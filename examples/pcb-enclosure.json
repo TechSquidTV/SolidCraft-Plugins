@@ -42,10 +42,10 @@
   {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "-(depth / 2 - corner_r)"], "id": "s3"}},
   {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "-(depth / 2 - corner_r)"], "id": "s4"}},
   {"caption": "", "command": "sketch.finish", "params": {}},
-  {"caption": "Threadcraft screws: an M3 x 6 socket head screw into each insert", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s1"}}},
-  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s2"}}},
-  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s3"}}},
-  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s4"}}}
+  {"caption": "Threadcraft screws: an M3 x 6 socket head screw into each insert", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s1"}}},
+  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s2"}}},
+  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s3"}}},
+  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s4"}}}
  ],
  "expect": {
   "bodies": 10,

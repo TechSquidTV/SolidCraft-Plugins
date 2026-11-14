@@ -1,6 +1,6 @@
 # Threadcraft Hexagon nuts
 
-An ISO 4032 hexagon nut for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-nut`. It builds the nut as its own body. The bore is a tapped hole.
+An ISO 4032 hexagon nut for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-nut`. It builds the nut as a component of its own, once, and places it on every point (see [Components](../../README.md#components)). The bore is a tapped hole.
 
 The sizes below are the ISO 4032 table, preferred and second-choice. ISO 4032 replaced DIN 934, and most sizes match, but not all: a DIN 934 nut is wider across the flats at M10 (17 mm, not 16), M12 (19, not 18), M14 (22, not 21) and narrower at M22 (32, not 34), and it is a little lower at most sizes (M6 5.0 mm, M8 6.5 mm). For a DIN 934 nut at those sizes, type its width and height in Custom width and Custom thickness, so the pocket fits it. The width across the flats is the nominal. The height is the standard maximum. Both ends are chamfered.
 
@@ -45,7 +45,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 | `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole` and `solid.cone`. The hexagon is the same profile a hex-head screw uses.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it. The hexagon is the same profile a hex-head screw uses.
 
 ## Sizes
 

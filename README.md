@@ -93,7 +93,7 @@ Each example comes as two files:
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It builds every `*.steps.json` and checks the body count, the bounding boxes, the insert hole, the clearance hole and the head recess on each corner, one insert and one screw on each corner, that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count (each placement of a fastener is a body, measured where it is placed), the bounding boxes, the insert hole, the clearance hole and the head recess on each corner, one insert and one screw on each corner, that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
 
 The pictures are rendered from the design:
 
@@ -127,10 +127,24 @@ Every name says what the part is and its size, so a design with several fastener
 | Insert hole | `Heat-set hole M3 x 5.7`, or `Glue-in hole` and `Glue-in pilot` for a stepped hole |
 | Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
 | Features and sketches of a part | the part's name, then the feature: `Screw M3 x 12 socket: Head`, `Nut M3: Thread` |
+| Fastener component | the body's name; its placements are `Screw M3 x 12 socket:1`, `:2` and so on |
 
 A hole keeps its kind and size in its own name because it stays in the part, and with Hole only or Pocket only there is no fastener body at all.
 
-A second body with the same name gets a number in brackets: `Screw M3 x 12 socket (2)`. Each plugin reads the body names in the design first and asks for one that is free, because a taken name makes the host number the body `BodyN`, and that number changes when the design is rebuilt.
+A second fastener definition with the same name gets a number in brackets: `Screw M3 x 12 socket (2)`. That happens only when the same name would build a different body, such as a modeled thread beside a cosmetic one. Each plugin reads the body and component names in the design first and asks for one that is free, because a taken name makes the host number the body `BodyN`, and that number changes when the design is rebuilt.
+
+## Components
+
+Each fastener is a component of its own. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
+
+- **One definition, many placements.** A run builds the fastener once, at its component's origin, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with the point on the origin and its outer side up +Z; each placement turns that onto the sketch.
+- **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.
+- **A Fasteners folder.** Every placement goes in one `Fasteners` component in the design, made the first time it is needed. It is a phantom, so the bill of materials counts what it holds and has no row of its own.
+- **A bill of materials.** Each definition is `purchased`, its part number is its name and its description the standard it follows (`ISO 4762`, `ISO 4032`) or the insert it is (`CNC Kitchen heat-set insert M3 × 5.7`). `assembly.bom` on the example lists 4 inserts and 4 screws.
+- **The active component stays.** Fasteners are placed in the design whichever component is active, and the component that was active before the run is active again afterwards.
+- **Moving them.** A placement is free, not grounded, and can be moved, hidden or given joints on its own.
+
+The reply's `component` says which definition was placed (`component`), whether it was `reused`, and the `occurrences` made.
 
 ## Releases
 

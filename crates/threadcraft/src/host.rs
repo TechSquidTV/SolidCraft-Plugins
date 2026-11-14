@@ -16,6 +16,18 @@ pub trait Runner {
     }
 }
 
+/// A builder generic over `Runner` runs on a `&mut dyn Runner` too, as
+/// [`crate::fasten::place_all`] hands it one.
+impl Runner for &mut dyn Runner {
+    fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+        (**self).run(command, args)
+    }
+
+    fn body_names(&mut self) -> Vec<String> {
+        (**self).body_names()
+    }
+}
+
 /// The arguments of the `inspect.measure` call that lists the body names.
 pub fn body_names_query() -> Value {
     serde_json::json!({"names_only": true})

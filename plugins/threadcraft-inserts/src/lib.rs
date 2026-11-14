@@ -1,7 +1,7 @@
 //! Heat-set insert generator for SolidCraft.
 //!
 //! One entry, `make-insert`. Every selected sketch point or circle gets the hole for the
-//! insert, drilled into the part under it, and the insert as its own body. The face end
+//! insert, drilled into the part under it, and a placement of the insert component. The face end
 //! sits on the point and the tip runs into the part. With nothing selected, an insert
 //! alone sits on the origin. The outside is a 16-point star that
 //! twists into a herringbone knurl. `solid.hole` bores that body and threads it.
@@ -12,7 +12,8 @@ pub mod knurl;
 
 use insert::{HoleCut, HoleShape, Params};
 use serde_json::{json, Value};
-use threadcraft::host::{body_name_of, free_body_name, sketch_id};
+use threadcraft::fasten::{self, Definition, Placed};
+use threadcraft::host::{body_name_of, sketch_id};
 use threadcraft::name;
 use threadcraft::place::{self, opposite, Placement, Spot};
 use threadcraft::Runner;
@@ -27,10 +28,9 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         if p.create.hole() {
             return Err(NOTHING_SELECTED.into());
         }
-        let place = Placement::on_origin();
-        let name = free_body_name(&mut r.body_names(), &body_base(p));
-        build_insert(r, p, &place, &name)?;
-        return Ok(summary(p, &[place], &[]));
+        let places = [Placement::on_origin()];
+        let placed = place_inserts(r, p, &places)?;
+        return Ok(summary(p, &places, &[], Some(&placed)));
     }
     // The holes go first: the insert would otherwise be a body under the point too.
     let mut drilled: Vec<String> = Vec::new();
@@ -49,15 +49,30 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             }
         }
     }
-    if p.create.insert() {
-        let mut taken = r.body_names();
-        for spot in &spots {
-            let name = free_body_name(&mut taken, &body_base(p));
-            build_insert(r, p, &spot.place, &name)?;
-        }
-    }
     let places: Vec<Placement> = spots.iter().map(|spot| spot.place).collect();
-    Ok(summary(p, &places, &drilled))
+    let placed = if p.create.insert() {
+        Some(place_inserts(r, p, &places)?)
+    } else {
+        None
+    };
+    Ok(summary(p, &places, &drilled, placed.as_ref()))
+}
+
+/// The plugin id, which an insert component's metadata names.
+pub const PLUGIN: &str = "threadcraft-inserts";
+
+/// One insert component, built once and placed on every point.
+fn place_inserts<R: Runner>(r: &mut R, p: &Params, places: &[Placement]) -> Result<Placed, String> {
+    let base = body_base(p);
+    let description = format!("CNC Kitchen heat-set insert {}", p.size);
+    let def = Definition {
+        plugin: PLUGIN,
+        base: &base,
+        description: &description,
+    };
+    fasten::place_all(r, &def, places, |mut r, name| {
+        build_insert(&mut r, p, &Placement::on_origin(), name)
+    })
 }
 
 /// The body name before any number: `Insert M3 x 5.7`. The thread and the length are
@@ -306,6 +321,15 @@ fn sweep_band<R: Runner>(
             "name": name,
         }),
     )?;
+    // A sweep leaves both sketches shown, where an extrude or a revolve hides its own.
+    // The path starts on the insert's axis at its open face, the very point a screw is
+    // placed on, and a screw placed on a point of the path would take the path's
+    // sketch normal, square to the axis, and lie on its side. Hidden, neither can be picked.
+    // Hiding is cosmetic, so a host that refuses it still keeps the insert.
+    let _ = r.run(
+        "browser.visibility",
+        json!({"visible": false, "items": [profile_id, path_id]}),
+    );
     Ok(())
 }
 
@@ -320,7 +344,7 @@ fn created_curve(reply: &Value) -> Result<String, String> {
         .ok_or_else(|| "sketch.line did not return a curve id".to_string())
 }
 
-fn summary(p: &Params, places: &[Placement], drilled: &[String]) -> Value {
+fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<&Placed>) -> Value {
     let place = &places[0];
     let hole = p.cut.map(|cut| match cut.shape {
         HoleShape::Straight { diameter } => json!({
@@ -351,6 +375,7 @@ fn summary(p: &Params, places: &[Placement], drilled: &[String]) -> Value {
         "blind_depth": p.length + 1.0,
         "plastic_hole": p.hole,
         "min_wall": p.wall,
+        "component": placed.map(Placed::json),
     })
 }
 
@@ -365,6 +390,10 @@ mod tests {
     }
     impl Runner for Rec {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            // Placing the fastener is checked on its own; these check the build.
+            if let Some(reply) = threadcraft::fasten::stand_in(command) {
+                return Ok(reply);
+            }
             let reply = match command {
                 "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
@@ -377,7 +406,7 @@ mod tests {
                 {
                     json!({"created_bodies": [args["body_name"]]})
                 }
-                _ => Value::Null,
+                _ => threadcraft::fasten::stand_in(command).unwrap_or(Value::Null),
             };
             self.calls.push((command.to_string(), args));
             Ok(reply)
@@ -426,6 +455,7 @@ mod tests {
                 "sketch.line",
                 "sketch.finish",
                 "solid.sweep",
+                "browser.visibility",
                 "sketch.create",
                 "sketch.line",
                 "sketch.finish",
@@ -433,10 +463,20 @@ mod tests {
                 "sketch.line",
                 "sketch.finish",
                 "solid.sweep",
+                "browser.visibility",
                 "solid.chamfer",
                 "solid.hole",
             ]
         );
+        // Each band hides its own profile and path, so no point of either is picked
+        // later to place a screw.
+        let hidden: Vec<&Value> = calls
+            .iter()
+            .filter(|(c, _)| c == "browser.visibility")
+            .map(|(_, a)| a)
+            .collect();
+        assert_eq!(hidden[0], &json!({"visible": false, "items": [1, 2]}));
+        assert_eq!(hidden[1], &json!({"visible": false, "items": [3, 4]}));
         let shape = knurl::shape(5.7, 4.6, 3.0);
         let core = &calls[1].1;
         assert_eq!(core["diameter"], json!(shape.gap_diameter));
@@ -454,10 +494,10 @@ mod tests {
         assert_eq!(star[0][0], json!(shape.crest));
         assert_eq!(calls[7].1["sketch"], 2);
         assert_eq!(calls[9].1["twist"], json!(shape.twist_deg));
-        assert_eq!(calls[16].1["twist"], json!(-shape.twist_deg));
+        assert_eq!(calls[17].1["twist"], json!(-shape.twist_deg));
         assert_eq!(calls[9].1["targets"], json!(["Insert M3 x 5.7"]));
-        assert_eq!(calls[16].1["targets"], json!(["Insert M3 x 5.7"]));
-        let hole = &calls[18].1;
+        assert_eq!(calls[17].1["targets"], json!(["Insert M3 x 5.7"]));
+        let hole = &calls[20].1;
         assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
         assert_eq!(hole["depth"], 5.7);
@@ -527,6 +567,10 @@ mod tests {
         }
         impl Runner for Renamed {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = threadcraft::fasten::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => {
@@ -539,7 +583,7 @@ mod tests {
                     {
                         json!({"created_bodies": ["Body1"]})
                     }
-                    _ => Value::Null,
+                    _ => threadcraft::fasten::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.calls.push((command.to_string(), args));
                 Ok(reply)
@@ -561,10 +605,14 @@ mod tests {
         struct Mute(Vec<String>);
         impl Runner for Mute {
             fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = threadcraft::fasten::stand_in(command) {
+                    return Ok(reply);
+                }
                 self.0.push(command.to_string());
                 Ok(match command {
                     "selection.get" => json!({"count": 0, "items": []}),
-                    _ => Value::Null,
+                    _ => threadcraft::fasten::stand_in(command).unwrap_or(Value::Null),
                 })
             }
         }
@@ -580,6 +628,10 @@ mod tests {
         struct Named(Vec<(String, Value)>);
         impl Runner for Named {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = threadcraft::fasten::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "sketch.inspect" => json!({
                         "plane": {
@@ -597,7 +649,7 @@ mod tests {
                     {
                         json!({"created_bodies": ["Insert"]})
                     }
-                    _ => Value::Null,
+                    _ => threadcraft::fasten::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.0.push((command.to_string(), args));
                 Ok(reply)
@@ -607,9 +659,10 @@ mod tests {
         let mut rec = Named(vec![]);
         let summary = make_insert(&mut rec, &p).unwrap();
         assert_eq!(rec.0[0].0, "sketch.inspect");
-        assert_eq!(rec.0[1].1["base"], json!([12.0, 10.0, 2.3]));
+        // The insert is built in its own component, its face end on the origin.
+        assert_eq!(rec.0[1].1["base"], json!([0.0, 0.0, -5.7]));
         let hole = last(&rec.0, "solid.hole");
-        assert_eq!(hole["position"], json!([12.0, 10.0, 8.0]));
+        assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
         assert_eq!(summary["at"], json!([12.0, 10.0, 8.0]));
     }
@@ -658,7 +711,7 @@ mod tests {
                 "solid.hole" if args.get("sketch").is_some() => {
                     json!({"changed_bodies": self.changed})
                 }
-                _ => Value::Null,
+                _ => threadcraft::fasten::stand_in(command).unwrap_or(Value::Null),
             };
             self.calls.push((command.to_string(), args));
             Ok(reply)
@@ -695,18 +748,36 @@ mod tests {
             .filter(|(name, args)| name == "solid.cylinder" && args["operation"] == "new")
             .map(|(_, args)| &args["base"])
             .collect();
+        // One insert is built, and placed with its face end on each circle.
+        assert_eq!(bodies, [&json!([0.0, 0.0, -5.7])]);
+        let placed: Vec<&Value> = calls
+            .iter()
+            .filter(|(name, _)| name == "occurrence.move")
+            .map(|(_, args)| &args["to_matrix"])
+            .collect();
         assert_eq!(
-            bodies,
-            [&json!([10.0, 10.0, 4.3]), &json!([30.0, 10.0, 4.3])]
+            placed,
+            [
+                &json!([
+                    [1.0, 0.0, 0.0, 10.0],
+                    [0.0, 1.0, 0.0, 10.0],
+                    [0.0, 0.0, 1.0, 10.0]
+                ]),
+                &json!([
+                    [1.0, 0.0, 0.0, 30.0],
+                    [0.0, 1.0, 0.0, 10.0],
+                    [0.0, 0.0, 1.0, 10.0]
+                ]),
+            ]
         );
-        // Each bore drills its own insert, not the plate.
+        // The bore drills the insert, not the plate.
         let bores: Vec<&Value> = calls
             .iter()
             .filter(|(name, args)| name == "solid.hole" && args.get("sketch").is_none())
             .map(|(_, args)| &args["targets"])
             .collect();
-        assert_eq!(bores.len(), 2);
-        assert!(bores[0] != bores[1]);
+        assert_eq!(bores, [&json!(["Insert0"])]);
+        assert_eq!(summary["component"]["component"], "Insert M3 x 5.7");
         assert_eq!(summary["count"], 2);
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["hole"]["diameter"], 4.0);
@@ -836,8 +907,17 @@ mod tests {
                 "sketch.finish",
                 "solid.cylinder",
                 "solid.sweep",
+                "browser.visibility",
                 "solid.chamfer",
-                "solid.hole"
+                "solid.hole",
+                "component.list",
+                "component.create",
+                "component.metadata",
+                "component.metadata.set",
+                "component.activate",
+                "occurrence.copy",
+                "occurrence.move",
+                "occurrence.reparent"
             ])
         );
     }
@@ -850,6 +930,10 @@ mod tests {
     }
     impl Runner for Taken {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            // Placing the fastener is checked on its own; these check the build.
+            if let Some(reply) = threadcraft::fasten::stand_in(command) {
+                return Ok(reply);
+            }
             Ok(match command {
                 "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
@@ -876,7 +960,7 @@ mod tests {
                     self.names.push(name.clone());
                     json!({"created_bodies": [name]})
                 }
-                _ => Value::Null,
+                _ => threadcraft::fasten::stand_in(command).unwrap_or(Value::Null),
             })
         }
 
@@ -894,21 +978,14 @@ mod tests {
     }
 
     /// A taken name makes the host number the body, and that number changes on a rebuild.
+    /// A run builds one insert, whatever the number of points.
     #[test]
-    fn every_insert_of_a_run_asks_for_a_free_body_name() {
+    fn every_new_insert_asks_for_a_free_body_name() {
         let p = insert::parse(&json!({"sketch": "Points", "sketch_point": "a, b"})).unwrap();
         let mut host = design(&["Base"]);
         make_insert(&mut host, &p).unwrap();
         make_insert(&mut host, &p).unwrap();
-        assert_eq!(
-            host.asked,
-            [
-                "Insert M3 x 5.7",
-                "Insert M3 x 5.7 (2)",
-                "Insert M3 x 5.7 (3)",
-                "Insert M3 x 5.7 (4)"
-            ]
-        );
+        assert_eq!(host.asked, ["Insert M3 x 5.7", "Insert M3 x 5.7 (2)"]);
     }
 
     #[test]

@@ -1,6 +1,6 @@
 # Threadcraft Heat-set inserts
 
-A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-insert`. For every sketch point or circle you select, it drills the hole for the insert into the part under that point and builds the brass insert as its own body.
+A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-insert`. For every sketch point or circle you select, it drills the hole for the insert into the part under that point and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../README.md#components)).
 
 Sizes are [CNC Kitchen](https://cnckitchen.store/)'s. The outside is the knurl. The top face is a 16-point star, those points twist down one way, a smooth gap follows, and the points twist back the other way. A short lead-in at the tip is smooth, with a small chamfer. D1 is the diameter across the points.
 
@@ -21,7 +21,7 @@ You need a SolidCraft build that has the plugin host (the `commands@0.1` capabil
 
 ## Use
 
-Sketch on the face of the part, put a point or a circle where each insert goes, select them all, and open Plugins > Heat-set insert. Pick a Size and press Run. Each point gets the hole for that insert and an insert body, as one undo step.
+Sketch on the face of the part, put a point or a circle where each insert goes, select them all, and open Plugins > Heat-set insert. Pick a Size and press Run. Each point gets the hole for that insert and a placement of the insert, as one undo step.
 
 Create chooses what is made: `Hole and insert` (the default), `Hole only`, or `Insert only`. A hole needs a part, so the first two need a selection. `Insert only` with nothing selected puts a loose insert on the origin.
 
@@ -57,7 +57,7 @@ The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall 
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas: `c1, c2` |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.cylinder`, `solid.sweep`, `solid.chamfer` and `solid.hole`.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.cylinder`, `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.chamfer`, `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 `short` and `Voron` mark a second row of the same thread. D1 is the insert diameter, D2 is the plastic hole, and W is the minimum wall beside that hole.
 

@@ -369,8 +369,8 @@ loose_rail("rail: V-slot 2060 x 80", {"slot": "V-slot", "size": "2060", "length"
            rail_area(V, 3, 0.5), (20, 60, 80))
 loose_rail("rail: T-slot 2080 x 50", {"slot": "T-slot", "size": "2080", "length": 50},
            rail_area(T, 4, 1.0), (20, 80, 50))
-# MISUMI lists 472 mm2 for HFS5-4040. Its cores are open to the middle, and the drawing
-# gives no size for the opening, so this one is held to the catalog area within 0.5%.
+# The end face of MISUMI's STEP model of NFS5-4040 is 479.13 mm2, with each core open to
+# the middle. The model also rounds the groove edges, so this is held to it within 0.5%.
 @case
 def rail_4040(name):
     found, reply = plugin_run("techsquid-extrusions", "make-extrusion",
@@ -381,12 +381,12 @@ def rail_4040(name):
     rail = list(found.values())[0]
     got = rail["volume_mm3"] / 100
     box = [rail["bbox"]["max"][i] - rail["bbox"]["min"][i] for i in range(3)]
-    ok = (len(found) == 1 and rail["closed"] and abs(got - 472) < 472 * 0.005
+    ok = (len(found) == 1 and rail["closed"] and abs(got - 479.13) < 479.13 * 0.005
           and all(abs(box[i] - (40, 40, 100)[i]) < 1e-6 for i in range(3)))
-    check(name, ok, f"| area {got:.2f}, catalog 472; box {box}")
+    check(name, ok, f"| area {got:.2f}, STEP model 479.13; box {box}")
 
 
-rail_4040("rail: T-slot 4040 x 100 has the catalog area")
+rail_4040("rail: T-slot 4040 x 100 has the STEP model's area")
 
 
 @case

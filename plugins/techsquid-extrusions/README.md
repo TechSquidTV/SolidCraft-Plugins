@@ -49,11 +49,11 @@ A rail is a grid of 20 mm cells. Each cell has a square core with a Ø4.2 bore, 
 | 2040 | 20 x 40 | 323.7 | 300.0 |
 | 2060 | 20 x 60 | 465.2 | 428.6 |
 | 2080 | 20 x 80 | 606.8 | 557.2 |
-| 4040 | 40 x 40 | 471.3 | not offered |
+| 4040 | 40 x 40 | 480.9 | not offered |
 
 At 2.70 g/cm³ a T-slot 2020 weighs 0.49 kg/m and a 2040 0.87 kg/m.
 
-In a T-slot 4040 no web runs to the middle. The four cavities are one, and each core is open to it, so each bore is a C. That is how MISUMI draws HFS5-4040. The drawing gives no size for the opening, so it is set to bring the section within 0.5% of the catalog's area.
+In a T-slot 4040 no web runs to the middle. The four cavities are one, and each core is open to it through a 53° wedge that faces the middle of the rail, so each bore is a C. That is MISUMI's STEP model of NFS5-4040. The catalog draws the opening differently and lists 472 mm², which is 1.5% under the model.
 
 Each T-slot floor has the 120° groove, 0.3 mm deep. MISUMI's STEP model rounds the groove's edges to R0.5 and the corners of the closed cavity to R0.3; here they are sharp.
 
@@ -66,11 +66,13 @@ What is not here: the closed-face rails (HFSF5, HFST5), the 30 and 40 mm series,
 | T-slot: 6 slot, 2 lip, 12 cavity, 8 core, Ø4.2 bore, R1 corners, 1.5 webs | MISUMI catalog 2019 US p. 2686 to 2687, Slot Details and the HFS5-2020 and HFS5-4040 sections | `slot::tests::the_t_slot_is_the_misumi_5_series_slot` |
 | T-slot: the 120° floor groove, 0.3 deep | The same pages, Slot Bottom Details | `slot::tests::the_t_slot_is_the_misumi_5_series_slot` |
 | T-slot 2040 outline and cavity vertices, and the section's 322.44 mm² to within 0.5% | MISUMI STEP model `NFS5-2040-50.stp` (PARTcommunity) | `profile::tests::the_t_slot_2040_has_the_misumi_step_vertices` |
-| T-slot areas 183, 324 and 472 mm² for 2020, 2040 and 4040, to within 0.5% | The same catalog pages, Sectional Area | `profile::tests::the_t_slot_areas_are_the_misumi_catalog_areas` |
+| T-slot 2060 cavities (143.03 mm² each), and the section's 463.49 mm² to within 0.5% | MISUMI STEP model `NFS5-2060-2060.stp` | `profile::tests::the_t_slot_2060_has_the_misumi_step_cavities` |
+| T-slot 4040 outline and middle cavity vertices, the opening of each core, and the section's 479.13 mm² to within 0.5% | MISUMI STEP model `NFS5-4040-50.stp` | `profile::tests::the_t_slot_4040_has_the_misumi_step_vertices` |
+| T-slot areas 183 and 324 mm² for 2020 and 2040, to within 0.5% | The same catalog pages, Sectional Area | `profile::tests::the_t_slot_areas_are_the_misumi_catalog_areas` |
 | V-slot: 6.25 throat, 9.16 mouth, 11 cavity, 1.80 lip, 1.50 webs, Ø4.20 bore | OpenBuilds drawing "V-Slot 20x20 Linear Rail" | `slot::tests::the_v_slot_is_the_openbuilds_slot` |
 | V-slot outline and cavity vertices, and the area of each section | OpenBuilds `V-Slot 20x20.dxf`, `20x40.dxf`, `20x60.dxf` and `20x80.dxf` | `profile::tests::the_v_slot_outline_has_the_dxf_vertices`, `the_v_slot_2040_cavity_has_the_dxf_vertices`, `the_v_slot_areas_are_the_openbuilds_dxf_areas` |
 
-A T-slot 2060 and 2080 repeat the 2040's cavity, the way the V-slot drawings do. They are not checked against a catalog area.
+A T-slot 2080 repeats the 2060's cavity. It is not checked against a model of its own. The STEP models also have a second, shallower mark beside the groove on each slot floor, which is left out.
 
 ## Names
 

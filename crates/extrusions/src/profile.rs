@@ -6,7 +6,7 @@
 //! The outline walks the four sides anticlockwise and dips into a slot at every cell.
 //! Between two cells of a single row the webs and walls close a cavity. In a 2 x 2 rail
 //! no web runs to the middle, so the four cavities are one, and each core is open to it:
-//! the quarter of the core that faces the middle is left out, which makes the bore a C.
+//! a wedge of the core that faces the middle is left out, which makes the bore a C.
 
 use crate::slot::{Slot, HALF_CELL};
 
@@ -24,8 +24,9 @@ pub struct Grid {
 /// The sizes a rail comes in, by the name on a parts list.
 ///
 /// Sources: MISUMI catalog 2019 US p. 2686 to 2687 draws HFS5-2020, HFS5-2040 and
-/// HFS5-4040. OpenBuilds publishes V-Slot 20x20, 20x40, 20x60 and 20x80. A T-slot 2060
-/// and 2080 repeat the 2040's cavity, as the V-slot drawings do.
+/// HFS5-4040, and MISUMI's STEP models give NFS5-2040, NFS5-2060 and NFS5-4040.
+/// OpenBuilds publishes V-Slot 20x20, 20x40, 20x60 and 20x80. A T-slot 2080 repeats
+/// the 2060's cavity, as the V-slot drawings do.
 pub const SIZES: [(&str, Grid); 5] = [
     ("2020", Grid { nx: 1, ny: 1 }),
     ("2040", Grid { nx: 1, ny: 2 }),
@@ -225,10 +226,14 @@ fn outline(s: &Slot, grid: &Grid) -> Vec<Seg> {
     segs
 }
 
-/// How far past its centre lines a core of a 2 x 2 rail runs before it opens to the
-/// middle cavity. The HFS5-4040 section draws the opening and gives no size for it; with
-/// 0.4 mm the section is within 0.5% of the catalog's area.
-pub const OPEN_CORE_RIB: f64 = 0.4;
+/// How a core of a 2 x 2 rail opens to the middle cavity. Two straight cuts run from the
+/// bore's centre line out to the core's two inner faces, and each meets its face this
+/// share of the core's half width past the centre line. The wedge between them, 53.13°
+/// wide and facing the middle of the rail, is open.
+///
+/// Source: MISUMI STEP model `NFS5-4040-50.stp`, whose cuts run from (8.6667, 6) to
+/// (9.3359, 8.0078) on the bore of the core at (10, 10), and mirrored.
+pub const OPEN_CORE_SHARE: f64 = 1.0 / 3.0;
 
 fn cavities(s: &Slot, grid: &Grid) -> Vec<Vec<Seg>> {
     let face = HALF_CELL - s.core;
@@ -256,11 +261,14 @@ fn cavities(s: &Slot, grid: &Grid) -> Vec<Vec<Seg>> {
     // 2 x 2: the part of the middle cavity in the top right cell, about that cell's
     // centre. It runs from the top wall down the web to the core, round the bore the
     // long way, and out along the other web to the right wall.
-    let (f, c, e) = (s.leg(), s.core, OPEN_CORE_RIB);
+    let (f, c) = (s.leg(), s.core);
     let r = s.bore / 2.0;
-    let q = (r * r - e * e).sqrt();
+    // Where a cut meets its face, and how far it leans from that face's normal.
+    let e = c * OPEN_CORE_SHARE;
+    let lean = e.atan2(c).to_degrees();
     let k = r / std::f64::consts::SQRT_2;
-    let (into, far, out) = ([-q, -e], [k, k], [-e, -q]);
+    let d = e.hypot(c);
+    let (into, far, out) = ([-r * c / d, -r * e / d], [k, k], [-r * e / d, -r * c / d]);
     // A point on the bore at `degrees` anticlockwise from +X.
     let on = |degrees: f64| -> P {
         let a = degrees.to_radians();
@@ -274,8 +282,9 @@ fn cavities(s: &Slot, grid: &Grid) -> Vec<Vec<Seg>> {
         ccw: false,
     };
     let mut quarter = chain(&[[-f, wall], [-f, knee], [-c, root], [-c, -e], into]);
-    quarter.push(arc(into, far, on(112.5)));
-    quarter.push(arc(far, out, on(-22.5)));
+    // Clockwise from just below -X round to +X +Y, then on to just left of -Y.
+    quarter.push(arc(into, far, on((180.0 + lean + 45.0) / 2.0)));
+    quarter.push(arc(far, out, on((45.0 - 90.0 - lean) / 2.0)));
     quarter.extend(chain(&[out, [-e, -c], [root, -c], [knee, -f], [wall, -f]]));
     let moved = |p: P| [p[0] + HALF_CELL, p[1] + HALF_CELL];
     // A quarter turn clockwise about the rail's centre gives the next cell's part.
@@ -455,11 +464,12 @@ mod tests {
     }
 
     /// MISUMI catalog 2019 US p. 2686 to 2687, "Sectional Area mm²": HFS5-2020 183,
-    /// HFS5-2040 324, HFS5-4040 472. The catalog rounds to a whole mm², and its 2040 is
-    /// 0.5% over its own STEP model.
+    /// HFS5-2040 324. The catalog rounds to a whole mm², and its 2040 is 0.5% over its
+    /// own STEP model. Its 4040 is 472, which is 1.5% under the STEP model, so the 4040
+    /// is held to the model instead.
     #[test]
     fn the_t_slot_areas_are_the_misumi_catalog_areas() {
-        for (size, area) in [("2020", 183.0), ("2040", 324.0), ("4040", 472.0)] {
+        for (size, area) in [("2020", 183.0), ("2040", 324.0)] {
             let got = profile(T5, size).area();
             assert!(close(got, area, area * 0.005), "{size}: {got}");
         }
@@ -522,8 +532,73 @@ mod tests {
         assert_eq!(profile(T5, "2080").bores.len(), 4);
     }
 
-    /// HFS5-4040: the cores stand 6, 8, 12, 8, 6 across the rail, the wall between two
-    /// slots is 2 mm thick, and each bore is open to the middle.
+    /// The closed cavities of MISUMI's STEP model `NFS5-2060-2060.stp`, 143.029 mm² each,
+    /// and its section of 463.49 mm².
+    #[test]
+    fn the_t_slot_2060_has_the_misumi_step_cavities() {
+        let p = profile(T5, "2060");
+        assert_eq!(p.cavities.len(), 2);
+        let upper: Vec<P> = p.cavities[1].iter().map(|s| s.start()).collect();
+        assert_eq!(upper.len(), 12);
+        for (x, y) in [
+            (2.9393, 4.0),
+            (6.9393, 8.0),
+            (8.0, 8.0),
+            (8.0, 12.0),
+            (6.9393, 12.0),
+            (2.9393, 16.0),
+        ] {
+            assert!(has(&upper, x, y) && has(&upper, -x, y), "({x}, {y})");
+        }
+        for cavity in &p.cavities {
+            assert!(close(loop_area(cavity), 143.029, 0.001));
+        }
+        assert!(close(p.area(), 463.49, 463.49 * 0.005));
+    }
+
+    /// Vertices of the end face of MISUMI's STEP model `NFS5-4040-50.stp`, in the top
+    /// right quarter, and its section of 479.13 mm².
+    #[test]
+    fn the_t_slot_4040_has_the_misumi_step_vertices() {
+        let p = profile(T5, "4040");
+        let cavity: Vec<P> = p.cavities[0].iter().map(|s| s.start()).collect();
+        for (x, y) in [
+            (18.0, 2.0),
+            (16.9393, 2.0),
+            (12.9393, 6.0),
+            (8.6667, 6.0),
+            (9.3359, 8.0078),
+            (8.0078, 9.3359),
+            (6.0, 8.6667),
+            (6.0, 12.9393),
+            (2.0, 16.9393),
+            (2.0, 18.0),
+        ] {
+            assert!(has(&cavity, x, y), "({x}, {y})");
+        }
+        let outer: Vec<P> = p.outer.iter().map(|s| s.start()).collect();
+        for (x, y) in [
+            (20.0, 7.0),
+            (18.0, 4.0),
+            (14.0, 7.0607),
+            (13.7, 10.0),
+            (17.0607, 16.0),
+            (19.0, 20.0),
+            (13.0, 18.0),
+            (16.0, 17.0607),
+            (10.0, 13.7),
+            (4.0, 17.0607),
+            (7.0, 18.0),
+            (7.0, 20.0),
+        ] {
+            assert!(has(&outer, x, y), "({x}, {y})");
+        }
+        assert!(close(loop_area(&p.cavities[0]), 711.96, 0.05));
+        assert!(close(p.area(), 479.13, 479.13 * 0.005));
+    }
+
+    /// NFS5-4040: the wall between two slots is 2 mm thick, and each bore is open to
+    /// the middle.
     #[test]
     fn a_4040_has_one_middle_cavity_that_takes_in_the_four_bores() {
         let p = profile(T5, "4040");

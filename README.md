@@ -9,7 +9,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Screws](plugins/techsquid-screws/README.md) | `techsquid-screws` | Fasteners | Metric machine screws to ISO standards on selected sketch points (socket, button, countersunk, hex, pan and cheese heads, set screws and threaded rod), with any drive, and optionally the clearance, counterbored, countersunk or tapped hole |
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
-| [Aluminium extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length and placed on selected sketch points, and the MISUMI M5 slot nuts that go in them |
+| [Aluminium extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
 
 Each plugin's README covers installing it, its dialog fields, the standards it follows and the names it gives bodies and features. Each release has one zip per plugin. To install a plugin, unzip its folder into SolidCraft's plugins folder.
 
@@ -23,6 +23,8 @@ The three fastener plugins share field names (`size`, `custom_size`, `create`, `
 
 A rail is one sketch of lines and arcs, extruded once. Its section comes from `crates/extrusions`, which builds it from a slot shape and a grid of 20 mm cells. The T-slot is checked against MISUMI's STEP models and the V-slot against OpenBuilds' DXF files; the plugin's README lists each source and its test.
 
+A rail can be built with its ends tapped M5 and with screw holes across it, so rails screw together with no bracket: see the plugin's README.
+
 A slot nut is one section too, extruded along the slot and tapped. `make-t-nut`, the plugin's second entry, hangs it under the lips of a slot, on a point on the rail's face. Its shape is MISUMI's STEP model of the pre-assembly nut HNTT5-5 or the post-assembly nut HNTP5-5.
 
 ## Layout
@@ -31,7 +33,7 @@ A slot nut is one section too, extruded along the slot and tapped. `make-t-nut`,
 Cargo.toml                 workspace
 crates/plugin-kit/         what every plugin shares: the host runner and wasm guest, dialog fields, placement, components, and names
 crates/fasteners/          designations, metric sizes, standard heads, ISO 4032 nuts, ISO 273 clearance holes, drives, and the hex profile
-crates/extrusions/         the 20 mm T-slot and V-slot shapes, the section of a rail built from them, and the slot nuts
+crates/extrusions/         the 20 mm T-slot and V-slot shapes, the section of a rail built from them, its taps and screw holes, and the slot nuts
 wit/plugin.wit             copy of SolidCraft's craft:plugin@0.1.0
 plugins/techsquid-screws   screw entry and its parameters
 plugins/techsquid-inserts  heat-set insert entry, catalog, and parameters
@@ -75,11 +77,13 @@ It inspects each package. A screw run must build an M3, an insert run must build
 
 A PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. One `make-screw` run on the points of a sketch on the 5 mm lid drills M3 clearance holes, each with a recess for the screw head, and sets an M3 × 6 socket head screw into each recess, its head flush with the lid. The screws and inserts have modeled threads.
 
-![A cube frame of T-slot rails with a V-slot gantry beam across the top](examples/rail-frame.png)
+![A frame of T-slot rails on V-slot posts, screwed together](examples/rail-frame.png)
+
+![The frame cut through one side: screws go through the side rails into the ends of a cross rail, and up through the cross rail into the feet of two posts](examples/rail-frame-joint.png)
 
 ![A slot nut under the lips of a top rail, its tapped hole showing through the slot](examples/rail-frame-nuts.png)
 
-A 300 mm cube frame of 20 mm rails. Four `make-extrusion` runs place thirteen rails, which are three components. The first stands four 300 mm T-slot 2020 uprights on the points of a sketch on the floor. Two more lay eight 260 mm T-slot 2020 rails between them, four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane; the second of those runs places the rail the first one built. The last puts a 260 mm V-slot 2040 beam on edge between the top side rails. Two `make-t-nut` runs then put four M5 post-assembly nuts in the top slots of two top rails and two M5 pre-assembly nuts in a slot of the beam. No screw, bracket or joint is modeled.
+A 300 mm square frame, 340 mm tall, held together by screws alone, the way a Creality Ender 5 frame is. Five `make-extrusion` runs place twelve rails, already cut for their joints: cross rails with both ends tapped and four screw holes for the posts, side rails with a screw hole at each end, and four V-slot 2040 posts with both ends tapped. Four `make-screw` runs place 24 M5 x 25 socket head screws on the slot floors. Each goes through one rail and 11 mm into the tapped end of the next. Two `make-t-nut` runs put four M5 post-assembly nuts in the top slots and two M5 pre-assembly nuts in a slot of two posts. The only bodies that overlap are the screws and the bores they are screwed into, which are listed as tapped and left at the tap drill's size.
 
 Each example comes as two files:
 
@@ -90,18 +94,19 @@ Each example comes as two files:
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of each rail and each slot nut. A rail's volume is the area of its section times its length. For both it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of every rail, screw and slot nut, and that the only bodies that overlap are the 24 screws and the bores they are in. For both it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
 
 The pictures are rendered from the design:
 
 ```
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --view iso --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure-closed.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame.png --width 1280 --height 800 --camera '{"target": [0, 0, 150], "yaw": 0.5, "pitch": 0.4, "distance": 720}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-nuts.png --width 1280 --height 800 --camera '{"target": [62, -140, 296], "yaw": 0.5, "pitch": 0.7, "distance": 75}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame.png --width 1280 --height 800 --camera '{"target": [0, 0, 170], "yaw": 0.5, "pitch": 0.4, "distance": 800}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-joint.png --width 1280 --height 800 --camera '{"target": [140, 105, 30], "yaw": 0.3, "pitch": 0.15, "distance": 190}' --no-grid --no-axes --quality fine --section x=140,flip
+solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-nuts.png --width 1280 --height 800 --camera '{"target": [62, -140, 336], "yaw": 0.5, "pitch": 0.7, "distance": 75}' --no-grid --no-axes --quality fine
 ```
 
-`tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length. A slot nut is put in the slot of a rail: it must be the size MISUMI draws, sit under the lips, touch nothing, and leave the rail and any nut built before it as they were.
+`tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length. A tapped or drilled rail is checked against the plain one, a screw hole by the metal it takes out, and a drilled rail, a tapped post and two screws are put together to check that each screw passes the first rail without touching it. A slot nut is put in the slot of a rail: it must be the size MISUMI draws, sit under the lips, touch nothing, and leave the rail and any nut built before it as they were.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/geometry_test.py

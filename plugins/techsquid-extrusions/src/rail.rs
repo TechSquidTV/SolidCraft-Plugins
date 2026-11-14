@@ -1,5 +1,6 @@
 //! What a person sets for a rail. Sizes are millimetres.
 
+use extrusions::machining::{self, Face, FACES};
 use extrusions::profile::{Grid, SIZES};
 use extrusions::slot::{Slot, T5, V5};
 use plugin_kit::input::FieldError;
@@ -13,6 +14,40 @@ pub const DEFAULT_LENGTH: f64 = 500.0;
 /// The longest rail the dialog takes. Stock lengths end at 4 m (MISUMI) and 6 m.
 pub const MAX_LENGTH_MM: f64 = 6000.0;
 
+pub const DEFAULT_TAPS: &str = "None";
+pub const DEFAULT_HOLE_FACE: &str = "+Y";
+
+/// The most screw holes one rail takes.
+pub const MAX_HOLES: usize = 64;
+
+/// Which ends of a rail are tapped. The start is the end on the sketch point.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Taps {
+    None,
+    Start,
+    End,
+    Both,
+}
+
+impl Taps {
+    pub fn label(&self) -> &'static str {
+        match self {
+            Taps::None => "None",
+            Taps::Start => "Start",
+            Taps::End => "End",
+            Taps::Both => "Both",
+        }
+    }
+
+    pub fn start(&self) -> bool {
+        matches!(self, Taps::Start | Taps::Both)
+    }
+
+    pub fn end(&self) -> bool {
+        matches!(self, Taps::End | Taps::Both)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Params {
     pub slot: Slot,
@@ -20,6 +55,12 @@ pub struct Params {
     pub size: String,
     pub grid: Grid,
     pub length: f64,
+    /// The ends whose bores are tapped M5.
+    pub taps: Taps,
+    /// Where the screw holes are, as distances from the start, in order.
+    pub holes: Vec<f64>,
+    /// The face the screws go in from.
+    pub hole_face: Face,
     pub place: PlaceInput,
 }
 
@@ -62,13 +103,95 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             format!("must be more than 0 and at most {MAX_LENGTH_MM} mm"),
         ));
     }
+    let taps = match text(v, "end_taps", DEFAULT_TAPS)? {
+        "None" => Taps::None,
+        "Start" => Taps::Start,
+        "End" => Taps::End,
+        "Both" => Taps::Both,
+        other => {
+            return Err(FieldError::new(
+                "end_taps",
+                format!("must be None, Start, End or Both, not {other}"),
+            ))
+        }
+    };
+    let tapped =
+        machining::TAP_DEPTH * (usize::from(taps.start()) + usize::from(taps.end())) as f64;
+    if length < tapped {
+        return Err(FieldError::new(
+            "end_taps",
+            format!(
+                "a tap is {} mm deep, so this rail must be at least {tapped} mm long",
+                machining::TAP_DEPTH
+            ),
+        ));
+    }
+    let hole_face = text(v, "hole_face", DEFAULT_HOLE_FACE)?;
+    let hole_face = Face::of(hole_face).ok_or_else(|| {
+        let listed: Vec<&str> = FACES.iter().map(Face::name).collect();
+        FieldError::new(
+            "hole_face",
+            format!("must be one of {}, not {hole_face}", listed.join(", ")),
+        )
+    })?;
     Ok(Params {
         slot,
         size: size.to_string(),
         grid,
         length,
+        taps,
+        holes: holes(v, length)?,
+        hole_face,
         place: place::parse_input(v)?,
     })
+}
+
+/// The screw hole positions: distances from the start of the rail, as text with commas
+/// or spaces between them, or one number. They come back in order, each once.
+fn holes(v: &Value, length: f64) -> Result<Vec<f64>, FieldError> {
+    let text = match v.get("holes") {
+        None | Some(Value::Null) => return Ok(Vec::new()),
+        Some(Value::Number(n)) => n.to_string(),
+        Some(Value::String(s)) => s.clone(),
+        Some(_) => {
+            return Err(FieldError::new(
+                "holes",
+                "must be distances in millimetres, such as 10, 290",
+            ))
+        }
+    };
+    let margin = machining::hole_margin();
+    let mut out: Vec<f64> = Vec::new();
+    for word in text.split([',', ' ', ';']).filter(|w| !w.is_empty()) {
+        let at: f64 = word.parse().map_err(|_| {
+            FieldError::new(
+                "holes",
+                format!("{word} is not a distance; type them as 10, 290"),
+            )
+        })?;
+        // A name shows a distance to 0.01 mm, as it does a length.
+        let at = (at * 100.0).round() / 100.0;
+        if !(at.is_finite() && at >= margin && at <= length - margin) {
+            return Err(FieldError::new(
+                "holes",
+                format!(
+                    "{word} is too close to an end; a hole goes from {margin} to {} mm along this rail",
+                    length - margin
+                ),
+            ));
+        }
+        if !out.contains(&at) {
+            out.push(at);
+        }
+    }
+    if out.len() > MAX_HOLES {
+        return Err(FieldError::new(
+            "holes",
+            format!("a rail takes at most {MAX_HOLES} holes"),
+        ));
+    }
+    out.sort_by(f64::total_cmp);
+    Ok(out)
 }
 
 /// A choice from a list, or `default` when the field is absent.
@@ -142,6 +265,56 @@ mod tests {
         // Too short to show is too short to cut.
         let err = parse(&json!({"length": 0.004})).unwrap_err();
         assert_eq!(err.field, "length");
+    }
+
+    #[test]
+    fn a_plain_rail_has_no_taps_and_no_holes() {
+        let p = parse(&json!({})).unwrap();
+        assert_eq!(p.taps, Taps::None);
+        assert!(p.holes.is_empty());
+        assert_eq!(p.hole_face, Face::YPlus);
+        let p = parse(&json!({"end_taps": "", "holes": "", "hole_face": ""})).unwrap();
+        assert_eq!(p.taps, Taps::None);
+        assert!(p.holes.is_empty());
+    }
+
+    #[test]
+    fn holes_are_distances_from_the_start_in_order() {
+        let p = parse(&json!({"length": 300, "holes": "290, 10 30;270, 10", "hole_face": "-Y"}))
+            .unwrap();
+        assert_eq!(p.holes, [10.0, 30.0, 270.0, 290.0]);
+        assert_eq!(p.hole_face, Face::YMinus);
+        assert_eq!(parse(&json!({"holes": 250})).unwrap().holes, [250.0]);
+    }
+
+    #[test]
+    fn a_hole_must_be_clear_of_both_ends() {
+        for holes in [
+            json!("2"),
+            json!("298"),
+            json!("ten"),
+            json!(true),
+            json!("-10"),
+        ] {
+            let err = parse(&json!({"length": 300, "holes": holes})).unwrap_err();
+            assert_eq!(err.field, "holes");
+        }
+        assert_eq!(
+            parse(&json!({"hole_face": "top"})).unwrap_err().field,
+            "hole_face"
+        );
+    }
+
+    #[test]
+    fn a_tapped_rail_is_long_enough_for_its_taps() {
+        let p = parse(&json!({"length": 24, "end_taps": "Both"})).unwrap();
+        assert_eq!(p.taps, Taps::Both);
+        assert!(p.taps.start() && p.taps.end());
+        assert!(parse(&json!({"length": 20, "end_taps": "Start"})).is_ok());
+        for (length, taps) in [(20, "Both"), (10, "End"), (100, "Left")] {
+            let err = parse(&json!({"length": length, "end_taps": taps})).unwrap_err();
+            assert_eq!(err.field, "end_taps");
+        }
     }
 
     #[test]

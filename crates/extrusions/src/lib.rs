@@ -3,8 +3,10 @@
 //! A rail is a grid of 20 mm cells. Each cell has a square core with a bore, a web from
 //! each core corner, and a slot on every side that faces out. [`slot`] holds the slot
 //! shapes with their sources, and [`profile`] builds the cross-section of a rail from a
-//! slot shape and a grid. [`tnut`] holds the nuts that go in a slot.
+//! slot shape and a grid. [`tnut`] holds the nuts that go in a slot, and
+//! [`machining`] the taps and screw holes that let rails screw together.
 
+pub mod machining;
 pub mod profile;
 pub mod slot;
 pub mod tnut;

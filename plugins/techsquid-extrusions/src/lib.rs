@@ -8,13 +8,14 @@
 pub mod rail;
 pub mod tnut;
 
+use extrusions::machining::{self, TAP_DEPTH, TAP_THREAD};
 use extrusions::{Profile, Seg};
 use plugin_kit::component::{self, Definition, Placed};
 use plugin_kit::host::sketch_id;
 use plugin_kit::name;
 use plugin_kit::place::{self, Placement};
 use plugin_kit::Runner;
-use rail::Params;
+use rail::{Params, Taps};
 use serde_json::{json, Value};
 
 /// The plugin id, which a rail component's metadata names.
@@ -23,20 +24,49 @@ pub const PLUGIN: &str = "techsquid-extrusions";
 /// The component every rail placement goes in.
 pub const FOLDER: &str = "Extrusions";
 
-/// The body name before any number: `T-slot 2040 x 500`.
+/// The body name before any number: `T-slot 2040 x 500`. What is cut into the rail
+/// follows, because a tapped or drilled rail is another part: `T-slot 2020 x 300 taps
+/// both holes -Y 10 290`.
 pub fn body_base(p: &Params) -> String {
-    format!("{} {}", p.slot.name, name::sized(&p.size, p.length))
+    let mut base = format!("{} {}", p.slot.name, name::sized(&p.size, p.length));
+    if p.taps != Taps::None {
+        base.push_str(&format!(" taps {}", p.taps.label().to_lowercase()));
+    }
+    if !p.holes.is_empty() {
+        base.push_str(&format!(" holes {}", p.hole_face.name()));
+        for at in &p.holes {
+            base.push_str(&format!(" {}", name::length(*at)));
+        }
+    }
+    base
 }
 
 /// What the bill of materials says a rail is.
 pub fn description(p: &Params) -> String {
-    format!(
+    let mut text = format!(
         "{} x {} mm {} aluminium extrusion, {} mm long",
         name::length(p.grid.width()),
         name::length(p.grid.height()),
         p.slot.name,
         name::length(p.length)
-    )
+    );
+    match p.taps {
+        Taps::None => {}
+        Taps::Both => text.push_str(&format!(", both ends tapped {TAP_THREAD}")),
+        one => text.push_str(&format!(
+            ", {} tapped {TAP_THREAD}",
+            one.label().to_lowercase()
+        )),
+    }
+    if !p.holes.is_empty() {
+        let at: Vec<String> = p.holes.iter().map(|at| name::length(*at)).collect();
+        text.push_str(&format!(
+            ", M5 screw holes from {} at {} mm",
+            p.hole_face.name(),
+            at.join(", ")
+        ));
+    }
+    text
 }
 
 /// Build the rail on every point. Returns a summary of what was made.
@@ -59,20 +89,21 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
         site: component::ORIGIN,
     };
     let placed = component::place_all(r, &def, &places, |mut r, name, site| {
-        build_rail(&mut r, &profile, p.length, site, name)
+        build_rail(&mut r, &profile, p, site, name)
     })?;
     Ok(summary(p, &profile, &places, &placed))
 }
 
 /// One rail named `body_name`, its section centred on `place` and its length along the
-/// normal.
+/// normal, with its taps and screw holes.
 pub fn build_rail<R: Runner>(
     r: &mut R,
     profile: &Profile,
-    length: f64,
+    p: &Params,
     place: &Placement,
     body_name: &str,
 ) -> Result<(), String> {
+    let length = p.length;
     let created = r.run(
         "sketch.create",
         json!({
@@ -108,6 +139,83 @@ pub fn build_rail<R: Runner>(
             "name": name::part(body_name, "Rail"),
         }),
     )?;
+    // A point of the section, `along` the rail from its start.
+    let at = |point: [f64; 2], along: f64| -> [f64; 3] {
+        std::array::from_fn(|i| {
+            place.point[i]
+                + point[0] * place.x_dir[i]
+                + point[1] * place.y_dir[i]
+                + along * place.normal[i]
+        })
+    };
+    for along in &p.holes {
+        let holes = machining::cross_holes(&p.slot, &p.grid, p.hole_face);
+        for (n, hole) in holes.iter().enumerate() {
+            let axis: [f64; 3] = std::array::from_fn(|i| {
+                hole.inward[0] * place.x_dir[i] + hole.inward[1] * place.y_dir[i]
+            });
+            let label = if holes.len() > 1 {
+                format!("Hole at {} ({})", name::length(*along), n + 1)
+            } else {
+                format!("Hole at {}", name::length(*along))
+            };
+            // The head goes through the lips and sits on the slot floor.
+            let (access, seat) = hole.access;
+            r.run(
+                "solid.cylinder",
+                json!({
+                    "diameter": access,
+                    "height": seat,
+                    "base": at(hole.at, *along),
+                    "axis": axis,
+                    "operation": "cut",
+                    "targets": [body_name],
+                    "name": name::part(body_name, &format!("{label}: Access")),
+                }),
+            )?;
+            let (clearance, start, run) = hole.clearance;
+            let from = [
+                hole.at[0] + start * hole.inward[0],
+                hole.at[1] + start * hole.inward[1],
+            ];
+            r.run(
+                "solid.cylinder",
+                json!({
+                    "diameter": clearance,
+                    "height": run,
+                    "base": at(from, *along),
+                    "axis": axis,
+                    "operation": "cut",
+                    "targets": [body_name],
+                    "name": name::part(body_name, &format!("{label}: Clearance")),
+                }),
+            )?;
+        }
+    }
+    // The bore is the tap drill already, so a tap is listed and cuts nothing.
+    let ends = [
+        (p.taps.start(), "start", 0.0, place.normal),
+        (p.taps.end(), "end", length, place::opposite(place.normal)),
+    ];
+    for (tapped, end, along, into) in ends {
+        if !tapped {
+            continue;
+        }
+        for (n, bore) in p.grid.centres().iter().enumerate() {
+            r.run(
+                "solid.hole",
+                json!({
+                    "position": at(*bore, along),
+                    "direction": into,
+                    "depth": TAP_DEPTH,
+                    "thread": TAP_THREAD,
+                    "modeled": false,
+                    "targets": [body_name],
+                    "name": name::part(body_name, &format!("Tap {end} {}", n + 1)),
+                }),
+            )?;
+        }
+    }
     Ok(())
 }
 
@@ -156,6 +264,9 @@ fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed)
         "width": p.grid.width(),
         "height": p.grid.height(),
         "area_mm2": (profile.area() * 100.0).round() / 100.0,
+        "end_taps": p.taps.label(),
+        "holes": p.holes,
+        "hole_face": p.hole_face.name(),
         "count": places.len(),
         "placed": places[0].source.words(),
         "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
@@ -252,6 +363,23 @@ mod tests {
             schema["properties"]["length"]["maximum"],
             rail::MAX_LENGTH_MM
         );
+        assert_eq!(
+            schema["properties"]["end_taps"]["enum"],
+            json!(["None", "Start", "End", "Both"])
+        );
+        assert_eq!(
+            schema["properties"]["end_taps"]["default"],
+            rail::DEFAULT_TAPS
+        );
+        let faces: Vec<&str> = extrusions::machining::FACES
+            .iter()
+            .map(|f| f.name())
+            .collect();
+        assert_eq!(schema["properties"]["hole_face"]["enum"], json!(faces));
+        assert_eq!(
+            schema["properties"]["hole_face"]["default"],
+            rail::DEFAULT_HOLE_FACE
+        );
     }
 
     #[test]
@@ -264,6 +392,7 @@ mod tests {
         for v in [
             json!({"slot": "T-slot", "size": "4040", "length": 100}),
             json!({"slot": "V-slot", "size": "2040", "length": 100}),
+            json!({"size": "2020", "length": 100, "end_taps": "Both", "holes": "50"}),
         ] {
             let (_, calls) = commands(v);
             for (command, _) in &calls {
@@ -386,6 +515,91 @@ mod tests {
         );
         let p = rail::parse(&json!({"size": "2020", "length": 122.5})).unwrap();
         assert_eq!(body_base(&p), "T-slot 2020 x 122.5");
+    }
+
+    #[test]
+    fn a_machined_rail_says_so_in_its_name_and_its_description() {
+        let p = rail::parse(&json!({
+            "size": "2020", "length": 300, "end_taps": "Both",
+            "holes": "10, 290", "hole_face": "-Y",
+        }))
+        .unwrap();
+        assert_eq!(body_base(&p), "T-slot 2020 x 300 taps both holes -Y 10 290");
+        assert_eq!(
+            description(&p),
+            "20 x 20 mm T-slot aluminium extrusion, 300 mm long, both ends tapped M5, M5 screw holes from -Y at 10, 290 mm"
+        );
+        let p = rail::parse(&json!({"size": "2040", "length": 300, "end_taps": "Start"})).unwrap();
+        assert_eq!(body_base(&p), "T-slot 2040 x 300 taps start");
+        assert!(description(&p).ends_with("300 mm long, start tapped M5"));
+        // A plain rail keeps the name it had.
+        let p = rail::parse(&json!({"size": "2020", "length": 300})).unwrap();
+        assert_eq!(body_base(&p), "T-slot 2020 x 300");
+    }
+
+    #[test]
+    fn a_screw_hole_is_an_access_hole_and_a_clearance_hole_cut_from_the_face() {
+        let (summary, calls) = commands(json!({
+            "size": "2020", "length": 300, "holes": "10, 290", "hole_face": "-Y",
+        }));
+        let cuts = all(&calls, "solid.cylinder");
+        assert_eq!(cuts.len(), 4);
+        let name = "T-slot 2020 x 300 holes -Y 10 290";
+        // The first hole is 10 along the rail, in from the -Y face.
+        assert_eq!(cuts[0]["name"], format!("{name}: Hole at 10: Access"));
+        assert_eq!(cuts[0]["diameter"], 9.5);
+        assert_eq!(cuts[0]["height"], 6.0);
+        assert_eq!(cuts[0]["base"], json!([0.0, -10.0, 10.0]));
+        assert_eq!(cuts[0]["axis"], json!([0.0, 1.0, 0.0]));
+        assert_eq!(cuts[1]["name"], format!("{name}: Hole at 10: Clearance"));
+        assert_eq!(cuts[1]["diameter"], 5.5);
+        assert_eq!(cuts[1]["height"], 14.0);
+        assert_eq!(cuts[1]["base"], json!([0.0, -4.0, 10.0]));
+        assert_eq!(cuts[2]["base"], json!([0.0, -10.0, 290.0]));
+        for cut in &cuts {
+            assert_eq!(cut["operation"], "cut");
+            assert_eq!(cut["targets"], json!([name]));
+        }
+        assert!(all(&calls, "solid.hole").is_empty());
+        assert_eq!(summary["holes"], json!([10.0, 290.0]));
+        assert_eq!(summary["hole_face"], "-Y");
+        // A 2040's wide face has two slots, so each position gets two holes.
+        let (_, calls) = commands(json!({
+            "size": "2040", "length": 100, "holes": "50", "hole_face": "+X",
+        }));
+        let cuts = all(&calls, "solid.cylinder");
+        assert_eq!(cuts.len(), 4);
+        assert_eq!(cuts[0]["base"], json!([10.0, -10.0, 50.0]));
+        assert_eq!(cuts[2]["base"], json!([10.0, 10.0, 50.0]));
+        assert_eq!(
+            cuts[2]["name"],
+            "T-slot 2040 x 100 holes +X 50: Hole at 50 (2): Access"
+        );
+    }
+
+    #[test]
+    fn a_tapped_end_lists_an_m5_thread_in_every_bore_and_cuts_nothing() {
+        let (summary, calls) = commands(json!({"size": "2040", "length": 300, "end_taps": "Both"}));
+        let taps = all(&calls, "solid.hole");
+        assert_eq!(taps.len(), 4);
+        let name = "T-slot 2040 x 300 taps both";
+        assert_eq!(taps[0]["name"], format!("{name}: Tap start 1"));
+        assert_eq!(taps[0]["position"], json!([0.0, -10.0, 0.0]));
+        assert_eq!(taps[0]["direction"], json!([0.0, 0.0, 1.0]));
+        assert_eq!(taps[1]["position"], json!([0.0, 10.0, 0.0]));
+        assert_eq!(taps[2]["name"], format!("{name}: Tap end 1"));
+        assert_eq!(taps[2]["position"], json!([0.0, -10.0, 300.0]));
+        assert_eq!(taps[2]["direction"], json!([0.0, 0.0, -1.0]));
+        for tap in &taps {
+            assert_eq!(tap["thread"], "M5");
+            assert_eq!(tap["depth"], 12.0);
+            assert_eq!(tap["modeled"], false);
+            assert_eq!(tap["targets"], json!([name]));
+        }
+        assert!(all(&calls, "solid.cylinder").is_empty());
+        assert_eq!(summary["end_taps"], "Both");
+        let (_, calls) = commands(json!({"size": "2020", "length": 300, "end_taps": "End"}));
+        assert_eq!(all(&calls, "solid.hole").len(), 1);
     }
 
     #[test]

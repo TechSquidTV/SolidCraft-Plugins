@@ -13,7 +13,7 @@
   "features": [
     {
       "id": 1,
-      "name": "Upright points",
+      "name": "Cross rail points",
       "suppressed": false,
       "param_names": [
         "d1"
@@ -23,9 +23,9 @@
         "type": "offset",
         "base": {
           "type": "origin",
-          "name": "XY"
+          "name": "XZ"
         },
-        "distance": "0"
+        "distance": "-130"
       },
       "sketch": {
         "points": [
@@ -38,34 +38,34 @@
             "fixed": true
           },
           {
-            "id": "u1",
+            "id": "b1",
             "pos": [
               140.0,
-              140.0
+              -10.0
             ],
             "fixed": false
           },
           {
-            "id": "u2",
+            "id": "b2",
             "pos": [
               -140.0,
-              140.0
+              -10.0
             ],
             "fixed": false
           },
           {
-            "id": "u3",
-            "pos": [
-              -140.0,
-              -140.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "u4",
+            "id": "t1",
             "pos": [
               140.0,
-              -140.0
+              -330.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "t2",
+            "pos": [
+              -140.0,
+              -330.0
             ],
             "fixed": false
           }
@@ -77,7 +77,7 @@
     },
     {
       "id": 6,
-      "name": "T-slot 2020 x 300: Section",
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Section",
       "suppressed": false,
       "component": 4,
       "type": "sketch",
@@ -1731,10 +1731,10 @@
     },
     {
       "id": 7,
-      "name": "T-slot 2020 x 300: Rail",
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Rail",
       "suppressed": false,
       "body_names": [
-        "T-slot 2020 x 300"
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
       ],
       "param_names": [
         "d2"
@@ -1826,81 +1826,299 @@
         ]
       },
       "extent": {
-        "distance": "300",
+        "distance": "260",
         "convention": "total_distance",
         "direction": "positive"
       },
       "operation": "new_body"
     },
     {
-      "id": 11,
-      "name": "Cross rail points",
+      "id": 8,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 20: Access",
       "suppressed": false,
       "param_names": [
-        "d3"
+        "d3",
+        "d4"
       ],
-      "type": "sketch",
-      "plane": {
-        "type": "offset",
-        "base": {
-          "type": "origin",
-          "name": "YZ"
-        },
-        "distance": "-130"
-      },
-      "sketch": {
-        "points": [
-          {
-            "id": "origin",
-            "pos": [
-              0.0,
-              0.0
-            ],
-            "fixed": true
-          },
-          {
-            "id": "x1",
-            "pos": [
-              140.0,
-              10.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "x2",
-            "pos": [
-              -140.0,
-              10.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "x3",
-            "pos": [
-              140.0,
-              290.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "x4",
-            "pos": [
-              -140.0,
-              290.0
-            ],
-            "fixed": false
-          }
-        ],
-        "curves": [],
-        "constraints": [],
-        "counters": {}
-      }
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        10.0,
+        20.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 9,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 20: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        4.0,
+        20.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 10,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 40: Access",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        10.0,
+        40.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 11,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 40: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d9",
+        "d10"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        4.0,
+        40.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 12,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 220: Access",
+      "suppressed": false,
+      "param_names": [
+        "d11",
+        "d12"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        10.0,
+        220.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 13,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 220: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d13",
+        "d14"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        4.0,
+        220.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
     },
     {
       "id": 14,
-      "name": "T-slot 2020 x 260: Section",
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 240: Access",
       "suppressed": false,
-      "component": 12,
+      "param_names": [
+        "d15",
+        "d16"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        10.0,
+        240.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 15,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Hole at 240: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "component": 4,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        4.0,
+        240.0
+      ],
+      "axis": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 16,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Tap start 1",
+      "suppressed": false,
+      "param_names": [
+        "d19",
+        "d20"
+      ],
+      "component": 4,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 17,
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240: Tap end 1",
+      "suppressed": false,
+      "param_names": [
+        "d21",
+        "d22"
+      ],
+      "component": 4,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        260.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 21,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Section",
+      "suppressed": false,
+      "component": 19,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -3551,18 +3769,18 @@
       }
     },
     {
-      "id": 15,
-      "name": "T-slot 2020 x 260: Rail",
+      "id": 22,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Rail",
       "suppressed": false,
       "body_names": [
-        "T-slot 2020 x 260"
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
       ],
       "param_names": [
-        "d4"
+        "d23"
       ],
-      "component": 12,
+      "component": 19,
       "type": "extrude",
-      "sketch": 14,
+      "sketch": 21,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -3654,75 +3872,293 @@
       "operation": "new_body"
     },
     {
-      "id": 19,
-      "name": "Side rail points",
+      "id": 23,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 20: Access",
       "suppressed": false,
       "param_names": [
-        "d5"
+        "d24",
+        "d25"
       ],
-      "type": "sketch",
-      "plane": {
-        "type": "offset",
-        "base": {
-          "type": "origin",
-          "name": "XZ"
-        },
-        "distance": "-130"
-      },
-      "sketch": {
-        "points": [
-          {
-            "id": "origin",
-            "pos": [
-              0.0,
-              0.0
-            ],
-            "fixed": true
-          },
-          {
-            "id": "y1",
-            "pos": [
-              140.0,
-              -10.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "y2",
-            "pos": [
-              -140.0,
-              -10.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "y3",
-            "pos": [
-              140.0,
-              -290.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "y4",
-            "pos": [
-              -140.0,
-              -290.0
-            ],
-            "fixed": false
-          }
-        ],
-        "curves": [],
-        "constraints": [],
-        "counters": {}
-      }
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -10.0,
+        20.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
     },
     {
       "id": 24,
-      "name": "Gantry point",
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 20: Clearance",
       "suppressed": false,
       "param_names": [
-        "d6"
+        "d26",
+        "d27"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -4.0,
+        20.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 25,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 40: Access",
+      "suppressed": false,
+      "param_names": [
+        "d28",
+        "d29"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -10.0,
+        40.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 26,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 40: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d30",
+        "d31"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -4.0,
+        40.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 27,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 220: Access",
+      "suppressed": false,
+      "param_names": [
+        "d32",
+        "d33"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -10.0,
+        220.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 28,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 220: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d34",
+        "d35"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -4.0,
+        220.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 29,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 240: Access",
+      "suppressed": false,
+      "param_names": [
+        "d36",
+        "d37"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -10.0,
+        240.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 30,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Hole at 240: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d38",
+        "d39"
+      ],
+      "component": 19,
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        -4.0,
+        240.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 31,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Tap start 1",
+      "suppressed": false,
+      "param_names": [
+        "d40",
+        "d41"
+      ],
+      "component": 19,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 32,
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240: Tap end 1",
+      "suppressed": false,
+      "param_names": [
+        "d42",
+        "d43"
+      ],
+      "component": 19,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        260.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 34,
+      "name": "Side rail points",
+      "suppressed": false,
+      "param_names": [
+        "d44"
       ],
       "type": "sketch",
       "plane": {
@@ -3731,7 +4167,7 @@
           "type": "origin",
           "name": "YZ"
         },
-        "distance": "-130"
+        "distance": "-150"
       },
       "sketch": {
         "points": [
@@ -3744,10 +4180,34 @@
             "fixed": true
           },
           {
-            "id": "g1",
+            "id": "f1",
             "pos": [
-              0.0,
-              280.0
+              140.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "f2",
+            "pos": [
+              140.0,
+              330.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "r1",
+            "pos": [
+              -140.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "r2",
+            "pos": [
+              -140.0,
+              330.0
             ],
             "fixed": false
           }
@@ -3758,10 +4218,3804 @@
       }
     },
     {
-      "id": 27,
-      "name": "V-slot 2040 x 260: Section",
+      "id": 37,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Section",
       "suppressed": false,
-      "component": 25,
+      "component": 35,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              -9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              -3.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -3.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -6.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -6.0,
+              -7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              -2.939339828220179,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              -0.6535898384862247,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              -0.6535898384862316,
+              -3.4999999999999942
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              -0.6535898384862247,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              -0.40358983848622615,
+              -3.933012701892217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.start",
+            "pos": [
+              -0.40358983848622465,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              0.0,
+              -3.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              0.40358983848622465,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              0.6535898384862224,
+              -3.4999999999999933
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              0.40358983848622465,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              0.9035898384862235,
+              -3.933012701892218
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.start",
+            "pos": [
+              0.9035898384862247,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.end",
+            "pos": [
+              1.2188856287933074,
+              -3.7509765924840694
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.end",
+            "pos": [
+              2.5,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l11.end",
+            "pos": [
+              2.939339828220179,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l12.end",
+            "pos": [
+              6.0,
+              -7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l13.end",
+            "pos": [
+              6.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l14.end",
+            "pos": [
+              3.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l15.end",
+            "pos": [
+              3.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l16.end",
+            "pos": [
+              9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              8.999999999999991,
+              -8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l17.start",
+            "pos": [
+              10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l17.end",
+            "pos": [
+              10.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l18.end",
+            "pos": [
+              8.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l19.end",
+            "pos": [
+              8.0,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l20.end",
+            "pos": [
+              7.060660171779821,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l21.end",
+            "pos": [
+              4.0,
+              -2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l22.end",
+            "pos": [
+              4.0,
+              -0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.center",
+            "pos": [
+              3.4999999999999876,
+              -0.6535898384862303
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.start",
+            "pos": [
+              4.0,
+              -0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.end",
+            "pos": [
+              3.9330127018922183,
+              -0.40358983848622537
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l23.start",
+            "pos": [
+              3.9330127018922196,
+              -0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l23.end",
+            "pos": [
+              3.7,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l24.end",
+            "pos": [
+              3.9330127018922196,
+              0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.center",
+            "pos": [
+              3.4999999999999933,
+              0.6535898384862224
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.start",
+            "pos": [
+              3.9330127018922196,
+              0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.end",
+            "pos": [
+              3.933012701892218,
+              0.9035898384862235
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l25.start",
+            "pos": [
+              3.9330127018922196,
+              0.9035898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l25.end",
+            "pos": [
+              3.7509765924840694,
+              1.2188856287933074
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l26.end",
+            "pos": [
+              4.0,
+              2.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l27.end",
+            "pos": [
+              4.0,
+              2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l28.end",
+            "pos": [
+              7.060660171779821,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l29.end",
+            "pos": [
+              8.0,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l30.end",
+            "pos": [
+              8.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l31.end",
+            "pos": [
+              10.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l32.end",
+            "pos": [
+              10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.center",
+            "pos": [
+              8.999999999999991,
+              8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.start",
+            "pos": [
+              10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.end",
+            "pos": [
+              9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l33.start",
+            "pos": [
+              9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l33.end",
+            "pos": [
+              3.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l34.end",
+            "pos": [
+              3.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l35.end",
+            "pos": [
+              6.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l36.end",
+            "pos": [
+              6.0,
+              7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l37.end",
+            "pos": [
+              2.939339828220179,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l38.end",
+            "pos": [
+              0.6535898384862247,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.center",
+            "pos": [
+              0.6535898384862316,
+              3.4999999999999942
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.start",
+            "pos": [
+              0.6535898384862247,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.end",
+            "pos": [
+              0.40358983848622615,
+              3.933012701892217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l39.start",
+            "pos": [
+              0.40358983848622465,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l39.end",
+            "pos": [
+              0.0,
+              3.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l40.end",
+            "pos": [
+              -0.40358983848622465,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.center",
+            "pos": [
+              -0.6535898384862224,
+              3.4999999999999933
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.start",
+            "pos": [
+              -0.40358983848622465,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.end",
+            "pos": [
+              -0.9035898384862235,
+              3.933012701892218
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l41.start",
+            "pos": [
+              -0.9035898384862247,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l41.end",
+            "pos": [
+              -1.2188856287933074,
+              3.7509765924840694
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l42.end",
+            "pos": [
+              -2.5,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l43.end",
+            "pos": [
+              -2.939339828220179,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l44.end",
+            "pos": [
+              -6.0,
+              7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l45.end",
+            "pos": [
+              -6.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l46.end",
+            "pos": [
+              -3.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l47.end",
+            "pos": [
+              -3.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l48.end",
+            "pos": [
+              -9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a9.center",
+            "pos": [
+              -8.999999999999991,
+              8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a9.start",
+            "pos": [
+              -9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a9.end",
+            "pos": [
+              -10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l49.start",
+            "pos": [
+              -10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l49.end",
+            "pos": [
+              -10.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l50.end",
+            "pos": [
+              -8.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l51.end",
+            "pos": [
+              -8.0,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l52.end",
+            "pos": [
+              -7.060660171779821,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l53.end",
+            "pos": [
+              -4.0,
+              2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l54.end",
+            "pos": [
+              -4.0,
+              0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a10.center",
+            "pos": [
+              -3.4999999999999876,
+              0.6535898384862303
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a10.start",
+            "pos": [
+              -4.0,
+              0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a10.end",
+            "pos": [
+              -3.9330127018922183,
+              0.40358983848622537
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l55.start",
+            "pos": [
+              -3.9330127018922196,
+              0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l55.end",
+            "pos": [
+              -3.7,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l56.end",
+            "pos": [
+              -3.9330127018922196,
+              -0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a11.center",
+            "pos": [
+              -3.4999999999999933,
+              -0.6535898384862224
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a11.start",
+            "pos": [
+              -3.9330127018922196,
+              -0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a11.end",
+            "pos": [
+              -3.933012701892218,
+              -0.9035898384862235
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l57.start",
+            "pos": [
+              -3.9330127018922196,
+              -0.9035898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l57.end",
+            "pos": [
+              -3.7509765924840694,
+              -1.2188856287933074
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l58.end",
+            "pos": [
+              -4.0,
+              -2.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l59.end",
+            "pos": [
+              -4.0,
+              -2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l60.end",
+            "pos": [
+              -7.060660171779821,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l61.end",
+            "pos": [
+              -8.0,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l62.end",
+            "pos": [
+              -8.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l63.end",
+            "pos": [
+              -10.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l64.end",
+            "pos": [
+              -10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a12.center",
+            "pos": [
+              -8.999999999999991,
+              -8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a12.start",
+            "pos": [
+              -10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a12.end",
+            "pos": [
+              -9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 8,
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 14,
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 20,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 21,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 24,
+            "b": 25,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 26,
+            "a": 27,
+            "b": 28,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 29,
+            "b": 30,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 30,
+            "b": 31,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 31,
+            "b": 32,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 32,
+            "b": 33,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 33,
+            "b": 34,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 34,
+            "b": 35,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 36,
+            "a": 37,
+            "b": 38,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 39,
+            "b": 40,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 40,
+            "b": 41,
+            "construction": false
+          },
+          {
+            "id": "a5",
+            "type": "arc",
+            "c": 42,
+            "a": 43,
+            "b": 44,
+            "construction": false
+          },
+          {
+            "id": "l25",
+            "type": "line",
+            "a": 45,
+            "b": 46,
+            "construction": false
+          },
+          {
+            "id": "l26",
+            "type": "line",
+            "a": 46,
+            "b": 47,
+            "construction": false
+          },
+          {
+            "id": "l27",
+            "type": "line",
+            "a": 47,
+            "b": 48,
+            "construction": false
+          },
+          {
+            "id": "l28",
+            "type": "line",
+            "a": 48,
+            "b": 49,
+            "construction": false
+          },
+          {
+            "id": "l29",
+            "type": "line",
+            "a": 49,
+            "b": 50,
+            "construction": false
+          },
+          {
+            "id": "l30",
+            "type": "line",
+            "a": 50,
+            "b": 51,
+            "construction": false
+          },
+          {
+            "id": "l31",
+            "type": "line",
+            "a": 51,
+            "b": 52,
+            "construction": false
+          },
+          {
+            "id": "l32",
+            "type": "line",
+            "a": 52,
+            "b": 53,
+            "construction": false
+          },
+          {
+            "id": "a6",
+            "type": "arc",
+            "c": 54,
+            "a": 55,
+            "b": 56,
+            "construction": false
+          },
+          {
+            "id": "l33",
+            "type": "line",
+            "a": 57,
+            "b": 58,
+            "construction": false
+          },
+          {
+            "id": "l34",
+            "type": "line",
+            "a": 58,
+            "b": 59,
+            "construction": false
+          },
+          {
+            "id": "l35",
+            "type": "line",
+            "a": 59,
+            "b": 60,
+            "construction": false
+          },
+          {
+            "id": "l36",
+            "type": "line",
+            "a": 60,
+            "b": 61,
+            "construction": false
+          },
+          {
+            "id": "l37",
+            "type": "line",
+            "a": 61,
+            "b": 62,
+            "construction": false
+          },
+          {
+            "id": "l38",
+            "type": "line",
+            "a": 62,
+            "b": 63,
+            "construction": false
+          },
+          {
+            "id": "a7",
+            "type": "arc",
+            "c": 64,
+            "a": 65,
+            "b": 66,
+            "construction": false
+          },
+          {
+            "id": "l39",
+            "type": "line",
+            "a": 67,
+            "b": 68,
+            "construction": false
+          },
+          {
+            "id": "l40",
+            "type": "line",
+            "a": 68,
+            "b": 69,
+            "construction": false
+          },
+          {
+            "id": "a8",
+            "type": "arc",
+            "c": 70,
+            "a": 71,
+            "b": 72,
+            "construction": false
+          },
+          {
+            "id": "l41",
+            "type": "line",
+            "a": 73,
+            "b": 74,
+            "construction": false
+          },
+          {
+            "id": "l42",
+            "type": "line",
+            "a": 74,
+            "b": 75,
+            "construction": false
+          },
+          {
+            "id": "l43",
+            "type": "line",
+            "a": 75,
+            "b": 76,
+            "construction": false
+          },
+          {
+            "id": "l44",
+            "type": "line",
+            "a": 76,
+            "b": 77,
+            "construction": false
+          },
+          {
+            "id": "l45",
+            "type": "line",
+            "a": 77,
+            "b": 78,
+            "construction": false
+          },
+          {
+            "id": "l46",
+            "type": "line",
+            "a": 78,
+            "b": 79,
+            "construction": false
+          },
+          {
+            "id": "l47",
+            "type": "line",
+            "a": 79,
+            "b": 80,
+            "construction": false
+          },
+          {
+            "id": "l48",
+            "type": "line",
+            "a": 80,
+            "b": 81,
+            "construction": false
+          },
+          {
+            "id": "a9",
+            "type": "arc",
+            "c": 82,
+            "a": 83,
+            "b": 84,
+            "construction": false
+          },
+          {
+            "id": "l49",
+            "type": "line",
+            "a": 85,
+            "b": 86,
+            "construction": false
+          },
+          {
+            "id": "l50",
+            "type": "line",
+            "a": 86,
+            "b": 87,
+            "construction": false
+          },
+          {
+            "id": "l51",
+            "type": "line",
+            "a": 87,
+            "b": 88,
+            "construction": false
+          },
+          {
+            "id": "l52",
+            "type": "line",
+            "a": 88,
+            "b": 89,
+            "construction": false
+          },
+          {
+            "id": "l53",
+            "type": "line",
+            "a": 89,
+            "b": 90,
+            "construction": false
+          },
+          {
+            "id": "l54",
+            "type": "line",
+            "a": 90,
+            "b": 91,
+            "construction": false
+          },
+          {
+            "id": "a10",
+            "type": "arc",
+            "c": 92,
+            "a": 93,
+            "b": 94,
+            "construction": false
+          },
+          {
+            "id": "l55",
+            "type": "line",
+            "a": 95,
+            "b": 96,
+            "construction": false
+          },
+          {
+            "id": "l56",
+            "type": "line",
+            "a": 96,
+            "b": 97,
+            "construction": false
+          },
+          {
+            "id": "a11",
+            "type": "arc",
+            "c": 98,
+            "a": 99,
+            "b": 100,
+            "construction": false
+          },
+          {
+            "id": "l57",
+            "type": "line",
+            "a": 101,
+            "b": 102,
+            "construction": false
+          },
+          {
+            "id": "l58",
+            "type": "line",
+            "a": 102,
+            "b": 103,
+            "construction": false
+          },
+          {
+            "id": "l59",
+            "type": "line",
+            "a": 103,
+            "b": 104,
+            "construction": false
+          },
+          {
+            "id": "l60",
+            "type": "line",
+            "a": 104,
+            "b": 105,
+            "construction": false
+          },
+          {
+            "id": "l61",
+            "type": "line",
+            "a": 105,
+            "b": 106,
+            "construction": false
+          },
+          {
+            "id": "l62",
+            "type": "line",
+            "a": 106,
+            "b": 107,
+            "construction": false
+          },
+          {
+            "id": "l63",
+            "type": "line",
+            "a": 107,
+            "b": 108,
+            "construction": false
+          },
+          {
+            "id": "l64",
+            "type": "line",
+            "a": 108,
+            "b": 109,
+            "construction": false
+          },
+          {
+            "id": "a12",
+            "type": "arc",
+            "c": 110,
+            "a": 111,
+            "b": 112,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 113,
+            "r": 2.1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 7,
+            "q": 9
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 10,
+            "q": 11
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 13,
+            "q": 15
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 16,
+            "q": 17
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 25,
+            "q": 27
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 28,
+            "q": 29
+          },
+          {
+            "id": "k7",
+            "type": "coincident",
+            "p": 35,
+            "q": 37
+          },
+          {
+            "id": "k8",
+            "type": "coincident",
+            "p": 38,
+            "q": 39
+          },
+          {
+            "id": "k9",
+            "type": "coincident",
+            "p": 41,
+            "q": 43
+          },
+          {
+            "id": "k10",
+            "type": "coincident",
+            "p": 44,
+            "q": 45
+          },
+          {
+            "id": "k11",
+            "type": "coincident",
+            "p": 53,
+            "q": 55
+          },
+          {
+            "id": "k12",
+            "type": "coincident",
+            "p": 56,
+            "q": 57
+          },
+          {
+            "id": "k13",
+            "type": "coincident",
+            "p": 63,
+            "q": 65
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 66,
+            "q": 67
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 69,
+            "q": 71
+          },
+          {
+            "id": "k16",
+            "type": "coincident",
+            "p": 72,
+            "q": 73
+          },
+          {
+            "id": "k17",
+            "type": "coincident",
+            "p": 81,
+            "q": 83
+          },
+          {
+            "id": "k18",
+            "type": "coincident",
+            "p": 84,
+            "q": 85
+          },
+          {
+            "id": "k19",
+            "type": "coincident",
+            "p": 91,
+            "q": 93
+          },
+          {
+            "id": "k20",
+            "type": "coincident",
+            "p": 94,
+            "q": 95
+          },
+          {
+            "id": "k21",
+            "type": "coincident",
+            "p": 97,
+            "q": 99
+          },
+          {
+            "id": "k22",
+            "type": "coincident",
+            "p": 100,
+            "q": 101
+          },
+          {
+            "id": "k23",
+            "type": "coincident",
+            "p": 109,
+            "q": 111
+          },
+          {
+            "id": "k24",
+            "type": "coincident",
+            "p": 1,
+            "q": 112
+          },
+          {
+            "id": "k25",
+            "type": "coincident",
+            "p": 0,
+            "q": 113
+          }
+        ],
+        "counters": {
+          "a": 12,
+          "c": 1,
+          "k": 25,
+          "l": 64
+        }
+      }
+    },
+    {
+      "id": 38,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Rail",
+      "suppressed": false,
+      "body_names": [
+        "T-slot 2020 x 300 holes +X 10 290"
+      ],
+      "param_names": [
+        "d45"
+      ],
+      "component": 35,
+      "type": "extrude",
+      "sketch": 37,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "l1",
+            "l2",
+            "l3",
+            "l4",
+            "l5",
+            "l6",
+            "a1",
+            "l7",
+            "l8",
+            "a2",
+            "l9",
+            "l10",
+            "l11",
+            "l12",
+            "l13",
+            "l14",
+            "l15",
+            "l16",
+            "a3",
+            "l17",
+            "l18",
+            "l19",
+            "l20",
+            "l21",
+            "l22",
+            "a4",
+            "l23",
+            "l24",
+            "a5",
+            "l25",
+            "l26",
+            "l27",
+            "l28",
+            "l29",
+            "l30",
+            "l31",
+            "l32",
+            "a6",
+            "l33",
+            "l34",
+            "l35",
+            "l36",
+            "l37",
+            "l38",
+            "a7",
+            "l39",
+            "l40",
+            "a8",
+            "l41",
+            "l42",
+            "l43",
+            "l44",
+            "l45",
+            "l46",
+            "l47",
+            "l48",
+            "a9",
+            "l49",
+            "l50",
+            "l51",
+            "l52",
+            "l53",
+            "l54",
+            "a10",
+            "l55",
+            "l56",
+            "a11",
+            "l57",
+            "l58",
+            "l59",
+            "l60",
+            "l61",
+            "l62",
+            "l63",
+            "l64",
+            "a12"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "300",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 39,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 10: Access",
+      "suppressed": false,
+      "param_names": [
+        "d46",
+        "d47"
+      ],
+      "component": 35,
+      "participants": [
+        "T-slot 2020 x 300 holes +X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "axis": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 40,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 10: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d48",
+        "d49"
+      ],
+      "component": 35,
+      "participants": [
+        "T-slot 2020 x 300 holes +X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        4.0,
+        0.0,
+        10.0
+      ],
+      "axis": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 41,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 290: Access",
+      "suppressed": false,
+      "param_names": [
+        "d50",
+        "d51"
+      ],
+      "component": 35,
+      "participants": [
+        "T-slot 2020 x 300 holes +X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        10.0,
+        0.0,
+        290.0
+      ],
+      "axis": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 42,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 290: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d52",
+        "d53"
+      ],
+      "component": 35,
+      "participants": [
+        "T-slot 2020 x 300 holes +X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        4.0,
+        0.0,
+        290.0
+      ],
+      "axis": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 46,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Section",
+      "suppressed": false,
+      "component": 44,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              -9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              -3.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -3.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -6.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -6.0,
+              -7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              -2.939339828220179,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              -0.6535898384862247,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              -0.6535898384862316,
+              -3.4999999999999942
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              -0.6535898384862247,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              -0.40358983848622615,
+              -3.933012701892217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.start",
+            "pos": [
+              -0.40358983848622465,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              0.0,
+              -3.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              0.40358983848622465,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              0.6535898384862224,
+              -3.4999999999999933
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              0.40358983848622465,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              0.9035898384862235,
+              -3.933012701892218
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.start",
+            "pos": [
+              0.9035898384862247,
+              -3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.end",
+            "pos": [
+              1.2188856287933074,
+              -3.7509765924840694
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.end",
+            "pos": [
+              2.5,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l11.end",
+            "pos": [
+              2.939339828220179,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l12.end",
+            "pos": [
+              6.0,
+              -7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l13.end",
+            "pos": [
+              6.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l14.end",
+            "pos": [
+              3.0,
+              -8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l15.end",
+            "pos": [
+              3.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l16.end",
+            "pos": [
+              9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              8.999999999999991,
+              -8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l17.start",
+            "pos": [
+              10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l17.end",
+            "pos": [
+              10.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l18.end",
+            "pos": [
+              8.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l19.end",
+            "pos": [
+              8.0,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l20.end",
+            "pos": [
+              7.060660171779821,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l21.end",
+            "pos": [
+              4.0,
+              -2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l22.end",
+            "pos": [
+              4.0,
+              -0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.center",
+            "pos": [
+              3.4999999999999876,
+              -0.6535898384862303
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.start",
+            "pos": [
+              4.0,
+              -0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.end",
+            "pos": [
+              3.9330127018922183,
+              -0.40358983848622537
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l23.start",
+            "pos": [
+              3.9330127018922196,
+              -0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l23.end",
+            "pos": [
+              3.7,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l24.end",
+            "pos": [
+              3.9330127018922196,
+              0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.center",
+            "pos": [
+              3.4999999999999933,
+              0.6535898384862224
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.start",
+            "pos": [
+              3.9330127018922196,
+              0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.end",
+            "pos": [
+              3.933012701892218,
+              0.9035898384862235
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l25.start",
+            "pos": [
+              3.9330127018922196,
+              0.9035898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l25.end",
+            "pos": [
+              3.7509765924840694,
+              1.2188856287933074
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l26.end",
+            "pos": [
+              4.0,
+              2.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l27.end",
+            "pos": [
+              4.0,
+              2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l28.end",
+            "pos": [
+              7.060660171779821,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l29.end",
+            "pos": [
+              8.0,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l30.end",
+            "pos": [
+              8.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l31.end",
+            "pos": [
+              10.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l32.end",
+            "pos": [
+              10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.center",
+            "pos": [
+              8.999999999999991,
+              8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.start",
+            "pos": [
+              10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.end",
+            "pos": [
+              9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l33.start",
+            "pos": [
+              9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l33.end",
+            "pos": [
+              3.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l34.end",
+            "pos": [
+              3.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l35.end",
+            "pos": [
+              6.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l36.end",
+            "pos": [
+              6.0,
+              7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l37.end",
+            "pos": [
+              2.939339828220179,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l38.end",
+            "pos": [
+              0.6535898384862247,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.center",
+            "pos": [
+              0.6535898384862316,
+              3.4999999999999942
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.start",
+            "pos": [
+              0.6535898384862247,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.end",
+            "pos": [
+              0.40358983848622615,
+              3.933012701892217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l39.start",
+            "pos": [
+              0.40358983848622465,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l39.end",
+            "pos": [
+              0.0,
+              3.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l40.end",
+            "pos": [
+              -0.40358983848622465,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.center",
+            "pos": [
+              -0.6535898384862224,
+              3.4999999999999933
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.start",
+            "pos": [
+              -0.40358983848622465,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.end",
+            "pos": [
+              -0.9035898384862235,
+              3.933012701892218
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l41.start",
+            "pos": [
+              -0.9035898384862247,
+              3.9330127018922196
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l41.end",
+            "pos": [
+              -1.2188856287933074,
+              3.7509765924840694
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l42.end",
+            "pos": [
+              -2.5,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l43.end",
+            "pos": [
+              -2.939339828220179,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l44.end",
+            "pos": [
+              -6.0,
+              7.060660171779821
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l45.end",
+            "pos": [
+              -6.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l46.end",
+            "pos": [
+              -3.0,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l47.end",
+            "pos": [
+              -3.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l48.end",
+            "pos": [
+              -9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a9.center",
+            "pos": [
+              -8.999999999999991,
+              8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a9.start",
+            "pos": [
+              -9.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a9.end",
+            "pos": [
+              -10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l49.start",
+            "pos": [
+              -10.0,
+              9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l49.end",
+            "pos": [
+              -10.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l50.end",
+            "pos": [
+              -8.0,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l51.end",
+            "pos": [
+              -8.0,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l52.end",
+            "pos": [
+              -7.060660171779821,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l53.end",
+            "pos": [
+              -4.0,
+              2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l54.end",
+            "pos": [
+              -4.0,
+              0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a10.center",
+            "pos": [
+              -3.4999999999999876,
+              0.6535898384862303
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a10.start",
+            "pos": [
+              -4.0,
+              0.6535898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a10.end",
+            "pos": [
+              -3.9330127018922183,
+              0.40358983848622537
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l55.start",
+            "pos": [
+              -3.9330127018922196,
+              0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l55.end",
+            "pos": [
+              -3.7,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l56.end",
+            "pos": [
+              -3.9330127018922196,
+              -0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a11.center",
+            "pos": [
+              -3.4999999999999933,
+              -0.6535898384862224
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a11.start",
+            "pos": [
+              -3.9330127018922196,
+              -0.40358983848622465
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a11.end",
+            "pos": [
+              -3.933012701892218,
+              -0.9035898384862235
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l57.start",
+            "pos": [
+              -3.9330127018922196,
+              -0.9035898384862247
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l57.end",
+            "pos": [
+              -3.7509765924840694,
+              -1.2188856287933074
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l58.end",
+            "pos": [
+              -4.0,
+              -2.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l59.end",
+            "pos": [
+              -4.0,
+              -2.939339828220179
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l60.end",
+            "pos": [
+              -7.060660171779821,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l61.end",
+            "pos": [
+              -8.0,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l62.end",
+            "pos": [
+              -8.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l63.end",
+            "pos": [
+              -10.0,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l64.end",
+            "pos": [
+              -10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a12.center",
+            "pos": [
+              -8.999999999999991,
+              -8.999999999999991
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a12.start",
+            "pos": [
+              -10.0,
+              -9.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a12.end",
+            "pos": [
+              -9.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 8,
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 14,
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 20,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 21,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 24,
+            "b": 25,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 26,
+            "a": 27,
+            "b": 28,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 29,
+            "b": 30,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 30,
+            "b": 31,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 31,
+            "b": 32,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 32,
+            "b": 33,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 33,
+            "b": 34,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 34,
+            "b": 35,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 36,
+            "a": 37,
+            "b": 38,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 39,
+            "b": 40,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 40,
+            "b": 41,
+            "construction": false
+          },
+          {
+            "id": "a5",
+            "type": "arc",
+            "c": 42,
+            "a": 43,
+            "b": 44,
+            "construction": false
+          },
+          {
+            "id": "l25",
+            "type": "line",
+            "a": 45,
+            "b": 46,
+            "construction": false
+          },
+          {
+            "id": "l26",
+            "type": "line",
+            "a": 46,
+            "b": 47,
+            "construction": false
+          },
+          {
+            "id": "l27",
+            "type": "line",
+            "a": 47,
+            "b": 48,
+            "construction": false
+          },
+          {
+            "id": "l28",
+            "type": "line",
+            "a": 48,
+            "b": 49,
+            "construction": false
+          },
+          {
+            "id": "l29",
+            "type": "line",
+            "a": 49,
+            "b": 50,
+            "construction": false
+          },
+          {
+            "id": "l30",
+            "type": "line",
+            "a": 50,
+            "b": 51,
+            "construction": false
+          },
+          {
+            "id": "l31",
+            "type": "line",
+            "a": 51,
+            "b": 52,
+            "construction": false
+          },
+          {
+            "id": "l32",
+            "type": "line",
+            "a": 52,
+            "b": 53,
+            "construction": false
+          },
+          {
+            "id": "a6",
+            "type": "arc",
+            "c": 54,
+            "a": 55,
+            "b": 56,
+            "construction": false
+          },
+          {
+            "id": "l33",
+            "type": "line",
+            "a": 57,
+            "b": 58,
+            "construction": false
+          },
+          {
+            "id": "l34",
+            "type": "line",
+            "a": 58,
+            "b": 59,
+            "construction": false
+          },
+          {
+            "id": "l35",
+            "type": "line",
+            "a": 59,
+            "b": 60,
+            "construction": false
+          },
+          {
+            "id": "l36",
+            "type": "line",
+            "a": 60,
+            "b": 61,
+            "construction": false
+          },
+          {
+            "id": "l37",
+            "type": "line",
+            "a": 61,
+            "b": 62,
+            "construction": false
+          },
+          {
+            "id": "l38",
+            "type": "line",
+            "a": 62,
+            "b": 63,
+            "construction": false
+          },
+          {
+            "id": "a7",
+            "type": "arc",
+            "c": 64,
+            "a": 65,
+            "b": 66,
+            "construction": false
+          },
+          {
+            "id": "l39",
+            "type": "line",
+            "a": 67,
+            "b": 68,
+            "construction": false
+          },
+          {
+            "id": "l40",
+            "type": "line",
+            "a": 68,
+            "b": 69,
+            "construction": false
+          },
+          {
+            "id": "a8",
+            "type": "arc",
+            "c": 70,
+            "a": 71,
+            "b": 72,
+            "construction": false
+          },
+          {
+            "id": "l41",
+            "type": "line",
+            "a": 73,
+            "b": 74,
+            "construction": false
+          },
+          {
+            "id": "l42",
+            "type": "line",
+            "a": 74,
+            "b": 75,
+            "construction": false
+          },
+          {
+            "id": "l43",
+            "type": "line",
+            "a": 75,
+            "b": 76,
+            "construction": false
+          },
+          {
+            "id": "l44",
+            "type": "line",
+            "a": 76,
+            "b": 77,
+            "construction": false
+          },
+          {
+            "id": "l45",
+            "type": "line",
+            "a": 77,
+            "b": 78,
+            "construction": false
+          },
+          {
+            "id": "l46",
+            "type": "line",
+            "a": 78,
+            "b": 79,
+            "construction": false
+          },
+          {
+            "id": "l47",
+            "type": "line",
+            "a": 79,
+            "b": 80,
+            "construction": false
+          },
+          {
+            "id": "l48",
+            "type": "line",
+            "a": 80,
+            "b": 81,
+            "construction": false
+          },
+          {
+            "id": "a9",
+            "type": "arc",
+            "c": 82,
+            "a": 83,
+            "b": 84,
+            "construction": false
+          },
+          {
+            "id": "l49",
+            "type": "line",
+            "a": 85,
+            "b": 86,
+            "construction": false
+          },
+          {
+            "id": "l50",
+            "type": "line",
+            "a": 86,
+            "b": 87,
+            "construction": false
+          },
+          {
+            "id": "l51",
+            "type": "line",
+            "a": 87,
+            "b": 88,
+            "construction": false
+          },
+          {
+            "id": "l52",
+            "type": "line",
+            "a": 88,
+            "b": 89,
+            "construction": false
+          },
+          {
+            "id": "l53",
+            "type": "line",
+            "a": 89,
+            "b": 90,
+            "construction": false
+          },
+          {
+            "id": "l54",
+            "type": "line",
+            "a": 90,
+            "b": 91,
+            "construction": false
+          },
+          {
+            "id": "a10",
+            "type": "arc",
+            "c": 92,
+            "a": 93,
+            "b": 94,
+            "construction": false
+          },
+          {
+            "id": "l55",
+            "type": "line",
+            "a": 95,
+            "b": 96,
+            "construction": false
+          },
+          {
+            "id": "l56",
+            "type": "line",
+            "a": 96,
+            "b": 97,
+            "construction": false
+          },
+          {
+            "id": "a11",
+            "type": "arc",
+            "c": 98,
+            "a": 99,
+            "b": 100,
+            "construction": false
+          },
+          {
+            "id": "l57",
+            "type": "line",
+            "a": 101,
+            "b": 102,
+            "construction": false
+          },
+          {
+            "id": "l58",
+            "type": "line",
+            "a": 102,
+            "b": 103,
+            "construction": false
+          },
+          {
+            "id": "l59",
+            "type": "line",
+            "a": 103,
+            "b": 104,
+            "construction": false
+          },
+          {
+            "id": "l60",
+            "type": "line",
+            "a": 104,
+            "b": 105,
+            "construction": false
+          },
+          {
+            "id": "l61",
+            "type": "line",
+            "a": 105,
+            "b": 106,
+            "construction": false
+          },
+          {
+            "id": "l62",
+            "type": "line",
+            "a": 106,
+            "b": 107,
+            "construction": false
+          },
+          {
+            "id": "l63",
+            "type": "line",
+            "a": 107,
+            "b": 108,
+            "construction": false
+          },
+          {
+            "id": "l64",
+            "type": "line",
+            "a": 108,
+            "b": 109,
+            "construction": false
+          },
+          {
+            "id": "a12",
+            "type": "arc",
+            "c": 110,
+            "a": 111,
+            "b": 112,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 113,
+            "r": 2.1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 7,
+            "q": 9
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 10,
+            "q": 11
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 13,
+            "q": 15
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 16,
+            "q": 17
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 25,
+            "q": 27
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 28,
+            "q": 29
+          },
+          {
+            "id": "k7",
+            "type": "coincident",
+            "p": 35,
+            "q": 37
+          },
+          {
+            "id": "k8",
+            "type": "coincident",
+            "p": 38,
+            "q": 39
+          },
+          {
+            "id": "k9",
+            "type": "coincident",
+            "p": 41,
+            "q": 43
+          },
+          {
+            "id": "k10",
+            "type": "coincident",
+            "p": 44,
+            "q": 45
+          },
+          {
+            "id": "k11",
+            "type": "coincident",
+            "p": 53,
+            "q": 55
+          },
+          {
+            "id": "k12",
+            "type": "coincident",
+            "p": 56,
+            "q": 57
+          },
+          {
+            "id": "k13",
+            "type": "coincident",
+            "p": 63,
+            "q": 65
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 66,
+            "q": 67
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 69,
+            "q": 71
+          },
+          {
+            "id": "k16",
+            "type": "coincident",
+            "p": 72,
+            "q": 73
+          },
+          {
+            "id": "k17",
+            "type": "coincident",
+            "p": 81,
+            "q": 83
+          },
+          {
+            "id": "k18",
+            "type": "coincident",
+            "p": 84,
+            "q": 85
+          },
+          {
+            "id": "k19",
+            "type": "coincident",
+            "p": 91,
+            "q": 93
+          },
+          {
+            "id": "k20",
+            "type": "coincident",
+            "p": 94,
+            "q": 95
+          },
+          {
+            "id": "k21",
+            "type": "coincident",
+            "p": 97,
+            "q": 99
+          },
+          {
+            "id": "k22",
+            "type": "coincident",
+            "p": 100,
+            "q": 101
+          },
+          {
+            "id": "k23",
+            "type": "coincident",
+            "p": 109,
+            "q": 111
+          },
+          {
+            "id": "k24",
+            "type": "coincident",
+            "p": 1,
+            "q": 112
+          },
+          {
+            "id": "k25",
+            "type": "coincident",
+            "p": 0,
+            "q": 113
+          }
+        ],
+        "counters": {
+          "a": 12,
+          "c": 1,
+          "k": 25,
+          "l": 64
+        }
+      }
+    },
+    {
+      "id": 47,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Rail",
+      "suppressed": false,
+      "body_names": [
+        "T-slot 2020 x 300 holes -X 10 290"
+      ],
+      "param_names": [
+        "d54"
+      ],
+      "component": 44,
+      "type": "extrude",
+      "sketch": 46,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "l1",
+            "l2",
+            "l3",
+            "l4",
+            "l5",
+            "l6",
+            "a1",
+            "l7",
+            "l8",
+            "a2",
+            "l9",
+            "l10",
+            "l11",
+            "l12",
+            "l13",
+            "l14",
+            "l15",
+            "l16",
+            "a3",
+            "l17",
+            "l18",
+            "l19",
+            "l20",
+            "l21",
+            "l22",
+            "a4",
+            "l23",
+            "l24",
+            "a5",
+            "l25",
+            "l26",
+            "l27",
+            "l28",
+            "l29",
+            "l30",
+            "l31",
+            "l32",
+            "a6",
+            "l33",
+            "l34",
+            "l35",
+            "l36",
+            "l37",
+            "l38",
+            "a7",
+            "l39",
+            "l40",
+            "a8",
+            "l41",
+            "l42",
+            "l43",
+            "l44",
+            "l45",
+            "l46",
+            "l47",
+            "l48",
+            "a9",
+            "l49",
+            "l50",
+            "l51",
+            "l52",
+            "l53",
+            "l54",
+            "a10",
+            "l55",
+            "l56",
+            "a11",
+            "l57",
+            "l58",
+            "l59",
+            "l60",
+            "l61",
+            "l62",
+            "l63",
+            "l64",
+            "a12"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "300",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 48,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 10: Access",
+      "suppressed": false,
+      "param_names": [
+        "d55",
+        "d56"
+      ],
+      "component": 44,
+      "participants": [
+        "T-slot 2020 x 300 holes -X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        -10.0,
+        0.0,
+        10.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 49,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 10: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d57",
+        "d58"
+      ],
+      "component": 44,
+      "participants": [
+        "T-slot 2020 x 300 holes -X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        -4.0,
+        0.0,
+        10.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 50,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 290: Access",
+      "suppressed": false,
+      "param_names": [
+        "d59",
+        "d60"
+      ],
+      "component": 44,
+      "participants": [
+        "T-slot 2020 x 300 holes -X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        -10.0,
+        0.0,
+        290.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "radius": "(9.5 mm) / 2",
+      "height": "6",
+      "operation": "cut"
+    },
+    {
+      "id": 51,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 290: Clearance",
+      "suppressed": false,
+      "param_names": [
+        "d61",
+        "d62"
+      ],
+      "component": 44,
+      "participants": [
+        "T-slot 2020 x 300 holes -X 10 290"
+      ],
+      "type": "cylinder",
+      "base": [
+        -4.0,
+        0.0,
+        290.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "radius": "(5.5 mm) / 2",
+      "height": "14",
+      "operation": "cut"
+    },
+    {
+      "id": 53,
+      "name": "Post points",
+      "suppressed": false,
+      "param_names": [
+        "d63"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "20"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              140.0,
+              100.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -140.0,
+              100.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -140.0,
+              -100.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              140.0,
+              -100.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 56,
+      "name": "V-slot 2040 x 300 taps both: Section",
+      "suppressed": false,
+      "component": 54,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -5643,18 +9897,18 @@
       }
     },
     {
-      "id": 28,
-      "name": "V-slot 2040 x 260: Rail",
+      "id": 57,
+      "name": "V-slot 2040 x 300 taps both: Rail",
       "suppressed": false,
       "body_names": [
-        "V-slot 2040 x 260"
+        "V-slot 2040 x 300 taps both"
       ],
       "param_names": [
-        "d7"
+        "d64"
       ],
-      "component": 25,
+      "component": 54,
       "type": "extrude",
-      "sketch": 27,
+      "sketch": 56,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -5761,27 +10015,168 @@
         ]
       },
       "extent": {
-        "distance": "260",
+        "distance": "300",
         "convention": "total_distance",
         "direction": "positive"
       },
       "operation": "new_body"
     },
     {
-      "id": 29,
-      "name": "Top nut points",
+      "id": 58,
+      "name": "V-slot 2040 x 300 taps both: Tap start 1",
       "suppressed": false,
       "param_names": [
-        "d8"
+        "d65",
+        "d66"
       ],
+      "component": 54,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "V-slot 2040 x 300 taps both"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        -10.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 59,
+      "name": "V-slot 2040 x 300 taps both: Tap start 2",
+      "suppressed": false,
+      "param_names": [
+        "d67",
+        "d68"
+      ],
+      "component": 54,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "V-slot 2040 x 300 taps both"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        10.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 60,
+      "name": "V-slot 2040 x 300 taps both: Tap end 1",
+      "suppressed": false,
+      "param_names": [
+        "d69",
+        "d70"
+      ],
+      "component": 54,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "V-slot 2040 x 300 taps both"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        -10.0,
+        300.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 61,
+      "name": "V-slot 2040 x 300 taps both: Tap end 2",
+      "suppressed": false,
+      "param_names": [
+        "d71",
+        "d72"
+      ],
+      "component": 54,
+      "face_names": [
+        ""
+      ],
+      "participants": [
+        "V-slot 2040 x 300 taps both"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        10.0,
+        300.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 65,
+      "name": "Base screw seats",
+      "suppressed": false,
       "type": "sketch",
       "plane": {
-        "type": "offset",
-        "base": {
-          "type": "origin",
-          "name": "XY"
-        },
-        "distance": "300"
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            6.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            -1.0,
+            0.0
+          ]
+        }
       },
       "sketch": {
         "points": [
@@ -5794,7 +10189,580 @@
             "fixed": true
           },
           {
-            "id": "t1",
+            "id": "u1",
+            "pos": [
+              140.0,
+              -110.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u2",
+            "pos": [
+              140.0,
+              -90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u3",
+            "pos": [
+              140.0,
+              90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u4",
+            "pos": [
+              140.0,
+              110.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u5",
+            "pos": [
+              -140.0,
+              -110.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u6",
+            "pos": [
+              -140.0,
+              -90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u7",
+            "pos": [
+              -140.0,
+              90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "u8",
+            "pos": [
+              -140.0,
+              110.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 70,
+      "name": "Screw M5 x 25 socket: Shank",
+      "suppressed": false,
+      "body_names": [
+        "Screw M5 x 25 socket"
+      ],
+      "param_names": [
+        "d73",
+        "d74"
+      ],
+      "component": 68,
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        -25.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(5 mm) / 2",
+      "height": "25",
+      "operation": "new_body"
+    },
+    {
+      "id": 71,
+      "name": "Screw M5 x 25 socket: Head",
+      "suppressed": false,
+      "param_names": [
+        "d75",
+        "d76"
+      ],
+      "component": 68,
+      "participants": [
+        "Screw M5 x 25 socket"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(8.5 mm) / 2",
+      "height": "5",
+      "operation": "join"
+    },
+    {
+      "id": 72,
+      "name": "Screw M5 x 25 socket: Hex socket profile",
+      "suppressed": false,
+      "component": 68,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            5.02
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              2.3094010767585034,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.1547005383792515,
+              2.0000000000000004
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -1.1547005383792521,
+              2.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -2.3094010767585034,
+              -7.427600357445925e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -1.1547005383792508,
+              -2.0000000000000004
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              1.1547005383792537,
+              -1.9999999999999991
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6
+        }
+      }
+    },
+    {
+      "id": 73,
+      "name": "Screw M5 x 25 socket: Hex socket",
+      "suppressed": false,
+      "param_names": [
+        "d77"
+      ],
+      "component": 68,
+      "type": "extrude",
+      "sketch": 72,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2.52",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "Screw M5 x 25 socket"
+      ]
+    },
+    {
+      "id": 74,
+      "name": "Screw M5 x 25 socket: Thread",
+      "suppressed": false,
+      "component": 68,
+      "face_names": [
+        "F70:side"
+      ],
+      "type": "thread",
+      "face": [
+        2.5,
+        0.0,
+        -20.833333333333332
+      ],
+      "designation": "M5",
+      "modeled": true,
+      "continuous_flanks": true,
+      "from": [
+        2.5,
+        0.0,
+        -20.833333333333332
+      ]
+    },
+    {
+      "id": 82,
+      "name": "Top screw seats",
+      "suppressed": false,
+      "param_names": [
+        "d78"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "334"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "d1",
+            "pos": [
+              140.0,
+              110.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d2",
+            "pos": [
+              140.0,
+              90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d3",
+            "pos": [
+              140.0,
+              -90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d4",
+            "pos": [
+              140.0,
+              -110.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d5",
+            "pos": [
+              -140.0,
+              110.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d6",
+            "pos": [
+              -140.0,
+              90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d7",
+            "pos": [
+              -140.0,
+              -90.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "d8",
+            "pos": [
+              -140.0,
+              -110.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 91,
+      "name": "Back screw seats",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            144.0,
+            0.0
+          ],
+          "x_dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "y_dir": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "k1",
+            "pos": [
+              10.0,
+              140.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "k2",
+            "pos": [
+              10.0,
+              -140.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "k3",
+            "pos": [
+              330.0,
+              140.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "k4",
+            "pos": [
+              330.0,
+              -140.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 96,
+      "name": "Front screw seats",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            -144.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "g1",
+            "pos": [
+              140.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "g2",
+            "pos": [
+              -140.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "g3",
+            "pos": [
+              140.0,
+              330.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "g4",
+            "pos": [
+              -140.0,
+              330.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 101,
+      "name": "Top nut points",
+      "suppressed": false,
+      "param_names": [
+        "d79"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "340"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "n1",
             "pos": [
               60.0,
               140.0
@@ -5802,7 +10770,7 @@
             "fixed": false
           },
           {
-            "id": "t2",
+            "id": "n2",
             "pos": [
               -60.0,
               140.0
@@ -5810,7 +10778,7 @@
             "fixed": false
           },
           {
-            "id": "t3",
+            "id": "n3",
             "pos": [
               60.0,
               -140.0
@@ -5818,7 +10786,7 @@
             "fixed": false
           },
           {
-            "id": "t4",
+            "id": "n4",
             "pos": [
               -60.0,
               -140.0
@@ -5832,10 +10800,10 @@
       }
     },
     {
-      "id": 32,
+      "id": 104,
       "name": "T-nut M5 post-assembly: Section",
       "suppressed": false,
-      "component": 30,
+      "component": 102,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -6362,18 +11330,18 @@
       }
     },
     {
-      "id": 33,
+      "id": 105,
       "name": "T-nut M5 post-assembly: Bar",
       "suppressed": false,
       "body_names": [
         "T-nut M5 post-assembly"
       ],
       "param_names": [
-        "d9"
+        "d80"
       ],
-      "component": 30,
+      "component": 102,
       "type": "extrude",
-      "sketch": 32,
+      "sketch": 104,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -6405,16 +11373,16 @@
       "operation": "new_body"
     },
     {
-      "id": 34,
+      "id": 106,
       "name": "T-nut M5 post-assembly: Thread",
       "suppressed": false,
       "param_names": [
-        "d10",
-        "d11"
+        "d81",
+        "d82"
       ],
-      "component": 30,
+      "component": 102,
       "face_names": [
-        "F33:side:l1"
+        "F105:side:l1"
       ],
       "participants": [
         "T-nut M5 post-assembly"
@@ -6439,14 +11407,14 @@
       "modeled": true
     },
     {
-      "id": 35,
+      "id": 107,
       "name": "T-nut M5 post-assembly: Ball recess",
       "suppressed": false,
       "param_names": [
-        "d12",
-        "d13"
+        "d83",
+        "d84"
       ],
-      "component": 30,
+      "component": 102,
       "participants": [
         "T-nut M5 post-assembly"
       ],
@@ -6466,13 +11434,13 @@
       "operation": "cut"
     },
     {
-      "id": 36,
+      "id": 108,
       "name": "T-nut M5 post-assembly: Ball",
       "suppressed": false,
       "param_names": [
-        "d14"
+        "d85"
       ],
-      "component": 30,
+      "component": 102,
       "participants": [
         "T-nut M5 post-assembly"
       ],
@@ -6486,20 +11454,20 @@
       "operation": "join"
     },
     {
-      "id": 40,
-      "name": "Gantry nut points",
+      "id": 112,
+      "name": "Post nut points",
       "suppressed": false,
       "param_names": [
-        "d15"
+        "d86"
       ],
       "type": "sketch",
       "plane": {
         "type": "offset",
         "base": {
           "type": "origin",
-          "name": "XZ"
+          "name": "YZ"
         },
-        "distance": "10"
+        "distance": "150"
       },
       "sketch": {
         "points": [
@@ -6512,18 +11480,18 @@
             "fixed": true
           },
           {
-            "id": "n1",
+            "id": "m1",
             "pos": [
-              40.0,
-              -270.0
+              90.0,
+              170.0
             ],
             "fixed": false
           },
           {
-            "id": "n2",
+            "id": "m2",
             "pos": [
-              -40.0,
-              -270.0
+              -90.0,
+              170.0
             ],
             "fixed": false
           }
@@ -6534,10 +11502,10 @@
       }
     },
     {
-      "id": 43,
+      "id": 115,
       "name": "T-nut M5 pre-assembly: Section",
       "suppressed": false,
-      "component": 41,
+      "component": 113,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -7064,18 +12032,18 @@
       }
     },
     {
-      "id": 44,
+      "id": 116,
       "name": "T-nut M5 pre-assembly: Bar",
       "suppressed": false,
       "body_names": [
         "T-nut M5 pre-assembly"
       ],
       "param_names": [
-        "d16"
+        "d87"
       ],
-      "component": 41,
+      "component": 113,
       "type": "extrude",
-      "sketch": 43,
+      "sketch": 115,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -7107,16 +12075,16 @@
       "operation": "new_body"
     },
     {
-      "id": 45,
+      "id": 117,
       "name": "T-nut M5 pre-assembly: Thread",
       "suppressed": false,
       "param_names": [
-        "d17",
-        "d18"
+        "d88",
+        "d89"
       ],
-      "component": 41,
+      "component": 113,
       "face_names": [
-        "F44:side:l1"
+        "F116:side:l1"
       ],
       "participants": [
         "T-nut M5 pre-assembly"
@@ -7141,7 +12109,7 @@
       "modeled": true
     }
   ],
-  "next_id": 47,
+  "next_id": 119,
   "components": [
     {
       "id": 2,
@@ -7155,13 +12123,13 @@
     {
       "id": 4,
       "identification_color_index": 1,
-      "name": "T-slot 2020 x 300",
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240",
       "parent": 2,
       "metadata": {
         "bom_type": "purchased",
-        "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long",
+        "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from +Y at 20, 40, 220, 240 mm",
         "dev.threadcraft": {
-          "geometry": "f65303806544486f",
+          "geometry": "e769b33b564936d2",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -7169,19 +12137,19 @@
             0.0
           ]
         },
-        "part_number": "T-slot 2020 x 300"
+        "part_number": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240"
       }
     },
     {
-      "id": 12,
+      "id": 19,
       "identification_color_index": 2,
-      "name": "T-slot 2020 x 260",
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240",
       "parent": 2,
       "metadata": {
         "bom_type": "purchased",
-        "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long",
+        "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from -Y at 20, 40, 220, 240 mm",
         "dev.threadcraft": {
-          "geometry": "bb01686c208c6d2a",
+          "geometry": "d5b15a05880ded92",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -7189,19 +12157,19 @@
             0.0
           ]
         },
-        "part_number": "T-slot 2020 x 260"
+        "part_number": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240"
       }
     },
     {
-      "id": 25,
+      "id": 35,
       "identification_color_index": 3,
-      "name": "V-slot 2040 x 260",
+      "name": "T-slot 2020 x 300 holes +X 10 290",
       "parent": 2,
       "metadata": {
         "bom_type": "purchased",
-        "description": "20 x 40 mm V-slot aluminium extrusion, 260 mm long",
+        "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from +X at 10, 290 mm",
         "dev.threadcraft": {
-          "geometry": "7f60aff905c01955",
+          "geometry": "b053950aba291445",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -7209,12 +12177,81 @@
             0.0
           ]
         },
-        "part_number": "V-slot 2040 x 260"
+        "part_number": "T-slot 2020 x 300 holes +X 10 290"
       }
     },
     {
-      "id": 30,
+      "id": 44,
       "identification_color_index": 4,
+      "name": "T-slot 2020 x 300 holes -X 10 290",
+      "parent": 2,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from -X at 10, 290 mm",
+        "dev.threadcraft": {
+          "geometry": "83fd14254c9fcfd5",
+          "plugin": "techsquid-extrusions",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "part_number": "T-slot 2020 x 300 holes -X 10 290"
+      }
+    },
+    {
+      "id": 54,
+      "identification_color_index": 5,
+      "name": "V-slot 2040 x 300 taps both",
+      "parent": 2,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "20 x 40 mm V-slot aluminium extrusion, 300 mm long, both ends tapped M5",
+        "dev.threadcraft": {
+          "geometry": "cde477b756d9f6aa",
+          "plugin": "techsquid-extrusions",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "part_number": "V-slot 2040 x 300 taps both"
+      }
+    },
+    {
+      "id": 66,
+      "identification_color_index": 6,
+      "name": "Fasteners",
+      "parent": 0,
+      "metadata": {
+        "bom_type": "phantom"
+      }
+    },
+    {
+      "id": 68,
+      "identification_color_index": 7,
+      "name": "Screw M5 x 25 socket",
+      "parent": 66,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4762",
+        "dev.threadcraft": {
+          "geometry": "8621727bf5003b53",
+          "plugin": "techsquid-screws",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "part_number": "Screw M5 x 25 socket"
+      }
+    },
+    {
+      "id": 102,
+      "identification_color_index": 8,
       "name": "T-nut M5 post-assembly",
       "parent": 2,
       "metadata": {
@@ -7233,8 +12270,8 @@
       }
     },
     {
-      "id": 41,
-      "identification_color_index": 5,
+      "id": 113,
+      "identification_color_index": 9,
       "name": "T-nut M5 pre-assembly",
       "parent": 2,
       "metadata": {
@@ -7253,7 +12290,7 @@
       }
     }
   ],
-  "next_component_color_index": 6,
+  "next_component_color_index": 10,
   "occurrences": [
     {
       "id": 3,
@@ -7292,7 +12329,7 @@
       "id": 5,
       "component": 4,
       "parent": 2,
-      "name": "T-slot 2020 x 300:1",
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240:1",
       "transform": [
         [
           1.0,
@@ -7302,218 +12339,20 @@
         ],
         [
           0.0,
-          1.0,
           0.0,
+          -1.0,
           0.0
         ],
         [
           0.0,
-          0.0,
           1.0,
+          0.0,
           0.0
         ],
         [
           140.0,
-          140.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
-      "id": 8,
-      "component": 4,
-      "parent": 2,
-      "name": "T-slot 2020 x 300:2",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          -140.0,
-          140.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
-      "id": 9,
-      "component": 4,
-      "parent": 2,
-      "name": "T-slot 2020 x 300:3",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          -140.0,
-          -140.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
-      "id": 10,
-      "component": 4,
-      "parent": 2,
-      "name": "T-slot 2020 x 300:4",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          140.0,
-          -140.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
-      "id": 13,
-      "component": 12,
-      "parent": 2,
-      "name": "T-slot 2020 x 260:1",
-      "transform": [
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
           -130.0,
-          140.0,
           10.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
-      "id": 16,
-      "component": 12,
-      "parent": 2,
-      "name": "T-slot 2020 x 260:2",
-      "transform": [
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -130.0,
-          -140.0,
-          10.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
-      "id": 17,
-      "component": 12,
-      "parent": 2,
-      "name": "T-slot 2020 x 260:3",
-      "transform": [
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -130.0,
-          140.0,
-          290.0,
           1.0
         ]
       ],
@@ -7521,32 +12360,32 @@
     },
     {
       "id": 18,
-      "component": 12,
+      "component": 4,
       "parent": 2,
-      "name": "T-slot 2020 x 260:4",
+      "name": "T-slot 2020 x 260 taps both holes +Y 20 40 220 240:2",
       "transform": [
         [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
           1.0,
           0.0,
           0.0,
           0.0
         ],
         [
-          -130.0,
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
           -140.0,
-          290.0,
+          -130.0,
+          10.0,
           1.0
         ]
       ],
@@ -7554,9 +12393,9 @@
     },
     {
       "id": 20,
-      "component": 12,
+      "component": 19,
       "parent": 2,
-      "name": "T-slot 2020 x 260:5",
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240:1",
       "transform": [
         [
           1.0,
@@ -7579,17 +12418,17 @@
         [
           140.0,
           -130.0,
-          10.0,
+          330.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 21,
-      "component": 12,
+      "id": 33,
+      "component": 19,
       "parent": 2,
-      "name": "T-slot 2020 x 260:6",
+      "name": "T-slot 2020 x 260 taps both holes -Y 20 40 220 240:2",
       "transform": [
         [
           1.0,
@@ -7612,6 +12451,39 @@
         [
           -140.0,
           -130.0,
+          330.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 36,
+      "component": 35,
+      "parent": 2,
+      "name": "T-slot 2020 x 300 holes +X 10 290:1",
+      "transform": [
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          -150.0,
+          140.0,
           10.0,
           1.0
         ]
@@ -7619,10 +12491,109 @@
       "grounded": false
     },
     {
-      "id": 22,
-      "component": 12,
+      "id": 43,
+      "component": 35,
       "parent": 2,
-      "name": "T-slot 2020 x 260:7",
+      "name": "T-slot 2020 x 300 holes +X 10 290:2",
+      "transform": [
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          -150.0,
+          140.0,
+          330.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 45,
+      "component": 44,
+      "parent": 2,
+      "name": "T-slot 2020 x 300 holes -X 10 290:1",
+      "transform": [
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          -150.0,
+          -140.0,
+          10.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 52,
+      "component": 44,
+      "parent": 2,
+      "name": "T-slot 2020 x 300 holes -X 10 290:2",
+      "transform": [
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          -150.0,
+          -140.0,
+          330.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 55,
+      "component": 54,
+      "parent": 2,
+      "name": "V-slot 2040 x 300 taps both:1",
       "transform": [
         [
           1.0,
@@ -7632,8 +12603,701 @@
         ],
         [
           0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          140.0,
+          100.0,
+          20.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 62,
+      "component": 54,
+      "parent": 2,
+      "name": "V-slot 2040 x 300 taps both:2",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          100.0,
+          20.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 63,
+      "component": 54,
+      "parent": 2,
+      "name": "V-slot 2040 x 300 taps both:3",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -100.0,
+          20.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 64,
+      "component": 54,
+      "parent": 2,
+      "name": "V-slot 2040 x 300 taps both:4",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          140.0,
+          -100.0,
+          20.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 67,
+      "component": 66,
+      "parent": 0,
+      "name": "Fasteners:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 69,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
           0.0,
           -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          140.0,
+          110.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 75,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:2",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          140.0,
+          90.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 76,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:3",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          140.0,
+          -90.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 77,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:4",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          140.0,
+          -110.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 78,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:5",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          110.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 79,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:6",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          90.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 80,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:7",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -90.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 81,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:8",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -110.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 83,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:9",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          140.0,
+          110.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 84,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:10",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          140.0,
+          90.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 85,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:11",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          140.0,
+          -90.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 86,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:12",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          140.0,
+          -110.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 87,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:13",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          110.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 88,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:14",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          90.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 89,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:15",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -90.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 90,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:16",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -110.0,
+          334.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 92,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:17",
+      "transform": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
           0.0
         ],
         [
@@ -7644,29 +13308,29 @@
         ],
         [
           140.0,
-          -130.0,
-          290.0,
+          144.0,
+          10.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 23,
-      "component": 12,
-      "parent": 2,
-      "name": "T-slot 2020 x 260:8",
+      "id": 93,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:18",
       "transform": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
         [
           1.0,
           0.0,
           0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          -1.0,
           0.0
         ],
         [
@@ -7677,27 +13341,21 @@
         ],
         [
           -140.0,
-          -130.0,
-          290.0,
+          144.0,
+          10.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 26,
-      "component": 25,
-      "parent": 2,
-      "name": "V-slot 2040 x 260:1",
+      "id": 94,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:19",
       "transform": [
         [
           0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
           0.0,
           1.0,
           0.0
@@ -7709,17 +13367,188 @@
           0.0
         ],
         [
-          -130.0,
           0.0,
-          280.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          140.0,
+          144.0,
+          330.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 31,
-      "component": 30,
+      "id": 95,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:20",
+      "transform": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -140.0,
+          144.0,
+          330.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 97,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:21",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          140.0,
+          -144.0,
+          10.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 98,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:22",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -144.0,
+          10.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 99,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:23",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          140.0,
+          -144.0,
+          330.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 100,
+      "component": 68,
+      "parent": 66,
+      "name": "Screw M5 x 25 socket:24",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -140.0,
+          -144.0,
+          330.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 103,
+      "component": 102,
       "parent": 2,
       "name": "T-nut M5 post-assembly:1",
       "transform": [
@@ -7744,15 +13573,15 @@
         [
           15.0,
           115.0,
-          298.0,
+          338.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 37,
-      "component": 30,
+      "id": 109,
+      "component": 102,
       "parent": 2,
       "name": "T-nut M5 post-assembly:2",
       "transform": [
@@ -7777,15 +13606,15 @@
         [
           -105.0,
           115.0,
-          298.0,
+          338.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 38,
-      "component": 30,
+      "id": 110,
+      "component": 102,
       "parent": 2,
       "name": "T-nut M5 post-assembly:3",
       "transform": [
@@ -7810,15 +13639,15 @@
         [
           15.0,
           -165.0,
-          298.0,
+          338.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 39,
-      "component": 30,
+      "id": 111,
+      "component": 102,
       "parent": 2,
       "name": "T-nut M5 post-assembly:4",
       "transform": [
@@ -7843,73 +13672,73 @@
         [
           -105.0,
           -165.0,
-          298.0,
+          338.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 42,
-      "component": 41,
+      "id": 114,
+      "component": 113,
       "parent": 2,
       "name": "T-nut M5 pre-assembly:1",
       "transform": [
         [
+          0.0,
+          0.0,
           1.0,
-          0.0,
-          0.0,
           0.0
         ],
         [
-          0.0,
           0.0,
           -1.0,
+          0.0,
           0.0
         ],
         [
-          0.0,
           1.0,
           0.0,
+          0.0,
           0.0
         ],
         [
-          15.0,
-          8.2,
-          295.0,
+          148.2,
+          115.0,
+          145.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 46,
-      "component": 41,
+      "id": 118,
+      "component": 113,
       "parent": 2,
       "name": "T-nut M5 pre-assembly:2",
       "transform": [
         [
+          0.0,
+          0.0,
           1.0,
-          0.0,
-          0.0,
           0.0
         ],
         [
-          0.0,
           0.0,
           -1.0,
+          0.0,
           0.0
         ],
         [
-          0.0,
           1.0,
           0.0,
+          0.0,
           0.0
         ],
         [
+          148.2,
           -65.0,
-          8.2,
-          295.0,
+          145.0,
           1.0
         ]
       ],

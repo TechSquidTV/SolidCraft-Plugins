@@ -32,10 +32,24 @@ Name Sketch and Sketch point together to place the rail without a selection. Ske
 | `slot` | `T-slot` | `T-slot` or `V-slot` |
 | `size` | `2020` | `2020`, `2040`, `2060`, `2080` or `4040`. A V-slot comes as `2020` to `2080` |
 | `length` | 500 | How long the rail is cut, mm, up to 6000. Kept to 0.01 mm, as the rail's name shows it |
+| `end_taps` | `None` | `None`, `Start`, `End` or `Both`: the ends whose bores are tapped M5. The start is the end on the sketch point |
+| `holes` | empty | Where M5 screw holes go across the rail, as distances from the start in mm: `10, 290` |
+| `hole_face` | `+Y` | `+Y`, `-Y`, `+X` or `-X`: the face the screws go in from. Y is the section's height and X its width |
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 
-The reply gives `slot`, `size`, `length`, `width`, `height` and `area_mm2`, the area of the section.
+The reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `holes` and `hole_face`.
+
+### Tapped ends and screw holes
+
+Rails screw together with no bracket when one is drilled and the other tapped, which is how a Creality Ender 5 frame is held. An M5 screw goes in through a slot of the first rail, across its core, and into the end of the second. The plugin cuts both into a rail as it builds it.
+
+- **Tapped ends.** `end_taps` taps every bore of an end M5, 12 mm deep. A rail's bore is 4.2 mm, the tap drill of M5, so nothing is cut: the thread is listed on the hole, as a cosmetic thread is, and the bore stays as it was. A screw placed in it overlaps the bore by its thread.
+- **Screw holes.** Each distance in `holes` gets a hole from the middle of a slot on `hole_face`, straight through the rail. It is a 9.5 mm access hole through the lips, down to the slot floor, and a 5.5 mm clearance hole from there out through the far face. The head of an M5 socket head screw goes through the access hole and sits on the slot floor, 6 mm under the face of a T-slot and 6.1 mm under the face of a V-slot. A face with two slots or more gets a hole in each. A hole must be at least 5.75 mm from an end.
+
+An M5 x 25 screw on the slot floor of a 2020 rail reaches 11 mm into the end it holds. Place it with the screw plugin, Create set to Screw only, on a point on the slot floor: sketch on a plane 6 mm inside the drilled rail's face, facing out.
+
+A tapped or drilled rail is a part of its own. Its name says what is cut into it, such as `T-slot 2020 x 300 taps both holes -Y 10 290`, and every placement of it has the same cuts, so two rails drilled differently are two parts. All the holes of one rail are on one face.
 
 ### Slot nuts
 
@@ -55,7 +69,7 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`.
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole`, `solid.cylinder`, `solid.sphere` (the last three for a nut), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a screw hole, and a nut's ball recess), `solid.sphere` (a nut's ball), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 ## Sizes
 
@@ -88,7 +102,7 @@ The post-assembly nut has an R2 ball 7.5 mm past its hole, standing 0.8 mm out o
 
 MISUMI sells both nuts tapped M3 and M4 too. Only the M5 models have been checked, so M5 is the one size.
 
-What is not here: the closed-face rails (HFSF5, HFST5), the 30 and 40 mm series, the V-slot 40x40 and C-Beam, and brackets, plates and other nuts.
+What is not here: the closed-face rails (HFSF5, HFST5), the 30 and 40 mm series, the V-slot 40x40 and C-Beam, screw holes on more than one face of a rail, modeled threads in a tapped end, and brackets, plates and other nuts.
 
 ## Standards
 
@@ -106,6 +120,7 @@ What is not here: the closed-face rails (HFSF5, HFST5), the 30 and 40 mm series,
 | V-slot outline and cavity vertices, and the area of each section | OpenBuilds `V-Slot 20x20.dxf`, `20x40.dxf`, `20x60.dxf` and `20x80.dxf` | `profile::tests::the_v_slot_outline_has_the_dxf_vertices`, `the_v_slot_2040_cavity_has_the_dxf_vertices`, `the_v_slot_areas_are_the_openbuilds_dxf_areas` |
 | Pre-assembly nut: its section, 10 long, the hole in the middle | MISUMI STEP model `HNTT5-5.stp` and the drawing on its product page | `tnut::tests::the_pre_assembly_nut_is_the_misumi_hntt5` |
 | Post-assembly nut: its section, 17 long, the hole 6 from the end, the ball and its recess | MISUMI STEP model `HNTP5-5.stp` and the drawing on its product page | `tnut::tests::the_post_assembly_nut_is_the_misumi_hntp5` |
+| Screw holes: 5.5 mm clearance, 9.5 mm access, and the 4.2 mm bore as the M5 tap drill | ISO 273 (medium fit) for the clearance hole, ISO 4762 for the 8.5 mm head with 0.5 mm round it, and the slot rows above for the bore | `machining::tests::the_holes_are_for_an_m5_socket_head_screw` |
 | Both nuts clear the lips, walls and webs of both slots | The slot and nut rows above | `tnut::tests::both_nuts_fit_both_slots` |
 
 The catalog's areas are a loose check: its 2040 is 0.5% over MISUMI's own model and its 4040 is 1.5% under.
@@ -115,7 +130,9 @@ The catalog's areas are a loose check: its 2040 is 0.5% over MISUMI's own model 
 | What | Name |
 |---|---|
 | Rail body and component | `T-slot 2040 x 500`, `V-slot 2020 x 122.5` |
+| A tapped or drilled rail | `T-slot 2040 x 300 taps start`, `T-slot 2020 x 300 taps both holes -Y 10 290` |
 | Its sketch and feature | `T-slot 2040 x 500: Section`, `T-slot 2040 x 500: Rail` |
+| Its taps and screw holes | `: Tap start 1`, `: Tap end 2`, `: Hole at 10: Access`, `: Hole at 10: Clearance`, and `: Hole at 50 (2): Access` on a face with two slots |
 | Nut body and component | `T-nut M5 pre-assembly`, `T-nut M5 post-assembly` |
 | Its sketch and features | `T-nut M5 pre-assembly: Section`, `: Bar`, `: Thread`, and `: Ball recess` and `: Ball` on a post-assembly nut |
 | The folder its placements go in | `Extrusions` |

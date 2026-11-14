@@ -37,6 +37,25 @@
               "maximum": 6000,
               "unit": "mm"
             },
+            "end_taps": {
+              "type": "string",
+              "title": "Tapped ends",
+              "description": "Taps the bores of an end M5, 12 mm deep, so a screw through another rail holds this one. Start is the end on the sketch point.",
+              "default": "None",
+              "enum": ["None", "Start", "End", "Both"]
+            },
+            "holes": {
+              "type": "string",
+              "title": "Screw holes",
+              "description": "Optional. Where M5 screw holes go across the rail, as distances from the start in mm, such as 10, 290. Each is a 9.5 mm access hole through the lips and a 5.5 mm hole through the rest."
+            },
+            "hole_face": {
+              "type": "string",
+              "title": "Holes from",
+              "description": "The face the screws go in from: +Y and -Y are the two ends of the section's height, +X and -X of its width. A face with two slots gets a hole in each.",
+              "default": "+Y",
+              "enum": ["+Y", "-Y", "+X", "-X"]
+            },
             "sketch": {
               "type": "string",
               "title": "Sketch",

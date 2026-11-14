@@ -22,6 +22,10 @@ because the approval changes with every build.
     placed     [{label, bbox, volume_mm3}] one body with exactly that box and, to one
                part in ten thousand, that volume. This is for placements that share a
                name, such as the rails of a frame
+    overlaps   {pairs, volume_mm3} exactly that many pairs of bodies overlap, each by
+               that volume to within 0.1 mm3. Without it nothing is checked for
+               overlap. This is for screws in tapped holes whose thread is only listed:
+               the screw's thread overlaps the plain bore
 
 Only `bodies` and `bbox` are required.
 
@@ -97,6 +101,8 @@ def example(path):
     measure_at = len(steps)
     steps.append({"command": "inspect.measure", "params": {}})
     steps += [{"command": "model.faces", "params": {"body": b}} for b in hole_bodies]
+    if "overlaps" in expect:
+        steps.append({"command": "inspect.interference", "params": {}})
     design = path[: -len(".steps.json")] + ".json"
     # A .json path saves SolidCraft's plain design format, the one kept in examples/.
     saved = os.path.join(TMP, os.path.basename(design))
@@ -153,6 +159,16 @@ def example(path):
             and abs(b["volume_mm3"] - part["volume_mm3"]) <= 1e-4 * part["volume_mm3"]
         ]
         check(f"{name}: one {part['label']}", len(found) == 1, f"got {len(found)}")
+    if "overlaps" in expect:
+        want = expect["overlaps"]
+        report = results[-1]
+        hits = report.get("interferences", [])
+        check(
+            f"{name}: {want['pairs']} pairs overlap, each by {want['volume_mm3']} mm3",
+            len(hits) == want["pairs"] and not report.get("unchecked")
+            and all(abs(h["volume_mm3"] - want["volume_mm3"]) < 0.1 for h in hits),
+            f"got {len(hits)}: {sorted({round(h['volume_mm3'], 2) for h in hits})}",
+        )
     wanted = len(expect.get("fasteners", [])) * len(corners) + len(expect.get("placed", []))
     check(f"{name}: no other bodies", len(loose) == wanted, f"{len(loose)} beside the named parts, expected {wanted}")
 

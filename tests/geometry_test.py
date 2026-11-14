@@ -605,4 +605,125 @@ def two_definitions_of_one_nut(name):
 two_definitions_of_one_nut("nut: a threaded M5 nut built after a plain one leaves the plain one plain")
 
 
+
+def rail_step(params):
+    return {"command": "plugin.run", "params": {
+        "path": os.path.join(ROOT, "dist", "techsquid-extrusions"),
+        "approval": approval("techsquid-extrusions"), "entry": "make-extrusion", "params": params}}
+
+
+@case
+def machined_rail(name, params, plain, removed):
+    """A tapped or drilled rail on the origin: one closed body named for what is cut into
+    it, lighter than the plain rail by `removed` mm3."""
+    found, reply = plugin_run("techsquid-extrusions", "make-extrusion", params)
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    rail = list(found.values())[0]
+    want = plain * params["length"] - removed
+    ok = (len(found) == 1 and rail["closed"] and abs(rail["volume_mm3"] - want) < 1.5
+          and list(found) == [reply["component"]["component"]])
+    check(name, ok, f"| {rail['volume_mm3']:.2f}, expected {want:.2f}; bodies {sorted(found)}")
+
+
+# A hole through a 2020 takes the lips beside the slot over the 9.5 mm access hole, the
+# roots of the two webs that hole reaches at the slot floor, and the 8 mm core over the
+# 5.5 mm clearance hole, less the bore that already crosses it and the groove in each of
+# the two slot floors it passes.
+def lips_removed(access=9.5, throat=3.0, lip=2.0):
+    r = access / 2
+    return lip * (PI * r * r - 2 * (throat * math.sqrt(r * r - throat * throat)
+                                    + r * r * math.asin(throat / r)))
+
+
+def core_removed(clearance=5.5, core=4.0, bore=2.1, steps=4000):
+    """A cylinder of the clearance diameter across the core, less the part of it the
+    bore along the rail has already taken, by slices across the bore."""
+    r = clearance / 2
+    solid = PI * r * r * 2 * core
+    shared = 0.0
+    for i in range(steps):
+        x = -bore + 2 * bore * (i + 0.5) / steps
+        if abs(x) < r:
+            shared += 2 * math.sqrt(bore * bore - x * x) * 2 * math.sqrt(r * r - x * x) * 2 * bore / steps
+    return solid - shared
+
+
+def webs_removed(access=9.5, core=4.0, web=1.5, steps=4000):
+    """The access hole is wider than the slot floor, so it cuts into the web on each
+    side from the floor up to where the web edge leaves the hole."""
+    r, offset = access / 2, web / math.sqrt(2)
+    top = r + offset
+    total = 0.0
+    for i in range(steps):
+        a = core + (top - core) * (i + 0.5) / steps - offset
+        total += r * r * math.acos(a / r) - a * math.sqrt(r * r - a * a)
+    return 2 * total * (top - core) / steps
+
+
+# The groove is narrow beside the hole, so it is taken as crossing the hole's middle.
+HOLE_2020 = lips_removed() + webs_removed() + core_removed() - 2 * misumi_floor() * 5.5
+machined_rail("rail: a tapped 2020 is named for its taps and weighs what the plain one does",
+              {"slot": "T-slot", "size": "2020", "length": 100, "end_taps": "Both"},
+              rail_area(T, 1, 1.0), 0)
+machined_rail("rail: two screw holes take the lips and the core out of a 2020",
+              {"slot": "T-slot", "size": "2020", "length": 100, "holes": "10, 90", "hole_face": "-Y"},
+              rail_area(T, 1, 1.0), 2 * HOLE_2020)
+
+
+@case
+def screwed_joint(name):
+    """A drilled base rail, a post with its foot tapped, and two M5 x 25 screws on the
+    slot floor: each screw passes the base rail without touching it and ends 11 mm up a
+    bore of the post."""
+    steps = [
+        {"command": "sketch.create", "params": {"plane": "XZ", "offset": -50, "name": "Base section"}},
+        {"command": "sketch.point", "params": {"point": [0, -10], "id": "b"}},
+        {"command": "sketch.finish", "params": {}},
+        rail_step({"slot": "T-slot", "size": "2020", "length": 100, "holes": "40, 60",
+                   "hole_face": "+Y", "sketch": "Base section", "sketch_point": "b"}),
+        {"command": "sketch.create", "params": {"plane": "XY", "offset": 20, "name": "Post foot"}},
+        {"command": "sketch.point", "params": {"point": [0, 0], "id": "p"}},
+        {"command": "sketch.finish", "params": {}},
+        rail_step({"slot": "T-slot", "size": "2040", "length": 80, "end_taps": "Start",
+                   "sketch": "Post foot", "sketch_point": "p"}),
+        {"command": "sketch.create", "params": {
+            "plane": {"origin": [0, 0, 6], "x_dir": [1, 0, 0], "y_dir": [0, -1, 0]},
+            "name": "Screw seats"}},
+        {"command": "sketch.point", "params": {"point": [0, 10], "id": "s1"}},
+        {"command": "sketch.point", "params": {"point": [0, -10], "id": "s2"}},
+        {"command": "sketch.finish", "params": {}},
+        {"command": "plugin.run", "params": {
+            "path": os.path.join(ROOT, "dist", "techsquid-screws"),
+            "approval": approval("techsquid-screws"), "entry": "make-screw",
+            "params": {"size": "M5", "length": 25, "head": "Socket head", "create": "Screw only",
+                       "sketch": "Screw seats", "sketch_point": "s1, s2"}}},
+        {"command": "inspect.measure", "params": {"summary": True}},
+        {"command": "inspect.interference", "params": {}},
+    ]
+    code, text, results = run(steps)
+    if killed(code):
+        raise Killed(f"plugin.run killed solidcraft-cli (exit {code})")
+    if code != 0 or not results:
+        check(name, False, "| " + last_line(text))
+        return
+    bodies = {b["name"]: b for b in body(results[-2])["bodies"]}
+    hits = body(results[-1])["interferences"]
+    base, post = "T-slot 2020 x 100 holes +Y 40 60", "T-slot 2040 x 80 taps start"
+    screws = [b for n, b in bodies.items() if n.startswith("Screw M5 x 25 socket")]
+    # A screw's thread overlaps the bore it is screwed into, which is listed as tapped
+    # and left at the tap drill's size. It must touch nothing else.
+    ok = (len(bodies) == 4 and len(screws) == 2 and len(hits) == 2
+          and all(post in (h["a"], h["b"]) and base not in (h["a"], h["b"]) for h in hits)
+          and all(abs(s["bbox"]["min"][2] - 1) < 1e-6 and abs(s["bbox"]["max"][2] - 31) < 1e-6
+                  for s in screws))
+    check(name, ok, f"| bodies {sorted(bodies)}; overlaps {[(h['a'], h['b']) for h in hits]}")
+
+
+screwed_joint("rail: two screws through a drilled rail hold a tapped post and miss the rail")
+refused("rail: a screw hole too close to an end is refused", "techsquid-extrusions", "make-extrusion",
+        {"length": 100, "holes": "3"}, "too close to an end")
+
+
 finish()

@@ -983,7 +983,7 @@ mod tests {
         assert_eq!(head["targets"], json!(["Screw M3 x 12 socket"]));
         let thread = &calls[7].1;
         assert_eq!(thread["designation"], "M3");
-        assert_eq!(thread["modeled"], false);
+        assert_eq!(thread["modeled"], true);
         assert_eq!(thread["face"], json!([1.5, 0.0, -10.0]));
         assert_eq!(thread["from"], json!([1.5, 0.0, -10.0]));
         assert!(thread.get("length").is_none());

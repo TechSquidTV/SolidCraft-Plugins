@@ -236,7 +236,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let head_diameter = optional_alias(v, "head_diameter", "custom_head_diameter")?;
     let head_height = optional_alias(v, "head_height", "custom_head_height")?;
     let thread_length = input::optional_length(v, "thread_length")?;
-    let modeled = input::flag(v, "thread_modeled")?;
+    let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
     let create = create(v)?;
     // The drive comes first: a head is sized from the standard of its drive.
@@ -1489,7 +1489,8 @@ mod tests {
         assert_eq!(p.head_diameter, None);
         assert_eq!(p.head_height, None);
         assert_eq!(p.thread_length, None);
-        assert!(!p.modeled);
+        assert!(p.modeled);
+        assert!(!parse(&json!({"thread_modeled": false})).unwrap().modeled);
         assert_eq!(p.resolved.major, Some(3.0));
         assert_eq!(p.resolved.pitch, Some(0.5));
         assert_eq!(

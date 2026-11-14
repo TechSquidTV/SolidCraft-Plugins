@@ -139,10 +139,10 @@ pub fn millimetres(text: &str) -> Option<f64> {
     (value.is_finite() && value > 0.0 && value <= MAX_LENGTH_MM).then_some(value)
 }
 
-/// Read a bool, or false when the field is absent. JSON null counts as absent.
-pub fn flag(v: &Value, key: &str) -> Result<bool, FieldError> {
+/// Read a bool, or `default` when the field is absent. JSON null counts as absent.
+pub fn flag(v: &Value, key: &str, default: bool) -> Result<bool, FieldError> {
     match v.get(key) {
-        None | Some(Value::Null) => Ok(false),
+        None | Some(Value::Null) => Ok(default),
         Some(Value::Bool(b)) => Ok(*b),
         Some(_) => Err(FieldError::new(key, "must be true or false")),
     }
@@ -242,11 +242,14 @@ mod tests {
     }
 
     #[test]
-    fn flag_defaults_to_false() {
-        assert!(!flag(&json!({}), "modeled").unwrap());
-        assert!(flag(&json!({"modeled": true}), "modeled").unwrap());
+    fn flag_takes_its_default_when_absent() {
+        assert!(flag(&json!({}), "modeled", true).unwrap());
+        assert!(!flag(&json!({}), "modeled", false).unwrap());
+        assert!(flag(&json!({"modeled": null}), "modeled", true).unwrap());
+        assert!(!flag(&json!({"modeled": false}), "modeled", true).unwrap());
+        assert!(flag(&json!({"modeled": true}), "modeled", false).unwrap());
         assert_eq!(
-            flag(&json!({"modeled": "yes"}), "modeled")
+            flag(&json!({"modeled": "yes"}), "modeled", true)
                 .unwrap_err()
                 .field,
             "modeled"

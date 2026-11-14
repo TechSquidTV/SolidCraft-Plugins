@@ -45,7 +45,7 @@ Blank head sizes are filled from the standard of the head and drive: socket M1.6
 | `head_diameter` | standard | Shown as Custom head diameter, mm. On a hex head, the width across the flats |
 | `head_height` | standard | Shown as Custom head height, mm. One of the two is enough, except on a countersunk head |
 | `thread_length` | standard | Threaded length from the tip of the cylinder, mm. A point is not included. Empty threads the whole shank on a short screw and the standard length `b` on a long one. Anything up to the full length threads all of the cylinder: above a point, and between the chamfers of a set screw |
-| `thread_modeled` | false | Cut the thread profile. False leaves a cosmetic thread |
+| `thread_modeled` | true | Cut the thread profile. False leaves a cosmetic thread, which rebuilds faster |
 
 A set screw and a threaded rod have no head, so both head sizes stay empty.
 

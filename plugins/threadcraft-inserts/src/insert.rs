@@ -104,6 +104,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         } else {
             "modeled"
         },
+        true,
     )
     .map_err(|err| FieldError::new("thread_modeled", err.reason))?;
     let place = place::parse_input(v)?;
@@ -330,7 +331,8 @@ mod tests {
         assert_eq!(p.length, 5.7);
         assert_eq!(p.diameter, 4.6);
         assert_eq!(p.major, 3.0);
-        assert!(!p.modeled);
+        assert!(p.modeled);
+        assert!(!parse(&json!({"thread_modeled": false})).unwrap().modeled);
         assert_eq!(p.plain_bore, None);
         assert_eq!(p.size, "M3 × 5.7");
         assert_eq!(p.hole, Some(4.0));

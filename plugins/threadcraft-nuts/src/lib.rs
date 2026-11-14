@@ -401,7 +401,7 @@ mod tests {
         assert_eq!(hole["direction"], json!([0.0, 0.0, 1.0]));
         assert_eq!(hole["depth"], 5.2);
         assert_eq!(hole["thread"], "M6");
-        assert_eq!(hole["modeled"], false);
+        assert_eq!(hole["modeled"], true);
         assert_eq!(hole["targets"], json!(["Nut"]));
         let near = call(&calls, "solid.cone");
         assert_eq!(near["diameter"], 6.75);
@@ -572,7 +572,7 @@ mod tests {
             .as_array()
             .unwrap()
             .contains(&json!(nut::DEFAULT_DESIGNATION)));
-        assert_eq!(props["thread_modeled"]["default"], false);
+        assert_eq!(props["thread_modeled"]["default"], true);
         // The dialog lists optional fields by key, so the keys are the order.
         let mut optional: Vec<&str> = props
             .as_object()

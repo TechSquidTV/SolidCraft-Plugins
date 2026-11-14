@@ -96,7 +96,7 @@
               "type": "boolean",
               "title": "Modeled thread",
               "description": "Cut the internal thread. Off leaves a cosmetic thread, which rebuilds faster.",
-              "default": false
+              "default": true
             }
           }
         },

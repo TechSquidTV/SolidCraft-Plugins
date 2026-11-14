@@ -53,7 +53,7 @@ The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall 
 | `custom_diameter` | the row's | Outside diameter, across the knurl points, mm |
 | `custom_length` | the row's | Overall length, mm. A blind hole wants at least this plus 1 mm |
 | `custom_thread` | the row's | Screw size for the bore |
-| `thread_modeled` | false | Cut the internal thread. False leaves a cosmetic thread |
+| `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas: `c1, c2` |
 

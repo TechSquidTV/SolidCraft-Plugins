@@ -43,7 +43,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | `custom_width` | standard | Width across the flats, mm |
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
-| `thread_modeled` | false | Cut the internal thread. False leaves a cosmetic thread |
+| `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 
 The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole` and `solid.cone`. The hexagon is the same profile a hex-head screw uses.
 

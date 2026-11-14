@@ -91,7 +91,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         },
     )
     .map_err(|err| FieldError::new("custom_thickness", err.reason))?;
-    let modeled = input::flag(v, "thread_modeled")?;
+    let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
     let (size, thread, listed) =
         resolve_size(&designation).map_err(|e| e.moved("size", size_field))?;
@@ -300,7 +300,8 @@ mod tests {
         assert_eq!(p.pitch, 1.0);
         assert_eq!(p.countersink, Some(6.75));
         assert_eq!(p.chamfer_max, Some(0.5));
-        assert!(!p.modeled);
+        assert!(p.modeled);
+        assert!(!parse(&json!({"thread_modeled": false})).unwrap().modeled);
     }
 
     #[test]

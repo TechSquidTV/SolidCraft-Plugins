@@ -462,7 +462,7 @@ mod tests {
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
         assert_eq!(hole["depth"], 5.7);
         assert_eq!(hole["thread"], "M3");
-        assert_eq!(hole["modeled"], false);
+        assert_eq!(hole["modeled"], true);
         assert!(hole.get("diameter").is_none());
         assert_eq!(hole["targets"], json!(["Insert M3 x 5.7"]));
         assert_eq!(summary["thread"], "M3");
@@ -792,7 +792,7 @@ mod tests {
         );
         let props = &schema["properties"];
         assert_eq!(props["size"]["default"], catalog::DEFAULT_SIZE);
-        assert_eq!(props["thread_modeled"]["default"], false);
+        assert_eq!(props["thread_modeled"]["default"], true);
         assert_eq!(props["create"]["default"], "Hole and insert");
         assert_eq!(
             props["hole_type"]["enum"],

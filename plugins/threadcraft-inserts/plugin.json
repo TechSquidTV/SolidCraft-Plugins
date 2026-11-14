@@ -124,7 +124,7 @@
               "type": "boolean",
               "title": "Modeled thread",
               "description": "Cut the internal thread. Off leaves a cosmetic thread, which rebuilds faster. Unified and pipe sizes stay cosmetic.",
-              "default": false
+              "default": true
             },
             "sketch": {
               "type": "string",

@@ -124,8 +124,10 @@ def refused(name, plugin_id, entry, params, words, before=()):
 
 @case
 def loose_screw(name, params, volume):
-    """One screw on the origin: its whole volume."""
-    found, reply = plugin_run("threadcraft-screws", "make-screw", params)
+    """One screw on the origin: its whole volume. The thread is cosmetic unless `params`
+    asks for it, so the shank is a plain cylinder and the volume is the head and drive's."""
+    found, reply = plugin_run("threadcraft-screws", "make-screw",
+                              dict({"thread_modeled": False}, **params))
     if found is None:
         check(name, False, "| " + reply)
         return
@@ -198,7 +200,8 @@ on_plate("screw: countersunk hole, ISO 2009 head with its land flush", *SCREW,
          {"head": "Countersunk", "drive": "Slotted", "create": "Screw and hole",
           "hole_type": "Clearance, head recessed"},
          frustum(6.3, 3.4, CONE) + cyl(3.4, 12 - CONE), 12, top=12)
-on_plate("screw: tapped hole", *SCREW, {"create": "Hole only", "hole_type": "Tapped"},
+on_plate("screw: tapped hole", *SCREW,
+         {"create": "Hole only", "hole_type": "Tapped", "thread_modeled": False},
          cyl(2.5, 12), 12)
 on_plate("screw: blind clearance hole for a shorter screw", *SCREW,
          {"create": "Screw and hole", "length": 8}, cyl(3.4, 8), 12, top=15)
@@ -283,5 +286,23 @@ BUTTON = sum(PI * (CX + math.sqrt(RF * RF - ((i + 0.5) * 1.65 / STEPS - CY) ** 2
              for i in range(STEPS)) * 1.65 / STEPS
 loose_screw("screw: ISO 7380-1 button head, domed", {"head": "Button head", "drive": "None"},
             SHANK + BUTTON)
+
+
+@case
+def threaded_by_default(name, params, smooth):
+    """A run that does not mention Modeled thread cuts the thread: the screw comes out
+    lighter than the same screw with a plain shank, and the cut is about the thread's
+    share of the shank, not the whole shank."""
+    found, reply = plugin_run("threadcraft-screws", "make-screw", params)
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    got = sum(b["volume_mm3"] for b in found.values())
+    cut = smooth - got
+    # An M3 x 0.5 thread over 12 mm takes roughly 10 to 20 mm3 out of the shank.
+    check(name, len(found) == 1 and 5 < cut < 30, f"| {got:.3f}, smooth {smooth:.3f}, cut {cut:.3f}")
+
+
+threaded_by_default("screw: the thread is modeled by default", {}, CAP - hexagon(2.5, 1.3))
 
 finish()

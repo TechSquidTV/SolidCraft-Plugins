@@ -12,6 +12,7 @@ pub mod hexsocket;
 pub mod host;
 pub mod input;
 pub mod metric;
+pub mod name;
 pub mod nut;
 pub mod phillips;
 pub mod place;

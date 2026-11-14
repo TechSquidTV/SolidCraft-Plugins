@@ -92,8 +92,6 @@ SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 
 It runs every example and checks the body count, the bounding boxes, the insert hole, the clearance hole and the head recess on each corner, one insert and one screw on each corner, and that the saved design reopens. The same signed macOS build skips here as well, because every example runs a plugin.
 
-A second body from the same plugin is named `Insert 2`, `Screw 3` and so on. Each plugin reads the body names in the design first and asks for one that is free, because a taken name makes the host number the body `BodyN`, and that number changes when the design is rebuilt.
-
 `tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws.
 
 ```
@@ -105,6 +103,24 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 ## Field names
 
 The three plugins share one set of names: `size` and `custom_size` (inserts: `custom_thread`), `create`, `sketch` and `sketch_point`, `thread_modeled`. The earlier names still read, so an older script keeps working: `designation`, `custom_designation`, `custom_height` on a nut, and `modeled` on an insert.
+
+## Names
+
+Every name says what the part is and its size, so a design with several fasteners stays readable. Sizes use a plain `x`, with spaces around it so a fine pitch stays apart from the length.
+
+| What | Name |
+|---|---|
+| Screw body | `Screw M3 x 12 socket`, `Screw M8x1 x 25 hex`, `Set screw M3 x 6`, `Threaded rod M8 x 100` |
+| Insert body | `Insert M3 x 5.7`, from the thread and length actually built |
+| Nut body | `Nut M3`, `Nut M8x1` |
+| Screw hole | `Clearance hole M3`, `Counterbore M3`, `Countersink M3`, `Tapped hole M3` |
+| Insert hole | `Heat-set hole M3 x 5.7`, or `Glue-in hole` and `Glue-in pilot` for a stepped hole |
+| Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
+| Features and sketches of a part | the part's name, then the feature: `Screw M3 x 12 socket: Head`, `Nut M3: Thread` |
+
+A hole keeps its kind and size in its own name because it stays in the part, and with Hole only or Pocket only there is no fastener body at all.
+
+A second body with the same name gets a number in brackets: `Screw M3 x 12 socket (2)`. Each plugin reads the body names in the design first and asks for one that is free, because a taken name makes the host number the body `BodyN`, and that number changes when the design is rebuilt.
 
 ## Releases
 

@@ -17,8 +17,8 @@ pub struct Hex {
     pub y_dir: [f64; 3],
     pub across_flats: f64,
     pub height: f64,
-    pub sketch_name: &'static str,
-    pub name: &'static str,
+    pub sketch_name: String,
+    pub name: String,
     pub operation: &'static str,
     pub body_name: Option<String>,
     /// The body a join attaches to. A new body leaves this empty.
@@ -103,8 +103,8 @@ mod tests {
             y_dir: [0.0, 1.0, 0.0],
             across_flats: 10.0,
             height: 5.2,
-            sketch_name: "Nut profile",
-            name: "Nut",
+            sketch_name: "Nut M6: Hex profile".into(),
+            name: "Nut M6: Hex".into(),
             operation: "new",
             body_name: Some("Nut".into()),
             target: None,
@@ -134,6 +134,8 @@ mod tests {
         assert_eq!(rec.0[5].1["operation"], "new");
         assert_eq!(rec.0[5].1["sketch"], 7);
         assert_eq!(rec.0[5].1["body_name"], "Nut");
+        assert_eq!(rec.0[0].1["name"], "Nut M6: Hex profile");
+        assert_eq!(rec.0[5].1["name"], "Nut M6: Hex");
         assert!(rec.0[5].1.get("targets").is_none());
     }
 }

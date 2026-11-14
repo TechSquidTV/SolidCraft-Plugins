@@ -13,6 +13,7 @@ pub mod knurl;
 use insert::{HoleCut, HoleShape, Params};
 use serde_json::{json, Value};
 use threadcraft::host::{body_name_of, free_body_name, sketch_id};
+use threadcraft::name;
 use threadcraft::place::{self, opposite, Placement, Spot};
 use threadcraft::Runner;
 
@@ -27,7 +28,7 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             return Err(NOTHING_SELECTED.into());
         }
         let place = Placement::on_origin();
-        let name = free_body_name(&mut r.body_names(), "Insert");
+        let name = free_body_name(&mut r.body_names(), &body_base(p));
         build_insert(r, p, &place, &name)?;
         return Ok(summary(p, &[place], &[]));
     }
@@ -41,7 +42,7 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             }
         }
         for sketch in sketches {
-            for body in cut_holes(r, cut, sketch, &spots)? {
+            for body in cut_holes(r, p, cut, sketch, &spots)? {
                 if !drilled.contains(&body) {
                     drilled.push(body);
                 }
@@ -51,7 +52,7 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     if p.create.insert() {
         let mut taken = r.body_names();
         for spot in &spots {
-            let name = free_body_name(&mut taken, "Insert");
+            let name = free_body_name(&mut taken, &body_base(p));
             build_insert(r, p, &spot.place, &name)?;
         }
     }
@@ -59,10 +60,27 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     Ok(summary(p, &places, &drilled))
 }
 
+/// The body name before any number: `Insert M3 x 5.7`. The thread and the length are
+/// the ones built, so a custom thread or length shows in the name.
+pub fn body_base(p: &Params) -> String {
+    format!("Insert {}", name::sized(&p.thread, p.length))
+}
+
+/// The hole feature's name: its kind and the insert it is for, `Heat-set hole M3 x 5.7`.
+/// With Hole only there is no insert body, so this is the only place the size shows.
+pub fn hole_name(p: &Params, cut: &HoleCut, feature: &str) -> String {
+    let kind = match cut.shape {
+        HoleShape::Straight { .. } => "Heat-set",
+        HoleShape::Stepped { .. } => "Glue-in",
+    };
+    format!("{kind} {feature} {}", name::sized(&p.thread, p.length))
+}
+
 /// One hole feature for every point of `sketch`, so the holes follow the sketch. No
 /// target is named: the host drills the body under each point. Returns those bodies.
 fn cut_holes<R: Runner>(
     r: &mut R,
+    p: &Params,
     cut: &HoleCut,
     sketch: &str,
     spots: &[Spot],
@@ -72,7 +90,7 @@ fn cut_holes<R: Runner>(
         .filter(|spot| spot.sketch == sketch)
         .map(|spot| spot.point.as_str())
         .collect();
-    let mut hole = json!({"sketch": sketch, "points": points, "name": "Insert hole"});
+    let mut hole = json!({"sketch": sketch, "points": points, "name": hole_name(p, cut, "hole")});
     let mut pilot = None;
     match cut.shape {
         HoleShape::Straight { diameter } => {
@@ -93,7 +111,7 @@ fn cut_holes<R: Runner>(
                 "sketch": sketch,
                 "points": points,
                 "diameter": d3,
-                "name": "Insert pilot",
+                "name": hole_name(p, cut, "pilot"),
             });
             if let Some(depth) = cut.depth {
                 below["depth"] = json!(depth - l2);
@@ -149,6 +167,8 @@ fn build_insert<R: Runner>(
 ) -> Result<(), String> {
     let shape = knurl::shape(p.length, p.diameter, p.major);
     let tip = place.tip(p.length);
+    // Every feature and sketch of this insert starts with its name.
+    let named = |feature: &str| name::part(body_name, feature);
     let made = r.run(
         "solid.cylinder",
         json!({
@@ -157,7 +177,7 @@ fn build_insert<R: Runner>(
             "base": tip,
             "axis": place.normal,
             "operation": "new",
-            "name": "Insert",
+            "name": named("Core"),
             "body_name": body_name,
         }),
     )?;
@@ -171,10 +191,18 @@ fn build_insert<R: Runner>(
             "axis": place.normal,
             "operation": "join",
             "targets": [body],
-            "name": "Lead-in",
+            "name": named("Lead-in"),
         }),
     )?;
-    sweep_band(r, place, &body, &shape, 0.0, shape.twist_deg, "Upper knurl")?;
+    sweep_band(
+        r,
+        place,
+        &body,
+        &shape,
+        0.0,
+        shape.twist_deg,
+        &named("Upper knurl"),
+    )?;
     sweep_band(
         r,
         place,
@@ -182,7 +210,7 @@ fn build_insert<R: Runner>(
         &shape,
         shape.band + shape.gap,
         -shape.twist_deg,
-        "Lower knurl",
+        &named("Lower knurl"),
     )?;
     let edge = place.on_shank(p.length, 0.0, shape.root);
     r.run(
@@ -191,7 +219,7 @@ fn build_insert<R: Runner>(
             "edges": [edge],
             "distance": shape.chamfer,
             "body": body,
-            "name": "Tip chamfer",
+            "name": named("Tip chamfer"),
         }),
     )?;
     let mut hole = json!({
@@ -199,7 +227,7 @@ fn build_insert<R: Runner>(
         "direction": opposite(place.normal),
         "depth": p.length,
         "targets": [body],
-        "name": "Bore",
+        "name": named("Bore"),
     });
     // `#2-56` has no tap name in this host, so the bore is a plain diameter.
     if let Some(diameter) = p.plain_bore {
@@ -416,7 +444,8 @@ mod tests {
         assert_eq!(core["base"], json!([0.0, 0.0, -5.7]));
         assert_eq!(core["axis"], json!([0.0, 0.0, 1.0]));
         assert_eq!(core["operation"], "new");
-        assert_eq!(core["body_name"], "Insert");
+        assert_eq!(core["body_name"], "Insert M3 x 5.7");
+        assert_eq!(core["name"], "Insert M3 x 5.7: Core");
         assert_eq!(calls[2].1["diameter"], json!(shape.lead_diameter));
         assert_eq!(calls[2].1["operation"], "join");
         let star = &calls[4].1["points"];
@@ -426,8 +455,8 @@ mod tests {
         assert_eq!(calls[7].1["sketch"], 2);
         assert_eq!(calls[9].1["twist"], json!(shape.twist_deg));
         assert_eq!(calls[16].1["twist"], json!(-shape.twist_deg));
-        assert_eq!(calls[9].1["targets"], json!(["Insert"]));
-        assert_eq!(calls[16].1["targets"], json!(["Insert"]));
+        assert_eq!(calls[9].1["targets"], json!(["Insert M3 x 5.7"]));
+        assert_eq!(calls[16].1["targets"], json!(["Insert M3 x 5.7"]));
         let hole = &calls[18].1;
         assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
@@ -435,7 +464,7 @@ mod tests {
         assert_eq!(hole["thread"], "M3");
         assert_eq!(hole["modeled"], false);
         assert!(hole.get("diameter").is_none());
-        assert_eq!(hole["targets"], json!(["Insert"]));
+        assert_eq!(hole["targets"], json!(["Insert M3 x 5.7"]));
         assert_eq!(summary["thread"], "M3");
         assert_eq!(summary["diameter"], 4.6);
         assert_eq!(summary["length"], 5.7);
@@ -474,7 +503,10 @@ mod tests {
         );
         assert_eq!(summary["diameter"], 5.0);
         assert_eq!(summary["thread"], "M3");
-        assert_eq!(last(&calls, "solid.hole")["targets"], json!(["Insert"]));
+        assert_eq!(
+            last(&calls, "solid.hole")["targets"],
+            json!(["Insert M3 x 5.7"])
+        );
     }
 
     #[test]
@@ -868,7 +900,52 @@ mod tests {
         let mut host = design(&["Base"]);
         make_insert(&mut host, &p).unwrap();
         make_insert(&mut host, &p).unwrap();
-        assert_eq!(host.asked, ["Insert", "Insert 2", "Insert 3", "Insert 4"]);
+        assert_eq!(
+            host.asked,
+            [
+                "Insert M3 x 5.7",
+                "Insert M3 x 5.7 (2)",
+                "Insert M3 x 5.7 (3)",
+                "Insert M3 x 5.7 (4)"
+            ]
+        );
+    }
+
+    #[test]
+    fn a_body_name_is_the_thread_and_length_built() {
+        let base = |v: Value| body_base(&insert::parse(&loose(v)).unwrap());
+        assert_eq!(base(json!({})), "Insert M3 x 5.7");
+        assert_eq!(base(json!({"size": "M3 × 3 short"})), "Insert M3 x 3");
+        assert_eq!(
+            base(json!({"size": "#4-40 × 5.7"})),
+            "Insert #4-40 UNC x 5.7"
+        );
+        assert_eq!(base(json!({"custom_length": 8})), "Insert M3 x 8");
+    }
+
+    #[test]
+    fn every_feature_of_an_insert_starts_with_its_body_name() {
+        let (_, calls) = commands(json!({}));
+        for (command, args) in &calls {
+            if let Some(name) = args.get("name").and_then(Value::as_str) {
+                assert!(
+                    name.starts_with("Insert M3 x 5.7: "),
+                    "{command} is named {name}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_hole_names_its_kind_and_the_insert() {
+        let named_hole = |v: Value, feature: &str| {
+            let p = insert::parse(&v).unwrap();
+            hole_name(&p, p.cut.as_ref().unwrap(), feature)
+        };
+        assert_eq!(named_hole(json!({}), "hole"), "Heat-set hole M3 x 5.7");
+        let stepped = json!({"hole_type": insert::STEPPED});
+        assert_eq!(named_hole(stepped.clone(), "hole"), "Glue-in hole M3 x 5.7");
+        assert_eq!(named_hole(stepped, "pilot"), "Glue-in pilot M3 x 5.7");
     }
 }
 

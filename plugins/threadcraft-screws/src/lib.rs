@@ -14,11 +14,12 @@
 
 pub mod screw;
 
-use screw::{Hole, HoleKind, Params, ResolvedHead, ResolvedTip};
+use screw::{Head, Hole, HoleKind, Params, ResolvedHead, ResolvedTip};
 use serde_json::{json, Value};
 use threadcraft::head;
 use threadcraft::hex::{self, Hex};
 use threadcraft::host::{body_name_of, changed_bodies, free_body_name, sketch_id};
+use threadcraft::name;
 use threadcraft::phillips;
 use threadcraft::place::{self, opposite, Placement};
 use threadcraft::torx;
@@ -95,6 +96,35 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     Ok(summary(p, &places, &drilled))
 }
 
+/// The body name before any number: what the screw is, its size, then its head, as a
+/// parts list writes it: `Screw M3 x 12 socket`, `Set screw M3 x 6`, `Threaded rod M8 x 100`.
+pub fn body_base(p: &Params) -> String {
+    let size = name::sized(&p.designation, p.nominal_length);
+    let head = match p.head {
+        Head::Set => return format!("Set screw {size}"),
+        Head::Rod => return format!("Threaded rod {size}"),
+        Head::Socket => "socket",
+        Head::Button => "button",
+        Head::Countersunk => "countersunk",
+        Head::Hex => "hex",
+        Head::Pan => "pan",
+        Head::Cheese => "cheese",
+    };
+    format!("Screw {size} {head}")
+}
+
+/// The hole feature's name: its kind and the screw size, `Clearance hole M3`. With Hole
+/// only there is no screw body, so this is the only place the size shows.
+pub fn hole_name(p: &Params, hole: &Hole) -> String {
+    let kind = match hole.kind {
+        HoleKind::Clearance { .. } => "Clearance hole",
+        HoleKind::Counterbore { .. } => "Counterbore",
+        HoleKind::Countersink { .. } => "Countersink",
+        HoleKind::Tapped { .. } => "Tapped hole",
+    };
+    format!("{kind} {}", p.designation)
+}
+
 /// One hole feature for every point of `sketch`. No target is named: the host drills
 /// the part under each point.
 fn hole_args(p: &Params, hole: &Hole, sketch: &str, points: &[&str]) -> Value {
@@ -102,7 +132,7 @@ fn hole_args(p: &Params, hole: &Hole, sketch: &str, points: &[&str]) -> Value {
         "sketch": sketch,
         "points": points,
         "depth": hole.depth,
-        "name": "Screw hole",
+        "name": hole_name(p, hole),
     });
     match &hole.kind {
         HoleKind::Clearance { size } => {
@@ -146,7 +176,10 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
     };
     // The point is part of `length`. The cylinder stops at the shoulder.
     let cylinder = length - point_length;
-    let body_name = free_body_name(&mut r.body_names(), "Screw");
+    let body_name = free_body_name(&mut r.body_names(), &body_base(p));
+    // Every feature and sketch of this screw starts with its name.
+    let part = body_name.as_str();
+    let named = |feature: &str| name::part(part, feature);
     let shank = r.run(
         "solid.cylinder",
         json!({
@@ -155,7 +188,7 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
             "base": place.tip(cylinder),
             "axis": axis,
             "operation": "new",
-            "name": "Shank",
+            "name": named("Shank"),
             "body_name": body_name,
         }),
     )?;
@@ -163,14 +196,14 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
     // Guessing the requested name could attach the head to another screw.
     let body = body_name_of(&shank);
     // The chamfers go on the plain cylinder, before a cup is cut into its end.
-    add_set_screw_chamfers(r, p, &place, body.as_deref(), major)?;
-    add_tip(r, p, &place, body.as_deref(), major)?;
+    add_set_screw_chamfers(r, p, &place, body.as_deref(), part, major)?;
+    add_tip(r, p, &place, body.as_deref(), part, major)?;
     match p.resolved.head {
         ResolvedHead::None => {}
         ResolvedHead::Round { diameter, height } => {
             let body = shank_body(body.clone())?;
             match head::profile(p.resolved.crown, diameter, height) {
-                Some(profile) => revolve_head(r, &place, &body, &profile)?,
+                Some(profile) => revolve_head(r, &place, &body, part, &profile)?,
                 None => {
                     r.run(
                         "solid.cylinder",
@@ -181,7 +214,7 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
                             "axis": axis,
                             "operation": "join",
                             "targets": [body],
-                            "name": "Head",
+                            "name": named("Head"),
                         }),
                     )?;
                 }
@@ -202,7 +235,7 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
                     "axis": axis,
                     "operation": "join",
                     "targets": [body.clone()],
-                    "name": "Head",
+                    "name": named("Head"),
                 }),
             )?;
             if land > 0.0 {
@@ -215,7 +248,7 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
                         "axis": axis,
                         "operation": "join",
                         "targets": [body],
-                        "name": "Head land",
+                        "name": named("Head land"),
                     }),
                 )?;
             }
@@ -235,20 +268,20 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
                     y_dir: place.y_dir,
                     across_flats,
                     height,
-                    sketch_name: "Head profile",
-                    name: "Head",
+                    sketch_name: named("Head profile"),
+                    name: named("Head"),
                     operation: "join",
                     body_name: None,
                     target: Some(body.clone()),
                 },
             )?;
-            chamfer_hex_head(r, &place, &body, across_flats, height)?;
+            chamfer_hex_head(r, &place, &body, part, across_flats, height)?;
         }
     }
-    add_torx(r, p, &place, body.as_deref())?;
-    add_slot(r, p, &place, body.as_deref())?;
-    add_phillips(r, p, &place, body.as_deref())?;
-    add_hex(r, p, &place, body.as_deref())?;
+    add_torx(r, p, &place, body.as_deref(), part)?;
+    add_slot(r, p, &place, body.as_deref(), part)?;
+    add_phillips(r, p, &place, body.as_deref(), part)?;
+    add_hex(r, p, &place, body.as_deref(), part)?;
     // The pick sits in the first third of the cylindrical face, measured from the tip.
     // A point closes that end, so the third is of the cylinder above the shoulder.
     // With a head and a flat end, that end is the only free one and a sixth of the
@@ -269,7 +302,7 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
         "from": at,
         "designation": p.designation,
         "modeled": p.modeled,
-        "name": "Thread",
+        "name": named("Thread"),
     });
     if let Some(thread_length) = p.thread_length {
         thread["length"] = json!(thread_length);
@@ -284,6 +317,7 @@ fn revolve_head<R: Runner>(
     r: &mut R,
     place: &Placement,
     body: &str,
+    part: &str,
     profile: &[head::Segment],
 ) -> Result<(), String> {
     let created = r.run(
@@ -294,7 +328,7 @@ fn revolve_head<R: Runner>(
                 "x_dir": place.x_dir,
                 "y_dir": place.normal,
             },
-            "name": "Head profile",
+            "name": name::part(part, "Head profile"),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -324,7 +358,7 @@ fn revolve_head<R: Runner>(
             "angle": 360,
             "operation": "join",
             "targets": [body],
-            "name": "Head",
+            "name": name::part(part, "Head"),
         }),
     )?;
     Ok(())
@@ -336,11 +370,13 @@ fn chamfer_hex_head<R: Runner>(
     r: &mut R,
     place: &Placement,
     body: &str,
+    part: &str,
     across_flats: f64,
     height: f64,
 ) -> Result<(), String> {
     let end = threadcraft::nut::end_chamfer(across_flats, None);
-    revolve_cut(r, place, body, height, &end.triangle, "Head chamfer")
+    let name = name::part(part, "Head chamfer");
+    revolve_cut(r, place, body, height, &end.triangle, &name)
 }
 
 /// Cut a triangle revolved about the screw axis from the end face `along` above the
@@ -396,9 +432,10 @@ fn add_set_screw_chamfers<R: Runner>(
     p: &Params,
     place: &Placement,
     body: Option<&str>,
+    part: &str,
     major: f64,
 ) -> Result<(), String> {
-    let chamfer = |r: &mut R, distance: f64, along: f64, name: &str| -> Result<(), String> {
+    let chamfer = |r: &mut R, distance: f64, along: f64, feature: &str| -> Result<(), String> {
         let body = shank_body(body.map(str::to_string))?;
         r.run(
             "solid.chamfer",
@@ -406,7 +443,7 @@ fn add_set_screw_chamfers<R: Runner>(
                 "edges": [place.on_shank(p.length, along, major / 2.0)],
                 "distance": distance,
                 "body": body,
-                "name": name,
+                "name": name::part(part, feature),
             }),
         )?;
         Ok(())
@@ -430,7 +467,8 @@ fn add_set_screw_chamfers<R: Runner>(
         [rim + past, 0.0],
         [rim + past, (radial + past) * length / radial],
     ];
-    revolve_cut(r, place, &body, 0.0, &triangle, "Socket end chamfer")
+    let name = name::part(part, "Socket end chamfer");
+    revolve_cut(r, place, &body, 0.0, &triangle, &name)
 }
 
 /// The cone for a point or a cup. A flat end adds nothing. A missing body name stops here.
@@ -439,6 +477,7 @@ fn add_tip<R: Runner>(
     p: &Params,
     place: &Placement,
     body: Option<&str>,
+    part: &str,
     major: f64,
 ) -> Result<(), String> {
     match p.resolved.tip {
@@ -457,7 +496,7 @@ fn add_tip<R: Runner>(
                     "axis": opposite(place.normal),
                     "operation": "join",
                     "targets": [body],
-                    "name": "Point",
+                    "name": name::part(part, "Point"),
                 }),
             )?;
             Ok(())
@@ -477,7 +516,7 @@ fn add_tip<R: Runner>(
                     "axis": place.normal,
                     "operation": "cut",
                     "targets": [body],
-                    "name": "Cup",
+                    "name": name::part(part, "Cup"),
                 }),
             )?;
             Ok(())
@@ -493,6 +532,7 @@ fn add_torx<R: Runner>(
     p: &Params,
     place: &Placement,
     body: Option<&str>,
+    part: &str,
 ) -> Result<(), String> {
     let Some(recess) = p.recess else {
         return Ok(());
@@ -509,7 +549,7 @@ fn add_torx<R: Runner>(
                 "x_dir": place.x_dir,
                 "y_dir": place.y_dir,
             },
-            "name": "Torx profile",
+            "name": name::part(part, "Torx profile"),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -533,7 +573,7 @@ fn add_torx<R: Runner>(
             "operation": "cut",
             "sketch": sketch,
             "targets": [body],
-            "name": "Torx",
+            "name": name::part(part, "Torx"),
         }),
     )?;
     Ok(())
@@ -546,6 +586,7 @@ fn add_slot<R: Runner>(
     p: &Params,
     place: &Placement,
     body: Option<&str>,
+    part: &str,
 ) -> Result<(), String> {
     let Some(slot) = p.slot else {
         return Ok(());
@@ -561,7 +602,7 @@ fn add_slot<R: Runner>(
                 "x_dir": place.x_dir,
                 "y_dir": place.y_dir,
             },
-            "name": "Slot profile",
+            "name": name::part(part, "Slot profile"),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -582,7 +623,7 @@ fn add_slot<R: Runner>(
             "operation": "cut",
             "sketch": sketch,
             "targets": [body],
-            "name": "Slot",
+            "name": name::part(part, "Slot"),
         }),
     )?;
     Ok(())
@@ -599,6 +640,7 @@ fn add_phillips<R: Runner>(
     p: &Params,
     place: &Placement,
     body: Option<&str>,
+    part: &str,
 ) -> Result<(), String> {
     let Some(tool) = p.phillips else {
         return Ok(());
@@ -615,8 +657,8 @@ fn add_phillips<R: Runner>(
             "base": place.along(height - tool.reach() + h1),
             "axis": opposite(place.normal),
             "operation": "new",
-            "name": "Phillips point",
-            "body_name": "Phillips point",
+            "name": name::part(part, "Phillips point"),
+            "body_name": name::part(part, "Phillips point"),
         }),
     )?;
     let point = feature_body(&point, "solid.cone did not name the Phillips point")?;
@@ -631,7 +673,7 @@ fn add_phillips<R: Runner>(
             "axis": opposite(place.normal),
             "operation": "join",
             "targets": [point.clone()],
-            "name": "Phillips envelope",
+            "name": name::part(part, "Phillips envelope"),
         }),
     )?;
     let reach = tool.radius_at(tool.reach() + TIP_OVERLAP) + PHILLIPS_PAST;
@@ -643,7 +685,7 @@ fn add_phillips<R: Runner>(
                 "x_dir": place.x_dir,
                 "y_dir": place.y_dir,
             },
-            "name": "Phillips wings",
+            "name": name::part(part, "Phillips wings"),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -663,8 +705,8 @@ fn add_phillips<R: Runner>(
             "direction": "negative",
             "operation": "new",
             "sketch": sketch,
-            "name": "Phillips wings",
-            "body_name": "Phillips wings",
+            "name": name::part(part, "Phillips wings"),
+            "body_name": name::part(part, "Phillips wings"),
         }),
     )?;
     let wings = feature_body(&wings, "solid.extrude did not name the Phillips wings")?;
@@ -674,7 +716,7 @@ fn add_phillips<R: Runner>(
             "target": wings.clone(),
             "tools": [point],
             "operation": "intersect",
-            "name": "Phillips recess",
+            "name": name::part(part, "Phillips recess"),
         }),
     )?;
     r.run(
@@ -683,7 +725,7 @@ fn add_phillips<R: Runner>(
             "target": screw,
             "tools": [wings],
             "operation": "cut",
-            "name": "Phillips",
+            "name": name::part(part, "Phillips"),
         }),
     )?;
     Ok(())
@@ -696,6 +738,7 @@ fn add_hex<R: Runner>(
     p: &Params,
     place: &Placement,
     body: Option<&str>,
+    part: &str,
 ) -> Result<(), String> {
     let Some(socket) = p.hex else {
         return Ok(());
@@ -710,7 +753,7 @@ fn add_hex<R: Runner>(
                 "x_dir": place.x_dir,
                 "y_dir": place.y_dir,
             },
-            "name": "Hex socket profile",
+            "name": name::part(part, "Hex socket profile"),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -731,7 +774,7 @@ fn add_hex<R: Runner>(
             "operation": "cut",
             "sketch": sketch,
             "targets": [body],
-            "name": "Hex socket",
+            "name": name::part(part, "Hex socket"),
         }),
     )?;
     Ok(())
@@ -878,9 +921,16 @@ mod tests {
     fn named<'a>(calls: &'a [(String, Value)], command: &str, name: &str) -> &'a Value {
         &calls
             .iter()
-            .find(|(c, args)| c == command && args["name"] == name)
+            .find(|(c, args)| c == command && feature(args) == name)
             .unwrap()
             .1
+    }
+
+    /// The feature part of a name, after the screw it belongs to: `Head` in
+    /// `Screw M3 x 12 socket: Head`. A hole has no screw in front.
+    fn feature(args: &Value) -> &str {
+        let name = args["name"].as_str().unwrap_or_default();
+        name.split_once(": ").map_or(name, |(_, feature)| feature)
     }
 
     #[test]
@@ -901,7 +951,7 @@ mod tests {
         );
         // DIN 912: a 2.5 mm key, 1.3 mm deep, cut from just outside the 3 mm head.
         let profile = &calls[3].1;
-        assert_eq!(profile["name"], "Hex socket profile");
+        assert_eq!(profile["name"], "Screw M3 x 12 socket: Hex socket profile");
         assert_eq!(
             profile["plane"]["origin"],
             json!([0.0, 0.0, 3.0 + TIP_OVERLAP])
@@ -911,11 +961,11 @@ mod tests {
         assert!((corners[0][0].as_f64().unwrap() - 2.5 / 3.0_f64.sqrt()).abs() < 1e-12);
         assert_eq!(calls[4].1["closed"], true);
         let socket = &calls[6].1;
-        assert_eq!(socket["name"], "Hex socket");
+        assert_eq!(socket["name"], "Screw M3 x 12 socket: Hex socket");
         assert_eq!(socket["operation"], "cut");
         assert_eq!(socket["direction"], "negative");
         assert_eq!(socket["distance"], 1.3 + TIP_OVERLAP);
-        assert_eq!(socket["targets"], json!(["Screw"]));
+        assert_eq!(socket["targets"], json!(["Screw M3 x 12 socket"]));
         assert_eq!(summary["hex"], 2.5);
         assert_eq!(summary["hex_depth"], 1.3);
         let shank = &calls[1].1;
@@ -924,13 +974,13 @@ mod tests {
         assert_eq!(shank["base"], json!([0.0, 0.0, -12.0]));
         assert_eq!(shank["axis"], json!([0.0, 0.0, 1.0]));
         assert_eq!(shank["operation"], "new");
-        assert_eq!(shank["body_name"], "Screw");
+        assert_eq!(shank["body_name"], "Screw M3 x 12 socket");
         let head = &calls[2].1;
         assert_eq!(head["diameter"], 5.5);
         assert_eq!(head["height"], 3.0);
         assert_eq!(head["base"], json!([0.0, 0.0, 0.0]));
         assert_eq!(head["operation"], "join");
-        assert_eq!(head["targets"], json!(["Screw"]));
+        assert_eq!(head["targets"], json!(["Screw M3 x 12 socket"]));
         let thread = &calls[7].1;
         assert_eq!(thread["designation"], "M3");
         assert_eq!(thread["modeled"], false);
@@ -979,7 +1029,7 @@ mod tests {
         assert_eq!(chamfer["plane"]["y_dir"], json!([0.0, 0.0, -1.0]));
         let cut = named(&calls, "solid.revolve", "Head chamfer");
         assert_eq!(cut["operation"], "cut");
-        assert_eq!(cut["targets"], json!(["Screw"]));
+        assert_eq!(cut["targets"], json!(["Screw M8x1 x 30 hex"]));
         assert_eq!(
             args(&calls, "sketch.create")["plane"]["origin"],
             json!([0.0, 0.0, 0.0])
@@ -1032,7 +1082,7 @@ mod tests {
         );
         assert_eq!(arcs, 12);
         let sketch = args(&calls, "sketch.create");
-        assert_eq!(sketch["name"], "Torx profile");
+        assert_eq!(sketch["name"], "Screw M3 x 12 socket: Torx profile");
         assert_eq!(
             sketch["plane"]["origin"],
             json!([0.0, 0.0, 3.0 + TIP_OVERLAP])
@@ -1045,8 +1095,8 @@ mod tests {
         assert_eq!(cut["operation"], "cut");
         assert_eq!(cut["direction"], "negative");
         assert_eq!(cut["sketch"], 7);
-        assert_eq!(cut["targets"], json!(["Screw"]));
-        assert_eq!(cut["name"], "Torx");
+        assert_eq!(cut["targets"], json!(["Screw M3 x 12 socket"]));
+        assert_eq!(cut["name"], "Screw M3 x 12 socket: Torx");
         let depth = summary["torx_depth"].as_f64().unwrap();
         assert_eq!(cut["distance"], json!(depth + TIP_OVERLAP));
         assert_eq!(summary["torx"], "T10");
@@ -1077,7 +1127,10 @@ mod tests {
             args(&calls, "sketch.create")["plane"]["origin"],
             json!([0.0, 0.0, TIP_OVERLAP])
         );
-        assert_eq!(args(&calls, "solid.extrude")["targets"], json!(["Screw"]));
+        assert_eq!(
+            args(&calls, "solid.extrude")["targets"],
+            json!(["Set screw M3 x 10"])
+        );
     }
 
     #[test]
@@ -1109,9 +1162,9 @@ mod tests {
         let head = named(&calls, "solid.revolve", "Head");
         assert_eq!(head["operation"], "join");
         assert_eq!(head["angle"], 360);
-        assert_eq!(head["targets"], json!(["Screw"]));
+        assert_eq!(head["targets"], json!(["Screw M3 x 12 pan"]));
         let sketch = named(&calls, "sketch.create", "Slot profile");
-        assert_eq!(sketch["name"], "Slot profile");
+        assert_eq!(sketch["name"], "Screw M3 x 12 pan: Slot profile");
         assert_eq!(
             sketch["plane"]["origin"],
             json!([0.0, 0.0, 1.8 + TIP_OVERLAP])
@@ -1124,8 +1177,8 @@ mod tests {
         assert_eq!(cut["operation"], "cut");
         assert_eq!(cut["direction"], "negative");
         assert_eq!(cut["sketch"], 7);
-        assert_eq!(cut["targets"], json!(["Screw"]));
-        assert_eq!(cut["name"], "Slot");
+        assert_eq!(cut["targets"], json!(["Screw M3 x 12 pan"]));
+        assert_eq!(cut["name"], "Screw M3 x 12 pan: Slot");
         assert_eq!(cut["distance"], json!(0.7 + TIP_OVERLAP));
         assert_eq!(summary["slot_width"], 0.8);
         assert_eq!(summary["slot_depth"], 0.7);
@@ -1160,7 +1213,10 @@ mod tests {
             args(&calls, "solid.extrude")["distance"],
             json!(0.8 + TIP_OVERLAP)
         );
-        assert_eq!(args(&calls, "solid.extrude")["targets"], json!(["Screw"]));
+        assert_eq!(
+            args(&calls, "solid.extrude")["targets"],
+            json!(["Set screw M3 x 10"])
+        );
     }
 
     #[test]
@@ -1219,7 +1275,7 @@ mod tests {
         assert_eq!(point["base"], json!([0.0, 0.0, height - depth + h1]));
         assert_eq!(point["axis"], json!([0.0, 0.0, -1.0]));
         assert_eq!(point["operation"], "new");
-        assert_eq!(point["body_name"], "Phillips point");
+        assert_eq!(point["body_name"], "Screw M3 x 12 pan: Phillips point");
         let envelope = named(&calls, "solid.cone", "Phillips envelope");
         assert_eq!(
             envelope["diameter"],
@@ -1233,9 +1289,12 @@ mod tests {
         assert_eq!(envelope["base"], json!([0.0, 0.0, height + TIP_OVERLAP]));
         assert_eq!(envelope["axis"], json!([0.0, 0.0, -1.0]));
         assert_eq!(envelope["operation"], "join");
-        assert_eq!(envelope["targets"], json!(["Phillips point"]));
+        assert_eq!(
+            envelope["targets"],
+            json!(["Screw M3 x 12 pan: Phillips point"])
+        );
         let sketch = named(&calls, "sketch.create", "Phillips wings");
-        assert_eq!(sketch["name"], "Phillips wings");
+        assert_eq!(sketch["name"], "Screw M3 x 12 pan: Phillips wings");
         assert_eq!(
             sketch["plane"]["origin"],
             json!([0.0, 0.0, height + TIP_OVERLAP])
@@ -1254,15 +1313,18 @@ mod tests {
         assert_eq!(wings["direction"], "negative");
         assert_eq!(wings["distance"], depth + 2.0 * TIP_OVERLAP);
         assert_eq!(wings["sketch"], 7);
-        assert_eq!(wings["body_name"], "Phillips wings");
+        assert_eq!(wings["body_name"], "Screw M3 x 12 pan: Phillips wings");
         let recess = named(&calls, "solid.combine", "Phillips recess");
         assert_eq!(recess["operation"], "intersect");
-        assert_eq!(recess["target"], "Phillips wings");
-        assert_eq!(recess["tools"], json!(["Phillips point"]));
+        assert_eq!(recess["target"], "Screw M3 x 12 pan: Phillips wings");
+        assert_eq!(
+            recess["tools"],
+            json!(["Screw M3 x 12 pan: Phillips point"])
+        );
         let cut = named(&calls, "solid.combine", "Phillips");
         assert_eq!(cut["operation"], "cut");
-        assert_eq!(cut["target"], "Screw");
-        assert_eq!(cut["tools"], json!(["Phillips wings"]));
+        assert_eq!(cut["target"], "Screw M3 x 12 pan");
+        assert_eq!(cut["tools"], json!(["Screw M3 x 12 pan: Phillips wings"]));
         assert_eq!(summary["phillips"], "PH1");
         assert_eq!(summary["phillips_depth"], 1.4);
         assert_eq!(summary["phillips_opening"], 3.0);
@@ -1288,10 +1350,10 @@ mod tests {
         assert_eq!(calls[1].1["base"], json!([0.0, 0.0, -10.0]));
         // ISO 4026 flat point: the tip edge is chamfered 0.5 mm, from 3 mm down to 2.
         let chamfer = &calls[2].1;
-        assert_eq!(chamfer["name"], "Point chamfer");
+        assert_eq!(chamfer["name"], "Set screw M3 x 10: Point chamfer");
         assert_eq!(chamfer["distance"], 0.5);
         assert_eq!(chamfer["edges"], json!([[1.5, 0.0, -10.0]]));
-        assert_eq!(chamfer["body"], "Screw");
+        assert_eq!(chamfer["body"], "Set screw M3 x 10");
         // The thread is picked a sixth of the way up the cylinder above the chamfer.
         let thread = &calls[3].1;
         assert!((thread["face"][2].as_f64().unwrap() - (-10.0 + 0.5 + 9.5 / 6.0)).abs() < 1e-9);
@@ -1322,9 +1384,9 @@ mod tests {
         assert_eq!(cone["base"], json!([0.0, 0.0, -(9.0 - TIP_OVERLAP)]));
         assert_eq!(cone["axis"], json!([0.0, 0.0, -1.0]));
         assert_eq!(cone["operation"], "join");
-        assert_eq!(cone["targets"], json!(["Screw"]));
-        assert_eq!(cone["name"], "Point");
-        assert_eq!(calls[3].1["name"], "Head");
+        assert_eq!(cone["targets"], json!(["Screw M3 x 12 socket"]));
+        assert_eq!(cone["name"], "Screw M3 x 12 socket: Point");
+        assert_eq!(calls[3].1["name"], "Screw M3 x 12 socket: Head");
         assert_eq!(calls[4].1["face"], json!([1.5, 0.0, -7.5]));
         assert!(calls[4].1.get("tip").is_none());
         assert_eq!(summary["tip"], "Point");
@@ -1353,7 +1415,7 @@ mod tests {
         // ISO 4029: the outside is chamfered at 45° from 3 mm down to the 1.4 mm mouth,
         // before the cup is cut, so the rim between them is sharp.
         let chamfer = &calls[2].1;
-        assert_eq!(chamfer["name"], "Point chamfer");
+        assert_eq!(chamfer["name"], "Set screw M3 x 10: Point chamfer");
         assert!((chamfer["distance"].as_f64().unwrap() - 0.8).abs() < 1e-12);
         assert_eq!(chamfer["edges"], json!([[1.5, 0.0, -10.0]]));
         let depth = 1.4 / (2.0 * 3.0_f64.sqrt());
@@ -1365,8 +1427,8 @@ mod tests {
         assert_eq!(cone["base"], json!([0.0, 0.0, -(10.0 + TIP_OVERLAP)]));
         assert_eq!(cone["axis"], json!([0.0, 0.0, 1.0]));
         assert_eq!(cone["operation"], "cut");
-        assert_eq!(cone["targets"], json!(["Screw"]));
-        assert_eq!(cone["name"], "Cup");
+        assert_eq!(cone["targets"], json!(["Set screw M3 x 10"]));
+        assert_eq!(cone["name"], "Set screw M3 x 10: Cup");
         // The thread is picked on the cylinder above the chamfer.
         let along = 0.8 + (10.0 - 0.8) / 6.0;
         assert!((calls[4].1["face"][2].as_f64().unwrap() - (-10.0 + along)).abs() < 1e-9);
@@ -1506,7 +1568,7 @@ mod tests {
         let mut rec = Renamed(vec![]);
         make_screw(&mut rec, &p).unwrap();
         assert_eq!(rec.0[2].1["targets"], json!(["Body1"]));
-        assert_eq!(rec.0[2].1["name"], "Point");
+        assert_eq!(rec.0[2].1["name"], "Screw M3 x 12 socket: Point");
         assert_eq!(rec.0[3].1["targets"], json!(["Body1"]));
     }
 
@@ -1569,7 +1631,9 @@ mod tests {
         assert_eq!(summary["head_height"], 1.65);
         // The hexagon socket head has no land.
         let (_, calls) = commands(json!({"head": "Countersunk"}));
-        assert!(calls.iter().all(|(_, args)| args["name"] != "Head land"));
+        assert!(calls
+            .iter()
+            .all(|(_, args)| args["name"] != "Screw M3 x 12 countersunk: Head land"));
     }
 
     /// Two selected circles on a sketch on the top face of a plate.
@@ -1739,12 +1803,12 @@ mod tests {
             .collect();
         assert_eq!(chamfers.len(), 2);
         assert_eq!(chamfers[0]["edges"], json!([[1.5, 0.0, -6.0]]));
-        assert_eq!(chamfers[1]["name"], "Socket end chamfer");
+        assert_eq!(chamfers[1]["name"], "Set screw M3 x 6: Socket end chamfer");
         assert_eq!(chamfers[1]["edges"], json!([[1.5, 0.0, 0.0]]));
         assert!((chamfers[1]["distance"].as_f64().unwrap() - 0.3067).abs() < 1e-9);
         let socket = calls
             .iter()
-            .position(|(c, a)| c == "solid.extrude" && a["name"] == "Hex socket");
+            .position(|(c, a)| c == "solid.extrude" && a["name"] == "Set screw M3 x 6: Hex socket");
         let last_chamfer = calls.iter().rposition(|(c, _)| c == "solid.chamfer");
         assert!(last_chamfer < socket);
     }
@@ -1833,10 +1897,68 @@ mod tests {
     #[test]
     fn a_second_screw_asks_for_a_free_body_name() {
         let p = screw::parse(&json!({})).unwrap();
-        let mut host = design(&["Base", "Screw"]);
+        let mut host = design(&["Base", "Screw M3 x 12 socket"]);
         make_screw(&mut host, &p).unwrap();
         make_screw(&mut host, &p).unwrap();
-        assert_eq!(host.asked, ["Screw 2", "Screw 3"]);
+        assert_eq!(
+            host.asked,
+            ["Screw M3 x 12 socket (2)", "Screw M3 x 12 socket (3)"]
+        );
+    }
+
+    #[test]
+    fn a_body_name_is_the_kind_the_size_and_the_head() {
+        let base = |v: Value| body_base(&screw::parse(&v).unwrap());
+        assert_eq!(base(json!({})), "Screw M3 x 12 socket");
+        assert_eq!(
+            base(json!({"designation": "M5", "length": 20, "head": "Button head"})),
+            "Screw M5 x 20 button"
+        );
+        assert_eq!(
+            base(json!({"custom_size": "M8x1", "length": 25, "head": "Hex head"})),
+            "Screw M8x1 x 25 hex"
+        );
+        assert_eq!(
+            base(json!({"head": "Countersunk", "length": 10})),
+            "Screw M3 x 10 countersunk"
+        );
+        assert_eq!(
+            base(json!({"head": "Set screw", "length": 6})),
+            "Set screw M3 x 6"
+        );
+        assert_eq!(
+            base(json!({"designation": "M8", "head": "Threaded rod", "length": 100})),
+            "Threaded rod M8 x 100"
+        );
+    }
+
+    #[test]
+    fn every_feature_of_a_screw_starts_with_its_body_name() {
+        let (_, calls) = commands(json!({"drive": "Torx"}));
+        for (command, args) in &calls {
+            if let Some(name) = args.get("name").and_then(Value::as_str) {
+                assert!(
+                    name.starts_with("Screw M3 x 12 socket: "),
+                    "{command} is named {name}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_hole_names_its_kind_and_the_screw_size() {
+        let named_hole = |v: Value| {
+            let p = screw::parse(&v).unwrap();
+            hole_name(&p, p.hole.as_ref().unwrap())
+        };
+        let hole = |kind: &str| json!({"create": "Hole only", "hole_type": kind});
+        assert_eq!(named_hole(hole(screw::CLEARANCE)), "Clearance hole M3");
+        assert_eq!(named_hole(hole(screw::RECESSED)), "Counterbore M3");
+        assert_eq!(named_hole(hole(screw::TAPPED)), "Tapped hole M3");
+        let mut sunk = hole(screw::RECESSED);
+        sunk["head"] = json!("Countersunk");
+        sunk["designation"] = json!("M4");
+        assert_eq!(named_hole(sunk), "Countersink M4");
     }
 }
 

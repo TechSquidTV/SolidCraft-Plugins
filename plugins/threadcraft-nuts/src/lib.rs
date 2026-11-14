@@ -11,9 +11,15 @@ use nut::{Params, Pocket};
 use serde_json::{json, Value};
 use threadcraft::hex::{self, Hex};
 use threadcraft::host::{changed_bodies, free_body_name, sketch_id};
+use threadcraft::name;
 use threadcraft::nut::{self as din, EndChamfer};
 use threadcraft::place::{self, opposite, Placement};
 use threadcraft::Runner;
+
+/// The body name before any number: `Nut M3`, `Nut M8x1`.
+pub fn body_base(p: &Params) -> String {
+    format!("Nut {}", p.designation)
+}
 
 /// Build the nut. Returns a summary of what was made.
 pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
@@ -32,7 +38,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         let sink = match &p.pocket {
             Some(pocket) => {
                 for spot in &spots {
-                    for body in cut_pocket(r, pocket, &spot.place)? {
+                    for body in cut_pocket(r, p, pocket, &spot.place)? {
                         if !drilled.contains(&body) {
                             drilled.push(body);
                         }
@@ -42,7 +48,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                     let mut hole = json!({
                         "sketch": sketch,
                         "points": points,
-                        "name": "Bolt hole",
+                        "name": format!("Bolt hole {}", p.designation),
                     });
                     pocket.clearance.apply(&mut hole);
                     // Through the parts the pockets are in, and nothing beyond them.
@@ -77,6 +83,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
 /// cut, when the host says.
 fn cut_pocket<R: Runner>(
     r: &mut R,
+    p: &Params,
     pocket: &Pocket,
     place: &Placement,
 ) -> Result<Vec<String>, String> {
@@ -88,8 +95,8 @@ fn cut_pocket<R: Runner>(
             y_dir: place.y_dir,
             across_flats: pocket.across_flats,
             height: pocket.depth,
-            sketch_name: "Nut pocket profile",
-            name: "Nut pocket",
+            sketch_name: format!("Nut pocket {} profile", p.designation),
+            name: format!("Nut pocket {}", p.designation),
             operation: "cut",
             body_name: None,
             target: None,
@@ -108,7 +115,9 @@ fn cut_pocket<R: Runner>(
 /// One nut with its bearing face on `place`. Returns the chamfer it was cut with.
 fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndChamfer, String> {
     let place = *place;
-    let body_name = free_body_name(&mut r.body_names(), "Nut");
+    let body_name = free_body_name(&mut r.body_names(), &body_base(p));
+    // Every feature and sketch of this nut starts with its name.
+    let named = |feature: &str| name::part(&body_name, feature);
     let made = hex::extrude(
         r,
         &Hex {
@@ -117,16 +126,24 @@ fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndC
             y_dir: place.y_dir,
             across_flats: p.across_flats,
             height: p.height,
-            sketch_name: "Nut profile",
-            name: "Nut",
+            sketch_name: named("Hex profile"),
+            name: named("Hex"),
             operation: "new",
-            body_name: Some(body_name),
+            body_name: Some(body_name.clone()),
             target: None,
         },
     )?;
     let body = made.ok_or_else(|| "solid.extrude did not name the nut body".to_string())?;
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
-    chamfer(r, &place, &body, &end, 0.0, place.normal, "Bearing chamfer")?;
+    chamfer(
+        r,
+        &place,
+        &body,
+        &end,
+        0.0,
+        place.normal,
+        &named("Bearing chamfer"),
+    )?;
     let far = place.along(p.height);
     chamfer(
         r,
@@ -135,7 +152,7 @@ fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndC
         &end,
         p.height,
         opposite(place.normal),
-        "Outer chamfer",
+        &named("Outer chamfer"),
     )?;
     r.run(
         "solid.hole",
@@ -146,7 +163,7 @@ fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndC
             "thread": p.thread,
             "modeled": p.modeled,
             "targets": [body],
-            "name": "Thread",
+            "name": named("Thread"),
         }),
     )?;
     if let Some(da) = p.countersink {
@@ -160,7 +177,7 @@ fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndC
                 p.major,
                 da,
                 depth,
-                "Bearing countersink",
+                &named("Bearing countersink"),
             )?;
             countersink(
                 r,
@@ -170,7 +187,7 @@ fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndC
                 p.major,
                 da,
                 depth,
-                "Outer countersink",
+                &named("Outer countersink"),
             )?;
         }
     }
@@ -363,7 +380,8 @@ mod tests {
         assert_eq!(calls[2].1["sides"], 6);
         assert_eq!(calls[6].1["distance"], 5.2);
         assert_eq!(calls[6].1["operation"], "new");
-        assert_eq!(calls[6].1["body_name"], "Nut");
+        assert_eq!(calls[6].1["body_name"], "Nut M6");
+        assert_eq!(calls[6].1["name"], "Nut M6: Hex");
         assert_eq!(calls[6].1["sketch"], 1);
         let bearing = &calls[7].1;
         assert_eq!(bearing["plane"]["origin"], json!([0.0, 0.0, 0.0]));
@@ -650,10 +668,32 @@ mod tests {
     #[test]
     fn a_second_nut_asks_for_a_free_body_name() {
         let p = nut::parse(&json!({})).unwrap();
-        let mut host = design(&["Base", "Nut"]);
+        let mut host = design(&["Base", "Nut M3"]);
         make_nut(&mut host, &p).unwrap();
         make_nut(&mut host, &p).unwrap();
-        assert_eq!(host.asked, ["Nut 2", "Nut 3"]);
+        assert_eq!(host.asked, ["Nut M3 (2)", "Nut M3 (3)"]);
+    }
+
+    #[test]
+    fn a_body_name_is_the_size() {
+        let base = |v: Value| body_base(&nut::parse(&v).unwrap());
+        assert_eq!(base(json!({})), "Nut M3");
+        assert_eq!(base(json!({"custom_size": "M8x1"})), "Nut M8x1");
+    }
+
+    #[test]
+    fn every_feature_of_a_nut_starts_with_its_body_name() {
+        let p = nut::parse(&json!({"size": "M6"})).unwrap();
+        let mut rec = Rec {
+            calls: vec![],
+            sketch: 0,
+        };
+        make_nut(&mut rec, &p).unwrap();
+        for (command, args) in &rec.calls {
+            if let Some(name) = args.get("name").and_then(Value::as_str) {
+                assert!(name.starts_with("Nut M6: "), "{command} is named {name}");
+            }
+        }
     }
 
     /// Two selected circles on a sketch on the top face of a plate.
@@ -730,11 +770,11 @@ mod tests {
             .collect();
         assert_eq!(cuts.len(), 2);
         assert_eq!(cuts[0]["distance"], 5.2);
-        assert_eq!(cuts[0]["name"], "Nut pocket");
+        assert_eq!(cuts[0]["name"], "Nut pocket M6");
         assert!(cuts[0].get("targets").is_none());
         // The pocket sketch is on the pocket floor, 5.2 below the 10 mm surface, and
         // 10.4 across: the nut and 0.2 on each flat.
-        let floor = named(&calls, "sketch.create", "Nut pocket profile");
+        let floor = named(&calls, "sketch.create", "Nut pocket M6 profile");
         assert!((floor["plane"]["origin"][2].as_f64().unwrap() - 4.8).abs() < 1e-9);
         assert!(
             (call(&calls, "sketch.polygon.circumscribed")["radius"]
@@ -747,7 +787,7 @@ mod tests {
         // One bolt hole for both points, through the plate the pockets are in.
         let bolt = &calls
             .iter()
-            .find(|(c, args)| c == "solid.hole" && args["name"] == "Bolt hole")
+            .find(|(c, args)| c == "solid.hole" && args["name"] == "Bolt hole M6")
             .unwrap()
             .1;
         assert_eq!(bolt["clearance"], "M6");
@@ -762,7 +802,8 @@ mod tests {
         let last_cut = calls
             .iter()
             .rposition(|(c, args)| {
-                (c == "solid.extrude" && args["operation"] == "cut") || args["name"] == "Bolt hole"
+                (c == "solid.extrude" && args["operation"] == "cut")
+                    || args["name"] == "Bolt hole M6"
             })
             .unwrap();
         assert!(last_cut < first_nut);

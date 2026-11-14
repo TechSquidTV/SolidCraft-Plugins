@@ -50,8 +50,8 @@ pub enum Floor {
 /// shallower mark, whose far side rises at `rise` degrees to meet the floor `mark_end`
 /// from the middle.
 ///
-/// Source: the end faces of MISUMI's STEP models NFS5-2040, NFS5-2060, NFS5-2080,
-/// NFS5-4040 and NFSF5-2020, which all draw a floor at y = 4 as (0.6536, 4), an R0.5
+/// Source: the end faces of MISUMI's STEP models NFS5-2020, NFS5-2040, NFS5-2060,
+/// NFS5-2080, NFS5-4040 and NFSF5-2020, which all draw a floor at y = 4 as (0.6536, 4), an R0.5
 /// arc to (0.4036, 3.933), (0, 3.7), (-0.4036, 3.933), an R0.5 arc to (-0.9036, 3.933),
 /// (-1.2189, 3.751), (-2.5, 4). The catalog's Slot Bottom Details gives the 120° and
 /// the 0.3.

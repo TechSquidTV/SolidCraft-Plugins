@@ -24,7 +24,7 @@ pub struct Grid {
 /// The sizes a rail comes in, by the name on a parts list.
 ///
 /// Sources: MISUMI catalog 2019 US p. 2686 to 2687 draws HFS5-2020, HFS5-2040 and
-/// HFS5-4040, and MISUMI's STEP models give NFSF5-2020, NFS5-2040, NFS5-2060,
+/// HFS5-4040, and MISUMI's STEP models give NFS5-2020, NFS5-2040, NFS5-2060,
 /// NFS5-2080 and NFS5-4040. OpenBuilds publishes V-Slot 20x20, 20x40, 20x60 and 20x80.
 pub const SIZES: [(&str, Grid); 5] = [
     ("2020", Grid { nx: 1, ny: 1 }),
@@ -512,13 +512,15 @@ mod tests {
         }
     }
 
-    /// The area of the end face of each MISUMI STEP model: `NFS5-2040-50.stp`,
-    /// `NFS5-2060-2060.stp`, `NFS5-2080-50.stp` and `NFS5-4040-50.stp`, summed from
+    /// The area of the end face of each MISUMI STEP model: `NFS5-2020-50.stp`,
+    /// `NFS5-2040-50.stp`, `NFS5-2060-2060.stp`, `NFS5-2080-50.stp` and
+    /// `NFS5-4040-50.stp`, summed from
     /// vertices read to four decimals. The 2040 model rounds its cavity's corners to
     /// R0.3, which adds 0.07 mm² of metal.
     #[test]
     fn the_t_slot_areas_are_the_misumi_step_areas() {
         for (size, area, within) in [
+            ("2020", 181.264, 0.03),
             ("2040", 322.438, 0.1),
             ("2060", 463.486, 0.03),
             ("2080", 604.595, 0.03),
@@ -529,8 +531,9 @@ mod tests {
         }
     }
 
-    /// Vertices of the three open slots of MISUMI's STEP model `NFSF5-2020-50.stp`,
-    /// whose fourth face is closed: the right slot and the corner above it.
+    /// Vertices of the end face of MISUMI's STEP model `NFS5-2020-50.stp`, whose outline
+    /// has 76 edges: the right slot, the corner above it and the top slot. The open
+    /// slots of `NFSF5-2020-50.stp`, whose fourth face is closed, are the same.
     #[test]
     fn the_t_slot_2020_has_the_misumi_step_vertices() {
         let p = profile(T5, "2020");

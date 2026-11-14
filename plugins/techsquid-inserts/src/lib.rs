@@ -72,9 +72,11 @@ fn place_inserts<R: Runner>(r: &mut R, p: &Params, places: &[Placement]) -> Resu
         description: &description,
         folder: FOLDER,
         bom_type: "purchased",
+        // Column 3 is the inserts': one site for a plain bore, one for a thread.
+        site: fasten::site(3, u8::from(p.modeled)),
     };
-    fasten::place_all(r, &def, places, |mut r, name| {
-        build_insert(&mut r, p, &Placement::on_origin(), name)
+    fasten::place_all(r, &def, places, |mut r, name, site| {
+        build_insert(&mut r, p, site, name)
     })
 }
 
@@ -392,6 +394,10 @@ mod tests {
         sketch: i64,
     }
     impl Runner for Rec {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             // Placing the fastener is checked on its own; these check the build.
             if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -569,6 +575,10 @@ mod tests {
             sketch: i64,
         }
         impl Runner for Renamed {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 // Placing the fastener is checked on its own; these check the build.
                 if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -607,6 +617,10 @@ mod tests {
     fn a_body_without_a_name_is_not_bored() {
         struct Mute(Vec<String>);
         impl Runner for Mute {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
                 // Placing the fastener is checked on its own; these check the build.
                 if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -630,6 +644,10 @@ mod tests {
     fn a_named_point_puts_the_face_end_there() {
         struct Named(Vec<(String, Value)>);
         impl Runner for Named {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 // Placing the fastener is checked on its own; these check the build.
                 if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -687,6 +705,10 @@ mod tests {
         changed: Value,
     }
     impl Runner for Plate {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
                 "selection.get" => json!({"count": 2, "items": [
@@ -932,6 +954,10 @@ mod tests {
         sketch: i64,
     }
     impl Runner for Taken {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             // Placing the fastener is checked on its own; these check the build.
             if let Some(reply) = plugin_kit::component::stand_in(command) {

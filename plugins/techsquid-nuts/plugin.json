@@ -121,6 +121,7 @@
       "solid.extrude",
       "solid.revolve",
       "solid.hole",
+      "solid.move",
       "solid.cone",
       "component.list",
       "component.create",

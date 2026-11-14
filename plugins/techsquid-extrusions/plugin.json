@@ -2,7 +2,7 @@
   "id": "techsquid-extrusions",
   "name": "Aluminium extrusions",
   "version": "0.1.0",
-  "description": "20 mm series T-slot and V-slot aluminium extrusions, cut to any length. Select sketch points first: each gets a rail centred on it, running out of the sketch. With nothing selected one rail stands on the origin.",
+  "description": "20 mm series T-slot and V-slot aluminium extrusions, cut to any length, and the slot nuts that go in them. Select sketch points first: each gets a rail or a nut. With nothing selected one stands on the origin.",
   "capabilities": ["commands@0.1"],
   "runtime": {
     "module": "plugin.wasm",
@@ -50,6 +50,61 @@
           }
         },
         "slots": [{"kind": "menu", "name": "Aluminium extrusion"}]
+      },
+      {
+        "name": "make-t-nut",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "required": ["type", "size", "slot", "along"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "Pre-assembly is MISUMI HNTT5, 10 mm long, which slides in from the end of the rail. Post-assembly is MISUMI HNTP5, 17 mm long, which goes in through the slot and has a spring ball under it.",
+              "default": "Pre-assembly",
+              "enum": ["Pre-assembly", "Post-assembly"]
+            },
+            "size": {
+              "type": "string",
+              "title": "Size",
+              "description": "The thread the nut is tapped with.",
+              "default": "M5",
+              "enum": ["M5"]
+            },
+            "slot": {
+              "type": "string",
+              "title": "Slot",
+              "description": "The rail the nut sits in. The nut hangs under the lips, 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot.",
+              "default": "T-slot",
+              "enum": ["T-slot", "V-slot"]
+            },
+            "along": {
+              "type": "string",
+              "title": "Rail runs along",
+              "description": "The sketch axis the rail runs along, so the nut lies along the slot.",
+              "default": "Sketch X",
+              "enum": ["Sketch X", "Sketch Y"]
+            },
+            "thread_modeled": {
+              "type": "boolean",
+              "title": "Modeled thread",
+              "description": "On cuts the thread into the hole. Off drills the tap hole and lists the thread.",
+              "default": true
+            },
+            "sketch": {
+              "type": "string",
+              "title": "Sketch",
+              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point."
+            },
+            "sketch_point": {
+              "type": "string",
+              "title": "Sketch point",
+              "description": "Optional. The id of a point or circle in that sketch, on the rail's face in the middle of a slot, such as c1 or c1.center. Leave empty to use the selection."
+            }
+          }
+        },
+        "slots": [{"kind": "menu", "name": "Slot nut"}]
       }
     ],
     "commands": [
@@ -62,6 +117,9 @@
       "sketch.circle.center",
       "sketch.finish",
       "solid.extrude",
+      "solid.hole",
+      "solid.cylinder",
+      "solid.sphere",
       "component.list",
       "component.create",
       "component.metadata",

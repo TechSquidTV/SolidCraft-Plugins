@@ -81,9 +81,11 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             description: "ISO 4032",
             folder: FOLDER,
             bom_type: "purchased",
+            // Column 0 is the hexagon nuts': one site for a plain hole, one for a thread.
+            site: fasten::site(0, u8::from(p.modeled)),
         };
-        Some(fasten::place_all(r, &def, &places, |mut r, name| {
-            build_nut(&mut r, p, &Placement::on_origin(), name).map(|_| ())
+        Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
+            build_nut(&mut r, p, site, name).map(|_| ())
         })?)
     } else {
         None
@@ -127,15 +129,23 @@ fn cut_pocket<R: Runner>(
 /// The plugin id, which a nut component's metadata names.
 pub const PLUGIN: &str = "techsquid-nuts";
 
-/// One nut named `body_name` with its bearing face on `place`. Returns the chamfer it
-/// was cut with.
+/// One nut named `body_name` with its bearing face on `site`, whose axes are the
+/// world's. Returns the chamfer it was cut with.
+///
+/// The hexagon and its chamfers are cut on the origin and the blank is then moved to the
+/// site, where the hole is drilled and tapped. The kernel refuses the chamfer of some
+/// sizes away from the origin, and the tapped hole must be away from it: see
+/// [`plugin_kit::component`].
 fn build_nut<R: Runner>(
     r: &mut R,
     p: &Params,
-    place: &Placement,
+    site: &Placement,
     body_name: &str,
 ) -> Result<EndChamfer, String> {
-    let place = *place;
+    let place = Placement {
+        point: [0.0, 0.0, 0.0],
+        ..*site
+    };
     // Every feature and sketch of this nut starts with its name.
     let named = |feature: &str| name::part(body_name, feature);
     let made = hex::extrude(
@@ -164,7 +174,6 @@ fn build_nut<R: Runner>(
         place.normal,
         &named("Bearing chamfer"),
     )?;
-    let far = place.along(p.height);
     chamfer(
         r,
         &place,
@@ -174,6 +183,14 @@ fn build_nut<R: Runner>(
         opposite(place.normal),
         &named("Outer chamfer"),
     )?;
+    if site.point != place.point {
+        r.run(
+            "solid.move",
+            json!({"bodies": [body], "translate": site.point}),
+        )?;
+    }
+    let place = *site;
+    let far = place.along(p.height);
     r.run(
         "solid.hole",
         json!({
@@ -336,6 +353,10 @@ mod tests {
         sketch: i64,
     }
     impl Runner for Rec {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             // Placing the fastener is checked on its own; these check the build.
             if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -379,6 +400,38 @@ mod tests {
 
     fn last<'a>(calls: &'a [(String, Value)], command: &str) -> &'a Value {
         &calls.iter().rfind(|(name, _)| name == command).unwrap().1
+    }
+
+    /// On a site the blank is cut on the origin, moved, and tapped where it lands.
+    #[test]
+    fn on_a_site_the_blank_is_cut_on_the_origin_and_tapped_on_the_site() {
+        let p = nut::parse(&json!({"size": "M6"})).unwrap();
+        let mut rec = Rec {
+            calls: vec![],
+            sketch: 0,
+        };
+        let site = plugin_kit::component::site_at([5.0, 25.0]);
+        build_nut(&mut rec, &p, &site, "Nut M6").unwrap();
+        let names: Vec<&str> = rec.calls.iter().map(|(c, _)| c.as_str()).collect();
+        let moved = names.iter().position(|c| *c == "solid.move").unwrap();
+        let tapped = names.iter().position(|c| *c == "solid.hole").unwrap();
+        // Both chamfers are revolved before the move, and the hole comes after it.
+        assert_eq!(
+            names[..moved]
+                .iter()
+                .filter(|c| **c == "solid.revolve")
+                .count(),
+            2
+        );
+        assert!(moved < tapped);
+        assert_eq!(rec.calls[0].1["plane"]["origin"], json!([0.0, 0.0, 0.0]));
+        assert_eq!(rec.calls[moved].1["translate"], json!([5.0, 25.0, 0.0]));
+        assert_eq!(rec.calls[tapped].1["position"], json!([5.0, 25.0, 0.0]));
+        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
+        assert!(manifest["runtime"]["commands"]
+            .as_array()
+            .unwrap()
+            .contains(&json!("solid.move")));
     }
 
     #[test]
@@ -476,6 +529,10 @@ mod tests {
             sketch: i64,
         }
         impl Runner for Renamed {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 // Placing the fastener is checked on its own; these check the build.
                 if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -512,6 +569,10 @@ mod tests {
     fn a_body_without_a_name_is_not_chamfered() {
         struct Mute(Vec<String>);
         impl Runner for Mute {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
                 // Placing the fastener is checked on its own; these check the build.
                 if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -547,6 +608,10 @@ mod tests {
     fn a_named_point_puts_the_bearing_face_there() {
         struct Named(Vec<(String, Value)>);
         impl Runner for Named {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 // Placing the fastener is checked on its own; these check the build.
                 if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -649,6 +714,7 @@ mod tests {
                 "solid.extrude",
                 "solid.revolve",
                 "solid.hole",
+                "solid.move",
                 "solid.cone",
                 "component.list",
                 "component.create",
@@ -669,6 +735,10 @@ mod tests {
         sketch: i64,
     }
     impl Runner for Taken {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             // Placing the fastener is checked on its own; these check the build.
             if let Some(reply) = plugin_kit::component::stand_in(command) {
@@ -756,6 +826,10 @@ mod tests {
         changed: Value,
     }
     impl Runner for OnPlate {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
                 "selection.get" => json!({"count": 2, "items": [

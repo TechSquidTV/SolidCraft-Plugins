@@ -1,10 +1,12 @@
 //! 20 mm series T-slot and V-slot aluminium extrusions for SolidCraft.
 //!
-//! One entry, `make-extrusion`. The rail's section is centred on a sketch point, or on
-//! the origin when nothing is selected, and the rail runs out of the sketch for its
-//! length. The section is one sketch of lines and arcs, extruded once.
+//! Two entries. `make-extrusion` builds a rail: its section is centred on a sketch
+//! point, or on the origin when nothing is selected, and the rail runs out of the
+//! sketch for its length. The section is one sketch of lines and arcs, extruded once.
+//! `make-t-nut` puts a slot nut under the lips of a rail: see [`tnut`].
 
 pub mod rail;
+pub mod tnut;
 
 use extrusions::{Profile, Seg};
 use plugin_kit::component::{self, Definition, Placed};
@@ -54,9 +56,10 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
         description: &description,
         folder: FOLDER,
         bom_type: "purchased",
+        site: component::ORIGIN,
     };
-    let placed = component::place_all(r, &def, &places, |mut r, name| {
-        build_rail(&mut r, &profile, p.length, &Placement::on_origin(), name)
+    let placed = component::place_all(r, &def, &places, |mut r, name, site| {
+        build_rail(&mut r, &profile, p.length, site, name)
     })?;
     Ok(summary(p, &profile, &places, &placed))
 }
@@ -161,13 +164,24 @@ fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed)
 }
 
 plugin_kit::guest! {
-    entry: "make-extrusion",
-    noun: "extrusion",
     manifest: include_str!("../plugin.json"),
-    parse: crate::rail::parse,
-    make: crate::make_extrusion,
-    describe: |p: &crate::rail::Params| format!("making a {}", crate::body_base(p)),
     aliases: &[],
+    entries: [
+        {
+            entry: "make-extrusion",
+            noun: "extrusion",
+            parse: crate::rail::parse,
+            make: crate::make_extrusion,
+            describe: |p: &crate::rail::Params| format!("making a {}", crate::body_base(p)),
+        },
+        {
+            entry: "make-t-nut",
+            noun: "nut",
+            parse: crate::tnut::parse,
+            make: crate::tnut::make_t_nut,
+            describe: |p: &crate::tnut::Params| format!("making a {}", crate::tnut::body_base(p)),
+        },
+    ],
 }
 
 #[cfg(test)]
@@ -179,6 +193,10 @@ mod tests {
         calls: Vec<(String, Value)>,
     }
     impl Runner for Rec {
+        fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+            plugin_kit::Placement::on_origin()
+        }
+
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             // Placing the rail is checked in plugin-kit; these check the build.
             if let Some(reply) = component::stand_in(command) {
@@ -374,6 +392,10 @@ mod tests {
     fn the_rail_is_a_purchased_part_in_the_extrusions_folder() {
         struct All(Vec<(String, Value)>);
         impl Runner for All {
+            fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
+                plugin_kit::Placement::on_origin()
+            }
+
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 self.0.push((command.to_string(), args));
                 Ok(component::stand_in(command).unwrap_or(match command {

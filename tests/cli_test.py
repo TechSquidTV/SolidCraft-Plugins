@@ -7,7 +7,7 @@ Every folder under plugins/ is checked from its package in dist/<id>/, and each 
 needs a case in CASES, so a new plugin cannot be left out unnoticed. Needs a
 solidcraft-cli with the plugin host (SolidCraft 0.41 or newer).
 
-plugin.inspect must accept each package and list its entry. Each run must build
+plugin.inspect must accept each package and list its entries. Each run must build
 one closed body of the measured size: an M3 x 12 socket head screw 5.5 across and
 15 tall, an M3 x 5.7 insert 4.6 across and 5.7 long, an M6 nut 10 across the flats
 and 5.2 high, a V-slot 2040 rail 20 across and 120 long. On the signed macOS build of SolidCraft 0.41.0, loading a component
@@ -47,6 +47,10 @@ CASES = {
 }
 
 
+# The entries a plugin lists beside the one its case runs.
+OTHER_ENTRIES = {"techsquid-extrusions": ["make-t-nut"]}
+
+
 def size_of(bbox):
     """(across, height): the narrower of the two sides in X and Y, which is the width
     across the flats of a hexagon, and the height along Z."""
@@ -75,7 +79,8 @@ for plugin_id in PLUGINS:
     check(f"{plugin_id}: approval", isinstance(approval, str) and len(approval) > 8)
     names = [e.get("name") for e in info["manifest"]["runtime"]["entries"]]
     commands = info["manifest"]["runtime"]["commands"]
-    check(f"{plugin_id}: lists {entry}", names == [entry], str(names))
+    entries = [entry] + OTHER_ENTRIES.get(plugin_id, [])
+    check(f"{plugin_id}: lists {', '.join(entries)}", names == entries, str(names))
     check(f"{plugin_id}: names its commands", isinstance(commands, list) and len(commands) > 0, str(commands))
 
     code, text, results = run([

@@ -14,6 +14,13 @@ pub trait Runner {
     fn body_names(&mut self) -> Vec<String> {
         Vec::new()
     }
+
+    /// The frame a new definition is built on, for the site its plugin asks for: see
+    /// [`crate::component::site_at`]. A test host that checks what a build sends keeps
+    /// it on the origin, so the numbers it checks are the part's own.
+    fn site(&mut self, at: [f64; 2]) -> crate::Placement {
+        crate::component::site_at(at)
+    }
 }
 
 /// A builder generic over `Runner` runs on a `&mut dyn Runner` too, as
@@ -25,6 +32,10 @@ impl Runner for &mut dyn Runner {
 
     fn body_names(&mut self) -> Vec<String> {
         (**self).body_names()
+    }
+
+    fn site(&mut self, at: [f64; 2]) -> crate::Placement {
+        (**self).site(at)
     }
 }
 
@@ -158,8 +169,9 @@ pub fn labelled<K: AsRef<str>, L: AsRef<str>>(
     }
 }
 
-/// The wasm guest of a plugin with one entry. Every plugin exports the same thing: read
-/// the parameters, build, and turn each failure into the host's error for it.
+/// The wasm guest of a plugin. Every plugin exports the same thing: read the parameters,
+/// build, and turn each failure into the host's error for it. A plugin with one entry
+/// names it at the top. One with several lists them under `entries`.
 ///
 /// - `manifest`: `include_str!("../plugin.json")`, for the dialog labels.
 /// - `parse`: `fn(&Value) -> Result<Params, FieldError>`.
@@ -178,6 +190,29 @@ macro_rules! guest {
         make: $make:path,
         describe: $describe:expr,
         aliases: $aliases:expr $(,)?
+    ) => {
+        $crate::guest! {
+            manifest: $manifest,
+            aliases: $aliases,
+            entries: [{
+                entry: $entry,
+                noun: $noun,
+                parse: $parse,
+                make: $make,
+                describe: $describe,
+            }],
+        }
+    };
+    (
+        manifest: $manifest:expr,
+        aliases: $aliases:expr,
+        entries: [$({
+            entry: $entry:literal,
+            noun: $noun:literal,
+            parse: $parse:path,
+            make: $make:path,
+            describe: $describe:expr $(,)?
+        }),+ $(,)?] $(,)?
     ) => {
         #[cfg(target_arch = "wasm32")]
         mod guest {
@@ -261,27 +296,33 @@ macro_rules! guest {
                     if entry.is_empty() {
                         let _ = commands::run("inspect.measure", "{}");
                     }
-                    if entry != $entry {
-                        return Err(PluginError::InvalidInput(FieldFailure {
-                            field: "entry".into(),
-                            reason: format!("unknown entry {entry}"),
-                        }));
-                    }
                     let v: serde_json::Value =
                         serde_json::from_str(&params).unwrap_or(serde_json::json!({}));
-                    let p = $parse(&v).map_err(|err| invalid(&err.field, &err.reason))?;
-                    log::log(log::Level::Info, &($describe)(&p));
-                    let made = $make(&mut Host, &p).map_err(failure)?;
-                    if made["placed"]
-                        .as_str()
-                        .is_some_and(|at| at.contains("origin"))
-                    {
-                        log::log(
-                            log::Level::Warn,
-                            concat!("nothing was selected, so the ", $noun, " is on the origin"),
-                        );
-                    }
-                    Ok(made.to_string())
+                    $(
+                        if entry == $entry {
+                            let p = $parse(&v).map_err(|err| invalid(&err.field, &err.reason))?;
+                            log::log(log::Level::Info, &($describe)(&p));
+                            let made = $make(&mut Host, &p).map_err(failure)?;
+                            if made["placed"]
+                                .as_str()
+                                .is_some_and(|at| at.contains("origin"))
+                            {
+                                log::log(
+                                    log::Level::Warn,
+                                    concat!(
+                                        "nothing was selected, so the ",
+                                        $noun,
+                                        " is on the origin"
+                                    ),
+                                );
+                            }
+                            return Ok(made.to_string());
+                        }
+                    )+
+                    Err(PluginError::InvalidInput(FieldFailure {
+                        field: "entry".into(),
+                        reason: format!("unknown entry {entry}"),
+                    }))
                 }
             }
 

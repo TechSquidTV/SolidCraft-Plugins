@@ -1,5 +1,5 @@
 {
- "description": "A 300 mm cube frame of 20 mm rails with a gantry beam across the top. One techsquid-extrusions run stands four 300 mm T-slot 2020 uprights on the points of the sketch \"Upright points\". Two more runs lay eight 260 mm T-slot 2020 rails between them, bottom and top: four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane. The second of those runs finds the rail the first one built and places it again. A last run puts a 260 mm V-slot 2040 beam on edge between the top side rails. A rail's section is centred on its point, with its width along the sketch X and its height along the sketch Y, and the rail runs out of the sketch along its normal, so the plane and offset of each sketch say which way its rails run and where they start. The rails stay where the points were when the plugin ran, and no joint or fastener is modeled. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: each `volume_mm3` is the area of the section times the length.",
+ "description": "A 300 mm cube frame of 20 mm rails with a gantry beam across the top and slot nuts in it. One techsquid-extrusions run stands four 300 mm T-slot 2020 uprights on the points of the sketch \"Upright points\". Two more runs lay eight 260 mm T-slot 2020 rails between them, bottom and top: four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane. The second of those runs finds the rail the first one built and places it again. A last run puts a 260 mm V-slot 2040 beam on edge between the top side rails. A rail's section is centred on its point, with its width along the sketch X and its height along the sketch Y, and the rail runs out of the sketch along its normal, so the plane and offset of each sketch say which way its rails run and where they start. Two runs of the plugin's other entry, make-t-nut, then put slot nuts in the frame: four M5 post-assembly nuts in the top slots of the two top cross rails, from points on a sketch on top of the frame, and two M5 pre-assembly nuts in the lower front slot of the gantry beam. A nut hangs under the lips of the slot with its tapped hole on the point, and `along` says which sketch axis the rail runs along. The rails and nuts stay where the points were when the plugin ran, and no screw, bracket or joint is modeled. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: a rail's `volume_mm3` is the area of its section times its length, and a nut's is what the build measured.",
  "steps": [
   {"caption": "Sketch on the floor: one point per upright", "command": "sketch.create", "params": {"plane": "XY", "offset": 0, "name": "Upright points"}},
   {"caption": "", "command": "sketch.point", "params": {"point": [140, 140], "id": "u1"}},
@@ -25,10 +25,22 @@
   {"caption": "Sketch for the gantry beam, between the top side rails", "command": "sketch.create", "params": {"plane": "YZ", "offset": -130, "name": "Gantry point"}},
   {"caption": "", "command": "sketch.point", "params": {"point": [0, 280], "id": "g1"}},
   {"caption": "", "command": "sketch.finish", "params": {}},
-  {"caption": "Gantry: a 260 mm V-slot 2040 beam on edge, for wheels to run on", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2040", "length": 260, "sketch": "Gantry point", "sketch_point": "g1"}}}
+  {"caption": "Gantry: a 260 mm V-slot 2040 beam on edge, for wheels to run on", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2040", "length": 260, "sketch": "Gantry point", "sketch_point": "g1"}}},
+  {"caption": "Sketch on top of the frame: two points in the top slot of each cross rail", "command": "sketch.create", "params": {"plane": "XY", "offset": 300, "name": "Top nut points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [60, 140], "id": "t1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-60, 140], "id": "t2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [60, -140], "id": "t3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-60, -140], "id": "t4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Top nuts: four M5 post-assembly nuts dropped into the top slots, for a plate to screw onto", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Post-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "sketch": "Top nut points", "sketch_point": "t1, t2, t3, t4"}}},
+  {"caption": "Sketch on the front face of the gantry beam: two points in its lower slot", "command": "sketch.create", "params": {"plane": "XZ", "offset": 10, "name": "Gantry nut points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [40, -270], "id": "n1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-40, -270], "id": "n2"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Gantry nuts: two M5 pre-assembly nuts slid into the beam's V-slot, 1.8 mm under its face", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Pre-assembly", "size": "M5", "slot": "V-slot", "along": "Sketch X", "thread_modeled": true, "sketch": "Gantry nut points", "sketch_point": "n1, n2"}}}
  ],
  "expect": {
-  "bodies": 13,
+  "bodies": 19,
   "bbox": {"min": [-150, -150, 0], "max": [150, 150, 300]},
   "placed": [
    {"label": "upright at (140, 140)", "bbox": {"min": [130, 130, 0], "max": [150, 150, 300]}, "volume_mm3": 54378.86},
@@ -43,7 +55,13 @@
    {"label": "side rail at x 140, z 290", "bbox": {"min": [130, -130, 280], "max": [150, 130, 300]}, "volume_mm3": 47128.35},
    {"label": "side rail at x -140, z 10", "bbox": {"min": [-150, -130, 0], "max": [-130, 130, 20]}, "volume_mm3": 47128.35},
    {"label": "side rail at x -140, z 290", "bbox": {"min": [-150, -130, 280], "max": [-130, 130, 300]}, "volume_mm3": 47128.35},
-   {"label": "gantry beam", "bbox": {"min": [-130, -10, 260], "max": [130, 10, 300]}, "volume_mm3": 77997.26}
+   {"label": "gantry beam", "bbox": {"min": [-130, -10, 260], "max": [130, 10, 300]}, "volume_mm3": 77997.26},
+   {"label": "top nut at (60, 140)", "bbox": {"min": [54, 135.85, 294], "max": [71, 144.15, 298.7]}, "volume_mm3": 340.44},
+   {"label": "top nut at (-60, 140)", "bbox": {"min": [-66, 135.85, 294], "max": [-49, 144.15, 298.7]}, "volume_mm3": 340.44},
+   {"label": "top nut at (60, -140)", "bbox": {"min": [54, -144.15, 294], "max": [71, -135.85, 298.7]}, "volume_mm3": 340.44},
+   {"label": "top nut at (-60, -140)", "bbox": {"min": [-66, -144.15, 294], "max": [-49, -135.85, 298.7]}, "volume_mm3": 340.44},
+   {"label": "gantry nut at x 40", "bbox": {"min": [35, 4.9, 265], "max": [45, 9, 275]}, "volume_mm3": 233.88},
+   {"label": "gantry nut at x -40", "bbox": {"min": [-45, 4.9, 265], "max": [-35, 9, 275]}, "volume_mm3": 233.88}
   ]
  }
 }

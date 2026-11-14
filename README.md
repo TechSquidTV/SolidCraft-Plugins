@@ -9,7 +9,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Screws](plugins/techsquid-screws/README.md) | `techsquid-screws` | Fasteners | Metric machine screws to ISO standards on selected sketch points (socket, button, countersunk, hex, pan and cheese heads, set screws and threaded rod), with any drive, and optionally the clearance, counterbored, countersunk or tapped hole |
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
-| [Aluminium extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length and placed on selected sketch points |
+| [Aluminium extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length and placed on selected sketch points, and the MISUMI M5 slot nuts that go in them |
 
 Each plugin's README covers installing it, its dialog fields, the standards it follows and the names it gives bodies and features. Each release has one zip per plugin. To install a plugin, unzip its folder into SolidCraft's plugins folder.
 
@@ -23,18 +23,20 @@ The three fastener plugins share field names (`size`, `custom_size`, `create`, `
 
 A rail is one sketch of lines and arcs, extruded once. Its section comes from `crates/extrusions`, which builds it from a slot shape and a grid of 20 mm cells. The T-slot is checked against MISUMI's STEP models and the V-slot against OpenBuilds' DXF files; the plugin's README lists each source and its test.
 
+A slot nut is one section too, extruded along the slot and tapped. `make-t-nut`, the plugin's second entry, hangs it under the lips of a slot, on a point on the rail's face. Its shape is MISUMI's STEP model of the pre-assembly nut HNTT5-5 or the post-assembly nut HNTP5-5.
+
 ## Layout
 
 ```
 Cargo.toml                 workspace
 crates/plugin-kit/         what every plugin shares: the host runner and wasm guest, dialog fields, placement, components, and names
 crates/fasteners/          designations, metric sizes, standard heads, ISO 4032 nuts, ISO 273 clearance holes, drives, and the hex profile
-crates/extrusions/         the 20 mm T-slot and V-slot shapes, and the section of a rail built from them
+crates/extrusions/         the 20 mm T-slot and V-slot shapes, the section of a rail built from them, and the slot nuts
 wit/plugin.wit             copy of SolidCraft's craft:plugin@0.1.0
 plugins/techsquid-screws   screw entry and its parameters
 plugins/techsquid-inserts  heat-set insert entry, catalog, and parameters
 plugins/techsquid-nuts     ISO 4032 hexagon nut entry and its parameters
-plugins/techsquid-extrusions  T-slot and V-slot rail entry and its parameters
+plugins/techsquid-extrusions  T-slot and V-slot rail entry, slot nut entry, and their parameters
 build.sh                   the packages land in dist/<id>/, one per plugin
 examples/                  designs built with the plugins: <name>.json opens in SolidCraft, <name>.steps.json builds it
 tests/cli_test.py          runs the built package through solidcraft-cli
@@ -75,7 +77,9 @@ A PCB enclosure. The base is a shelled block with a boss in each corner, fillete
 
 ![A cube frame of T-slot rails with a V-slot gantry beam across the top](examples/rail-frame.png)
 
-A 300 mm cube frame of 20 mm rails. Four `make-extrusion` runs place thirteen rails, which are three components. The first stands four 300 mm T-slot 2020 uprights on the points of a sketch on the floor. Two more lay eight 260 mm T-slot 2020 rails between them, four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane; the second of those runs places the rail the first one built. The last puts a 260 mm V-slot 2040 beam on edge between the top side rails. No joint or fastener is modeled.
+![A slot nut under the lips of a top rail, its tapped hole showing through the slot](examples/rail-frame-nuts.png)
+
+A 300 mm cube frame of 20 mm rails. Four `make-extrusion` runs place thirteen rails, which are three components. The first stands four 300 mm T-slot 2020 uprights on the points of a sketch on the floor. Two more lay eight 260 mm T-slot 2020 rails between them, four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane; the second of those runs places the rail the first one built. The last puts a 260 mm V-slot 2040 beam on edge between the top side rails. Two `make-t-nut` runs then put four M5 post-assembly nuts in the top slots of two top rails and two M5 pre-assembly nuts in a slot of the beam. No screw, bracket or joint is modeled.
 
 Each example comes as two files:
 
@@ -86,7 +90,7 @@ Each example comes as two files:
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks each rail's box and its volume, which is the area of its section times its length. For both it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of each rail and each slot nut. A rail's volume is the area of its section times its length. For both it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
 
 The pictures are rendered from the design:
 
@@ -94,9 +98,10 @@ The pictures are rendered from the design:
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --view iso --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure-closed.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame.png --width 1280 --height 800 --camera '{"target": [0, 0, 150], "yaw": 0.5, "pitch": 0.4, "distance": 720}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-nuts.png --width 1280 --height 800 --camera '{"target": [62, -140, 296], "yaw": 0.5, "pitch": 0.7, "distance": 75}' --no-grid --no-axes --quality fine
 ```
 
-`tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length.
+`tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length. A slot nut is put in the slot of a rail: it must be the size MISUMI draws, sit under the lips, touch nothing, and leave the rail and any nut built before it as they were.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/geometry_test.py
@@ -108,7 +113,7 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 Each fastener and each rail is a component of its own. This section describes fasteners; a rail is placed the same way, in an `Extrusions` folder instead of `Fasteners`. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
 
-- **One definition, many placements.** A run builds the fastener once, at its component's origin, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with the point on the origin and its outer side up +Z; each placement turns that onto the sketch.
+- **One definition, many placements.** A run builds the fastener once, in a component of its own, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with its outer side up +Z; each placement turns that onto the sketch. A screw or a rail stands on the component's origin. A part with a tapped hole (a nut, an insert, a slot nut) stands on a point of its own beside it, because SolidCraft 0.42 cuts a modeled thread into any bore of the same size on the same axis, such as the bore of a rail standing on the origin.
 - **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.
 - **A Fasteners folder.** Every placement goes in one `Fasteners` component in the design, made the first time it is needed. It is a phantom, so the bill of materials counts what it holds and has no row of its own.
 - **A bill of materials.** Each definition is `purchased`, its part number is its name and its description the standard it follows (`ISO 4762`, `ISO 4032`) or the insert it is (`CNC Kitchen heat-set insert M3 × 5.7`). `assembly.bom` on the example lists 4 inserts and 4 screws.

@@ -431,4 +431,178 @@ refused("rail: a V-slot 4040 is refused on Size", "techsquid-extrusions", "make-
         {"slot": "V-slot", "size": "4040"}, "size")
 
 
+
+def rail_and_face(slot):
+    """A 60 mm 2020 rail standing on the origin, and a sketch on its +X face with two
+    points in the middle of the slot."""
+    return [
+        {"command": "plugin.run", "params": {
+            "path": os.path.join(ROOT, "dist", "techsquid-extrusions"),
+            "approval": approval("techsquid-extrusions"), "entry": "make-extrusion",
+            "params": {"slot": slot, "size": "2020", "length": 60}}},
+        {"command": "sketch.create", "params": {"plane": "YZ", "offset": 10, "name": "Face"}},
+        {"command": "sketch.point", "params": {"point": [0, 15], "id": "a"}},
+        {"command": "sketch.point", "params": {"point": [0, 40], "id": "b"}},
+        {"command": "sketch.finish", "params": {}},
+    ]
+
+
+def nut_step(params):
+    return {"command": "plugin.run", "params": {
+        "path": os.path.join(ROOT, "dist", "techsquid-extrusions"),
+        "approval": approval("techsquid-extrusions"), "entry": "make-t-nut", "params": params}}
+
+
+def measured(steps):
+    """Run the steps, then measure and check for interference. Returns (bodies by name,
+    interference count), or (None, the error line)."""
+    code, text, results = run(list(steps) + [
+        {"command": "inspect.measure", "params": {"summary": True}},
+        {"command": "inspect.interference", "params": {}},
+    ])
+    if killed(code):
+        raise Killed(f"plugin.run killed solidcraft-cli (exit {code})")
+    if code != 0 or not results:
+        return None, last_line(text)
+    hits = body(results[-1])
+    return ({b["name"]: b for b in body(results[-2])["bodies"]},
+            len(hits.get("interferences", [])) + len(hits.get("unchecked", [])))
+
+
+# The nuts' boxes as MISUMI draws them: 10 x 10 x 4.1, and 17 x 8.3 x 3.9 with the ball
+# standing 0.8 out of the bottom.
+NUT_BOX = {"Pre-assembly": (10, 10, 4.1), "Post-assembly": (17, 8.3, 4.7)}
+
+
+@case
+def loose_nut(name, kind):
+    """One nut on the origin: under the XY plane by the T-slot's 2 mm lip, with a
+    modeled thread that takes metal out of the plain hole."""
+    volumes = []
+    for modeled in (False, True):
+        found, reply = plugin_run("techsquid-extrusions", "make-t-nut",
+                                  {"type": kind, "thread_modeled": modeled})
+        if found is None:
+            check(name, False, "| " + reply)
+            return
+        nut = list(found.values())[0]
+        box = [nut["bbox"]["max"][i] - nut["bbox"]["min"][i] for i in range(3)]
+        top = nut["bbox"]["max"][2]
+        boss = 0.8 if kind == "Pre-assembly" else 0.7
+        if not (len(found) == 1 and nut["closed"] and abs(top - (boss - 2)) < 1e-6
+                and all(abs(box[i] - NUT_BOX[kind][i]) < 1e-6 for i in range(3))):
+            check(name, False, f"| box {box}, top {top}; bodies {sorted(found)}")
+            return
+        volumes.append(nut["volume_mm3"])
+    cut = volumes[0] - volumes[1]
+    check(name, 5 < cut < 20, f"| a modeled thread removed {cut:.2f} mm3")
+
+
+loose_nut("t-nut: a pre-assembly nut is 10 x 10 x 4.1 with a thread", "Pre-assembly")
+loose_nut("t-nut: a post-assembly nut is 17 x 8.3 x 3.9 and its ball", "Post-assembly")
+
+
+@case
+def nut_in_slot(name, slot, kind):
+    """A nut on a point of the rail's face: under the lips, along the rail, touching
+    nothing, and the rail as it was."""
+    before = rail_and_face(slot)
+    rail_only, _ = measured(before)
+    found, hits = measured(before + [nut_step(
+        {"type": kind, "slot": slot, "along": "Sketch Y", "sketch": "Face", "sketch_point": "b"})])
+    if found is None or rail_only is None:
+        check(name, False, "| " + str(hits))
+        return
+    rail_name = f"{slot} 2020 x 60"
+    nut = [b for n, b in found.items() if n != rail_name]
+    lip = 2.0 if slot == "T-slot" else 1.8
+    boss = 0.8 if kind == "Pre-assembly" else 0.7
+    start = 5 if kind == "Pre-assembly" else 6
+    ok = (len(nut) == 1 and hits == 0
+          and abs(found[rail_name]["volume_mm3"] - rail_only[rail_name]["volume_mm3"]) < 1e-6
+          and abs(nut[0]["bbox"]["max"][0] - (10 - lip + boss)) < 1e-6
+          and abs(nut[0]["bbox"]["min"][2] - (40 - start)) < 1e-6
+          and abs(nut[0]["bbox"]["max"][2] - (40 - start + NUT_BOX[kind][0])) < 1e-6)
+    check(name, ok, f"| interferences {hits}; nut box {nut[0]['bbox'] if nut else None}")
+
+
+for slot in ("T-slot", "V-slot"):
+    for kind in ("Pre-assembly", "Post-assembly"):
+        nut_in_slot(f"t-nut: a {kind.lower()} nut sits in a {slot} and leaves the rail alone", slot, kind)
+
+
+@case
+def nuts_keep_their_own_threads(name):
+    """SolidCraft 0.42 cuts a modeled thread into any bore of that size on the same
+    axis. A second kind of nut must leave the first as it was built."""
+    before = rail_and_face("T-slot")
+    place = {"along": "Sketch Y", "sketch": "Face"}
+    first = nut_step(dict(place, type="Pre-assembly", sketch_point="a"))
+    alone, _ = measured(before + [first])
+    found, hits = measured(before + [first, nut_step(dict(place, type="Post-assembly", sketch_point="b"))])
+    if found is None or alone is None:
+        check(name, False, "| " + str(hits))
+        return
+    pre = "T-nut M5 pre-assembly"
+    ok = (hits == 0 and len(found) == 3
+          and abs(found[pre]["volume_mm3"] - alone[pre]["volume_mm3"]) < 1e-6
+          and abs(found["T-slot 2020 x 60"]["volume_mm3"] - alone["T-slot 2020 x 60"]["volume_mm3"]) < 1e-6)
+    check(name, ok, f"| {pre} {found[pre]['volume_mm3']:.3f}, alone {alone[pre]['volume_mm3']:.3f}; "
+                    f"interferences {hits}")
+
+
+nuts_keep_their_own_threads("t-nut: a second kind of nut leaves the first nut and the rail as built")
+refused("t-nut: an unknown Type is refused", "techsquid-extrusions", "make-t-nut",
+        {"type": "Hammer"}, "Pre-assembly or Post-assembly")
+
+
+
+def hex_nut_step(params):
+    return {"command": "plugin.run", "params": {
+        "path": os.path.join(ROOT, "dist", "techsquid-nuts"),
+        "approval": approval("techsquid-nuts"), "entry": "make-nut", "params": params}}
+
+
+@case
+def hex_nut_beside_a_rail(name):
+    """An M5 nut's tap drill is the 4.2 mm of a rail's bore. With a 2020 rail standing on
+    the origin, the nut must take its own thread and the rail must stay as it was."""
+    before = rail_and_face("T-slot")
+    rail_only, _ = measured(before)
+    on_face = {"size": "M5", "sketch": "Face", "sketch_point": "a"}
+    plain, _ = measured(before + [hex_nut_step(dict(on_face, thread_modeled=False))])
+    found, hits = measured(before + [hex_nut_step(on_face)])
+    if found is None or plain is None or rail_only is None:
+        check(name, False, "| " + str(hits))
+        return
+    rail = "T-slot 2020 x 60"
+    cut = plain["Nut M5"]["volume_mm3"] - found["Nut M5"]["volume_mm3"]
+    ok = (abs(found[rail]["volume_mm3"] - rail_only[rail]["volume_mm3"]) < 1e-6 and 5 < cut < 20)
+    check(name, ok, f"| rail {found[rail]['volume_mm3']:.3f}, alone {rail_only[rail]['volume_mm3']:.3f}; "
+                    f"the thread removed {cut:.2f} mm3 from the nut")
+
+
+hex_nut_beside_a_rail("nut: an M5 nut is threaded and a rail on the origin is left alone")
+
+
+@case
+def two_definitions_of_one_nut(name):
+    """A nut with a plain hole and the same nut with a modeled thread are two
+    definitions. Building the second must not thread the first."""
+    sketch = plate(10, True)
+    first = hex_nut_step({"size": "M5", "thread_modeled": False, "sketch": "Holes", "sketch_point": "c1"})
+    alone, _ = measured(sketch + [first])
+    found, hits = measured(sketch + [first, hex_nut_step({"size": "M5", "sketch": "Holes", "sketch_point": "c2"})])
+    if found is None or alone is None:
+        check(name, False, "| " + str(hits))
+        return
+    nuts = sorted(b["volume_mm3"] for n, b in found.items() if n.startswith("Nut M5"))
+    plain = alone["Nut M5"]["volume_mm3"]
+    ok = len(nuts) == 2 and abs(nuts[1] - plain) < 1e-6 and 5 < plain - nuts[0] < 20
+    check(name, ok, f"| nuts {[round(v, 3) for v in nuts]}, the plain one alone {plain:.3f}")
+
+
+two_definitions_of_one_nut("nut: a threaded M5 nut built after a plain one leaves the plain one plain")
+
+
 finish()

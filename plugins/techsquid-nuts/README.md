@@ -45,7 +45,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 | `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it. The hexagon is the same profile a hex-head screw uses.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.move` (the nut is cut on the origin and moved aside before it is tapped), `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it. The hexagon is the same profile a hex-head screw uses.
 
 ## Sizes
 

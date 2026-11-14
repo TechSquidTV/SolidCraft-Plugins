@@ -14,9 +14,21 @@
 //! component's metadata under [`METADATA_KEY`]. A screw with a modelled thread and one with
 //! a cosmetic thread are two definitions with one part number.
 //!
-//! Inside its component the fastener stands as [`Placement::on_origin`] puts it: the
-//! point on the origin, the outer side up +Z. A placement turns that frame onto the
-//! sketch: X onto the sketch x, Y onto the sketch y, Z onto the normal, the origin onto the point.
+//! Inside its component the fastener stands as [`Placement::on_origin`] would put it,
+//! the outer side up +Z, on its site: the origin, or the point [`Definition::site`]
+//! names, which the metadata keeps. A placement turns that frame onto the sketch: X onto
+//! the sketch x, Y onto the sketch y, Z onto the normal, the site onto the point.
+//!
+//! The site is there because of how SolidCraft 0.42 cuts a modeled thread into a hole.
+//! It finds the wall by a point, among every body in the design and whatever the hole's
+//! targets are, and every component is built where the design's origin is. A bore of the
+//! tap drill's size on the same axis there took the thread: an M5 nut built on the origin
+//! threaded the 4.2 mm bore of a 2020 rail standing on it, and stayed plain itself. So
+//! a part with a tapped hole is built on a site off the origin, off the axes a rail's
+//! bores can be on, and no two kinds of such a part share a site. Sites are few and
+//! fixed, not spread over the plane, because the kernel refuses some cuts, such as the
+//! chamfer of a hexagon, at positions it accepts at others: each kind is checked on the
+//! site it uses.
 
 use serde_json::{json, Value};
 
@@ -56,7 +68,13 @@ pub struct Definition<'a> {
     pub folder: &'a str,
     /// The bill of materials type, `purchased`.
     pub bom_type: &'a str,
+    /// Where the definition is built, as (x, y): [`ORIGIN`], or a [`site`] of its own
+    /// for a part with a tapped hole.
+    pub site: [f64; 2],
 }
+
+/// The site of a part that has no tapped hole.
+pub const ORIGIN: [f64; 2] = [0.0, 0.0];
 
 /// What [`place_all`] did, for the run's reply.
 #[derive(Clone, Debug, PartialEq)]
@@ -79,9 +97,31 @@ impl Placed {
     }
 }
 
+/// How far apart two build sites are. A rail's bores are on multiples of 10 mm, so a
+/// rail built on one site has no bore on another.
+pub const SITE_PITCH: f64 = 20.0;
+
+/// The build site in column `column` and row `row` of the grid, as [`Definition::site`]
+/// takes it. No site is on the origin or on the 10 mm grid of a rail standing on it.
+pub const fn site(column: u8, row: u8) -> [f64; 2] {
+    [
+        5.0 + SITE_PITCH * column as f64,
+        5.0 + SITE_PITCH * row as f64,
+    ]
+}
+
+/// The frame a definition is built on: `at` in the XY plane, the axes the world's.
+pub fn site_at(at: [f64; 2]) -> Placement {
+    Placement {
+        point: [at[0], at[1], 0.0],
+        ..Placement::on_origin()
+    }
+}
+
 /// Place the fastener `build` makes on every placement in `places`. `build` makes one
-/// fastener at [`Placement::on_origin`] with the body name it is given, in the active
-/// component. The component that was active before is active again afterwards.
+/// fastener with the body name it is given, standing on the placement it is given, in
+/// the active component. The component that was active before is active again
+/// afterwards.
 pub fn place_all<R, F>(
     r: &mut R,
     def: &Definition,
@@ -90,7 +130,7 @@ pub fn place_all<R, F>(
 ) -> Result<Placed, String>
 where
     R: Runner,
-    F: FnMut(&mut dyn Runner, &str) -> Result<(), String>,
+    F: FnMut(&mut dyn Runner, &str, &Placement) -> Result<(), String>,
 {
     let geometry = geometry_key(&mut build)?;
     let list = r.run("component.list", json!({"compact": true}))?;
@@ -104,9 +144,10 @@ where
     let reused = found.is_some();
     let mut occurrences = Vec::new();
     let mut remaining = places;
-    let (component, name) = match found {
+    let (component, name, site) = match found {
         Some(found) => found,
         None => {
+            let site = r.site(def.site);
             let mut taken = r.body_names();
             taken.extend(components.iter().map(|c| c.name.clone()));
             let name = free_body_name(&mut taken, def.base);
@@ -116,23 +157,28 @@ where
             )?;
             let component = id_of(&made, "component")?;
             let first = id_of(&made, "occurrence")?;
-            build(r, &name)?;
+            build(r, &name, &site)?;
+            let site = site.point;
             let mut meta = json!({
                 "component": component,
                 "part_number": def.base,
                 "bom_type": def.bom_type,
-                "values": {METADATA_KEY: {"plugin": def.plugin, "geometry": geometry}},
+                "values": {METADATA_KEY: {
+                    "plugin": def.plugin,
+                    "geometry": geometry,
+                    "site": site,
+                }},
             });
             if !def.description.is_empty() {
                 meta["description"] = json!(def.description);
             }
             r.run("component.metadata.set", meta)?;
             if let Some((place, rest)) = places.split_first() {
-                put(r, first, place, folder)?;
+                put(r, first, place, site, folder)?;
                 occurrences.push(first);
                 remaining = rest;
             }
-            (component, name)
+            (component, name, site)
         }
     };
     for place in remaining {
@@ -141,7 +187,7 @@ where
             json!({"component": component, "parent": 0}),
         )?;
         let occurrence = id_of(&copy, "occurrence")?;
-        put(r, occurrence, place, folder)?;
+        put(r, occurrence, place, site, folder)?;
         occurrences.push(occurrence);
     }
     r.run("component.activate", json!({"component": active}))?;
@@ -205,17 +251,32 @@ pub fn matrix(place: &Placement) -> [[f64; 4]; 3] {
     [row(0), row(1), row(2)]
 }
 
+/// The frame that puts a part built on `site` onto `place`: the placement, moved back
+/// by the site along its own axes.
+pub fn from_site(place: &Placement, site: [f64; 3]) -> Placement {
+    Placement {
+        point: std::array::from_fn(|i| {
+            place.point[i]
+                - site[0] * place.x_dir[i]
+                - site[1] * place.y_dir[i]
+                - site[2] * place.normal[i]
+        }),
+        ..*place
+    }
+}
+
 /// A placement made under the design, where its parent's frame is the world, then moved
 /// into the folder, which keeps it where it is in the world wherever the folder is.
 fn put<R: Runner>(
     r: &mut R,
     occurrence: u64,
     place: &Placement,
+    site: [f64; 3],
     folder: u64,
 ) -> Result<(), String> {
     r.run(
         "occurrence.move",
-        json!({"occurrence": occurrence, "to_matrix": matrix(place)}),
+        json!({"occurrence": occurrence, "to_matrix": matrix(&from_site(place, site))}),
     )?;
     r.run(
         "occurrence.reparent",
@@ -274,13 +335,14 @@ fn make_folder<R: Runner>(r: &mut R, name: &str) -> Result<u64, String> {
     Ok(folder)
 }
 
-/// A definition this plugin built with the same commands, named `base` or `base (n)`.
+/// A definition this plugin built with the same commands, named `base` or `base (n)`,
+/// and the site it was built on. One built before there were sites is on the origin.
 fn find_definition<R: Runner>(
     r: &mut R,
     def: &Definition,
     components: &[Listed],
     geometry: &str,
-) -> Result<Option<(u64, String)>, String> {
+) -> Result<Option<(u64, String, [f64; 3])>, String> {
     for c in components {
         if c.id == 0 || !numbered(&c.name, def.base) {
             continue;
@@ -288,7 +350,8 @@ fn find_definition<R: Runner>(
         let meta = r.run("component.metadata", json!({"component": c.id}))?;
         let ours = &meta["metadata"][METADATA_KEY];
         if ours["plugin"] == json!(def.plugin) && ours["geometry"] == json!(geometry) {
-            return Ok(Some((c.id, c.name.clone())));
+            let site = std::array::from_fn(|i| ours["site"][i].as_f64().unwrap_or(0.0));
+            return Ok(Some((c.id, c.name.clone(), site)));
         }
     }
     Ok(None)
@@ -317,10 +380,10 @@ fn id_of(reply: &Value, key: &str) -> Result<u64, String> {
 /// [`DRY_NAME`]. Two runs with the same hash build the same body.
 fn geometry_key<F>(build: &mut F) -> Result<String, String>
 where
-    F: FnMut(&mut dyn Runner, &str) -> Result<(), String>,
+    F: FnMut(&mut dyn Runner, &str, &Placement) -> Result<(), String>,
 {
     let mut dry = Dry::default();
-    build(&mut dry, DRY_NAME)?;
+    build(&mut dry, DRY_NAME, &Placement::on_origin())?;
     Ok(format!("{:016x}", fnv1a(dry.text.as_bytes())))
 }
 
@@ -408,10 +471,15 @@ mod tests {
         }
     }
 
-    fn cylinder(r: &mut dyn Runner, name: &str) -> Result<(), String> {
+    fn cylinder(r: &mut dyn Runner, name: &str, at: &Placement) -> Result<(), String> {
         r.run(
             "solid.cylinder",
-            json!({"height": 3, "body_name": name, "name": format!("{name}: Shank")}),
+            json!({
+                "height": 3,
+                "base": at.point,
+                "body_name": name,
+                "name": format!("{name}: Shank"),
+            }),
         )?;
         Ok(())
     }
@@ -432,6 +500,7 @@ mod tests {
         description: "ISO 4762",
         folder: "Fasteners",
         bom_type: "purchased",
+        site: site(1, 2),
     };
 
     #[test]
@@ -475,6 +544,10 @@ mod tests {
         assert_eq!(calls[3].1["name"], "Screw M3 x 12 socket");
         assert_eq!(calls[3].1["grounded"], false);
         assert_eq!(calls[4].1["body_name"], "Screw M3 x 12 socket");
+        // It is built on its site, which the metadata keeps.
+        let site = [25.0, 45.0, 0.0];
+        assert_eq!(calls[4].1["base"], json!(site));
+        assert_eq!(calls[5].1["values"][METADATA_KEY]["site"], json!(site));
         let meta = &calls[5].1;
         assert_eq!(meta["part_number"], "Screw M3 x 12 socket");
         assert_eq!(meta["bom_type"], "purchased");
@@ -482,12 +555,13 @@ mod tests {
         assert_eq!(meta["values"][METADATA_KEY]["plugin"], "techsquid-screws");
         // Its first placement is the one the component came with.
         assert_eq!(calls[6].1["occurrence"], 154);
+        // The move takes the site back off, along the sketch x and the sketch y.
         assert_eq!(
             calls[6].1["to_matrix"],
             json!([
-                [1.0, 0.0, 0.0, 1.0],
+                [1.0, 0.0, 0.0, 1.0 - site[0]],
                 [0.0, 0.0, -1.0, 0.0],
-                [0.0, 1.0, 0.0, 2.0]
+                [0.0, 1.0, 0.0, 2.0 - site[1]]
             ])
         );
         assert_eq!(calls[7].1, json!({"occurrence": 154, "parent": 102}));
@@ -531,6 +605,46 @@ mod tests {
         assert_eq!(host.calls[4].1["parent"], 3);
         assert!(placed.reused);
         assert_eq!(placed.component, "Screw M3 x 12 socket");
+        // It goes back by the site the definition was built on.
+        assert_eq!(host.calls[3].1["to_matrix"][0][3], -25.0);
+        assert_eq!(host.calls[3].1["to_matrix"][2][3], -45.0);
+    }
+
+    #[test]
+    fn a_definition_from_before_sites_is_placed_as_built_on_the_origin() {
+        let mut probe = Host::new(json!({"active": 0, "components": []}));
+        place_all(&mut probe, &SCREW, &[], cylinder).unwrap();
+        let mut stored = probe.calls[5].1["values"].clone();
+        stored[METADATA_KEY].as_object_mut().unwrap().remove("site");
+        let mut host = Host::new(json!({"active": 0, "components": [
+            {"id": 0, "name": "Design", "occurrences": []},
+            {"id": 3, "name": "Fasteners", "occurrences": [{"id": 4, "parent": 0}]},
+            {"id": 5, "name": "Screw M3 x 12 socket", "occurrences": [{"id": 6, "parent": 3}]},
+        ]}));
+        host.metadata = stored;
+        let placed = place_all(&mut host, &SCREW, &[at([1.0, 0.0, 2.0])], cylinder).unwrap();
+        assert!(placed.reused);
+        assert_eq!(
+            host.calls[3].1["to_matrix"],
+            json!([
+                [1.0, 0.0, 0.0, 1.0],
+                [0.0, 0.0, -1.0, 0.0],
+                [0.0, 1.0, 0.0, 2.0]
+            ])
+        );
+    }
+
+    #[test]
+    fn a_site_is_off_the_origin_and_off_every_rail_bore() {
+        for (column, row) in [(0, 0), (1, 0), (3, 7)] {
+            let at = site(column, row);
+            assert_eq!(at[0] % 10.0, 5.0);
+            assert_eq!(at[1] % 10.0, 5.0);
+            assert_eq!(site_at(at).point, [at[0], at[1], 0.0]);
+            assert_eq!(site_at(at).normal, [0.0, 0.0, 1.0]);
+        }
+        assert_eq!(site(1, 2), [25.0, 45.0]);
+        assert_eq!(site_at(ORIGIN), Placement::on_origin());
     }
 
     #[test]
@@ -549,8 +663,8 @@ mod tests {
 
     #[test]
     fn the_key_follows_the_build_and_not_the_name() {
-        let mut a = |r: &mut dyn Runner, name: &str| cylinder(r, name);
-        let mut b = |r: &mut dyn Runner, name: &str| {
+        let mut a = |r: &mut dyn Runner, name: &str, at: &Placement| cylinder(r, name, at);
+        let mut b = |r: &mut dyn Runner, name: &str, _: &Placement| {
             r.run("solid.cylinder", json!({"height": 4, "body_name": name}))?;
             Ok(())
         };

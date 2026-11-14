@@ -5766,9 +5766,1382 @@
         "direction": "positive"
       },
       "operation": "new_body"
+    },
+    {
+      "id": 29,
+      "name": "Top nut points",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "300"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "t1",
+            "pos": [
+              60.0,
+              140.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "t2",
+            "pos": [
+              -60.0,
+              140.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "t3",
+            "pos": [
+              60.0,
+              -140.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "t4",
+            "pos": [
+              -60.0,
+              -140.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 32,
+      "name": "T-nut M5 post-assembly: Section",
+      "suppressed": false,
+      "component": 30,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            39.0,
+            25.0,
+            0.0
+          ],
+          "x_dir": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              2.6999999999999997,
+              0.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              2.6999999999999917,
+              0.4999999999999849
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              2.9,
+              0.49999999999999994
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              2.6999999999999997,
+              0.6999999999999931
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              2.9,
+              0.49999999999999994
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              2.9,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              3.95,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              3.9499999999999935,
+              -0.2000000000000094
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              4.104689817413813,
+              -0.3267716860678332
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              3.95,
+              -1.0436096431476471e-14
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              4.104689817413813,
+              -0.3267716860678332
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              1.8400347261207193,
+              -3.09015752910175
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              1.6079999999999917,
+              -2.8999999999999924
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              1.608,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              1.8400347261207164,
+              -3.090157529101748
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.start",
+            "pos": [
+              1.608,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              0.0,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              -1.608,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.center",
+            "pos": [
+              -1.6079999999999894,
+              -2.899999999999995
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.start",
+            "pos": [
+              -1.8400347261207193,
+              -3.09015752910175
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.end",
+            "pos": [
+              -1.608,
+              -3.2000000000000064
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.start",
+            "pos": [
+              -1.8400347261207193,
+              -3.09015752910175
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              -4.104689817413813,
+              -0.3267716860678332
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.center",
+            "pos": [
+              -3.949999999999999,
+              -0.20000000000000764
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.start",
+            "pos": [
+              -3.95,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.end",
+            "pos": [
+              -4.1046898174138216,
+              -0.32677168606784057
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.start",
+            "pos": [
+              -3.95,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              -2.9,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.end",
+            "pos": [
+              -2.9,
+              0.49999999999999994
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.center",
+            "pos": [
+              -2.699999999999995,
+              0.4999999999999866
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.start",
+            "pos": [
+              -2.6999999999999997,
+              0.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.end",
+            "pos": [
+              -2.9000000000000083,
+              0.49999999999999994
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.start",
+            "pos": [
+              -2.6999999999999997,
+              0.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.end",
+            "pos": [
+              -0.0,
+              0.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 3,
+            "a": 4,
+            "b": 5,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 9,
+            "a": 10,
+            "b": 11,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 14,
+            "a": 15,
+            "b": 16,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 20,
+            "a": 21,
+            "b": 22,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "a5",
+            "type": "arc",
+            "c": 25,
+            "a": 26,
+            "b": 27,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 28,
+            "b": 29,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 29,
+            "b": 30,
+            "construction": false
+          },
+          {
+            "id": "a6",
+            "type": "arc",
+            "c": 31,
+            "a": 32,
+            "b": 33,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 34,
+            "b": 35,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 5
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 4,
+            "q": 6
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 8,
+            "q": 11
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 13,
+            "q": 16
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 15,
+            "q": 17
+          },
+          {
+            "id": "k7",
+            "type": "coincident",
+            "p": 19,
+            "q": 22
+          },
+          {
+            "id": "k8",
+            "type": "coincident",
+            "p": 21,
+            "q": 23
+          },
+          {
+            "id": "k9",
+            "type": "coincident",
+            "p": 24,
+            "q": 27
+          },
+          {
+            "id": "k10",
+            "type": "coincident",
+            "p": 26,
+            "q": 28
+          },
+          {
+            "id": "k11",
+            "type": "coincident",
+            "p": 30,
+            "q": 33
+          },
+          {
+            "id": "k12",
+            "type": "coincident",
+            "p": 32,
+            "q": 34
+          },
+          {
+            "id": "k13",
+            "type": "coincident",
+            "p": 1,
+            "q": 35
+          }
+        ],
+        "counters": {
+          "a": 6,
+          "k": 13,
+          "l": 10
+        }
+      }
+    },
+    {
+      "id": 33,
+      "name": "T-nut M5 post-assembly: Bar",
+      "suppressed": false,
+      "body_names": [
+        "T-nut M5 post-assembly"
+      ],
+      "param_names": [
+        "d9"
+      ],
+      "component": 30,
+      "type": "extrude",
+      "sketch": 32,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "l1",
+            "l10",
+            "a6",
+            "l9",
+            "l8",
+            "a5",
+            "l7",
+            "a4",
+            "l6",
+            "l5",
+            "a3",
+            "l4",
+            "a2",
+            "l3",
+            "l2",
+            "a1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "17",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 34,
+      "name": "T-nut M5 post-assembly: Thread",
+      "suppressed": false,
+      "param_names": [
+        "d10",
+        "d11"
+      ],
+      "component": 30,
+      "face_names": [
+        "F33:side:l1"
+      ],
+      "participants": [
+        "T-nut M5 post-assembly"
+      ],
+      "type": "hole",
+      "position": [
+        45.0,
+        25.0,
+        0.7
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "3.9000000000000004",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5",
+      "modeled": true
+    },
+    {
+      "id": 35,
+      "name": "T-nut M5 post-assembly: Ball recess",
+      "suppressed": false,
+      "param_names": [
+        "d12",
+        "d13"
+      ],
+      "component": 30,
+      "participants": [
+        "T-nut M5 post-assembly"
+      ],
+      "type": "cylinder",
+      "base": [
+        52.5,
+        25.0,
+        -3.2
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "2.1",
+      "height": "0.2",
+      "operation": "cut"
+    },
+    {
+      "id": 36,
+      "name": "T-nut M5 post-assembly: Ball",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "component": 30,
+      "participants": [
+        "T-nut M5 post-assembly"
+      ],
+      "type": "sphere",
+      "center": [
+        52.5,
+        25.0,
+        -2.0
+      ],
+      "radius": "2",
+      "operation": "join"
+    },
+    {
+      "id": 40,
+      "name": "Gantry nut points",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "10"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "n1",
+            "pos": [
+              40.0,
+              -270.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "n2",
+            "pos": [
+              -40.0,
+              -270.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 43,
+      "name": "T-nut M5 pre-assembly: Section",
+      "suppressed": false,
+      "component": 41,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            20.0,
+            25.0,
+            0.0
+          ],
+          "x_dir": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.8
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              2.6999999999999997,
+              0.8
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              2.700000000000004,
+              0.5999999999999986
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              2.9,
+              0.6000000000000001
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              2.6999999999999997,
+              0.7999999999999944
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              2.9,
+              0.6000000000000001
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              2.9,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              4.8,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              4.799999999999995,
+              -0.19999999999999626
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              4.954228086242282,
+              -0.32733301776853885
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              4.8,
+              9.381384558082573e-15
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              4.954228086242282,
+              -0.32733301776853885
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              2.5899421293634237,
+              -3.190999526652808
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              2.358599999999998,
+              -3.0000000000000453
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              2.3586,
+              -3.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              2.58994212936341,
+              -3.1909995266527966
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.start",
+            "pos": [
+              2.3586,
+              -3.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              0.0,
+              -3.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              -2.3586,
+              -3.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.center",
+            "pos": [
+              -2.3586000000000062,
+              -3.000000000000066
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.start",
+            "pos": [
+              -2.5899421293634237,
+              -3.190999526652808
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.end",
+            "pos": [
+              -2.3586,
+              -3.300000000000019
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.start",
+            "pos": [
+              -2.5899421293634237,
+              -3.190999526652808
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              -4.954228086242282,
+              -0.32733301776853885
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.center",
+            "pos": [
+              -4.800000000000009,
+              -0.19999999999999946
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.start",
+            "pos": [
+              -4.8,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.end",
+            "pos": [
+              -4.954228086242287,
+              -0.32733301776854273
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.start",
+            "pos": [
+              -4.8,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              -2.9,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.end",
+            "pos": [
+              -2.9,
+              0.6000000000000001
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.center",
+            "pos": [
+              -2.700000000000004,
+              0.5999999999999986
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.start",
+            "pos": [
+              -2.6999999999999997,
+              0.8
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.end",
+            "pos": [
+              -2.9000000000000057,
+              0.6000000000000001
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.start",
+            "pos": [
+              -2.6999999999999997,
+              0.8
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.end",
+            "pos": [
+              -0.0,
+              0.8
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 3,
+            "a": 4,
+            "b": 5,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 9,
+            "a": 10,
+            "b": 11,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 14,
+            "a": 15,
+            "b": 16,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 20,
+            "a": 21,
+            "b": 22,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "a5",
+            "type": "arc",
+            "c": 25,
+            "a": 26,
+            "b": 27,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 28,
+            "b": 29,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 29,
+            "b": 30,
+            "construction": false
+          },
+          {
+            "id": "a6",
+            "type": "arc",
+            "c": 31,
+            "a": 32,
+            "b": 33,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 34,
+            "b": 35,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 5
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 4,
+            "q": 6
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 8,
+            "q": 11
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 13,
+            "q": 16
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 15,
+            "q": 17
+          },
+          {
+            "id": "k7",
+            "type": "coincident",
+            "p": 19,
+            "q": 22
+          },
+          {
+            "id": "k8",
+            "type": "coincident",
+            "p": 21,
+            "q": 23
+          },
+          {
+            "id": "k9",
+            "type": "coincident",
+            "p": 24,
+            "q": 27
+          },
+          {
+            "id": "k10",
+            "type": "coincident",
+            "p": 26,
+            "q": 28
+          },
+          {
+            "id": "k11",
+            "type": "coincident",
+            "p": 30,
+            "q": 33
+          },
+          {
+            "id": "k12",
+            "type": "coincident",
+            "p": 32,
+            "q": 34
+          },
+          {
+            "id": "k13",
+            "type": "coincident",
+            "p": 1,
+            "q": 35
+          }
+        ],
+        "counters": {
+          "a": 6,
+          "k": 13,
+          "l": 10
+        }
+      }
+    },
+    {
+      "id": 44,
+      "name": "T-nut M5 pre-assembly: Bar",
+      "suppressed": false,
+      "body_names": [
+        "T-nut M5 pre-assembly"
+      ],
+      "param_names": [
+        "d16"
+      ],
+      "component": 41,
+      "type": "extrude",
+      "sketch": 43,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "l1",
+            "l10",
+            "a6",
+            "l9",
+            "l8",
+            "a5",
+            "l7",
+            "a4",
+            "l6",
+            "l5",
+            "a3",
+            "l4",
+            "a2",
+            "l3",
+            "l2",
+            "a1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "10",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 45,
+      "name": "T-nut M5 pre-assembly: Thread",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "component": 41,
+      "face_names": [
+        "F44:side:l1"
+      ],
+      "participants": [
+        "T-nut M5 pre-assembly"
+      ],
+      "type": "hole",
+      "position": [
+        25.0,
+        25.0,
+        0.8
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "diameter": "4.2 mm",
+      "depth": "4.1",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M5",
+      "modeled": true
     }
   ],
-  "next_id": 29,
+  "next_id": 47,
   "components": [
     {
       "id": 2,
@@ -5789,7 +7162,12 @@
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long",
         "dev.threadcraft": {
           "geometry": "f65303806544486f",
-          "plugin": "techsquid-extrusions"
+          "plugin": "techsquid-extrusions",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
         },
         "part_number": "T-slot 2020 x 300"
       }
@@ -5804,7 +7182,12 @@
         "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long",
         "dev.threadcraft": {
           "geometry": "bb01686c208c6d2a",
-          "plugin": "techsquid-extrusions"
+          "plugin": "techsquid-extrusions",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
         },
         "part_number": "T-slot 2020 x 260"
       }
@@ -5819,13 +7202,58 @@
         "description": "20 x 40 mm V-slot aluminium extrusion, 260 mm long",
         "dev.threadcraft": {
           "geometry": "7f60aff905c01955",
-          "plugin": "techsquid-extrusions"
+          "plugin": "techsquid-extrusions",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
         },
         "part_number": "V-slot 2040 x 260"
       }
+    },
+    {
+      "id": 30,
+      "identification_color_index": 4,
+      "name": "T-nut M5 post-assembly",
+      "parent": 2,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "MISUMI HNTP5-5 post-assembly insertion nut for a 6 mm slot",
+        "dev.threadcraft": {
+          "geometry": "9c597f8363838195",
+          "plugin": "techsquid-extrusions",
+          "site": [
+            45.0,
+            25.0,
+            0.0
+          ]
+        },
+        "part_number": "T-nut M5 post-assembly"
+      }
+    },
+    {
+      "id": 41,
+      "identification_color_index": 5,
+      "name": "T-nut M5 pre-assembly",
+      "parent": 2,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "MISUMI HNTT5-5 pre-assembly insertion nut for a 6 mm slot",
+        "dev.threadcraft": {
+          "geometry": "2fa207adbd6f638b",
+          "plugin": "techsquid-extrusions",
+          "site": [
+            25.0,
+            25.0,
+            0.0
+          ]
+        },
+        "part_number": "T-nut M5 pre-assembly"
+      }
     }
   ],
-  "next_component_color_index": 4,
+  "next_component_color_index": 6,
   "occurrences": [
     {
       "id": 3,
@@ -6284,6 +7712,204 @@
           -130.0,
           0.0,
           280.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 31,
+      "component": 30,
+      "parent": 2,
+      "name": "T-nut M5 post-assembly:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          15.0,
+          115.0,
+          298.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 37,
+      "component": 30,
+      "parent": 2,
+      "name": "T-nut M5 post-assembly:2",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -105.0,
+          115.0,
+          298.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 38,
+      "component": 30,
+      "parent": 2,
+      "name": "T-nut M5 post-assembly:3",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          15.0,
+          -165.0,
+          298.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 39,
+      "component": 30,
+      "parent": 2,
+      "name": "T-nut M5 post-assembly:4",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -105.0,
+          -165.0,
+          298.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 42,
+      "component": 41,
+      "parent": 2,
+      "name": "T-nut M5 pre-assembly:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          15.0,
+          8.2,
+          295.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 46,
+      "component": 41,
+      "parent": 2,
+      "name": "T-nut M5 pre-assembly:2",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -65.0,
+          8.2,
+          295.0,
           1.0
         ]
       ],

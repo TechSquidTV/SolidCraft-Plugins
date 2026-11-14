@@ -72,7 +72,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 }
 
 /// A choice from a list, or `default` when the field is absent.
-fn text<'a>(v: &'a Value, key: &str, default: &'a str) -> Result<&'a str, FieldError> {
+pub(crate) fn text<'a>(v: &'a Value, key: &str, default: &'a str) -> Result<&'a str, FieldError> {
     match v.get(key) {
         None | Some(Value::Null) => Ok(default),
         Some(Value::String(s)) if s.trim().is_empty() => Ok(default),

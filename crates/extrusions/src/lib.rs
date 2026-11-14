@@ -3,10 +3,12 @@
 //! A rail is a grid of 20 mm cells. Each cell has a square core with a bore, a web from
 //! each core corner, and a slot on every side that faces out. [`slot`] holds the slot
 //! shapes with their sources, and [`profile`] builds the cross-section of a rail from a
-//! slot shape and a grid.
+//! slot shape and a grid. [`tnut`] holds the nuts that go in a slot.
 
 pub mod profile;
 pub mod slot;
+pub mod tnut;
 
 pub use profile::{Grid, Profile, Seg};
 pub use slot::Slot;
+pub use tnut::TNut;

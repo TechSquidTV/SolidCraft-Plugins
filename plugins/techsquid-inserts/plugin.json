@@ -62,7 +62,7 @@
             "create": {
               "type": "string",
               "title": "Create",
-              "description": "Hole and insert drills the part under each selected point and adds the insert as its own body. Hole only drills without an insert. Both need a selected point or circle. Insert only works with or without one: with nothing selected the insert sits on the origin.",
+              "description": "Hole and insert drills the part under each selected point and adds the insert as a component of its own, placed on every point. Hole only drills without an insert. Both need a selected point or circle. Insert only works with or without one: with nothing selected the insert sits on the origin.",
               "default": "Hole and insert",
               "enum": [
                 "Hole and insert",
@@ -155,8 +155,17 @@
       "sketch.finish",
       "solid.cylinder",
       "solid.sweep",
+      "browser.visibility",
       "solid.chamfer",
-      "solid.hole"
+      "solid.hole",
+      "component.list",
+      "component.create",
+      "component.metadata",
+      "component.metadata.set",
+      "component.activate",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent"
     ],
     "limits": {
       "fuel": 200000000,

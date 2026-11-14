@@ -136,6 +136,12 @@ def loose_screw(name, params, volume):
     check(name, len(found) == 1 and abs(got - volume) < 0.05, f"| {got:.3f}, expected {volume:.3f}")
 
 
+def second(name):
+    """The second placement of a fastener: every one is a placement of one component,
+    and the host names the body of each after the first by its path."""
+    return f"{name} (Fasteners:1/{name}:2)"
+
+
 def cyl(d, h):
     return PI * d * d / 4 * h
 
@@ -160,7 +166,7 @@ NUT = ("techsquid-nuts", "make-nut")
 
 # Heat-set inserts: M3 x 5.7. The plastic hole is 4.0 across and 6.7 deep.
 on_plate("insert: hole and insert", *INSERT, {}, cyl(4.0, 6.7),
-         bodies=["Insert M3 x 5.7", "Insert M3 x 5.7 (2)", "Plate", "Under"])
+         bodies=["Insert M3 x 5.7", second("Insert M3 x 5.7"), "Plate", "Under"])
 on_plate("insert: hole only, +0.1", *INSERT, {"create": "Hole only", "hole_adjust": 0.1},
          cyl(4.1, 6.7), bodies=["Plate", "Under"])
 on_plate("insert: through hole on a face sketch", *INSERT,
@@ -180,7 +186,7 @@ refused("insert: a hole with nothing selected says what to select", *INSERT, {},
         "select the sketch points")
 
 # Two M3 x 12 socket head screws: the second body name gets a number.
-SCREWS = ["Plate", "Screw M3 x 12 socket", "Screw M3 x 12 socket (2)", "Under"]
+SCREWS = ["Plate", "Screw M3 x 12 socket", second("Screw M3 x 12 socket"), "Under"]
 
 # Screw holes: M3 x 12 in a 12 mm plate. ISO 273 normal clearance is 3.4, the tap drill 2.5.
 on_plate("screw: clearance hole", *SCREW, {"create": "Hole only"}, cyl(3.4, 12), 12)
@@ -212,11 +218,11 @@ refused("screw: a hole with nothing selected says what to select", *SCREW,
 # Nut pocket: ISO 4032 M6 is 10 across and 5.2 high. 0.2 a side, and a 6.6 bolt hole below.
 on_plate("nut: pocket and nut, flush", *NUT, {"size": "M6", "create": "Nut and pocket"},
          hexagon(10.4, 5.2) + cyl(6.6, 6.8), 12,
-         bodies=["Nut M6", "Nut M6 (2)", "Plate", "Under"], top=12)
+         bodies=["Nut M6", second("Nut M6"), "Plate", "Under"], top=12)
 on_plate("nut: pocket only, no gap", *NUT, {"size": "M6", "create": "Pocket only", "pocket_adjust": 0},
          hexagon(10.0, 5.2) + cyl(6.6, 6.8), 12, bodies=["Plate", "Under"])
 on_plate("nut: no pocket by default", *NUT, {"size": "M6"}, 0, 12,
-         bodies=["Nut M6", "Nut M6 (2)", "Plate", "Under"], top=17.2)
+         bodies=["Nut M6", second("Nut M6"), "Plate", "Under"], top=17.2)
 refused("nut: a pocket with nothing selected says what to select", *NUT,
         {"create": "Pocket only"}, "select the sketch points")
 

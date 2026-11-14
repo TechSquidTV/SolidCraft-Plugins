@@ -9,8 +9,10 @@ pub mod nut;
 
 use fasteners::hex::{self, Hex};
 use fasteners::nut::{self as din, EndChamfer};
+use fasteners::FOLDER;
 use nut::{Params, Pocket};
-use plugin_kit::host::{changed_bodies, free_body_name, sketch_id};
+use plugin_kit::component::{self as fasten, Definition, Placed};
+use plugin_kit::host::{changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::Runner;
@@ -71,12 +73,22 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             .collect()
     };
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
-    if p.create.nut() {
-        for place in &places {
-            build_nut(r, p, place)?;
-        }
-    }
-    Ok(summary(p, &places, &end, &drilled))
+    let placed = if p.create.nut() {
+        let base = body_base(p);
+        let def = Definition {
+            plugin: PLUGIN,
+            base: &base,
+            description: "ISO 4032",
+            folder: FOLDER,
+            bom_type: "purchased",
+        };
+        Some(fasten::place_all(r, &def, &places, |mut r, name| {
+            build_nut(&mut r, p, &Placement::on_origin(), name).map(|_| ())
+        })?)
+    } else {
+        None
+    };
+    Ok(summary(p, &places, &end, &drilled, placed.as_ref()))
 }
 
 /// One hexagonal pocket, cut down from the surface at `place`. Returns the bodies it
@@ -112,12 +124,20 @@ fn cut_pocket<R: Runner>(
     }
 }
 
-/// One nut with its bearing face on `place`. Returns the chamfer it was cut with.
-fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndChamfer, String> {
+/// The plugin id, which a nut component's metadata names.
+pub const PLUGIN: &str = "techsquid-nuts";
+
+/// One nut named `body_name` with its bearing face on `place`. Returns the chamfer it
+/// was cut with.
+fn build_nut<R: Runner>(
+    r: &mut R,
+    p: &Params,
+    place: &Placement,
+    body_name: &str,
+) -> Result<EndChamfer, String> {
     let place = *place;
-    let body_name = free_body_name(&mut r.body_names(), &body_base(p));
     // Every feature and sketch of this nut starts with its name.
-    let named = |feature: &str| name::part(&body_name, feature);
+    let named = |feature: &str| name::part(body_name, feature);
     let made = hex::extrude(
         r,
         &Hex {
@@ -129,7 +149,7 @@ fn build_nut<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<EndC
             sketch_name: named("Hex profile"),
             name: named("Hex"),
             operation: "new",
-            body_name: Some(body_name.clone()),
+            body_name: Some(body_name.to_string()),
             target: None,
         },
     )?;
@@ -268,7 +288,13 @@ fn countersink<R: Runner>(
     Ok(())
 }
 
-fn summary(p: &Params, places: &[Placement], end: &EndChamfer, drilled: &[String]) -> Value {
+fn summary(
+    p: &Params,
+    places: &[Placement],
+    end: &EndChamfer,
+    drilled: &[String],
+    placed: Option<&Placed>,
+) -> Value {
     let place = &places[0];
     let pocket = p.pocket.as_ref().map(|pocket| {
         json!({
@@ -296,6 +322,7 @@ fn summary(p: &Params, places: &[Placement], end: &EndChamfer, drilled: &[String
         "at": place.point,
         "normal": place.normal,
         "placed": place.source.words(),
+        "component": placed.map(Placed::json),
     })
 }
 
@@ -310,6 +337,10 @@ mod tests {
     }
     impl Runner for Rec {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            // Placing the fastener is checked on its own; these check the build.
+            if let Some(reply) = plugin_kit::component::stand_in(command) {
+                return Ok(reply);
+            }
             let reply = match command {
                 "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
@@ -317,7 +348,7 @@ mod tests {
                     json!({"sketch": self.sketch})
                 }
                 "solid.extrude" => json!({"created_bodies": ["Nut"]}),
-                _ => Value::Null,
+                _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             };
             self.calls.push((command.to_string(), args));
             Ok(reply)
@@ -446,6 +477,10 @@ mod tests {
         }
         impl Runner for Renamed {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => {
@@ -453,7 +488,7 @@ mod tests {
                         json!({"sketch": self.sketch})
                     }
                     "solid.extrude" => json!({"created_bodies": ["Body1"]}),
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.calls.push((command.to_string(), args));
                 Ok(reply)
@@ -478,11 +513,15 @@ mod tests {
         struct Mute(Vec<String>);
         impl Runner for Mute {
             fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 self.0.push(command.to_string());
                 Ok(match command {
                     "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => json!({"sketch": 1}),
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 })
             }
         }
@@ -509,6 +548,10 @@ mod tests {
         struct Named(Vec<(String, Value)>);
         impl Runner for Named {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "sketch.inspect" => json!({
                         "plane": {
@@ -521,7 +564,7 @@ mod tests {
                     }),
                     "sketch.create" => json!({"sketch": 4}),
                     "solid.extrude" => json!({"created_bodies": ["Nut"]}),
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.0.push((command.to_string(), args));
                 Ok(reply)
@@ -534,13 +577,11 @@ mod tests {
         assert_eq!(rec.0[0].0, "sketch.inspect");
         assert_eq!(rec.0[0].1["sketch"], "Holes");
         assert_eq!(call(&rec.0, "solid.extrude")["distance"], 5.2);
+        // The nut is built in its own component, its bearing face on the origin.
         let hole = call(&rec.0, "solid.hole");
-        assert_eq!(hole["position"], json!([12.0, 10.0, 8.0]));
+        assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, 1.0]));
-        assert_eq!(
-            last(&rec.0, "solid.cone")["base"],
-            json!([12.0, 10.0, 13.2])
-        );
+        assert_eq!(last(&rec.0, "solid.cone")["base"], json!([0.0, 0.0, 5.2]));
         assert_eq!(summary["at"], json!([12.0, 10.0, 8.0]));
         assert_eq!(summary["placed"], "on the named sketch point");
     }
@@ -608,7 +649,15 @@ mod tests {
                 "solid.extrude",
                 "solid.revolve",
                 "solid.hole",
-                "solid.cone"
+                "solid.cone",
+                "component.list",
+                "component.create",
+                "component.metadata",
+                "component.metadata.set",
+                "component.activate",
+                "occurrence.copy",
+                "occurrence.move",
+                "occurrence.reparent"
             ])
         );
     }
@@ -621,6 +670,10 @@ mod tests {
     }
     impl Runner for Taken {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            // Placing the fastener is checked on its own; these check the build.
+            if let Some(reply) = plugin_kit::component::stand_in(command) {
+                return Ok(reply);
+            }
             Ok(match command {
                 "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
@@ -647,7 +700,7 @@ mod tests {
                     self.names.push(name.clone());
                     json!({"created_bodies": [name]})
                 }
-                _ => Value::Null,
+                _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             })
         }
 
@@ -725,7 +778,7 @@ mod tests {
                     json!({"changed_bodies": self.changed})
                 }
                 "solid.extrude" => json!({"created_bodies": [args["body_name"]]}),
-                _ => Value::Null,
+                _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             };
             self.calls.push((command.to_string(), args));
             Ok(reply)
@@ -807,8 +860,23 @@ mod tests {
             })
             .unwrap();
         assert!(last_cut < first_nut);
-        // The bearing face is on the pocket floor, so the nut ends flush.
+        // The bearing face is on the pocket floor, so the nut ends flush. One nut is
+        // built and placed in both pockets.
         assert!((summary["points"][0][2].as_f64().unwrap() - 4.8).abs() < 1e-9);
+        let placed: Vec<&Value> = calls
+            .iter()
+            .filter(|(c, _)| c == "occurrence.move")
+            .map(|(_, args)| &args["to_matrix"][2][3])
+            .collect();
+        assert_eq!(placed.len(), 2);
+        assert!(placed
+            .iter()
+            .all(|z| (z.as_f64().unwrap() - 4.8).abs() < 1e-9));
+        let nuts = calls
+            .iter()
+            .filter(|(c, args)| c == "solid.extrude" && args["operation"] == "new")
+            .count();
+        assert_eq!(nuts, 1);
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["pocket"]["bolt_hole"], "M6");
     }

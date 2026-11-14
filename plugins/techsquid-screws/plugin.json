@@ -195,7 +195,15 @@
       "solid.revolve",
       "solid.thread",
       "solid.hole",
-      "solid.chamfer"
+      "solid.chamfer",
+      "component.list",
+      "component.create",
+      "component.metadata",
+      "component.metadata.set",
+      "component.activate",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent"
     ],
     "limits": {
       "fuel": 200000000,

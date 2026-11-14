@@ -18,7 +18,9 @@ use fasteners::head;
 use fasteners::hex::{self, Hex};
 use fasteners::phillips;
 use fasteners::torx;
-use plugin_kit::host::{body_name_of, changed_bodies, free_body_name, sketch_id};
+use fasteners::FOLDER;
+use plugin_kit::component::{self as fasten, Definition, Placed};
+use plugin_kit::host::{body_name_of, changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::Runner;
@@ -88,12 +90,22 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             })
             .collect()
     };
-    if p.create.screw() {
-        for place in &places {
-            build_screw(r, p, place)?;
-        }
-    }
-    Ok(summary(p, &places, &drilled))
+    let placed = if p.create.screw() {
+        let base = body_base(p);
+        let def = Definition {
+            plugin: PLUGIN,
+            base: &base,
+            description: p.standard.unwrap_or(""),
+            folder: FOLDER,
+            bom_type: "purchased",
+        };
+        Some(fasten::place_all(r, &def, &places, |mut r, name| {
+            build_screw(&mut r, p, &Placement::on_origin(), name)
+        })?)
+    } else {
+        None
+    };
+    Ok(summary(p, &places, &drilled, placed.as_ref()))
 }
 
 /// The body name before any number: what the screw is, its size, then its head, as a
@@ -162,8 +174,16 @@ fn hole_args(p: &Params, hole: &Hole, sketch: &str, points: &[&str]) -> Value {
     args
 }
 
-/// One screw with the top of its shank on `place`.
-fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<(), String> {
+/// The plugin id, which a screw component's metadata names.
+pub const PLUGIN: &str = "techsquid-screws";
+
+/// One screw named `body_name` with the top of its shank on `place`.
+fn build_screw<R: Runner>(
+    r: &mut R,
+    p: &Params,
+    place: &Placement,
+    body_name: &str,
+) -> Result<(), String> {
     let Some(major) = p.resolved.major else {
         return Err(format!("{}: {NO_DIAMETER}", p.size_field));
     };
@@ -176,9 +196,8 @@ fn build_screw<R: Runner>(r: &mut R, p: &Params, place: &Placement) -> Result<()
     };
     // The point is part of `length`. The cylinder stops at the shoulder.
     let cylinder = length - point_length;
-    let body_name = free_body_name(&mut r.body_names(), &body_base(p));
     // Every feature and sketch of this screw starts with its name.
-    let part = body_name.as_str();
+    let part = body_name;
     let named = |feature: &str| name::part(part, feature);
     let shank = r.run(
         "solid.cylinder",
@@ -811,7 +830,7 @@ fn shank_body(body: Option<String>) -> Result<String, String> {
     body.ok_or_else(|| "solid.cylinder did not name the shank body".to_string())
 }
 
-fn summary(p: &Params, places: &[Placement], drilled: &[String]) -> Value {
+fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<&Placed>) -> Value {
     let place = &places[0];
     let hole = p.hole.as_ref().map(|hole| {
         let kind = match &hole.kind {
@@ -880,6 +899,7 @@ fn summary(p: &Params, places: &[Placement], drilled: &[String]) -> Value {
         "at": place.point,
         "normal": place.normal,
         "placed": place.source.words(),
+        "component": placed.map(Placed::json),
     })
 }
 
@@ -891,6 +911,10 @@ mod tests {
     struct Rec(Vec<(String, Value)>);
     impl Runner for Rec {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            // Placing the fastener is checked on its own; these check the build.
+            if let Some(reply) = plugin_kit::component::stand_in(command) {
+                return Ok(reply);
+            }
             let reply = match command {
                 "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => json!({"sketch": 7, "name": "Head profile"}),
@@ -900,7 +924,7 @@ mod tests {
                 {
                     json!({"created_bodies": [args["body_name"]]})
                 }
-                _ => Value::Null,
+                _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             };
             self.0.push((command.to_string(), args));
             Ok(reply)
@@ -1441,6 +1465,10 @@ mod tests {
         struct Named(Vec<(String, Value)>);
         impl Runner for Named {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "sketch.inspect" => json!({
                         "plane": {
@@ -1456,7 +1484,7 @@ mod tests {
                     {
                         json!({"created_bodies": ["Screw"]})
                     }
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.0.push((command.to_string(), args));
                 Ok(reply)
@@ -1476,10 +1504,12 @@ mod tests {
             ]
         );
         assert_eq!(rec.0[0].1["sketch"], "Holes");
-        assert_eq!(rec.0[1].1["base"], json!([12.0, 10.0, -4.0]));
+        // The screw is built in its own component, on its origin; its placement puts it
+        // on the circle.
+        assert_eq!(rec.0[1].1["base"], json!([0.0, 0.0, -12.0]));
         assert_eq!(rec.0[1].1["axis"], json!([0.0, 0.0, 1.0]));
-        assert_eq!(rec.0[2].1["base"], json!([12.0, 10.0, 8.0]));
-        assert_eq!(rec.0[3].1["face"], json!([13.5, 10.0, -2.0]));
+        assert_eq!(rec.0[2].1["base"], json!([0.0, 0.0, 0.0]));
+        assert_eq!(rec.0[3].1["face"], json!([1.5, 0.0, -10.0]));
         assert_eq!(summary["at"], json!([12.0, 10.0, 8.0]));
         assert_eq!(summary["normal"], json!([0.0, 0.0, 1.0]));
     }
@@ -1489,6 +1519,10 @@ mod tests {
         struct Renamed(Vec<(String, Value)>);
         impl Runner for Renamed {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "selection.get" => json!({"count": 0, "items": []}),
                     "solid.cylinder"
@@ -1496,7 +1530,7 @@ mod tests {
                     {
                         json!({"created_bodies": ["Body1"]})
                     }
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.0.push((command.to_string(), args));
                 Ok(reply)
@@ -1513,10 +1547,14 @@ mod tests {
         struct Mute(Vec<String>);
         impl Runner for Mute {
             fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 self.0.push(command.to_string());
                 Ok(match command {
                     "selection.get" => json!({"count": 0, "items": []}),
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 })
             }
         }
@@ -1532,10 +1570,14 @@ mod tests {
         struct Mute(Vec<String>);
         impl Runner for Mute {
             fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 self.0.push(command.to_string());
                 Ok(match command {
                     "selection.get" => json!({"count": 0, "items": []}),
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 })
             }
         }
@@ -1551,6 +1593,10 @@ mod tests {
         struct Renamed(Vec<(String, Value)>);
         impl Runner for Renamed {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                // Placing the fastener is checked on its own; these check the build.
+                if let Some(reply) = plugin_kit::component::stand_in(command) {
+                    return Ok(reply);
+                }
                 let reply = match command {
                     "selection.get" => json!({"count": 0, "items": []}),
                     "solid.cylinder"
@@ -1558,7 +1604,7 @@ mod tests {
                     {
                         json!({"created_bodies": ["Body1"]})
                     }
-                    _ => Value::Null,
+                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 };
                 self.0.push((command.to_string(), args));
                 Ok(reply)
@@ -1662,11 +1708,23 @@ mod tests {
                     json!({"created_bodies": [args["body_name"]]})
                 }
                 "solid.hole" => json!({"changed_bodies": self.changed}),
-                _ => Value::Null,
+                _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             };
             self.calls.push((command.to_string(), args));
             Ok(reply)
         }
+    }
+
+    /// Where each placement puts the screw's origin: the last column of its matrix.
+    fn placed_at(calls: &[(String, Value)]) -> Vec<[f64; 3]> {
+        calls
+            .iter()
+            .filter(|(c, _)| c == "occurrence.move")
+            .map(|(_, args)| {
+                let m = &args["to_matrix"];
+                [0, 1, 2].map(|i| m[i][3].as_f64().unwrap())
+            })
+            .collect()
     }
 
     fn on_plate(v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
@@ -1684,15 +1742,16 @@ mod tests {
         let (summary, calls) = on_plate(json!({"drive": "None"}), json!(["Plate"]));
         let summary = summary.unwrap();
         assert!(calls.iter().all(|(c, _)| c != "solid.hole"));
+        // One screw is built, and placed on both circles.
         let shanks: Vec<&Value> = calls
             .iter()
             .filter(|(c, args)| c == "solid.cylinder" && args["operation"] == "new")
             .map(|(_, args)| &args["base"])
             .collect();
-        assert_eq!(
-            shanks,
-            [&json!([10.0, 10.0, -2.0]), &json!([30.0, 10.0, -2.0])]
-        );
+        assert_eq!(shanks, [&json!([0.0, 0.0, -12.0])]);
+        assert_eq!(placed_at(&calls), [[10.0, 10.0, 10.0], [30.0, 10.0, 10.0]]);
+        assert_eq!(summary["component"]["component"], "Screw M3 x 12 socket");
+        assert_eq!(summary["component"]["occurrences"], json!([3, 4]));
         assert_eq!(summary["count"], 2);
         assert_eq!(summary["create"], "Screw only");
         assert_eq!(summary["standard"], "ISO 4762");
@@ -1716,8 +1775,7 @@ mod tests {
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["hole"]["clearance"], "M3");
         // The head stays on the surface.
-        let shank = named(&calls, "solid.cylinder", "Shank");
-        assert_eq!(shank["base"], json!([10.0, 10.0, -2.0]));
+        assert_eq!(placed_at(&calls)[0], [10.0, 10.0, 10.0]);
     }
 
     #[test]
@@ -1733,8 +1791,7 @@ mod tests {
         assert_eq!(hole["clearance"], "M3");
         assert_eq!(hole["depth"], 15.0);
         // The shank top is 3 mm under the 10 mm surface, so the head ends at 10.
-        let head = named(&calls, "solid.cylinder", "Head");
-        assert_eq!(head["base"], json!([10.0, 10.0, 7.0]));
+        assert_eq!(placed_at(&calls)[0], [10.0, 10.0, 7.0]);
         assert_eq!(summary.unwrap()["points"][0], json!([10.0, 10.0, 7.0]));
         // A countersunk head gets a 90° countersink of its own diameter.
         let (_, calls) = on_plate(
@@ -1851,6 +1908,10 @@ mod tests {
     }
     impl Runner for Taken {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            // Placing the fastener is checked on its own; these check the build.
+            if let Some(reply) = plugin_kit::component::stand_in(command) {
+                return Ok(reply);
+            }
             Ok(match command {
                 "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
@@ -1877,7 +1938,7 @@ mod tests {
                     self.names.push(name.clone());
                     json!({"created_bodies": [name]})
                 }
-                _ => Value::Null,
+                _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             })
         }
 

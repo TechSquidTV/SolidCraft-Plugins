@@ -11,7 +11,7 @@ A new plugin gets its own README with those sections and a row in the main READM
 
 ## Layout
 
-- `crates/plugin-kit`: code any plugin needs. It holds the `Runner` trait and the `guest!` macro that exports the wasm entry (`host.rs`), dialog fields and `FieldError` (`input.rs`), placement on a selected or named sketch point (`place.rs`), and body and feature names (`name.rs`). Nothing fastener-specific goes here.
+- `crates/plugin-kit`: code any plugin needs. It holds the `Runner` trait and the `guest!` macro that exports the wasm entry (`host.rs`), dialog fields and `FieldError` (`input.rs`), placement on a selected or named sketch point (`place.rs`), parts placed as components (`component.rs`), and body and feature names (`name.rs`). Nothing fastener-specific goes here.
 - `crates/fasteners`: fastener standards and geometry, such as size designations, metric sizes, heads, drives, nuts, clearance holes and the hex profile. It depends on `plugin-kit`.
 - `plugins/techsquid-<name>`: one plugin each, with its `plugin.json` manifest and README. The entry and its parameter parsing live in the plugin, and so does a catalog only one plugin uses (the insert catalog).
 - `wit/plugin.wit`: a copy of SolidCraft's `craft:plugin@0.1.0`. `guest!` generates bindings from `../../wit`.

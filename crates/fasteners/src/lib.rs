@@ -15,3 +15,6 @@ pub mod nut;
 pub mod phillips;
 pub mod slot;
 pub mod torx;
+
+/// The component every fastener placement goes in.
+pub const FOLDER: &str = "Fasteners";

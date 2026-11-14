@@ -759,18 +759,77 @@ mod tests {
         }
     }
 
+    /// Whether `p` is inside the polygon through each piece's start. A chord stands in
+    /// for an arc, which is close enough for a point well clear of every arc.
+    fn inside(segs: &[Seg], p: P) -> bool {
+        let mut inside = false;
+        for seg in segs {
+            let (a, b) = (seg.start(), seg.end());
+            if (a[1] > p[1]) != (b[1] > p[1])
+                && p[0] < a[0] + (p[1] - a[1]) / (b[1] - a[1]) * (b[0] - a[0])
+            {
+                inside = !inside;
+            }
+        }
+        inside
+    }
+
     #[test]
-    fn the_material_point_is_in_the_core_and_out_of_the_bore() {
+    fn the_material_point_is_in_the_metal_of_every_rail() {
         for slot in [T5, V5] {
-            for (_, grid) in SIZES {
+            for (size, grid) in SIZES {
                 let p = Profile::new(slot, grid).unwrap();
-                let c = grid.centres()[0];
                 let m = p.material_point();
-                let (dx, dy) = (m[0] - c[0], m[1] - c[1]);
-                // The first cell is the bottom left one, so its corner side is -X, -Y.
-                assert!(dx < 0.0 && dy < 0.0);
-                assert!(dx.hypot(dy) > slot.bore / 2.0 + 0.2);
-                assert!(-dx < slot.web_root() && -dy < slot.web_root());
+                assert!(inside(&p.outer, m), "{} {size}", slot.name);
+                for cavity in &p.cavities {
+                    assert!(!inside(cavity, m), "{} {size}", slot.name);
+                }
+                // Clear of every bore, round or open, by more than a chord could hide.
+                for c in grid.centres() {
+                    let d = (m[0] - c[0]).hypot(m[1] - c[1]);
+                    assert!(d > slot.bore / 2.0 + 0.5, "{} {size}", slot.name);
+                }
+            }
+        }
+    }
+
+    /// The host is sent only an arc's start, end and through point, so the through
+    /// point must lie on the arc, half way round the way the arc turns.
+    #[test]
+    fn every_arc_goes_through_the_middle_of_its_sweep() {
+        for slot in [T5, V5] {
+            for (size, grid) in SIZES {
+                let p = Profile::new(slot, grid).unwrap();
+                let mut arcs = 0;
+                for seg in p.outer.iter().chain(p.cavities.iter().flatten()) {
+                    let Seg::Arc {
+                        start,
+                        end,
+                        through,
+                        centre,
+                        ccw,
+                    } = *seg
+                    else {
+                        continue;
+                    };
+                    arcs += 1;
+                    let angle = |q: P| (q[1] - centre[1]).atan2(q[0] - centre[0]);
+                    let radius = |q: P| (q[0] - centre[0]).hypot(q[1] - centre[1]);
+                    let turn = std::f64::consts::TAU;
+                    let swept = |to: P| {
+                        if ccw {
+                            (angle(to) - angle(start)).rem_euclid(turn)
+                        } else {
+                            (angle(start) - angle(to)).rem_euclid(turn)
+                        }
+                    };
+                    let name = format!("{} {size}", slot.name);
+                    assert!(close(radius(start), radius(end), 1e-9), "{name}");
+                    assert!(close(radius(start), radius(through), 1e-9), "{name}");
+                    assert!(close(swept(through), swept(end) / 2.0, 1e-9), "{name}");
+                    assert!(swept(end) < std::f64::consts::PI, "{name}");
+                }
+                assert!(arcs >= 4, "{} {size}", slot.name);
             }
         }
     }

@@ -31,7 +31,7 @@ Name Sketch and Sketch point together to place the rail without a selection. Ske
 |---|---|---|
 | `slot` | `T-slot` | `T-slot` or `V-slot` |
 | `size` | `2020` | `2020`, `2040`, `2060`, `2080` or `4040`. A V-slot comes as `2020` to `2080` |
-| `length` | 500 | How long the rail is cut, mm, up to 6000 |
+| `length` | 500 | How long the rail is cut, mm, up to 6000. Kept to 0.01 mm, as the rail's name shows it |
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 

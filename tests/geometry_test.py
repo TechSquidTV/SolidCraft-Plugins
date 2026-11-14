@@ -7,7 +7,8 @@ Needs the packages from ./build.sh and a solidcraft-cli that can run a plugin. E
 case builds a plate with a sketch of two circles on its top face, runs one plugin on
 those circles, and compares the plate's volume with the volume worked out by hand
 here. A second body under the plate must stay untouched. Head shapes and drive
-recesses are checked on a loose screw the same way.
+recesses are checked on a loose screw the same way. A rail is checked by its whole
+volume: the area of its section, worked out here from the slot sizes, times its length.
 
 The signed macOS build of SolidCraft 0.41.0 cannot load a component (hardened
 runtime, no JIT entitlement) and kills the CLI with SIGKILL. A case whose own run was

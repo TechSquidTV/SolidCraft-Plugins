@@ -19,6 +19,10 @@ Threads themselves are a host command. `solid.thread` cuts or annotates a cylind
 
 The three fastener plugins share field names (`size`, `custom_size`, `create`, `sketch`, `sketch_point`, `thread_modeled`) and a naming scheme for bodies: the kind of part, then its size, as in `Screw M3 x 12 socket`.
 
+## Extrusions
+
+A rail is one sketch of lines and arcs, extruded once. Its section comes from `crates/extrusions`, which builds it from a slot shape and a grid of 20 mm cells. The T-slot is checked against MISUMI's STEP models and the V-slot against OpenBuilds' DXF files; the plugin's README lists each source and its test.
+
 ## Layout
 
 ```
@@ -30,9 +34,11 @@ wit/plugin.wit             copy of SolidCraft's craft:plugin@0.1.0
 plugins/techsquid-screws   screw entry and its parameters
 plugins/techsquid-inserts  heat-set insert entry, catalog, and parameters
 plugins/techsquid-nuts     ISO 4032 hexagon nut entry and its parameters
+plugins/techsquid-extrusions  T-slot and V-slot rail entry and its parameters
 build.sh                   the packages land in dist/<id>/, one per plugin
 examples/                  designs built with the plugins: <name>.json opens in SolidCraft, <name>.steps.json builds it
 tests/cli_test.py          runs the built package through solidcraft-cli
+tests/geometry_test.py     checks by volume what each plugin cuts and builds
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
 
@@ -57,7 +63,7 @@ cargo test
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py
 ```
 
-It inspects each package. A screw run must build an M3, an insert run must build the M3 × 5.7 insert, a nut run must build an ISO 4032 M6, and a bad `head` must be refused as invalid input. The signed macOS build of SolidCraft 0.41.0 has the hardened runtime and no JIT entitlement, so loading a component kills `solidcraft-cli` (`SIGKILL`, code signature invalid). Inspect still succeeds there, and the test skips a run check when the CLI dies that way.
+It inspects each package. A screw run must build an M3, an insert run must build the M3 × 5.7 insert, a nut run must build an ISO 4032 M6, an extrusion run must build a 120 mm V-slot 2040, and a bad `head` must be refused as invalid input. The signed macOS build of SolidCraft 0.41.0 has the hardened runtime and no JIT entitlement, so loading a component kills `solidcraft-cli` (`SIGKILL`, code signature invalid). Inspect still succeeds there, and the test skips a run check when the CLI dies that way.
 
 ## Examples
 
@@ -85,7 +91,7 @@ solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-encl
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure-closed.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
 ```
 
-`tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws.
+`tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/geometry_test.py
@@ -95,7 +101,7 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 ## Components
 
-Each fastener or rail is a component of its own. The rest of this section speaks of fasteners; a rail is placed the same way, in an `Extrusions` folder. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
+Each fastener and each rail is a component of its own. This section describes fasteners; a rail is placed the same way, in an `Extrusions` folder instead of `Fasteners`. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
 
 - **One definition, many placements.** A run builds the fastener once, at its component's origin, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with the point on the origin and its outer side up +Z; each placement turns that onto the sketch.
 - **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.

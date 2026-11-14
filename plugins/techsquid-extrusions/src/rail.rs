@@ -54,6 +54,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         Some(Value::Number(n)) => n.as_f64().unwrap_or(f64::NAN),
         Some(_) => return Err(FieldError::new("length", "must be a number of millimetres")),
     };
+    // A name shows a length to 0.01 mm, so two rails with one name are one rail.
+    let length = (length * 100.0).round() / 100.0;
     if !(length.is_finite() && length > 0.0 && length <= MAX_LENGTH_MM) {
         return Err(FieldError::new(
             "length",
@@ -73,7 +75,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 fn text<'a>(v: &'a Value, key: &str, default: &'a str) -> Result<&'a str, FieldError> {
     match v.get(key) {
         None | Some(Value::Null) => Ok(default),
-        Some(Value::String(s)) => Ok(s.as_str()),
+        Some(Value::String(s)) if s.trim().is_empty() => Ok(default),
+        Some(Value::String(s)) => Ok(s.trim()),
         Some(_) => Err(FieldError::new(key, "must be one of the listed choices")),
     }
 }
@@ -90,6 +93,13 @@ mod tests {
         assert_eq!(p.size, "2020");
         assert_eq!(p.grid, Grid { nx: 1, ny: 1 });
         assert_eq!(p.length, 500.0);
+    }
+
+    #[test]
+    fn an_empty_choice_is_the_default() {
+        let p = parse(&json!({"slot": "", "size": " "})).unwrap();
+        assert_eq!(p.slot, T5);
+        assert_eq!(p.size, "2020");
     }
 
     #[test]
@@ -123,6 +133,15 @@ mod tests {
         }
         assert_eq!(parse(&json!({"length": 6000})).unwrap().length, 6000.0);
         assert_eq!(parse(&json!({"length": 0.5})).unwrap().length, 0.5);
+    }
+
+    #[test]
+    fn a_length_is_kept_to_a_hundredth_as_its_name_shows_it() {
+        assert_eq!(parse(&json!({"length": 100.004})).unwrap().length, 100.0);
+        assert_eq!(parse(&json!({"length": 122.456})).unwrap().length, 122.46);
+        // Too short to show is too short to cut.
+        let err = parse(&json!({"length": 0.004})).unwrap_err();
+        assert_eq!(err.field, "length");
     }
 
     #[test]

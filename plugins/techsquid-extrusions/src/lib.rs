@@ -285,35 +285,44 @@ mod tests {
         assert_eq!(summary["component"]["component"], "T-slot 2020 x 250");
     }
 
+    /// The host joins pieces that share a point exactly, so the commands as sent must
+    /// chain end to start with no gap at all: across the corner arcs, the roundings of a
+    /// T-slot floor, and the bore arcs of a 4040.
     #[test]
-    fn every_polyline_starts_where_the_piece_before_it_ended() {
-        let (_, calls) = commands(json!({"slot": "V-slot", "size": "2040", "length": 100}));
-        let mut last: Option<Value> = None;
-        let mut first: Option<Value> = None;
-        let mut loops = 0;
-        for (command, args) in &calls {
-            let (start, end) = match command.as_str() {
-                "sketch.line" => {
-                    let points = args["points"].as_array().unwrap();
-                    (points[0].clone(), points[points.len() - 1].clone())
+    fn every_piece_starts_where_the_piece_before_it_ended() {
+        for v in [
+            json!({"slot": "V-slot", "size": "2040", "length": 100}),
+            json!({"slot": "T-slot", "size": "2040", "length": 100}),
+            json!({"slot": "T-slot", "size": "4040", "length": 100}),
+        ] {
+            let (_, calls) = commands(v.clone());
+            let mut last: Option<Value> = None;
+            let mut first: Option<Value> = None;
+            let mut loops = 0;
+            for (command, args) in &calls {
+                let (start, end) = match command.as_str() {
+                    "sketch.line" => {
+                        let points = args["points"].as_array().unwrap();
+                        (points[0].clone(), points[points.len() - 1].clone())
+                    }
+                    "sketch.arc.three_point" => (args["start"].clone(), args["end"].clone()),
+                    _ => continue,
+                };
+                match &last {
+                    Some(end_before) if *end_before == start => {}
+                    _ => {
+                        // A new loop starts; the one before must have closed.
+                        assert_eq!(last, first, "{v}");
+                        first = Some(start);
+                        loops += 1;
+                    }
                 }
-                "sketch.arc.three_point" => (args["start"].clone(), args["end"].clone()),
-                _ => continue,
-            };
-            match &last {
-                Some(end_before) if *end_before == start => {}
-                _ => {
-                    // A new loop starts; the one before must have closed.
-                    assert_eq!(last, first);
-                    first = Some(start);
-                    loops += 1;
-                }
+                last = Some(end);
             }
-            last = Some(end);
+            assert_eq!(last, first, "{v}");
+            // The outline and one cavity.
+            assert_eq!(loops, 2, "{v}");
         }
-        assert_eq!(last, first);
-        // The outline and the cavity between the two cells.
-        assert_eq!(loops, 2);
     }
 
     #[test]

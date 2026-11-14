@@ -558,19 +558,32 @@ mod tests {
         assert_ne!(geometry_key(&mut a).unwrap(), geometry_key(&mut b).unwrap());
     }
 
+    /// Every plugin under `plugins/` that places components lists all of [`COMMANDS`],
+    /// so a new plugin is checked without being named here.
     #[test]
     fn every_manifest_lists_every_command_sent() {
-        for manifest in [
-            include_str!("../../../plugins/techsquid-screws/plugin.json"),
-            include_str!("../../../plugins/techsquid-inserts/plugin.json"),
-            include_str!("../../../plugins/techsquid-nuts/plugin.json"),
-        ] {
-            let manifest: Value = serde_json::from_str(manifest).unwrap();
+        let plugins = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../plugins");
+        let mut checked = 0;
+        for entry in std::fs::read_dir(plugins).unwrap() {
+            let path = entry.unwrap().path().join("plugin.json");
+            let Ok(text) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let manifest: Value = serde_json::from_str(&text).unwrap();
             let listed = manifest["runtime"]["commands"].as_array().unwrap();
-            for command in COMMANDS {
-                assert!(listed.contains(&json!(command)), "{command}");
+            if !listed.contains(&json!("component.create")) {
+                continue;
             }
+            for command in COMMANDS {
+                assert!(
+                    listed.contains(&json!(command)),
+                    "{}: {command}",
+                    path.display()
+                );
+            }
+            checked += 1;
         }
+        assert!(checked >= 4, "only {checked} manifests place components");
         let mut host = Host::new(json!({"active": 0, "components": [
             {"id": 3, "name": "Screw M3 x 12 socket", "occurrences": [{"id": 6, "parent": 0}]},
         ]}));

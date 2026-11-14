@@ -3,7 +3,7 @@ import atexit, json, os, shutil, signal, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLI = os.environ.get("SOLIDCRAFT_CLI", "solidcraft-cli")
-TMP = tempfile.mkdtemp(prefix="threadcraft-test-")
+TMP = tempfile.mkdtemp(prefix="techsquid-plugins-test-")
 # The temporary folder goes on every way out: a normal end, sys.exit, or an exception.
 atexit.register(shutil.rmtree, TMP, ignore_errors=True)
 

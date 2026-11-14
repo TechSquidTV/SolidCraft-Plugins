@@ -1,0 +1,10 @@
+[package]
+name = "plugin-kit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Host runner, dialog input, placement and naming shared by the TechSquid SolidCraft plugins"
+
+[dependencies]
+serde_json.workspace = true

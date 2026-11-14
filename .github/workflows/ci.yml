@@ -33,7 +33,7 @@ jobs:
       - name: Clippy, wasm plugins
         run: >
           cargo clippy --locked --target wasm32-unknown-unknown
-          -p threadcraft-screws -p threadcraft-inserts -p threadcraft-nuts -- -D warnings
+          -p techsquid-screws -p techsquid-inserts -p techsquid-nuts -- -D warnings
 
   test:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
       - run: ./build.sh
       - name: Check the packaged plugins
         run: |
-          for id in threadcraft-screws threadcraft-inserts threadcraft-nuts; do
+          for id in techsquid-screws techsquid-inserts techsquid-nuts; do
             test -s "dist/$id/plugin.wasm"
             test -s "dist/$id/plugin.json"
           done

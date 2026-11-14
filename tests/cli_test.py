@@ -3,8 +3,8 @@
 
     SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py
 
-The packages are dist/threadcraft-screws/, dist/threadcraft-inserts/, and
-dist/threadcraft-nuts/. Needs a solidcraft-cli with the plugin host (SolidCraft
+The packages are dist/techsquid-screws/, dist/techsquid-inserts/, and
+dist/techsquid-nuts/. Needs a solidcraft-cli with the plugin host (SolidCraft
 0.41 or newer).
 
 plugin.inspect must accept each package and list its entry. Each run must build
@@ -20,21 +20,21 @@ TOL = 1e-3
 
 PACKAGES = [
     (
-        "threadcraft-screws",
+        "techsquid-screws",
         "make-screw",
         {"size": "M3", "length": 12, "head": "Socket head", "drive": "Hex socket"},
         "builds an M3 x 12 socket head screw",
         (5.5, 15.0),
     ),
     (
-        "threadcraft-inserts",
+        "techsquid-inserts",
         "make-insert",
         {"size": "M3 × 5.7", "create": "Insert only"},
         "builds the M3 x 5.7 insert",
         (4.6, 5.7),
     ),
     (
-        "threadcraft-nuts",
+        "techsquid-nuts",
         "make-nut",
         {"size": "M6"},
         "builds the M6 nut",
@@ -87,13 +87,13 @@ for plugin_id, entry, params, label, (across, height) in PACKAGES:
         and abs(got[1] - height) < TOL,
         f"measured {got}, expected {(across, height)}" if code == 0 else text[-800:],
     )
-    if plugin_id == "threadcraft-screws":
+    if plugin_id == "techsquid-screws":
         screws_ran = True
 
 
 if screws_ran:
-    path = package("threadcraft-screws")
-    _, _, info = inspect("threadcraft-screws")
+    path = package("techsquid-screws")
+    _, _, info = inspect("techsquid-screws")
     approval = info.get("approval") if info else None
     code, text, _ = run([{
         "command": "plugin.run",
@@ -105,11 +105,11 @@ if screws_ran:
         },
     }])
     check(
-        "threadcraft-screws: unknown head is invalid input",
+        "techsquid-screws: unknown head is invalid input",
         code != 0 and "head" in text and "not implemented" not in text,
         text[-800:],
     )
 else:
-    skip("threadcraft-screws: unknown head is invalid input", "the screw run did not finish")
+    skip("techsquid-screws: unknown head is invalid input", "the screw run did not finish")
 
 finish()

@@ -126,7 +126,7 @@ def refused(name, plugin_id, entry, params, words, before=()):
 def loose_screw(name, params, volume):
     """One screw on the origin: its whole volume. The thread is cosmetic unless `params`
     asks for it, so the shank is a plain cylinder and the volume is the head and drive's."""
-    found, reply = plugin_run("threadcraft-screws", "make-screw",
+    found, reply = plugin_run("techsquid-screws", "make-screw",
                               dict({"thread_modeled": False}, **params))
     if found is None:
         check(name, False, "| " + reply)
@@ -154,10 +154,10 @@ def strip(d, width, depth):
 
 
 APPROVAL = {p: approval(p) for p in
-            ("threadcraft-screws", "threadcraft-inserts", "threadcraft-nuts")}
-INSERT = ("threadcraft-inserts", "make-insert")
-SCREW = ("threadcraft-screws", "make-screw")
-NUT = ("threadcraft-nuts", "make-nut")
+            ("techsquid-screws", "techsquid-inserts", "techsquid-nuts")}
+INSERT = ("techsquid-inserts", "make-insert")
+SCREW = ("techsquid-screws", "make-screw")
+NUT = ("techsquid-nuts", "make-nut")
 
 # Heat-set inserts: M3 x 5.7. The plastic hole is 4.0 across and 6.7 deep.
 on_plate("insert: hole and insert", *INSERT, {}, cyl(4.0, 6.7),
@@ -293,7 +293,7 @@ def threaded_by_default(name, params, smooth):
     """A run that does not mention Modeled thread cuts the thread: the screw comes out
     lighter than the same screw with a plain shank, and the cut is about the thread's
     share of the shank, not the whole shank."""
-    found, reply = plugin_run("threadcraft-screws", "make-screw", params)
+    found, reply = plugin_run("techsquid-screws", "make-screw", params)
     if found is None:
         check(name, False, "| " + reply)
         return

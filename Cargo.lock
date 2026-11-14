@@ -21,6 +21,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "00d174d5400e5e8fd687ad1049e2f578285fa914201b1af7e8b112a4546bd826"
 
 [[package]]
+name = "fasteners"
+version = "0.1.0"
+dependencies = [
+ "plugin-kit",
+ "serde_json",
+]
+
+[[package]]
 name = "foldhash"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -190,6 +198,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
+name = "plugin-kit"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+]
+
+[[package]]
 name = "prettyplease"
 version = "0.2.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -294,36 +309,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "threadcraft"
+name = "techsquid-inserts"
 version = "0.1.0"
 dependencies = [
+ "fasteners",
+ "plugin-kit",
  "serde_json",
-]
-
-[[package]]
-name = "threadcraft-inserts"
-version = "0.1.0"
-dependencies = [
- "serde_json",
- "threadcraft",
  "wit-bindgen",
 ]
 
 [[package]]
-name = "threadcraft-nuts"
+name = "techsquid-nuts"
 version = "0.1.0"
 dependencies = [
+ "fasteners",
+ "plugin-kit",
  "serde_json",
- "threadcraft",
  "wit-bindgen",
 ]
 
 [[package]]
-name = "threadcraft-screws"
+name = "techsquid-screws"
 version = "0.1.0"
 dependencies = [
+ "fasteners",
+ "plugin-kit",
  "serde_json",
- "threadcraft",
  "wit-bindgen",
 ]
 

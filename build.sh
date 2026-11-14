@@ -20,6 +20,6 @@ build_one() {
   echo "built $out"
 }
 
-build_one threadcraft-screws threadcraft_screws
-build_one threadcraft-inserts threadcraft_inserts
-build_one threadcraft-nuts threadcraft_nuts
+build_one techsquid-screws techsquid_screws
+build_one techsquid-inserts techsquid_inserts
+build_one techsquid-nuts techsquid_nuts

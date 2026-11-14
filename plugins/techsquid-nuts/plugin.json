@@ -1,0 +1,132 @@
+{
+  "id": "techsquid-nuts",
+  "name": "Hex nuts",
+  "version": "0.1.0",
+  "description": "ISO 4032 hexagon nuts (the successor of DIN 934), with their pockets. Select sketch points or circles first: each gets a nut with its bearing face there. With nothing selected one nut lands on the origin.",
+  "capabilities": [
+    "commands@0.1"
+  ],
+  "runtime": {
+    "module": "plugin.wasm",
+    "entries": [
+      {
+        "name": "make-nut",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "required": [
+            "size",
+            "create",
+            "pocket_adjust"
+          ],
+          "properties": {
+            "size": {
+              "type": "string",
+              "title": "Size",
+              "description": "Common ISO 4032 sizes with the coarse thread. For any other size, such as a fine pitch, fill in Custom size. A DIN 934 nut is wider at M10, M12 and M14: set Custom width for it.",
+              "default": "M3",
+              "enum": [
+                "M1.6",
+                "M2",
+                "M2.5",
+                "M3",
+                "M4",
+                "M5",
+                "M6",
+                "M8",
+                "M10",
+                "M12",
+                "M16",
+                "M20",
+                "M24"
+              ]
+            },
+            "create": {
+              "type": "string",
+              "title": "Create",
+              "description": "Nut only builds the nut, on the origin when nothing is selected. Nut and pocket also cuts a hexagonal pocket in the part under each selected point, with a clearance hole for the bolt, and sets the nut in it flush. Pocket only cuts without a nut.",
+              "default": "Nut only",
+              "enum": [
+                "Nut only",
+                "Nut and pocket",
+                "Pocket only"
+              ]
+            },
+            "pocket_adjust": {
+              "type": "number",
+              "title": "Pocket adjustment",
+              "description": "Used when Create cuts a pocket. Gap between each flat of the nut and the pocket. Printed pockets come out small: raise this until the nut drops in.",
+              "default": 0.2,
+              "minimum": 0,
+              "maximum": 1,
+              "unit": "mm"
+            },
+            "custom_size": {
+              "type": "string",
+              "title": "Custom size",
+              "description": "Optional. A metric size that replaces Size, such as M8x1 or M3.5. ISO 4032 lists M1.6 to M64; a size outside that table also needs Custom width and Custom thickness."
+            },
+            "custom_thickness": {
+              "type": "number",
+              "title": "Custom thickness",
+              "description": "Optional. Nut height. Leave empty for the ISO 4032 height.",
+              "minimum": 0.1,
+              "maximum": 1000,
+              "unit": "mm"
+            },
+            "custom_width": {
+              "type": "number",
+              "title": "Custom width",
+              "description": "Optional. Width across the flats. Leave empty for the ISO 4032 width.",
+              "minimum": 0.1,
+              "maximum": 1000,
+              "unit": "mm"
+            },
+            "sketch": {
+              "type": "string",
+              "title": "Sketch",
+              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point."
+            },
+            "sketch_point": {
+              "type": "string",
+              "title": "Sketch point",
+              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection."
+            },
+            "thread_modeled": {
+              "type": "boolean",
+              "title": "Modeled thread",
+              "description": "Cut the internal thread. Off leaves a cosmetic thread, which rebuilds faster.",
+              "default": true
+            }
+          }
+        },
+        "slots": [
+          {
+            "kind": "menu",
+            "name": "Hex nut"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      "selection.get",
+      "inspect.measure",
+      "sketch.inspect",
+      "sketch.create",
+      "sketch.polygon.circumscribed",
+      "sketch.dimension",
+      "sketch.constraint.horizontal_vertical",
+      "sketch.line",
+      "sketch.finish",
+      "solid.extrude",
+      "solid.revolve",
+      "solid.hole",
+      "solid.cone"
+    ],
+    "limits": {
+      "fuel": 200000000,
+      "memory_mib": 64,
+      "deadline_ms": 30000
+    }
+  }
+}

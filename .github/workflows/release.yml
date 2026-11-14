@@ -39,7 +39,7 @@ jobs:
       - name: Package
         run: |
           mkdir -p out
-          for id in threadcraft-screws threadcraft-inserts threadcraft-nuts; do
+          for id in techsquid-screws techsquid-inserts techsquid-nuts; do
             (cd dist && zip -r "../out/${id}-${VERSION}.zip" "$id")
             (cd out && sha256sum "${id}-${VERSION}.zip" > "${id}-${VERSION}.zip.sha256")
           done
@@ -47,5 +47,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" out/* --title "SolidCraft Threadcraft $VERSION" \
-            --notes "Screw, heat-set insert, and DIN 934 hexagon nut plugins for SolidCraft. Unzip a folder into your SolidCraft plugins folder; see the README."
+          gh release create "$GITHUB_REF_NAME" out/* --title "TechSquid SolidCraft Plugins $VERSION" \
+            --notes "Screw, heat-set insert, and ISO 4032 hexagon nut plugins for SolidCraft. Unzip a folder into your SolidCraft plugins folder; see the README."

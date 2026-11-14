@@ -265,9 +265,10 @@ mod tests {
         assert_eq!(sketch.len(), 1);
         assert_eq!(sketch[0]["name"], "T-slot 2020 x 250: Section");
         assert_eq!(sketch[0]["plane"]["origin"], json!([0.0, 0.0, 0.0]));
-        // Four sides between four corner arcs, and the bore.
-        assert_eq!(all(&calls, "sketch.line").len(), 4);
-        assert_eq!(all(&calls, "sketch.arc.three_point").len(), 4);
+        // Each side is three runs of lines between the two roundings of its slot floor,
+        // and ends in a corner arc. Then the bore.
+        assert_eq!(all(&calls, "sketch.line").len(), 12);
+        assert_eq!(all(&calls, "sketch.arc.three_point").len(), 12);
         let bores = all(&calls, "sketch.circle.center");
         assert_eq!(bores.len(), 1);
         assert_eq!(bores[0]["diameter"], 4.2);
@@ -318,8 +319,11 @@ mod tests {
     #[test]
     fn a_2080_has_three_cavities_and_four_bores() {
         let (_, calls) = commands(json!({"slot": "T-slot", "size": "2080", "length": 100}));
-        // Four sides and three closed cavities.
-        assert_eq!(all(&calls, "sketch.line").len(), 7);
+        // Ten slots with three runs of lines each, less one run where a slot follows
+        // another on a long side, and three closed cavities.
+        assert_eq!(all(&calls, "sketch.line").len(), 27);
+        // Two roundings in each of the ten slot floors, and four corners.
+        assert_eq!(all(&calls, "sketch.arc.three_point").len(), 24);
         assert_eq!(all(&calls, "sketch.circle.center").len(), 4);
     }
 
@@ -327,8 +331,9 @@ mod tests {
     fn a_4040_draws_its_bores_as_arcs_of_the_middle_cavity() {
         let (summary, calls) = commands(json!({"slot": "T-slot", "size": "4040", "length": 100}));
         assert!(all(&calls, "sketch.circle.center").is_empty());
-        // Four corners and two arcs round each of the four bores.
-        assert_eq!(all(&calls, "sketch.arc.three_point").len(), 12);
+        // Four corners, two roundings in each of the eight slot floors, and two arcs
+        // round each of the four bores.
+        assert_eq!(all(&calls, "sketch.arc.three_point").len(), 28);
         assert_eq!(summary["width"], 40.0);
         assert_eq!(summary["height"], 40.0);
     }

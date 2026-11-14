@@ -27,12 +27,70 @@ pub struct Slot {
     pub core: f64,
     /// Thickness of the web from a core corner to the rail's corner or wall.
     pub web: f64,
-    /// A V groove along the middle of the slot floor, as (half width, depth). Zero for none.
-    pub groove: (f64, f64),
+    /// What runs along the middle of the slot floor.
+    pub floor: Floor,
     /// Diameter of the bore through each core.
     pub bore: f64,
     /// Radius of the rail's four outer corners.
     pub corner: f64,
+}
+
+/// The shape of a slot floor.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Floor {
+    /// A plain V groove with sharp edges, as (half width, depth).
+    Vee(f64, f64),
+    /// The MISUMI 5 series floor: [`MisumiFloor`].
+    Misumi(MisumiFloor),
+}
+
+/// The MISUMI 5 series slot floor. A groove with flanks at `flank` degrees to the floor
+/// runs along the middle, `depth` deep, and both its edges are rounded to `round`. Going
+/// anticlockwise round the rail, the second rounded edge runs straight on down into a
+/// shallower mark, whose far side rises at `rise` degrees to meet the floor `mark_end`
+/// from the middle.
+///
+/// Source: the end faces of MISUMI's STEP models NFS5-2040, NFS5-2060, NFS5-2080,
+/// NFS5-4040 and NFSF5-2020, which all draw a floor at y = 4 as (0.6536, 4), an R0.5
+/// arc to (0.4036, 3.933), (0, 3.7), (-0.4036, 3.933), an R0.5 arc to (-0.9036, 3.933),
+/// (-1.2189, 3.751), (-2.5, 4). The catalog's Slot Bottom Details gives the 120° and
+/// the 0.3.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MisumiFloor {
+    pub depth: f64,
+    pub flank: f64,
+    pub round: f64,
+    pub rise: f64,
+    pub mark_end: f64,
+}
+
+impl MisumiFloor {
+    /// How far from the middle each rounding's centre is.
+    pub fn round_at(&self) -> f64 {
+        let flank = self.flank.to_radians();
+        self.round * flank.sin() + (self.depth - self.round * (1.0 - flank.cos())) / flank.tan()
+    }
+
+    /// Where a rounding meets a flank, as (distance from the middle, depth below the floor).
+    pub fn flank_top(&self) -> (f64, f64) {
+        let flank = self.flank.to_radians();
+        (
+            self.round_at() - self.round * flank.sin(),
+            self.round * (1.0 - flank.cos()),
+        )
+    }
+
+    /// The bottom of the mark, as (distance from the middle, depth below the floor).
+    pub fn mark(&self) -> (f64, f64) {
+        let (flank, rise) = (self.flank.to_radians().tan(), self.rise.to_radians().tan());
+        // The flank carries on down from the far side of the second rounding.
+        let (t0, d0) = (
+            self.round_at() + self.round * self.flank.to_radians().sin(),
+            self.flank_top().1,
+        );
+        let t = (rise * self.mark_end - d0 + flank * t0) / (flank + rise);
+        (t, rise * (self.mark_end - t))
+    }
 }
 
 impl Slot {
@@ -63,9 +121,8 @@ impl Slot {
 /// Source: MISUMI catalog 2019 US p. 2686 to 2687, "Slot Details (Common to All Series)"
 /// (6 mm slot, 2 mm lip, 12 mm cavity, 4 mm from the lip to the floor) and the HFS5-2020
 /// and HFS5-4040 sections (8 mm core, Ø4.2 bore, 4-R1 corners, 1.5 mm webs), and "Slot
-/// Bottom Details" (a 120° groove 0.3 mm deep along the slot floor). MISUMI's STEP model
-/// of NFS5-2040 has the same vertices. It also rounds the groove's edges to R0.5 and the
-/// corners of the closed cavity to R0.3, which are left sharp here.
+/// Bottom Details" (a 120° groove 0.3 mm deep along the slot floor). MISUMI's STEP
+/// models have the same vertices, and the floor is theirs: see [`MisumiFloor`].
 pub const T5: Slot = Slot {
     name: "T-slot",
     throat: 3.0,
@@ -74,8 +131,13 @@ pub const T5: Slot = Slot {
     cavity: 6.0,
     core: 4.0,
     web: 1.5,
-    // 0.3 deep at 120°: half as wide as 0.3 x tan 60°.
-    groove: (0.519_615_242_270_663_2, 0.3),
+    floor: Floor::Misumi(MisumiFloor {
+        depth: 0.3,
+        flank: 30.0,
+        round: 0.5,
+        rise: 11.0,
+        mark_end: 2.5,
+    }),
     bore: 4.2,
     corner: 1.0,
 };
@@ -94,7 +156,7 @@ pub const V5: Slot = Slot {
     cavity: 5.5,
     core: 3.9,
     web: 1.5,
-    groove: (0.21, 0.21),
+    floor: Floor::Vee(0.21, 0.21),
     bore: 4.2,
     corner: 0.5,
 };
@@ -120,9 +182,24 @@ mod tests {
         assert_eq!(T5.bore, 4.2);
         assert_eq!(T5.corner, 1.0);
         assert_eq!(T5.web, 1.5);
-        // Slot Bottom Details: 120° and 0.3 deep.
-        assert_eq!(T5.groove.1, 0.3);
-        assert!(close(T5.groove.1 / T5.groove.0, 30f64.to_radians().tan()));
+    }
+
+    /// The catalog's Slot Bottom Details (120° and 0.3 deep) and the floor vertices of
+    /// the STEP models.
+    #[test]
+    fn the_t_slot_floor_is_the_misumi_floor() {
+        let Floor::Misumi(floor) = T5.floor else {
+            panic!("the T-slot has the MISUMI floor");
+        };
+        assert_eq!(floor.depth, 0.3);
+        assert_eq!(floor.flank * 2.0 + 120.0, 180.0);
+        assert_eq!(floor.round, 0.5);
+        assert!(close(floor.round_at(), 0.6536));
+        let (t, d) = floor.flank_top();
+        assert!(close(t, 0.4036) && close(4.0 - d, 3.933));
+        let (t, d) = floor.mark();
+        assert!(close(t, 1.2189) && close(4.0 - d, 3.751));
+        assert_eq!(floor.mark_end, 2.5);
     }
 
     /// The OpenBuilds drawing, and the DXF vertices the drawing does not dimension.

@@ -8,7 +8,7 @@
 //! no web runs to the middle, so the four cavities are one, and each core is open to it:
 //! a wedge of the core that faces the middle is left out, which makes the bore a C.
 
-use crate::slot::{Slot, HALF_CELL};
+use crate::slot::{Floor, Slot, HALF_CELL};
 
 pub type P = [f64; 2];
 
@@ -24,9 +24,8 @@ pub struct Grid {
 /// The sizes a rail comes in, by the name on a parts list.
 ///
 /// Sources: MISUMI catalog 2019 US p. 2686 to 2687 draws HFS5-2020, HFS5-2040 and
-/// HFS5-4040, and MISUMI's STEP models give NFS5-2040, NFS5-2060 and NFS5-4040.
-/// OpenBuilds publishes V-Slot 20x20, 20x40, 20x60 and 20x80. A T-slot 2080 repeats
-/// the 2060's cavity, as the V-slot drawings do.
+/// HFS5-4040, and MISUMI's STEP models give NFSF5-2020, NFS5-2040, NFS5-2060,
+/// NFS5-2080 and NFS5-4040. OpenBuilds publishes V-Slot 20x20, 20x40, 20x60 and 20x80.
 pub const SIZES: [(&str, Grid); 5] = [
     ("2020", Grid { nx: 1, ny: 1 }),
     ("2040", Grid { nx: 1, ny: 2 }),
@@ -151,8 +150,10 @@ impl Profile {
     }
 }
 
-/// One slot, as (distance along the side from the cell centre, depth below the face).
-fn slot_points(s: &Slot) -> Vec<P> {
+/// One slot in a side's own frame: each point is (distance along the side from the cell
+/// centre, depth below the face). The side runs anticlockwise round the rail, and an arc
+/// that is anticlockwise here is anticlockwise in the section.
+fn slot_segs(s: &Slot) -> Vec<Seg> {
     let floor = HALF_CELL - s.core;
     // Where the web edge meets the cavity wall.
     let shoulder = HALF_CELL - s.cavity - s.web_offset();
@@ -166,13 +167,50 @@ fn slot_points(s: &Slot) -> Vec<P> {
         [-s.cavity, shoulder],
         [-s.web_root(), floor],
     ]);
-    let mut out = left.clone();
-    let (half, depth) = s.groove;
-    if depth > 0.0 {
-        out.extend([[-half, floor], [0.0, floor + depth], [half, floor]]);
+    let right: Vec<P> = left.iter().rev().map(|p| [-p[0], p[1]]).collect();
+    let mut segs = chain(&left);
+    match s.floor {
+        Floor::Vee(half, depth) => {
+            let mut points = vec![left[left.len() - 1]];
+            points.extend([[-half, floor], [0.0, floor + depth], [half, floor]]);
+            points.push(right[0]);
+            segs.extend(chain(&points));
+        }
+        Floor::Misumi(m) => {
+            let (at, r) = (m.round_at(), m.round);
+            let (top, drop) = m.flank_top();
+            let (mark, mark_depth) = m.mark();
+            // A point on a rounding centred `centre` from the middle, `degrees` round
+            // from straight up towards the face, leaning the way the side runs.
+            let on = |centre: f64, degrees: f64| -> P {
+                let a = degrees.to_radians();
+                [centre + r * a.sin(), floor + r - r * a.cos()]
+            };
+            let arc = |centre: f64, from: f64, to: f64| Seg::Arc {
+                start: on(centre, from),
+                end: on(centre, to),
+                through: on(centre, (from + to) / 2.0),
+                centre: [centre, floor + r],
+                ccw: true,
+            };
+            segs.push(Seg::Line(left[left.len() - 1], [-at, floor]));
+            segs.push(arc(-at, 0.0, m.flank));
+            segs.extend(chain(&[
+                [-top, floor + drop],
+                [0.0, floor + m.depth],
+                [top, floor + drop],
+            ]));
+            segs.push(arc(at, -m.flank, m.flank));
+            segs.extend(chain(&[
+                on(at, m.flank),
+                [mark, floor + mark_depth],
+                [m.mark_end, floor],
+                right[0],
+            ]));
+        }
     }
-    out.extend(left.iter().rev().map(|p| [-p[0], p[1]]));
-    out
+    segs.extend(chain(&right));
+    segs
 }
 
 fn outline(s: &Slot, grid: &Grid) -> Vec<Seg> {
@@ -185,7 +223,7 @@ fn outline(s: &Slot, grid: &Grid) -> Vec<Seg> {
         ([w / 2.0, h / 2.0], [-1.0, 0.0], [0.0, 1.0], grid.nx),
         ([-w / 2.0, h / 2.0], [0.0, -1.0], [-1.0, 0.0], grid.ny),
     ];
-    let slot = slot_points(s);
+    let slot = slot_segs(s);
     let mut segs = Vec::new();
     for (start, e, n, cells) in sides {
         let length = CELL * cells as f64;
@@ -195,15 +233,15 @@ fn outline(s: &Slot, grid: &Grid) -> Vec<Seg> {
                 start[1] + t * e[1] - d * n[1],
             ]
         };
-        let mut points = vec![at(r, 0.0)];
+        let mut last = at(r, 0.0);
         for cell in 0..cells {
             let centre = HALF_CELL + CELL * cell as f64;
-            points.extend(slot.iter().map(|p| at(centre + p[0], p[1])));
+            let place = |p: P| at(centre + p[0], p[1]);
+            segs.push(Seg::Line(last, place(slot[0].start())));
+            segs.extend(slot.iter().map(|seg| map(seg, &place)));
+            last = place(slot[slot.len() - 1].end());
         }
-        points.push(at(length - r, 0.0));
-        for pair in points.windows(2) {
-            segs.push(Seg::Line(pair[0], pair[1]));
-        }
+        segs.push(Seg::Line(last, at(length - r, 0.0)));
         // The next side runs to the left of this one.
         let next = [-e[1], e[0]];
         let corner = at(length, 0.0);
@@ -458,21 +496,82 @@ mod tests {
         for (x, y) in [(2.9393, 6.0), (6.9393, 2.0), (8.0, 2.0), (8.0, -2.0)] {
             assert!(has(&cavity, x, y), "({x}, {y})");
         }
-        // The STEP section is 322.44 mm² and its cavity 142.96 mm².
-        assert!(close(loop_area(&p.cavities[0]), 142.96, 0.1));
-        assert!(close(p.area(), 322.44, 322.44 * 0.005));
+        // The STEP cavity is 142.96 mm² with its corners rounded.
+        assert!(close(loop_area(&p.cavities[0]), 142.96, 0.08));
     }
 
     /// MISUMI catalog 2019 US p. 2686 to 2687, "Sectional Area mm²": HFS5-2020 183,
-    /// HFS5-2040 324. The catalog rounds to a whole mm², and its 2040 is 0.5% over its
-    /// own STEP model. Its 4040 is 472, which is 1.5% under the STEP model, so the 4040
-    /// is held to the model instead.
+    /// HFS5-2040 324. The catalog is a loose check: its 2040 is 0.5% over MISUMI's own
+    /// STEP model and its 4040, at 472, is 1.5% under. The sections here are held to the
+    /// models, and to the catalog within 1%.
     #[test]
-    fn the_t_slot_areas_are_the_misumi_catalog_areas() {
+    fn the_t_slot_areas_are_near_the_misumi_catalog_areas() {
         for (size, area) in [("2020", 183.0), ("2040", 324.0)] {
             let got = profile(T5, size).area();
-            assert!(close(got, area, area * 0.005), "{size}: {got}");
+            assert!(close(got, area, area * 0.01), "{size}: {got}");
         }
+    }
+
+    /// The area of the end face of each MISUMI STEP model: `NFS5-2040-50.stp`,
+    /// `NFS5-2060-2060.stp`, `NFS5-2080-50.stp` and `NFS5-4040-50.stp`, summed from
+    /// vertices read to four decimals. The 2040 model rounds its cavity's corners to
+    /// R0.3, which adds 0.07 mm² of metal.
+    #[test]
+    fn the_t_slot_areas_are_the_misumi_step_areas() {
+        for (size, area, within) in [
+            ("2040", 322.438, 0.1),
+            ("2060", 463.486, 0.03),
+            ("2080", 604.595, 0.03),
+            ("4040", 479.131, 0.03),
+        ] {
+            let got = profile(T5, size).area();
+            assert!(close(got, area, within), "{size}: {got}");
+        }
+    }
+
+    /// Vertices of the three open slots of MISUMI's STEP model `NFSF5-2020-50.stp`,
+    /// whose fourth face is closed: the right slot and the corner above it.
+    #[test]
+    fn the_t_slot_2020_has_the_misumi_step_vertices() {
+        let p = profile(T5, "2020");
+        let outer: Vec<P> = p.outer.iter().map(|s| s.start()).collect();
+        for (x, y) in [
+            (10.0, -3.0),
+            (8.0, -3.0),
+            (8.0, -6.0),
+            (7.0607, -6.0),
+            (4.0, -2.9393),
+            (4.0, -0.6536),
+            (3.933, -0.4036),
+            (3.7, 0.0),
+            (3.933, 0.4036),
+            (3.933, 0.9036),
+            (3.751, 1.2189),
+            (4.0, 2.5),
+            (4.0, 2.9393),
+            (7.0607, 6.0),
+            (8.0, 6.0),
+            (8.0, 3.0),
+            (10.0, 3.0),
+            (10.0, 9.0),
+            (9.0, 10.0),
+            (3.0, 10.0),
+            (3.0, 8.0),
+            (6.0, 8.0),
+            (6.0, 7.0607),
+            (2.9393, 4.0),
+            (0.6536, 4.0),
+            (0.4036, 3.933),
+            (0.0, 3.7),
+            (-0.4036, 3.933),
+            (-0.9036, 3.933),
+            (-1.2189, 3.751),
+            (-2.5, 4.0),
+        ] {
+            assert!(has(&outer, x, y), "({x}, {y})");
+        }
+        // Each side has sixteen lines, the two roundings of its floor and a corner.
+        assert_eq!(outer.len(), 4 * 19);
     }
 
     /// The net area of each OpenBuilds DXF section: the outline less its cavities and bores.
@@ -553,7 +652,6 @@ mod tests {
         for cavity in &p.cavities {
             assert!(close(loop_area(cavity), 143.029, 0.001));
         }
-        assert!(close(p.area(), 463.49, 463.49 * 0.005));
     }
 
     /// Vertices of the end face of MISUMI's STEP model `NFS5-4040-50.stp`, in the top
@@ -593,8 +691,7 @@ mod tests {
         ] {
             assert!(has(&outer, x, y), "({x}, {y})");
         }
-        assert!(close(loop_area(&p.cavities[0]), 711.96, 0.05));
-        assert!(close(p.area(), 479.13, 479.13 * 0.005));
+        assert!(close(loop_area(&p.cavities[0]), 711.964, 0.002));
     }
 
     /// NFS5-4040: the wall between two slots is 2 mm thick, and each bore is open to

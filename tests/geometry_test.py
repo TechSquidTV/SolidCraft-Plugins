@@ -321,7 +321,24 @@ def slot_area(throat, mouth, lip, cavity, core, groove):
     opening = 2 * throat * lip + chamfer
     under_lip = 2 * cavity * (shoulder - lip)
     taper = (cavity + root) * (floor - shoulder)
-    return opening + under_lip + taper + groove[0] * groove[1]
+    return opening + under_lip + taper + groove
+
+
+def misumi_floor():
+    """What the MISUMI slot floor takes out of a core face: a 120 degree groove 0.3 deep
+    with both edges rounded to R0.5, and beside it a mark whose far side rises at 11
+    degrees to meet the floor 2.5 from the middle."""
+    depth, flank, r, rise, end = 0.3, math.radians(30), 0.5, math.radians(11), 2.5
+    drop = r * (1 - math.cos(flank))                   # where a rounding meets a flank
+    top = (depth - drop) / math.tan(flank)             # that point, from the middle
+    centre = top + r * math.sin(flank)                 # the centre of each rounding
+    # Under one rounding, from its top to where it meets a flank.
+    under = r * r * math.sin(flank) - r * r * (flank + math.sin(flank) * math.cos(flank)) / 2
+    start = centre + r * math.sin(flank)               # the mark starts off the rounding
+    mark = (math.tan(rise) * end - drop + math.tan(flank) * start) / (math.tan(flank) + math.tan(rise))
+    mark_depth = math.tan(rise) * (end - mark)
+    return (3 * under + (drop + depth) * top
+            + (drop + mark_depth) * (mark - start) / 2 + mark_depth * (end - mark) / 2)
 
 
 def cavity_area(lip, cavity, core):
@@ -332,8 +349,8 @@ def cavity_area(lip, cavity, core):
 
 
 BORE = PI * 2.1 ** 2
-T = dict(throat=3, mouth=3, lip=2, cavity=6, core=4, groove=(0.3 * math.tan(PI / 3), 0.3))
-V = dict(throat=3.125, mouth=4.58, lip=1.8, cavity=5.5, core=3.9, groove=(0.21, 0.21))
+T = dict(throat=3, mouth=3, lip=2, cavity=6, core=4, groove=misumi_floor())
+V = dict(throat=3.125, mouth=4.58, lip=1.8, cavity=5.5, core=3.9, groove=0.21 * 0.21)
 
 
 def rail_area(shape, cells, corner):
@@ -370,7 +387,7 @@ loose_rail("rail: V-slot 2060 x 80", {"slot": "V-slot", "size": "2060", "length"
 loose_rail("rail: T-slot 2080 x 50", {"slot": "T-slot", "size": "2080", "length": 50},
            rail_area(T, 4, 1.0), (20, 80, 50))
 # The end face of MISUMI's STEP model of NFS5-4040 is 479.13 mm2, with each core open to
-# the middle. The model also rounds the groove edges, so this is held to it within 0.5%.
+# the middle.
 @case
 def rail_4040(name):
     found, reply = plugin_run("techsquid-extrusions", "make-extrusion",
@@ -381,7 +398,7 @@ def rail_4040(name):
     rail = list(found.values())[0]
     got = rail["volume_mm3"] / 100
     box = [rail["bbox"]["max"][i] - rail["bbox"]["min"][i] for i in range(3)]
-    ok = (len(found) == 1 and rail["closed"] and abs(got - 479.13) < 479.13 * 0.005
+    ok = (len(found) == 1 and rail["closed"] and abs(got - 479.13) < 0.05
           and all(abs(box[i] - (40, 40, 100)[i]) < 1e-6 for i in range(3)))
     check(name, ok, f"| area {got:.2f}, STEP model 479.13; box {box}")
 

@@ -1,0 +1,49 @@
+{
+ "description": "A 300 mm cube frame of 20 mm rails with a gantry beam across the top. One techsquid-extrusions run stands four 300 mm T-slot 2020 uprights on the points of the sketch \"Upright points\". Two more runs lay eight 260 mm T-slot 2020 rails between them, bottom and top: four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane. The second of those runs finds the rail the first one built and places it again. A last run puts a 260 mm V-slot 2040 beam on edge between the top side rails. A rail's section is centred on its point, with its width along the sketch X and its height along the sketch Y, and the rail runs out of the sketch along its normal, so the plane and offset of each sketch say which way its rails run and where they start. The rails stay where the points were when the plugin ran, and no joint or fastener is modeled. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: each `volume_mm3` is the area of the section times the length.",
+ "steps": [
+  {"caption": "Sketch on the floor: one point per upright", "command": "sketch.create", "params": {"plane": "XY", "offset": 0, "name": "Upright points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [140, 140], "id": "u1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-140, 140], "id": "u2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-140, -140], "id": "u3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [140, -140], "id": "u4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Uprights: four 300 mm T-slot 2020 rails, standing on the points", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 300, "sketch": "Upright points", "sketch_point": "u1, u2, u3, u4"}}},
+  {"caption": "Sketch on the inner face of the left uprights: one point per rail that runs along X", "command": "sketch.create", "params": {"plane": "YZ", "offset": -130, "name": "Cross rail points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [140, 10], "id": "x1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-140, 10], "id": "x2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [140, 290], "id": "x3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-140, 290], "id": "x4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Cross rails: four 260 mm T-slot 2020 rails between the uprights, bottom and top", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 260, "sketch": "Cross rail points", "sketch_point": "x1, x2, x3, x4"}}},
+  {"caption": "Sketch on the inner face of the front uprights: one point per rail that runs along Y", "command": "sketch.create", "params": {"plane": "XZ", "offset": -130, "name": "Side rail points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [140, -10], "id": "y1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-140, -10], "id": "y2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [140, -290], "id": "y3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-140, -290], "id": "y4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Side rails: four more of the same rail, so the component is placed again and not rebuilt", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 260, "sketch": "Side rail points", "sketch_point": "y1, y2, y3, y4"}}},
+  {"caption": "Sketch for the gantry beam, between the top side rails", "command": "sketch.create", "params": {"plane": "YZ", "offset": -130, "name": "Gantry point"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [0, 280], "id": "g1"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Gantry: a 260 mm V-slot 2040 beam on edge, for wheels to run on", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2040", "length": 260, "sketch": "Gantry point", "sketch_point": "g1"}}}
+ ],
+ "expect": {
+  "bodies": 13,
+  "bbox": {"min": [-150, -150, 0], "max": [150, 150, 300]},
+  "placed": [
+   {"label": "upright at (140, 140)", "bbox": {"min": [130, 130, 0], "max": [150, 150, 300]}, "volume_mm3": 54378.86},
+   {"label": "upright at (-140, 140)", "bbox": {"min": [-150, 130, 0], "max": [-130, 150, 300]}, "volume_mm3": 54378.86},
+   {"label": "upright at (-140, -140)", "bbox": {"min": [-150, -150, 0], "max": [-130, -130, 300]}, "volume_mm3": 54378.86},
+   {"label": "upright at (140, -140)", "bbox": {"min": [130, -150, 0], "max": [150, -130, 300]}, "volume_mm3": 54378.86},
+   {"label": "cross rail at y 140, z 10", "bbox": {"min": [-130, 130, 0], "max": [130, 150, 20]}, "volume_mm3": 47128.35},
+   {"label": "cross rail at y 140, z 290", "bbox": {"min": [-130, 130, 280], "max": [130, 150, 300]}, "volume_mm3": 47128.35},
+   {"label": "cross rail at y -140, z 10", "bbox": {"min": [-130, -150, 0], "max": [130, -130, 20]}, "volume_mm3": 47128.35},
+   {"label": "cross rail at y -140, z 290", "bbox": {"min": [-130, -150, 280], "max": [130, -130, 300]}, "volume_mm3": 47128.35},
+   {"label": "side rail at x 140, z 10", "bbox": {"min": [130, -130, 0], "max": [150, 130, 20]}, "volume_mm3": 47128.35},
+   {"label": "side rail at x 140, z 290", "bbox": {"min": [130, -130, 280], "max": [150, 130, 300]}, "volume_mm3": 47128.35},
+   {"label": "side rail at x -140, z 10", "bbox": {"min": [-150, -130, 0], "max": [-130, 130, 20]}, "volume_mm3": 47128.35},
+   {"label": "side rail at x -140, z 290", "bbox": {"min": [-150, -130, 280], "max": [-130, 130, 300]}, "volume_mm3": 47128.35},
+   {"label": "gantry beam", "bbox": {"min": [-130, -10, 260], "max": [130, 10, 300]}, "volume_mm3": 77997.26}
+  ]
+ }
+}

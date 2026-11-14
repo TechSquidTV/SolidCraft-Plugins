@@ -19,6 +19,11 @@ because the approval changes with every build.
                cylindrical face of that radius on the corner's axis, starting at floor_z
     fasteners  [{label, diameter, z: [low, high]}] one such body on every corner: its box
                is `diameter` across, centred on the corner, from low to high
+    placed     [{label, bbox, volume_mm3}] one body with exactly that box and, to one
+               part in ten thousand, that volume. This is for placements that share a
+               name, such as the rails of a frame
+
+Only `bodies` and `bbox` are required.
 
 The saved design must also reopen with the same bodies. Each example also keeps the
 design it builds next to it, `examples/<name>.json`, which is what opens in SolidCraft:
@@ -121,7 +126,7 @@ def example(path):
             json.dumps(body["bbox"]) if body else "no such body",
         )
 
-    corners = expect["corners"]
+    corners = expect.get("corners", [])
     for hole in expect.get("holes", []):
         for x, y in corners:
             found = [
@@ -141,7 +146,14 @@ def example(path):
             want = {"min": [x - r, y - r, low], "max": [x + r, y + r, high]}
             found = [b for b in loose if box_is(b["bbox"], want)]
             check(f"{name}: one {kind['label']} at ({x:g}, {y:g})", len(found) == 1, f"got {len(found)}")
-    wanted = len(expect.get("fasteners", [])) * len(corners)
+    for part in expect.get("placed", []):
+        found = [
+            b for b in loose
+            if box_is(b["bbox"], part["bbox"])
+            and abs(b["volume_mm3"] - part["volume_mm3"]) <= 1e-4 * part["volume_mm3"]
+        ]
+        check(f"{name}: one {part['label']}", len(found) == 1, f"got {len(found)}")
+    wanted = len(expect.get("fasteners", [])) * len(corners) + len(expect.get("placed", []))
     check(f"{name}: no other bodies", len(loose) == wanted, f"{len(loose)} beside the named parts, expected {wanted}")
 
     code, text, results = run([{"command": "inspect.measure", "params": {}}], inp=saved)

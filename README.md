@@ -73,6 +73,10 @@ It inspects each package. A screw run must build an M3, an insert run must build
 
 A PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. One `make-screw` run on the points of a sketch on the 5 mm lid drills M3 clearance holes, each with a recess for the screw head, and sets an M3 × 6 socket head screw into each recess, its head flush with the lid. The screws and inserts have modeled threads.
 
+![A cube frame of T-slot rails with a V-slot gantry beam across the top](examples/rail-frame.png)
+
+A 300 mm cube frame of 20 mm rails. Four `make-extrusion` runs place thirteen rails, which are three components. The first stands four 300 mm T-slot 2020 uprights on the points of a sketch on the floor. Two more lay eight 260 mm T-slot 2020 rails between them, four along X from a sketch on the YZ plane and four along Y from a sketch on the XZ plane; the second of those runs places the rail the first one built. The last puts a 260 mm V-slot 2040 beam on edge between the top side rails. No joint or fastener is modeled.
+
 Each example comes as two files:
 
 - `examples/pcb-enclosure.json` is the design. Open it in SolidCraft (File > Open). It is saved by SolidCraft 0.42, so an older SolidCraft may refuse it as a newer file. SolidCraft rebuilds it as it opens, which takes a few seconds for the modeled threads. The plugins have already run, so opening it needs none of them installed.
@@ -82,13 +86,14 @@ Each example comes as two files:
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It builds every `*.steps.json` and checks the body count (each placement of a fastener is a body, measured where it is placed), the bounding boxes, the insert hole, the clearance hole and the head recess on each corner, one insert and one screw on each corner, that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks each rail's box and its volume, which is the area of its section times its length. For both it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
 
 The pictures are rendered from the design:
 
 ```
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --view iso --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure-closed.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame.png --width 1280 --height 800 --camera '{"target": [0, 0, 150], "yaw": 0.5, "pitch": 0.4, "distance": 720}' --no-grid --no-axes --quality fine
 ```
 
 `tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length.

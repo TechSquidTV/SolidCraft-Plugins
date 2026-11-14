@@ -69,9 +69,9 @@ It inspects each package. A screw run must build an M3, an insert run must build
 
 ![A PCB enclosure with a heat-set insert and a screw in each corner, the lid shown transparent](examples/pcb-enclosure.png)
 
-![The same enclosure closed: each screw head sits in a recess, below the top of the lid](examples/pcb-enclosure-closed.png)
+![The same enclosure closed: each screw head sits in a recess, flush with the top of the lid](examples/pcb-enclosure-closed.png)
 
-A PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. The 5 mm lid gets M3 clearance holes, each with a recess for the screw head, and four `make-screw` runs put an M3 × 6 socket head screw on each recess floor. The screws and inserts have modeled threads.
+A PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. One `make-screw` run on the points of a sketch on the 5 mm lid drills M3 clearance holes, each with a recess for the screw head, and sets an M3 × 6 socket head screw into each recess, its head flush with the lid. The screws and inserts have modeled threads.
 
 Each example comes as two files:
 

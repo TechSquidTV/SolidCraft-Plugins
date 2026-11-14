@@ -42,7 +42,7 @@
       "name": "lid_t",
       "expr": "5 mm",
       "unit": "mm",
-      "comment": "lid thickness: the screw head recess plus 1.8 mm under the head",
+      "comment": "lid thickness: the 3 mm screw head recess plus 2 mm under the head",
       "model": false
     },
     {
@@ -64,20 +64,6 @@
       "expr": "1.5 mm",
       "unit": "mm",
       "comment": "fillet where a boss meets the walls and the floor",
-      "model": false
-    },
-    {
-      "name": "head_d",
-      "expr": "6 mm",
-      "unit": "mm",
-      "comment": "recess diameter for the 5.5 mm M3 socket head",
-      "model": false
-    },
-    {
-      "name": "head_recess",
-      "expr": "3.2 mm",
-      "unit": "mm",
-      "comment": "recess depth for the 3 mm M3 socket head",
       "model": false
     }
   ],
@@ -2359,7 +2345,7 @@
     },
     {
       "id": 31,
-      "name": "Lid hole points",
+      "name": "Screw points",
       "suppressed": false,
       "param_names": [
         "d36"
@@ -2372,127 +2358,6 @@
           "name": "XY"
         },
         "distance": "height + lid_t"
-      },
-      "sketch": {
-        "points": [
-          {
-            "id": "origin",
-            "pos": [
-              0.0,
-              0.0
-            ],
-            "fixed": true
-          },
-          {
-            "id": "h1",
-            "pos": [
-              34.0,
-              24.0
-            ],
-            "fixed": true,
-            "exprs": {
-              "x": "width / 2 - corner_r",
-              "y": "depth / 2 - corner_r"
-            }
-          },
-          {
-            "id": "h2",
-            "pos": [
-              -34.0,
-              24.0
-            ],
-            "fixed": true,
-            "exprs": {
-              "x": "-(width / 2 - corner_r)",
-              "y": "depth / 2 - corner_r"
-            }
-          },
-          {
-            "id": "h3",
-            "pos": [
-              -34.0,
-              -24.0
-            ],
-            "fixed": true,
-            "exprs": {
-              "x": "-(width / 2 - corner_r)",
-              "y": "-(depth / 2 - corner_r)"
-            }
-          },
-          {
-            "id": "h4",
-            "pos": [
-              34.0,
-              -24.0
-            ],
-            "fixed": true,
-            "exprs": {
-              "x": "width / 2 - corner_r",
-              "y": "-(depth / 2 - corner_r)"
-            }
-          }
-        ],
-        "curves": [],
-        "constraints": [],
-        "counters": {}
-      }
-    },
-    {
-      "id": 32,
-      "name": "Lid holes",
-      "suppressed": false,
-      "param_names": [
-        "d37",
-        "d38",
-        "d39",
-        "d40"
-      ],
-      "participants": [
-        "Lid"
-      ],
-      "type": "hole",
-      "position": [
-        34.0,
-        24.0,
-        30.0
-      ],
-      "direction": [
-        -0.0,
-        -0.0,
-        -1.0
-      ],
-      "diameter": "3.4 mm",
-      "depth": "lid_t",
-      "hole": {
-        "type": "counterbore",
-        "cb_diameter": "head_d",
-        "cb_depth": "head_recess"
-      },
-      "points": {
-        "sketch": 31,
-        "ids": [
-          "h1",
-          "h2",
-          "h3",
-          "h4"
-        ]
-      }
-    },
-    {
-      "id": 33,
-      "name": "Screw points",
-      "suppressed": false,
-      "param_names": [
-        "d41"
-      ],
-      "type": "sketch",
-      "plane": {
-        "type": "offset",
-        "base": {
-          "type": "origin",
-          "name": "XY"
-        },
-        "distance": "height + lid_t - head_recess"
       },
       "sketch": {
         "points": [
@@ -2559,17 +2424,55 @@
       }
     },
     {
-      "id": 36,
+      "id": 32,
+      "name": "Counterbore M3",
+      "suppressed": false,
+      "param_names": [
+        "d37",
+        "d38",
+        "d39",
+        "d40"
+      ],
+      "type": "hole",
+      "position": [
+        34.0,
+        24.0,
+        30.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "3.4 mm",
+      "depth": "9",
+      "hole": {
+        "type": "counterbore",
+        "cb_diameter": "6.5",
+        "cb_depth": "3"
+      },
+      "points": {
+        "sketch": 31,
+        "ids": [
+          "s1",
+          "s2",
+          "s3",
+          "s4"
+        ]
+      }
+    },
+    {
+      "id": 35,
       "name": "Screw M3 x 6 socket: Shank",
       "suppressed": false,
       "body_names": [
         "Screw M3 x 6 socket"
       ],
       "param_names": [
-        "d42",
-        "d43"
+        "d41",
+        "d42"
       ],
-      "component": 34,
+      "component": 33,
       "type": "cylinder",
       "base": [
         0.0,
@@ -2586,14 +2489,14 @@
       "operation": "new_body"
     },
     {
-      "id": 37,
+      "id": 36,
       "name": "Screw M3 x 6 socket: Head",
       "suppressed": false,
       "param_names": [
-        "d44",
-        "d45"
+        "d43",
+        "d44"
       ],
-      "component": 34,
+      "component": 33,
       "participants": [
         "Screw M3 x 6 socket"
       ],
@@ -2613,10 +2516,10 @@
       "operation": "join"
     },
     {
-      "id": 38,
+      "id": 37,
       "name": "Screw M3 x 6 socket: Hex socket profile",
       "suppressed": false,
-      "component": 34,
+      "component": 33,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -2748,15 +2651,15 @@
       }
     },
     {
-      "id": 39,
+      "id": 38,
       "name": "Screw M3 x 6 socket: Hex socket",
       "suppressed": false,
       "param_names": [
-        "d46"
+        "d45"
       ],
-      "component": 34,
+      "component": 33,
       "type": "extrude",
-      "sketch": 38,
+      "sketch": 37,
       "profiles": {
         "type": "all"
       },
@@ -2771,12 +2674,12 @@
       ]
     },
     {
-      "id": 40,
+      "id": 39,
       "name": "Screw M3 x 6 socket: Thread",
       "suppressed": false,
-      "component": 34,
+      "component": 33,
       "face_names": [
-        "F36:side"
+        "F35:side"
       ],
       "type": "thread",
       "face": [
@@ -2794,7 +2697,7 @@
       ]
     }
   ],
-  "next_id": 44,
+  "next_id": 43,
   "components": [
     {
       "id": 12,
@@ -2821,7 +2724,7 @@
       }
     },
     {
-      "id": 34,
+      "id": 33,
       "identification_color_index": 2,
       "name": "Screw M3 x 6 socket",
       "parent": 12,
@@ -3004,8 +2907,8 @@
       "grounded": false
     },
     {
-      "id": 35,
-      "component": 34,
+      "id": 34,
+      "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:1",
       "transform": [
@@ -3030,15 +2933,15 @@
         [
           34.0,
           24.0,
-          26.8,
+          27.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 41,
-      "component": 34,
+      "id": 40,
+      "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:2",
       "transform": [
@@ -3063,15 +2966,15 @@
         [
           -34.0,
           24.0,
-          26.8,
+          27.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 42,
-      "component": 34,
+      "id": 41,
+      "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:3",
       "transform": [
@@ -3096,15 +2999,15 @@
         [
           -34.0,
           -24.0,
-          26.8,
+          27.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 43,
-      "component": 34,
+      "id": 42,
+      "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:4",
       "transform": [
@@ -3129,7 +3032,7 @@
         [
           34.0,
           -24.0,
-          26.8,
+          27.0,
           1.0
         ]
       ],

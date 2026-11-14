@@ -20,7 +20,7 @@ plugins/threadcraft-screws screw entry and its parameters
 plugins/threadcraft-inserts heat-set insert entry, catalog, and parameters
 plugins/threadcraft-nuts  ISO 4032 hexagon nut entry and its parameters
 build.sh                   the packages land in dist/threadcraft-screws/, dist/threadcraft-inserts/, and dist/threadcraft-nuts/
-examples/                  designs built with the plugins, one JSON script each
+examples/                  designs built with the plugins: <name>.json opens in SolidCraft, <name>.steps.json builds it
 tests/cli_test.py          runs the built package through solidcraft-cli
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
@@ -82,15 +82,25 @@ It inspects each package. A screw run must build an M3, an insert run must build
 
 ![The same enclosure closed: each screw head sits in a recess, below the top of the lid](examples/pcb-enclosure-closed.png)
 
-`examples/pcb-enclosure.json` builds a PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. The 5 mm lid gets M3 clearance holes, each with a recess for the screw head, and four `make-screw` runs put an M3 × 6 socket head screw on each recess floor.
+A PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. The 5 mm lid gets M3 clearance holes, each with a recess for the screw head, and four `make-screw` runs put an M3 × 6 socket head screw on each recess floor. The screws and inserts have modeled threads.
 
-An example is a list of steps, one SolidCraft command each, in the shape SolidCraft's own demo recordings replay: `caption` is the text shown for the step. A plugin step is a `plugin.run` with `"path": "dist/<id>"` and `"approval": "@approval"`. The approval changes with every build, so the test inspects each package and fills it in. `expect` holds what the finished design must measure.
+Each example comes as two files:
+
+- `examples/pcb-enclosure.json` is the design. Open it in SolidCraft (File > Open). It is saved by SolidCraft 0.42, so an older SolidCraft may refuse it as a newer file. SolidCraft rebuilds it as it opens, which takes a few seconds for the modeled threads. The plugins have already run, so opening it needs none of them installed.
+- `examples/pcb-enclosure.steps.json` builds that design, one SolidCraft command per step, with a `caption` saying what each step does. It is not a design file, so SolidCraft does not open it. A plugin step is a `plugin.run` with `"path": "dist/<id>"` and `"approval": "@approval"`. The approval changes with every build, so the test inspects each package and fills it in. `expect` holds what the finished design must measure.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It runs every example and checks the body count, the bounding boxes, the insert hole, the clearance hole and the head recess on each corner, one insert and one screw on each corner, and that the saved design reopens. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count, the bounding boxes, the insert hole, the clearance hole and the head recess on each corner, one insert and one screw on each corner, that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+
+The pictures are rendered from the design:
+
+```
+solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --view iso --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
+solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure-closed.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
+```
 
 `tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws.
 

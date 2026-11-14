@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Build every example in examples/ with the built plugins and measure the result.
 
-    SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py [example.json ...]
+    SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py [--update] [example.steps.json ...]
 
-An example is {"description", "steps": [{"caption", "command", "params"}], "expect"}.
+An example is `examples/<name>.steps.json`:
+{"description", "steps": [{"caption", "command", "params"}], "expect"}.
 A plugin step is a plugin.run whose path is relative to the repository (dist/<id>) and
 whose approval is "@approval". This test inspects each package and fills both in,
 because the approval changes with every build.
@@ -19,11 +20,17 @@ because the approval changes with every build.
     fasteners  [{label, diameter, z: [low, high]}] one such body on every corner: its box
                is `diameter` across, centred on the corner, from low to high
 
-The saved design must also reopen with the same bodies. On the signed macOS build of
+The saved design must also reopen with the same bodies. Each example also keeps the
+design it builds next to it, `examples/<name>.json`, which is what opens in SolidCraft:
+the steps file is not a design. That design must match a fresh build, body for body,
+with the same names and volumes. `--update` writes it from the fresh build instead,
+after a plugin or an example changes.
+
+On the signed macOS build of
 SolidCraft 0.41.0 a plugin run kills the CLI with SIGKILL; that example is reported and
 skipped.
 """
-import glob, json, os, sys
+import glob, json, os, shutil, sys
 
 from harness import ROOT, TMP, check, finish, inspect, killed, package, run, skip
 
@@ -85,7 +92,9 @@ def example(path):
     measure_at = len(steps)
     steps.append({"command": "inspect.measure", "params": {}})
     steps += [{"command": "model.faces", "params": {"body": b}} for b in hole_bodies]
-    saved = os.path.join(TMP, os.path.basename(path) + ".sc")
+    design = path[: -len(".steps.json")] + ".json"
+    # A .json path saves SolidCraft's plain design format, the one kept in examples/.
+    saved = os.path.join(TMP, os.path.basename(design))
 
     code, text, results = run(steps, save=saved)
     if killed(code):
@@ -143,8 +152,25 @@ def example(path):
         text[-800:] or f"got {len(reopened)}",
     )
 
+    if UPDATE:
+        shutil.copyfile(saved, design)
+        print(f"wrote {os.path.relpath(design, ROOT)}")
+        return
+    code, text, results = run([{"command": "inspect.measure", "params": {}}], inp=design)
+    kept = {b["name"]: b["volume_mm3"] for b in results[0]["bodies"]} if code == 0 and results else None
+    fresh = {b["name"]: b["volume_mm3"] for b in reopened}
+    same = kept is not None and sorted(kept) == sorted(fresh) and all(
+        abs(kept[n] - fresh[n]) <= 1e-6 * max(1.0, abs(fresh[n])) for n in fresh)
+    check(
+        f"{name}: {os.path.relpath(design, ROOT)} matches a fresh build",
+        same,
+        "run with --update to write it" if kept is None else
+        f"{len(kept)} bodies kept, {len(fresh)} built; after a plugin or example change, run with --update",
+    )
 
-paths = sys.argv[1:] or sorted(glob.glob(os.path.join(ROOT, "examples", "*.json")))
+
+UPDATE = "--update" in sys.argv[1:]
+paths = [a for a in sys.argv[1:] if a != "--update"] or sorted(glob.glob(os.path.join(ROOT, "examples", "*.steps.json")))
 if not paths:
     sys.exit("no examples found")
 for path in paths:

@@ -227,7 +227,7 @@ fn outline(s: &Slot, grid: &Grid) -> Vec<Seg> {
 
 /// How far past its centre lines a core of a 2 x 2 rail runs before it opens to the
 /// middle cavity. The HFS5-4040 section draws the opening and gives no size for it; with
-/// 0.4 mm the section has the catalog's area.
+/// 0.4 mm the section is within 0.5% of the catalog's area.
 pub const OPEN_CORE_RIB: f64 = 0.4;
 
 fn cavities(s: &Slot, grid: &Grid) -> Vec<Vec<Seg>> {
@@ -415,8 +415,48 @@ mod tests {
         }
     }
 
+    /// Vertices of the end face of MISUMI's STEP model `NFS5-2040-50.stp`, in the top
+    /// right quarter: the top cell's slots, its core and webs, and the closed cavity.
+    #[test]
+    fn the_t_slot_2040_has_the_misumi_step_vertices() {
+        let p = profile(T5, "2040");
+        let outer: Vec<P> = p.outer.iter().map(|s| s.start()).collect();
+        for (x, y) in [
+            (10.0, 7.0),
+            (8.0, 7.0),
+            (8.0, 4.0),
+            (7.0607, 4.0),
+            (4.0, 7.0607),
+            (3.7, 10.0),
+            (4.0, 12.9393),
+            (7.0607, 16.0),
+            (8.0, 16.0),
+            (8.0, 13.0),
+            (10.0, 13.0),
+            (10.0, 19.0),
+            (9.0, 20.0),
+            (3.0, 20.0),
+            (3.0, 18.0),
+            (6.0, 18.0),
+            (6.0, 17.0607),
+            (2.9393, 14.0),
+            (0.0, 13.7),
+        ] {
+            assert!(has(&outer, x, y), "({x}, {y})");
+        }
+        // The STEP model rounds the cavity's corners to R0.3; these are the sharp ones.
+        let cavity: Vec<P> = p.cavities[0].iter().map(|s| s.start()).collect();
+        for (x, y) in [(2.9393, 6.0), (6.9393, 2.0), (8.0, 2.0), (8.0, -2.0)] {
+            assert!(has(&cavity, x, y), "({x}, {y})");
+        }
+        // The STEP section is 322.44 mm² and its cavity 142.96 mm².
+        assert!(close(loop_area(&p.cavities[0]), 142.96, 0.1));
+        assert!(close(p.area(), 322.44, 322.44 * 0.005));
+    }
+
     /// MISUMI catalog 2019 US p. 2686 to 2687, "Sectional Area mm²": HFS5-2020 183,
-    /// HFS5-2040 324, HFS5-4040 472. The catalog rounds to a whole mm².
+    /// HFS5-2040 324, HFS5-4040 472. The catalog rounds to a whole mm², and its 2040 is
+    /// 0.5% over its own STEP model.
     #[test]
     fn the_t_slot_areas_are_the_misumi_catalog_areas() {
         for (size, area) in [("2020", 183.0), ("2040", 324.0), ("4040", 472.0)] {

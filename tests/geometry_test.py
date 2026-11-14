@@ -332,7 +332,7 @@ def cavity_area(lip, cavity, core):
 
 
 BORE = PI * 2.1 ** 2
-T = dict(throat=3, mouth=3, lip=2, cavity=6, core=4, groove=(0, 0))
+T = dict(throat=3, mouth=3, lip=2, cavity=6, core=4, groove=(0.3 * math.tan(PI / 3), 0.3))
 V = dict(throat=3.125, mouth=4.58, lip=1.8, cavity=5.5, core=3.9, groove=(0.21, 0.21))
 
 

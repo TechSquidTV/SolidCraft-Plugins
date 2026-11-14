@@ -62,9 +62,10 @@ impl Slot {
 ///
 /// Source: MISUMI catalog 2019 US p. 2686 to 2687, "Slot Details (Common to All Series)"
 /// (6 mm slot, 2 mm lip, 12 mm cavity, 4 mm from the lip to the floor) and the HFS5-2020
-/// and HFS5-4040 sections (8 mm core, Ø4.2 bore, 4-R1 corners, 1.5 mm webs). The HFS and
-/// CAF rails also have a 0.3 mm groove along the slot floor, which the NFS rails do not
-/// have and which is left out here.
+/// and HFS5-4040 sections (8 mm core, Ø4.2 bore, 4-R1 corners, 1.5 mm webs), and "Slot
+/// Bottom Details" (a 120° groove 0.3 mm deep along the slot floor). MISUMI's STEP model
+/// of NFS5-2040 has the same vertices. It also rounds the groove's edges to R0.5 and the
+/// corners of the closed cavity to R0.3, which are left sharp here.
 pub const T5: Slot = Slot {
     name: "T-slot",
     throat: 3.0,
@@ -73,7 +74,8 @@ pub const T5: Slot = Slot {
     cavity: 6.0,
     core: 4.0,
     web: 1.5,
-    groove: (0.0, 0.0),
+    // 0.3 deep at 120°: half as wide as 0.3 x tan 60°.
+    groove: (0.519_615_242_270_663_2, 0.3),
     bore: 4.2,
     corner: 1.0,
 };
@@ -118,6 +120,9 @@ mod tests {
         assert_eq!(T5.bore, 4.2);
         assert_eq!(T5.corner, 1.0);
         assert_eq!(T5.web, 1.5);
+        // Slot Bottom Details: 120° and 0.3 deep.
+        assert_eq!(T5.groove.1, 0.3);
+        assert!(close(T5.groove.1 / T5.groove.0, 30f64.to_radians().tan()));
     }
 
     /// The OpenBuilds drawing, and the DXF vertices the drawing does not dimension.

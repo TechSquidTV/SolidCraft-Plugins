@@ -1,0 +1,51 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the tag matches the version
+        run: |
+          ver="${GITHUB_REF_NAME#v}"
+          cargo_ver=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml","rb"))["workspace"]["package"]["version"])')
+          python3 - "$ver" "$cargo_ver" <<'PY'
+          import json, pathlib, sys
+          tag, cargo = sys.argv[1], sys.argv[2]
+          if tag != cargo:
+              raise SystemExit(f"tag {tag}, Cargo.toml {cargo}")
+          for path in pathlib.Path("plugins").glob("*/plugin.json"):
+              got = json.loads(path.read_text())["version"]
+              if got != tag:
+                  raise SystemExit(f"tag {tag}, {path} {got}")
+          print(tag)
+          PY
+          echo "VERSION=$ver" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-tools
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: ./build.sh
+      - name: Package
+        run: |
+          mkdir -p out
+          for id in threadcraft-screws threadcraft-inserts threadcraft-nuts; do
+            (cd dist && zip -r "../out/${id}-${VERSION}.zip" "$id")
+            (cd out && sha256sum "${id}-${VERSION}.zip" > "${id}-${VERSION}.zip.sha256")
+          done
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" out/* --title "SolidCraft Threadcraft $VERSION" \
+            --notes "Screw, heat-set insert, and DIN 934 hexagon nut plugins for SolidCraft. Unzip a folder into your SolidCraft plugins folder; see the README."

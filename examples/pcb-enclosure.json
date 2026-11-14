@@ -1,0 +1,68 @@
+{
+ "description": "A PCB enclosure closed with heat-set inserts and screws. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One threadcraft-inserts run drills the four bosses and builds four M3 x 5.7 inserts on the points of the sketch \"Insert points\". The lid gets M3 clearance holes with a recess for each screw head, and four threadcraft-screws runs put an M3 x 6 socket head screw on each recess floor, its head below the top of the lid. The base, the lid and the holes follow the parameters. The insert and screw bodies stay where the points were when the plugin ran. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures.",
+ "steps": [
+  {"caption": "Parameters: the box, its wall, the lid, the bosses, and the screw head recesses", "command": "parameters.change", "params": {"name": "width", "expression": "80 mm", "comment": "outside, X"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "depth", "expression": "60 mm", "comment": "outside, Y"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "height", "expression": "25 mm", "comment": "base, floor to rim"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "wall", "expression": "2 mm", "comment": "wall and floor"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "lid_t", "expression": "5 mm", "comment": "lid thickness: the screw head recess plus 1.8 mm under the head"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "corner_r", "expression": "6 mm", "comment": "outside corner radius; each insert sits on the corner's centre"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "boss_d", "expression": "9 mm", "comment": "boss width from each wall's corner centre: the 4 mm insert hole plus 2.5 mm of wall on its free sides"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "boss_fillet", "expression": "1.5 mm", "comment": "fillet where a boss meets the walls and the floor"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "head_d", "expression": "6 mm", "comment": "recess diameter for the 5.5 mm M3 socket head"}},
+  {"caption": "", "command": "parameters.change", "params": {"name": "head_recess", "expression": "3.2 mm", "comment": "recess depth for the 3 mm M3 socket head"}},
+  {"caption": "The base: a block", "command": "solid.box", "params": {"length": "width", "width": "depth", "height": "height", "center": [0, 0, "height / 2"], "name": "Base block", "body_name": "Base"}},
+  {"caption": "Round the four corners", "command": "solid.fillet", "params": {"edges": [[40, 30, 12.5], [-40, 30, 12.5], [-40, -30, 12.5], [40, -30, 12.5]], "radius": "corner_r", "body": "Base", "name": "Base corners"}},
+  {"caption": "Hollow it from the top", "command": "solid.shell", "params": {"faces": [[0, 0, 25]], "thickness": "wall", "name": "Base shell"}},
+  {"caption": "A square boss in each corner, floor to rim, reaching into both walls", "command": "solid.box", "params": {"length": "boss_d / 2 + 0.7 * corner_r", "width": "boss_d / 2 + 0.7 * corner_r", "height": "height", "center": ["width / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2", "depth / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2", "height / 2"], "operation": "join", "targets": ["Base"], "name": "Boss 1"}},
+  {"caption": "", "command": "solid.box", "params": {"length": "boss_d / 2 + 0.7 * corner_r", "width": "boss_d / 2 + 0.7 * corner_r", "height": "height", "center": ["-(width / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2)", "depth / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2", "height / 2"], "operation": "join", "targets": ["Base"], "name": "Boss 2"}},
+  {"caption": "", "command": "solid.box", "params": {"length": "boss_d / 2 + 0.7 * corner_r", "width": "boss_d / 2 + 0.7 * corner_r", "height": "height", "center": ["-(width / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2)", "-(depth / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2)", "height / 2"], "operation": "join", "targets": ["Base"], "name": "Boss 3"}},
+  {"caption": "", "command": "solid.box", "params": {"length": "boss_d / 2 + 0.7 * corner_r", "width": "boss_d / 2 + 0.7 * corner_r", "height": "height", "center": ["width / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2", "-(depth / 2 - corner_r + (0.7 * corner_r - boss_d / 2) / 2)", "height / 2"], "operation": "join", "targets": ["Base"], "name": "Boss 4"}},
+  {"caption": "Round each boss's free edge around its insert point", "command": "solid.fillet", "params": {"edges": [[29.5, 19.5, 13.5], [-29.5, 19.5, 13.5], [-29.5, -19.5, 13.5], [29.5, -19.5, 13.5]], "radius": "boss_d / 2", "body": "Base", "name": "Boss rounds"}},
+  {"caption": "Fillet where the bosses meet the walls and the floor", "command": "solid.fillet", "params": {"edges": [[38, 19.5, 13.5], [29.5, 28, 13.5], [29.5, 22.5, 2], [-38, 19.5, 13.5], [-29.5, 28, 13.5], [-29.5, 22.5, 2], [-38, -19.5, 13.5], [-29.5, -28, 13.5], [-29.5, -22.5, 2], [38, -19.5, 13.5], [29.5, -28, 13.5], [29.5, -22.5, 2]], "radius": "boss_fillet", "body": "Base", "name": "Boss fillets"}},
+  {"caption": "Sketch on the rim: one point per boss", "command": "sketch.create", "params": {"plane": "XY", "offset": "height", "name": "Insert points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "depth / 2 - corner_r"], "id": "i1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "depth / 2 - corner_r"], "id": "i2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "-(depth / 2 - corner_r)"], "id": "i3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "-(depth / 2 - corner_r)"], "id": "i4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Threadcraft inserts: four M3 heat-set inserts, holes and all", "command": "plugin.run", "params": {"path": "dist/threadcraft-inserts", "approval": "@approval", "entry": "make-insert", "params": {"size": "M3 × 5.7", "create": "Hole and insert", "hole_type": "Heat-set (straight)", "hole_depth": "Blind", "hole_adjust": 0, "sketch": "Insert points", "sketch_point": "i1, i2, i3, i4"}}},
+  {"caption": "The lid: a plate on the rim", "command": "solid.box", "params": {"length": "width", "width": "depth", "height": "lid_t", "center": [0, 0, "height + lid_t / 2"], "operation": "new", "name": "Lid plate", "body_name": "Lid"}},
+  {"caption": "", "command": "solid.fillet", "params": {"edges": [[40, 30, 27.5], [-40, 30, 27.5], [-40, -30, 27.5], [40, -30, 27.5]], "radius": "corner_r", "body": "Lid", "name": "Lid corners"}},
+  {"caption": "Sketch on the lid: one point per hole", "command": "sketch.create", "params": {"plane": "XY", "offset": "height + lid_t", "name": "Lid hole points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "depth / 2 - corner_r"], "id": "h1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "depth / 2 - corner_r"], "id": "h2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "-(depth / 2 - corner_r)"], "id": "h3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "-(depth / 2 - corner_r)"], "id": "h4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "M3 clearance holes, each with a recess for the screw head", "command": "solid.hole", "params": {"sketch": "Lid hole points", "points": ["h1", "h2", "h3", "h4"], "clearance": "M3", "type": "counterbore", "cb_diameter": "head_d", "cb_depth": "head_recess", "depth": "lid_t", "targets": ["Lid"], "name": "Lid holes"}},
+  {"caption": "Sketch on the recess floors: one point per screw", "command": "sketch.create", "params": {"plane": "XY", "offset": "height + lid_t - head_recess", "name": "Screw points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "depth / 2 - corner_r"], "id": "s1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "depth / 2 - corner_r"], "id": "s2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "-(depth / 2 - corner_r)"], "id": "s3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "-(depth / 2 - corner_r)"], "id": "s4"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "Threadcraft screws: an M3 x 6 socket head screw into each insert", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s1"}}},
+  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s2"}}},
+  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s3"}}},
+  {"caption": "", "command": "plugin.run", "params": {"path": "dist/threadcraft-screws", "approval": "@approval", "entry": "make-screw", "params": {"designation": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "sketch": "Screw points", "sketch_point": "s4"}}}
+ ],
+ "expect": {
+  "bodies": 10,
+  "bbox": {"min": [-40, -30, 0], "max": [40, 30, 30]},
+  "corners": [[34, 24], [-34, 24], [-34, -24], [34, -24]],
+  "parts": [
+   {"body": "Base", "bbox": {"min": [-40, -30, 0], "max": [40, 30, 25]}},
+   {"body": "Lid", "bbox": {"min": [-40, -30, 25], "max": [40, 30, 30]}}
+  ],
+  "holes": [
+   {"label": "insert hole", "body": "Base", "radius": 2.0, "floor_z": 18.3},
+   {"label": "clearance hole", "body": "Lid", "radius": 1.7, "floor_z": 25},
+   {"label": "head recess", "body": "Lid", "radius": 3.0, "floor_z": 26.8}
+  ],
+  "fasteners": [
+   {"label": "insert", "diameter": 4.6, "z": [19.3, 25]},
+   {"label": "screw", "diameter": 5.5, "z": [20.8, 29.8]}
+  ]
+ }
+}

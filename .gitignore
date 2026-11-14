@@ -1,0 +1,5 @@
+/target
+/dist
+/pkg
+.DS_Store
+/.claude/

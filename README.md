@@ -9,6 +9,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Screws](plugins/techsquid-screws/README.md) | `techsquid-screws` | Fasteners | Metric machine screws to ISO standards on selected sketch points (socket, button, countersunk, hex, pan and cheese heads, set screws and threaded rod), with any drive, and optionally the clearance, counterbored, countersunk or tapped hole |
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
+| [Aluminium extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length and placed on selected sketch points |
 
 Each plugin's README covers installing it, its dialog fields, the standards it follows and the names it gives bodies and features. Each release has one zip per plugin. To install a plugin, unzip its folder into SolidCraft's plugins folder.
 
@@ -22,8 +23,9 @@ The three fastener plugins share field names (`size`, `custom_size`, `create`, `
 
 ```
 Cargo.toml                 workspace
-crates/plugin-kit/         what every plugin shares: the host runner and wasm guest, dialog fields, placement, and names
+crates/plugin-kit/         what every plugin shares: the host runner and wasm guest, dialog fields, placement, components, and names
 crates/fasteners/          designations, metric sizes, standard heads, ISO 4032 nuts, ISO 273 clearance holes, drives, and the hex profile
+crates/extrusions/         the 20 mm T-slot and V-slot shapes, and the section of a rail built from them
 wit/plugin.wit             copy of SolidCraft's craft:plugin@0.1.0
 plugins/techsquid-screws   screw entry and its parameters
 plugins/techsquid-inserts  heat-set insert entry, catalog, and parameters
@@ -34,7 +36,7 @@ tests/cli_test.py          runs the built package through solidcraft-cli
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
 
-A plugin id is the folder name under `plugins/` and the folder you install. Preferences matches those. Each plugin owns its entry and the fields a person sets. Every plugin id starts with `techsquid-`, because SolidCraft plugin ids share one namespace. Code any plugin can use lives in `crates/plugin-kit`; fastener geometry lives in `crates/fasteners`, and a new family of plugins gets its own crate beside it. The insert catalog stays in the insert plugin.
+A plugin id is the folder name under `plugins/` and the folder you install. Preferences matches those. Each plugin owns its entry and the fields a person sets. Every plugin id starts with `techsquid-`, because SolidCraft plugin ids share one namespace. Code any plugin can use lives in `crates/plugin-kit`; fastener geometry lives in `crates/fasteners` and rail sections in `crates/extrusions`, and a new family of plugins gets its own crate beside them. The insert catalog stays in the insert plugin.
 
 ## Build
 
@@ -93,7 +95,7 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 ## Components
 
-Each fastener is a component of its own. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
+Each fastener or rail is a component of its own. The rest of this section speaks of fasteners; a rail is placed the same way, in an `Extrusions` folder. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
 
 - **One definition, many placements.** A run builds the fastener once, at its component's origin, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with the point on the origin and its outer side up +Z; each placement turns that onto the sketch.
 - **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.

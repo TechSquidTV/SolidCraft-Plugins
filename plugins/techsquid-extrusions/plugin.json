@@ -1,0 +1,76 @@
+{
+  "id": "techsquid-extrusions",
+  "name": "Aluminium extrusions",
+  "version": "0.1.0",
+  "description": "20 mm series T-slot and V-slot aluminium extrusions, cut to any length. Select sketch points first: each gets a rail centred on it, running out of the sketch. With nothing selected one rail stands on the origin.",
+  "capabilities": ["commands@0.1"],
+  "runtime": {
+    "module": "plugin.wasm",
+    "entries": [
+      {
+        "name": "make-extrusion",
+        "effect": "edit",
+        "input_schema": {
+          "type": "object",
+          "required": ["slot", "size", "length"],
+          "properties": {
+            "slot": {
+              "type": "string",
+              "title": "Slot",
+              "description": "T-slot is the MISUMI 5 series rail (HFS5, NFS5) with a 6 mm slot. V-slot is the OpenBuilds rail, whose slot faces are chamfered for wheels.",
+              "default": "T-slot",
+              "enum": ["T-slot", "V-slot"]
+            },
+            "size": {
+              "type": "string",
+              "title": "Size",
+              "description": "Width and height in tens of millimetres: 2040 is 20 mm along the sketch X and 40 mm along Y. A V-slot comes as 2020 to 2080.",
+              "default": "2020",
+              "enum": ["2020", "2040", "2060", "2080", "4040"]
+            },
+            "length": {
+              "type": "number",
+              "title": "Length",
+              "description": "How long the rail is cut.",
+              "default": 500,
+              "exclusiveMinimum": 0,
+              "maximum": 6000,
+              "unit": "mm"
+            },
+            "sketch": {
+              "type": "string",
+              "title": "Sketch",
+              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point."
+            },
+            "sketch_point": {
+              "type": "string",
+              "title": "Sketch point",
+              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection."
+            }
+          }
+        },
+        "slots": [{"kind": "menu", "name": "Aluminium extrusion"}]
+      }
+    ],
+    "commands": [
+      "selection.get",
+      "inspect.measure",
+      "sketch.inspect",
+      "sketch.create",
+      "sketch.line",
+      "sketch.arc.three_point",
+      "sketch.circle.center",
+      "sketch.finish",
+      "solid.extrude",
+      "component.list",
+      "component.create",
+      "component.metadata",
+      "component.metadata.set",
+      "component.activate",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent"
+    ],
+    "limits": {"fuel": 200000000, "memory_mib": 64, "deadline_ms": 30000}
+  }
+}

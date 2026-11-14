@@ -13,12 +13,13 @@ A new plugin gets its own README with those sections and a row in the main READM
 
 - `crates/plugin-kit`: code any plugin needs. It holds the `Runner` trait and the `guest!` macro that exports the wasm entry (`host.rs`), dialog fields and `FieldError` (`input.rs`), placement on a selected or named sketch point (`place.rs`), parts placed as components (`component.rs`), and body and feature names (`name.rs`). Nothing fastener-specific goes here.
 - `crates/fasteners`: fastener standards and geometry, such as size designations, metric sizes, heads, drives, nuts, clearance holes and the hex profile. It depends on `plugin-kit`.
+- `crates/extrusions`: slotted aluminium rails. `slot.rs` holds the T-slot and V-slot shapes with their sources, and `profile.rs` builds a rail's section from a slot and a grid of 20 mm cells. It depends on nothing.
 - `plugins/techsquid-<name>`: one plugin each, with its `plugin.json` manifest and README. The entry and its parameter parsing live in the plugin, and so does a catalog only one plugin uses (the insert catalog).
 - `wit/plugin.wit`: a copy of SolidCraft's `craft:plugin@0.1.0`. `guest!` generates bindings from `../../wit`.
 - `examples/`: `<name>.json` is a design that opens in SolidCraft. `<name>.steps.json` builds that design one command at a time.
 - `tests/*.py`: host tests that run the built packages through `solidcraft-cli`.
 
-A new family of plugins, such as aluminium extrusions, gets its own crate beside `fasteners` (for example `crates/extrusions`) and reuses `plugin-kit`. Don't make it depend on `fasteners` just for one helper. If a helper is generic, move it to `plugin-kit`.
+A new family of plugins gets its own crate beside `fasteners` and `extrusions`, and reuses `plugin-kit`. Don't make it depend on `fasteners` just for one helper. If a helper is generic, move it to `plugin-kit`.
 
 ## Plugin ids
 

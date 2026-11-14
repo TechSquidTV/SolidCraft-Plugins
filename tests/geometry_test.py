@@ -310,4 +310,107 @@ def threaded_by_default(name, params, smooth):
 
 threaded_by_default("screw: the thread is modeled by default", {}, CAP - hexagon(2.5, 1.3))
 
+# Rails. The section areas are worked out here from the slot sizes, not read back from
+# the plugin: a cell is 400 mm2 less its slots, its bore and the rounding of the corners.
+def slot_area(throat, mouth, lip, cavity, core, groove):
+    """One slot of a 20 mm cell, from half widths as the drawings give them."""
+    w = 1.5 / math.sqrt(2)          # a 1.5 mm web, measured along x or y
+    shoulder = 10 - cavity - w      # depth where the web meets the cavity wall
+    floor, root = 10 - core, core - w
+    chamfer = (mouth - throat) ** 2                     # the two 45 degree chamfers
+    opening = 2 * throat * lip + chamfer
+    under_lip = 2 * cavity * (shoulder - lip)
+    taper = (cavity + root) * (floor - shoulder)
+    return opening + under_lip + taper + groove[0] * groove[1]
+
+
+def cavity_area(lip, cavity, core):
+    """The closed cavity between two cells of a row."""
+    w = 1.5 / math.sqrt(2)
+    face, leg, root, knee, wall = 10 - core, 10 - cavity - lip, core - w, cavity + lip - w, 10 - lip
+    return 2 * ((root + knee) * (face - leg) + 2 * wall * leg)
+
+
+BORE = PI * 2.1 ** 2
+T = dict(throat=3, mouth=3, lip=2, cavity=6, core=4, groove=(0, 0))
+V = dict(throat=3.125, mouth=4.58, lip=1.8, cavity=5.5, core=3.9, groove=(0.21, 0.21))
+
+
+def rail_area(shape, cells, corner):
+    slots = 2 * cells + 2
+    between = cavity_area(shape["lip"], shape["cavity"], shape["core"]) * (cells - 1)
+    return (400 * cells - (4 - PI) * corner ** 2 - slots * slot_area(**shape)
+            - cells * BORE - between)
+
+
+@case
+def loose_rail(name, params, area, size):
+    """One rail on the origin: one closed body of the section's area times the length."""
+    found, reply = plugin_run("techsquid-extrusions", "make-extrusion", params)
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    want = area * params["length"]
+    rail = list(found.values())[0]
+    got = rail["volume_mm3"]
+    box = [rail["bbox"]["max"][i] - rail["bbox"]["min"][i] for i in range(3)]
+    ok = (len(found) == 1 and rail["closed"] and abs(got - want) < 0.5
+          and all(abs(box[i] - size[i]) < 1e-6 for i in range(3)))
+    check(name, ok, f"| {got:.2f}, expected {want:.2f}; box {box}; bodies {sorted(found)}")
+
+
+loose_rail("rail: T-slot 2020 x 100", {"slot": "T-slot", "size": "2020", "length": 100},
+           rail_area(T, 1, 1.0), (20, 20, 100))
+loose_rail("rail: V-slot 2020 x 100", {"slot": "V-slot", "size": "2020", "length": 100},
+           rail_area(V, 1, 0.5), (20, 20, 100))
+loose_rail("rail: T-slot 2040 x 250", {"slot": "T-slot", "size": "2040", "length": 250},
+           rail_area(T, 2, 1.0), (20, 40, 250))
+loose_rail("rail: V-slot 2060 x 80", {"slot": "V-slot", "size": "2060", "length": 80},
+           rail_area(V, 3, 0.5), (20, 60, 80))
+loose_rail("rail: T-slot 2080 x 50", {"slot": "T-slot", "size": "2080", "length": 50},
+           rail_area(T, 4, 1.0), (20, 80, 50))
+# MISUMI lists 472 mm2 for HFS5-4040. Its cores are open to the middle, and the drawing
+# gives no size for the opening, so this one is held to the catalog area within 0.5%.
+@case
+def rail_4040(name):
+    found, reply = plugin_run("techsquid-extrusions", "make-extrusion",
+                              {"slot": "T-slot", "size": "4040", "length": 100})
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    rail = list(found.values())[0]
+    got = rail["volume_mm3"] / 100
+    box = [rail["bbox"]["max"][i] - rail["bbox"]["min"][i] for i in range(3)]
+    ok = (len(found) == 1 and rail["closed"] and abs(got - 472) < 472 * 0.005
+          and all(abs(box[i] - (40, 40, 100)[i]) < 1e-6 for i in range(3)))
+    check(name, ok, f"| area {got:.2f}, catalog 472; box {box}")
+
+
+rail_4040("rail: T-slot 4040 x 100 has the catalog area")
+
+
+@case
+def rails_on_points(name):
+    """Two points on the plate: one rail definition, placed twice, standing on the plate
+    and leaving it as it was."""
+    found, reply = plugin_run(
+        "techsquid-extrusions", "make-extrusion",
+        {"slot": "V-slot", "size": "2020", "length": 60, "sketch": "Holes", "sketch_point": "c1, c2"},
+        plate(10, False))
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    top = max(b["bbox"]["max"][2] for b in found.values())
+    placed = reply.get("component", {})
+    ok = (abs(found["Plate"]["volume_mm3"] - 16000) < 0.01
+          and reply.get("count") == 2 and len(placed.get("occurrences", [])) == 2
+          and placed.get("component") == "V-slot 2020 x 60" and abs(top - 70) < 0.01)
+    check(name, ok, f"| top {top:.2f}, expected 70; reply {json.dumps(reply)[:200]}")
+
+
+rails_on_points("rail: two points get one V-slot 2020 placed twice")
+refused("rail: a V-slot 4040 is refused on Size", "techsquid-extrusions", "make-extrusion",
+        {"slot": "V-slot", "size": "4040"}, "size")
+
+
 finish()

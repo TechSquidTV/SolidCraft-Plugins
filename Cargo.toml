@@ -11,6 +11,7 @@ publish = false
 
 [workspace.dependencies]
 serde_json = "1"
+extrusions = { path = "crates/extrusions" }
 fasteners = { path = "crates/fasteners" }
 plugin-kit = { path = "crates/plugin-kit" }
 wit-bindgen = "0.46"

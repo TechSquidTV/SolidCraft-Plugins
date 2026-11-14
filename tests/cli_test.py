@@ -10,7 +10,7 @@ solidcraft-cli with the plugin host (SolidCraft 0.41 or newer).
 plugin.inspect must accept each package and list its entry. Each run must build
 one closed body of the measured size: an M3 x 12 socket head screw 5.5 across and
 15 tall, an M3 x 5.7 insert 4.6 across and 5.7 long, an M6 nut 10 across the flats
-and 5.2 high. On the signed macOS build of SolidCraft 0.41.0, loading a component
+and 5.2 high, a V-slot 2040 rail 20 across and 120 long. On the signed macOS build of SolidCraft 0.41.0, loading a component
 kills the CLI with SIGKILL (hardened runtime, no JIT entitlement), and that case is
 reported and skipped.
 """
@@ -37,6 +37,12 @@ CASES = {
         {"size": "M6"},
         "builds the M6 nut",
         (10.0, 5.2),
+    ),
+    "techsquid-extrusions": (
+        "make-extrusion",
+        {"slot": "V-slot", "size": "2040", "length": 120},
+        "builds a 120 mm V-slot 2040",
+        (20.0, 120.0),
     ),
 }
 

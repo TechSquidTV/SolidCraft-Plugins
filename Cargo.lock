@@ -21,6 +21,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "00d174d5400e5e8fd687ad1049e2f578285fa914201b1af7e8b112a4546bd826"
 
 [[package]]
+name = "extrusions"
+version = "0.1.0"
+
+[[package]]
 name = "fasteners"
 version = "0.1.0"
 dependencies = [
@@ -306,6 +310,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "techsquid-extrusions"
+version = "0.1.0"
+dependencies = [
+ "extrusions",
+ "plugin-kit",
+ "serde_json",
+ "wit-bindgen",
 ]
 
 [[package]]

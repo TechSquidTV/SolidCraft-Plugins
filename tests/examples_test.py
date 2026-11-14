@@ -22,10 +22,10 @@ because the approval changes with every build.
     placed     [{label, bbox, volume_mm3}] one body with exactly that box and, to one
                part in ten thousand, that volume. This is for placements that share a
                name, such as the rails of a frame
-    overlaps   {pairs, volume_mm3} exactly that many pairs of bodies overlap, each by
-               that volume to within 0.1 mm3. Without it nothing is checked for
-               overlap. This is for screws in tapped holes whose thread is only listed:
-               the screw's thread overlaps the plain bore
+    overlaps   {pairs, volume_mm3: [least, most]} exactly that many pairs of bodies
+               overlap, each by a volume in that range, to within 0.1 mm3. Without it
+               nothing is checked for overlap. This is for screws in tapped holes: two
+               threads cut out of step overlap a little
 
 Only `bodies` and `bbox` are required.
 
@@ -163,10 +163,11 @@ def example(path):
         want = expect["overlaps"]
         report = results[-1]
         hits = report.get("interferences", [])
+        least, most = want["volume_mm3"]
         check(
-            f"{name}: {want['pairs']} pairs overlap, each by {want['volume_mm3']} mm3",
+            f"{name}: {want['pairs']} pairs overlap, each by {least} to {most} mm3",
             len(hits) == want["pairs"] and not report.get("unchecked")
-            and all(abs(h["volume_mm3"] - want["volume_mm3"]) < 0.1 for h in hits),
+            and all(least - 0.1 < h["volume_mm3"] < most + 0.1 for h in hits),
             f"got {len(hits)}: {sorted({round(h['volume_mm3'], 2) for h in hits})}",
         )
     wanted = len(expect.get("fasteners", [])) * len(corners) + len(expect.get("placed", []))

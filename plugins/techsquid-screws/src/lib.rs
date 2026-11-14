@@ -98,7 +98,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             description: p.standard.unwrap_or(""),
             folder: FOLDER,
             bom_type: "purchased",
-            site: fasten::ORIGIN,
+            site: built_at(p, &base),
         };
         Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
             build_screw(&mut r, p, site, name)
@@ -178,13 +178,36 @@ fn hole_args(p: &Params, hole: &Hole, sketch: &str, points: &[&str]) -> Value {
 /// The plugin id, which a screw component's metadata names.
 pub const PLUGIN: &str = "techsquid-screws";
 
-/// One screw named `body_name` with the top of its shank on `place`.
+/// Where the first screw with a cut thread is built, how far apart they are, and how
+/// many there are along each axis. They run away from the origin towards -X and -Y,
+/// clear of the sites of the other parts.
+const SCREW_SITE_FIRST: [f64; 2] = [-105.0, -105.0];
+const SCREW_SITE_PITCH: f64 = -20.0;
+const SCREW_SITE_ROWS: u64 = 32;
+
+/// Where a screw is built. One whose thread is cut gets a site by its name, so that no
+/// other screw of its size is on its axis: see [`plugin_kit::component`]. One whose
+/// thread is only listed is built on the origin.
+pub fn built_at(p: &Params, base: &str) -> [f64; 2] {
+    if !p.modeled {
+        return fasten::ORIGIN;
+    }
+    fasten::site_by_name(base, SCREW_SITE_FIRST, SCREW_SITE_PITCH, SCREW_SITE_ROWS)
+}
+
+/// One screw named `body_name` with the top of its shank on `site`, whose axes are the
+/// world's. It is made on the origin and moved to the site before its thread is cut:
+/// the kernel refuses some heads away from the origin.
 fn build_screw<R: Runner>(
     r: &mut R,
     p: &Params,
-    place: &Placement,
+    site: &Placement,
     body_name: &str,
 ) -> Result<(), String> {
+    let place = &Placement {
+        point: [0.0, 0.0, 0.0],
+        ..*site
+    };
     let Some(major) = p.resolved.major else {
         return Err(format!("{}: {NO_DIAMETER}", p.size_field));
     };
@@ -302,6 +325,16 @@ fn build_screw<R: Runner>(
     add_slot(r, p, &place, body.as_deref(), part)?;
     add_phillips(r, p, &place, body.as_deref(), part)?;
     add_hex(r, p, &place, body.as_deref(), part)?;
+    if site.point != place.point {
+        r.run(
+            "solid.move",
+            json!({
+                "bodies": [body.as_deref().unwrap_or(body_name)],
+                "translate": site.point,
+            }),
+        )?;
+    }
+    let place = *site;
     // The pick sits in the first third of the cylindrical face, measured from the tip.
     // A point closes that end, so the third is of the cylinder above the shoulder.
     // With a head and a flat end, that end is the only free one and a sixth of the
@@ -960,6 +993,52 @@ mod tests {
     fn feature(args: &Value) -> &str {
         let name = args["name"].as_str().unwrap_or_default();
         name.split_once(": ").map_or(name, |(_, feature)| feature)
+    }
+
+    /// On a site the screw is made on the origin, moved, and threaded where it lands.
+    #[test]
+    fn on_a_site_the_screw_is_made_on_the_origin_and_threaded_on_the_site() {
+        let p = screw::parse(&json!({"size": "M5", "length": 25})).unwrap();
+        let mut rec = Rec(vec![]);
+        let site = plugin_kit::component::site_at([-105.0, -125.0]);
+        build_screw(&mut rec, &p, &site, "Screw M5 x 25 socket").unwrap();
+        let names: Vec<&str> = rec.0.iter().map(|(c, _)| c.as_str()).collect();
+        let moved = names.iter().position(|c| *c == "solid.move").unwrap();
+        // The move is the last thing before the thread.
+        assert_eq!(names[moved + 1..], ["solid.thread"]);
+        assert_eq!(rec.0[0].1["base"], json!([0.0, 0.0, -25.0]));
+        assert_eq!(rec.0[moved].1["translate"], json!([-105.0, -125.0, 0.0]));
+        let pick = &rec.0[moved + 1].1["face"];
+        assert_eq!(pick[0].as_f64().unwrap(), -105.0 + 2.5);
+        assert_eq!(pick[1], -125.0);
+        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
+        assert!(manifest["runtime"]["commands"]
+            .as_array()
+            .unwrap()
+            .contains(&json!("solid.move")));
+    }
+
+    #[test]
+    fn a_screw_with_a_cut_thread_is_built_on_a_site_by_its_name() {
+        let site = |v: Value| {
+            let p = screw::parse(&v).unwrap();
+            built_at(&p, &body_base(&p))
+        };
+        let (long, short) = (
+            site(json!({"size": "M5", "length": 25})),
+            site(json!({"size": "M5", "length": 20})),
+        );
+        assert_ne!(long, short);
+        for at in [long, short] {
+            // Away from the origin, and off the 10 mm grid of a rail's bores.
+            assert!(at[0] <= -105.0 && at[1] <= -105.0);
+            assert_eq!(at[0].rem_euclid(20.0), 15.0);
+            assert_eq!(at[1].rem_euclid(20.0), 15.0);
+        }
+        assert_eq!(
+            site(json!({"size": "M5", "length": 25, "thread_modeled": false})),
+            fasten::ORIGIN
+        );
     }
 
     #[test]

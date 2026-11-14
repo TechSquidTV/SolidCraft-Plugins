@@ -17,6 +17,10 @@ pub const MAX_LENGTH_MM: f64 = 6000.0;
 pub const DEFAULT_TAPS: &str = "None";
 pub const DEFAULT_HOLE_FACE: &str = "+Y";
 
+/// The most bores of one rail a thread is cut into. A cut thread takes a few seconds,
+/// and a run has 30: SolidCraft's limit for a plugin.
+pub const MAX_MODELED_TAPS: usize = 4;
+
 /// The most screw holes one rail takes.
 pub const MAX_HOLES: usize = 64;
 
@@ -57,9 +61,13 @@ pub struct Params {
     pub length: f64,
     /// The ends whose bores are tapped M5.
     pub taps: Taps,
-    /// Where the screw holes are, as distances from the start, in order.
-    pub holes: Vec<f64>,
-    /// The face the screws go in from.
+    /// Whether a tap's thread is cut into the bore, 12 mm deep. Otherwise the thread is
+    /// listed and the bore stays plain. The dialog calls this `thread_modeled`.
+    pub modeled: bool,
+    /// The screw holes: the face each screw goes in from and its distance from the
+    /// start, face by face and in order along the rail.
+    pub holes: Vec<(Face, f64)>,
+    /// The face of the holes that name none.
     pub hole_face: Face,
     pub place: PlaceInput,
 }
@@ -126,6 +134,16 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ),
         ));
     }
+    let modeled = plugin_kit::input::flag(v, "thread_modeled", true)?;
+    let bores = grid.nx * grid.ny * (usize::from(taps.start()) + usize::from(taps.end()));
+    if modeled && bores > MAX_MODELED_TAPS {
+        return Err(FieldError::new(
+            "thread_modeled",
+            format!(
+                "this rail has {bores} bores to tap, and a thread can be cut into {MAX_MODELED_TAPS} in the time a run has; turn it off to list the threads, or tap one end"
+            ),
+        ));
+    }
     let hole_face = text(v, "hole_face", DEFAULT_HOLE_FACE)?;
     let hole_face = Face::of(hole_face).ok_or_else(|| {
         let listed: Vec<&str> = FACES.iter().map(Face::name).collect();
@@ -140,15 +158,18 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         grid,
         length,
         taps,
-        holes: holes(v, length)?,
+        modeled,
+        holes: holes(v, length, hole_face)?,
         hole_face,
         place: place::parse_input(v)?,
     })
 }
 
-/// The screw hole positions: distances from the start of the rail, as text with commas
-/// or spaces between them, or one number. They come back in order, each once.
-fn holes(v: &Value, length: f64) -> Result<Vec<f64>, FieldError> {
+/// The screw holes: distances from the start of the rail, as text with commas or spaces
+/// between them, or one number. A face name such as `+X` in the text puts the distances
+/// after it on that face; the ones before any name are on `face`. They come back face
+/// by face in the dialog's order, each face's in order along the rail, each once.
+fn holes(v: &Value, length: f64, face: Face) -> Result<Vec<(Face, f64)>, FieldError> {
     let text = match v.get("holes") {
         None | Some(Value::Null) => return Ok(Vec::new()),
         Some(Value::Number(n)) => n.to_string(),
@@ -161,12 +182,17 @@ fn holes(v: &Value, length: f64) -> Result<Vec<f64>, FieldError> {
         }
     };
     let margin = machining::hole_margin();
-    let mut out: Vec<f64> = Vec::new();
-    for word in text.split([',', ' ', ';']).filter(|w| !w.is_empty()) {
+    let mut face = face;
+    let mut out: Vec<(Face, f64)> = Vec::new();
+    for word in text.split([',', ' ', ';', ':']).filter(|w| !w.is_empty()) {
+        if let Some(named) = Face::of(word) {
+            face = named;
+            continue;
+        }
         let at: f64 = word.parse().map_err(|_| {
             FieldError::new(
                 "holes",
-                format!("{word} is not a distance; type them as 10, 290"),
+                format!("{word} is not a distance or a face; type them as 10, 290 or +X 10, 290"),
             )
         })?;
         // A name shows a distance to 0.01 mm, as it does a length.
@@ -180,8 +206,8 @@ fn holes(v: &Value, length: f64) -> Result<Vec<f64>, FieldError> {
                 ),
             ));
         }
-        if !out.contains(&at) {
-            out.push(at);
+        if !out.contains(&(face, at)) {
+            out.push((face, at));
         }
     }
     if out.len() > MAX_HOLES {
@@ -190,7 +216,26 @@ fn holes(v: &Value, length: f64) -> Result<Vec<f64>, FieldError> {
             format!("a rail takes at most {MAX_HOLES} holes"),
         ));
     }
-    out.sort_by(f64::total_cmp);
+    let order = |face: &Face| FACES.iter().position(|f| f == face).unwrap_or(0);
+    out.sort_by(|a, b| order(&a.0).cmp(&order(&b.0)).then(a.1.total_cmp(&b.1)));
+    // Holes from two faces meet in the core, so their screws would too.
+    for (i, a) in out.iter().enumerate() {
+        for b in &out[i + 1..] {
+            if a.0 != b.0 && (a.1 - b.1).abs() < machining::ACCESS {
+                return Err(FieldError::new(
+                    "holes",
+                    format!(
+                        "the hole from {} at {} and the hole from {} at {} would meet inside the rail; keep holes from different faces {} mm apart",
+                        a.0.name(),
+                        a.1,
+                        b.0.name(),
+                        b.1,
+                        machining::ACCESS
+                    ),
+                ));
+            }
+        }
+    }
     Ok(out)
 }
 
@@ -271,6 +316,12 @@ mod tests {
     fn a_plain_rail_has_no_taps_and_no_holes() {
         let p = parse(&json!({})).unwrap();
         assert_eq!(p.taps, Taps::None);
+        assert!(p.modeled);
+        assert!(!parse(&json!({"thread_modeled": false})).unwrap().modeled);
+        assert_eq!(
+            parse(&json!({"thread_modeled": "yes"})).unwrap_err().field,
+            "thread_modeled"
+        );
         assert!(p.holes.is_empty());
         assert_eq!(p.hole_face, Face::YPlus);
         let p = parse(&json!({"end_taps": "", "holes": "", "hole_face": ""})).unwrap();
@@ -282,9 +333,36 @@ mod tests {
     fn holes_are_distances_from_the_start_in_order() {
         let p = parse(&json!({"length": 300, "holes": "290, 10 30;270, 10", "hole_face": "-Y"}))
             .unwrap();
-        assert_eq!(p.holes, [10.0, 30.0, 270.0, 290.0]);
+        let at = |face, at: &[f64]| at.iter().map(|d| (face, *d)).collect::<Vec<_>>();
+        assert_eq!(p.holes, at(Face::YMinus, &[10.0, 30.0, 270.0, 290.0]));
         assert_eq!(p.hole_face, Face::YMinus);
-        assert_eq!(parse(&json!({"holes": 250})).unwrap().holes, [250.0]);
+        assert_eq!(
+            parse(&json!({"holes": 250})).unwrap().holes,
+            [(Face::YPlus, 250.0)]
+        );
+    }
+
+    #[test]
+    fn a_face_name_in_the_text_puts_the_holes_after_it_on_that_face() {
+        let p =
+            parse(&json!({"length": 300, "holes": "40, +X 290 10, -Y: 150", "hole_face": "-X"}))
+                .unwrap();
+        assert_eq!(
+            p.holes,
+            [
+                (Face::YMinus, 150.0),
+                (Face::XPlus, 10.0),
+                (Face::XPlus, 290.0),
+                (Face::XMinus, 40.0),
+            ]
+        );
+        // Two faces at one place would put two screws through one point of the core.
+        for holes in ["+Y 50 +X 50", "+Y 50 -Y 55", "10 +X 19"] {
+            let err = parse(&json!({"length": 300, "holes": holes})).unwrap_err();
+            assert_eq!(err.field, "holes");
+            assert!(err.reason.contains("would meet"), "{}", err.reason);
+        }
+        assert!(parse(&json!({"length": 300, "holes": "+Y 50 +X 60"})).is_ok());
     }
 
     #[test]
@@ -311,6 +389,14 @@ mod tests {
         assert_eq!(p.taps, Taps::Both);
         assert!(p.taps.start() && p.taps.end());
         assert!(parse(&json!({"length": 20, "end_taps": "Start"})).is_ok());
+        // A 2040 has two bores an end, a 2080 four: both ends of it are too many to cut.
+        assert!(parse(&json!({"size": "2040", "end_taps": "Both"})).is_ok());
+        assert!(parse(&json!({"size": "2080", "end_taps": "Start"})).is_ok());
+        let err = parse(&json!({"size": "2080", "end_taps": "Both"})).unwrap_err();
+        assert_eq!(err.field, "thread_modeled");
+        assert!(
+            parse(&json!({"size": "2080", "end_taps": "Both", "thread_modeled": false})).is_ok()
+        );
         for (length, taps) in [(20, "Both"), (10, "End"), (100, "Left")] {
             let err = parse(&json!({"length": length, "end_taps": taps})).unwrap_err();
             assert_eq!(err.field, "end_taps");

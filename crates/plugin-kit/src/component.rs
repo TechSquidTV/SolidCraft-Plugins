@@ -25,10 +25,15 @@
 //! tap drill's size on the same axis there took the thread: an M5 nut built on the origin
 //! threaded the 4.2 mm bore of a 2020 rail standing on it, and stayed plain itself. So
 //! a part with a tapped hole is built on a site off the origin, off the axes a rail's
-//! bores can be on, and no two kinds of such a part share a site. Sites are few and
-//! fixed, not spread over the plane, because the kernel refuses some cuts, such as the
-//! chamfer of a hexagon, at positions it accepts at others: each kind is checked on the
-//! site it uses.
+//! bores can be on, and no two kinds of such a part share a site. The same goes for a
+//! thread cut onto a screw: a second length of one screw size, built on the first one's
+//! axis, put its thread on the first. A nut, an insert or a slot nut has a fixed site
+//! ([`site`]). A screw or a tapped rail comes in too many sizes for that, and has one
+//! picked by its name ([`site_by_name`]).
+//!
+//! The kernel refuses some cuts, such as the chamfer of a hexagon, at positions it
+//! accepts at others. A part with such a cut is made on the origin and moved to its site
+//! with `solid.move` before its thread is cut, as the hex nut and the screw are.
 
 use serde_json::{json, Value};
 
@@ -107,6 +112,18 @@ pub const fn site(column: u8, row: u8) -> [f64; 2] {
     [
         5.0 + SITE_PITCH * column as f64,
         5.0 + SITE_PITCH * row as f64,
+    ]
+}
+
+/// A site picked by a definition's name, for a kind of part that has too many sizes to
+/// give each a fixed site: one of `rows` x `rows` points `pitch` apart, the first at
+/// `first`. Two names seldom share one. A plugin gives each kind its own `first`, far
+/// enough from the others that their grids do not meet.
+pub fn site_by_name(name: &str, first: [f64; 2], pitch: f64, rows: u64) -> [f64; 2] {
+    let key = fnv1a(name.as_bytes());
+    [
+        first[0] + pitch * (key % rows) as f64,
+        first[1] + pitch * ((key / rows) % rows) as f64,
     ]
 }
 
@@ -416,7 +433,7 @@ impl Runner for Dry {
 }
 
 /// FNV-1a, 64 bits: small, and the same on every host.
-fn fnv1a(bytes: &[u8]) -> u64 {
+pub fn fnv1a(bytes: &[u8]) -> u64 {
     let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
     for byte in bytes {
         hash ^= u64::from(*byte);
@@ -644,6 +661,14 @@ mod tests {
             assert_eq!(site_at(at).normal, [0.0, 0.0, 1.0]);
         }
         assert_eq!(site(1, 2), [25.0, 45.0]);
+        // A site by name is on its own grid, and follows the name.
+        let named = |name| site_by_name(name, [5.0, -5.0], -20.0, 32);
+        let at = named("Screw M5 x 25 socket");
+        assert_eq!(at, named("Screw M5 x 25 socket"));
+        assert_ne!(at, named("Screw M5 x 20 socket"));
+        assert_eq!(at[0].rem_euclid(20.0), 5.0);
+        assert_eq!(at[1].rem_euclid(20.0), 15.0);
+        assert!(at[0] <= 5.0 && at[1] <= -5.0);
         assert_eq!(site_at(ORIGIN), Placement::on_origin());
     }
 

@@ -194,6 +194,7 @@
       "solid.combine",
       "solid.revolve",
       "solid.thread",
+      "solid.move",
       "solid.hole",
       "solid.chamfer",
       "component.list",

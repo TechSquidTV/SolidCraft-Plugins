@@ -33,10 +33,8 @@ pub fn body_base(p: &Params) -> String {
         base.push_str(&format!(" taps {}", p.taps.label().to_lowercase()));
     }
     if !p.holes.is_empty() {
-        base.push_str(&format!(" holes {}", p.hole_face.name()));
-        for at in &p.holes {
-            base.push_str(&format!(" {}", name::length(*at)));
-        }
+        base.push_str(" holes");
+        base.push_str(&holes_by_face(p, " ", " "));
     }
     base
 }
@@ -59,14 +57,47 @@ pub fn description(p: &Params) -> String {
         )),
     }
     if !p.holes.is_empty() {
-        let at: Vec<String> = p.holes.iter().map(|at| name::length(*at)).collect();
-        text.push_str(&format!(
-            ", M5 screw holes from {} at {} mm",
-            p.hole_face.name(),
-            at.join(", ")
-        ));
+        text.push_str(", M5 screw holes from");
+        text.push_str(&holes_by_face(p, " at ", ", "));
+        text.push_str(" mm");
     }
     text
+}
+
+/// The holes as words, face by face: each face's name, `after_face`, and its distances
+/// with `between` between them.
+fn holes_by_face(p: &Params, after_face: &str, between: &str) -> String {
+    let mut text = String::new();
+    let mut last = None;
+    for (face, at) in &p.holes {
+        if last == Some(*face) {
+            text.push_str(between);
+        } else {
+            if last.is_some() {
+                text.push_str(if between == " " { "" } else { " and from" });
+            }
+            text.push_str(&format!(" {}{after_face}", face.name()));
+            last = Some(*face);
+        }
+        text.push_str(&name::length(*at));
+    }
+    text
+}
+
+/// How far apart two rails with cut threads are built, and where the first is. The
+/// widest rail has bores 60 mm apart.
+const TAP_SITE_PITCH: f64 = 100.0;
+const TAP_SITE_FIRST: [f64; 2] = [1005.0, 1005.0];
+const TAP_SITE_ROWS: u64 = 16;
+
+/// Where a rail is built. A rail with a thread cut into an end has a tapped hole, so it
+/// is built away from the origin and from every other such rail, on a site picked by
+/// its name: see [`plugin_kit::component`]. Any other rail is built on the origin.
+pub fn built_at(p: &Params, base: &str) -> [f64; 2] {
+    if p.taps == Taps::None || !p.modeled {
+        return component::ORIGIN;
+    }
+    component::site_by_name(base, TAP_SITE_FIRST, TAP_SITE_PITCH, TAP_SITE_ROWS)
 }
 
 /// Build the rail on every point. Returns a summary of what was made.
@@ -86,7 +117,7 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
         description: &description,
         folder: FOLDER,
         bom_type: "purchased",
-        site: component::ORIGIN,
+        site: built_at(p, &base),
     };
     let placed = component::place_all(r, &def, &places, |mut r, name, site| {
         build_rail(&mut r, &profile, p, site, name)
@@ -148,8 +179,8 @@ pub fn build_rail<R: Runner>(
                 + along * place.normal[i]
         })
     };
-    for along in &p.holes {
-        let holes = machining::cross_holes(&p.slot, &p.grid, p.hole_face);
+    for (face, along) in &p.holes {
+        let holes = machining::cross_holes(&p.slot, &p.grid, *face);
         for (n, hole) in holes.iter().enumerate() {
             let axis: [f64; 3] = std::array::from_fn(|i| {
                 hole.inward[0] * place.x_dir[i] + hole.inward[1] * place.y_dir[i]
@@ -192,7 +223,7 @@ pub fn build_rail<R: Runner>(
             )?;
         }
     }
-    // The bore is the tap drill already, so a tap is listed and cuts nothing.
+    // The bore is the tap drill already, so a tap only cuts the thread, or lists it.
     let ends = [
         (p.taps.start(), "start", 0.0, place.normal),
         (p.taps.end(), "end", length, place::opposite(place.normal)),
@@ -208,8 +239,10 @@ pub fn build_rail<R: Runner>(
                     "position": at(*bore, along),
                     "direction": into,
                     "depth": TAP_DEPTH,
+                    // The bore runs the length of the rail, and the tap does not.
+                    "thread_depth": TAP_DEPTH,
                     "thread": TAP_THREAD,
-                    "modeled": false,
+                    "modeled": p.modeled,
                     "targets": [body_name],
                     "name": name::part(body_name, &format!("Tap {end} {}", n + 1)),
                 }),
@@ -265,8 +298,8 @@ fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed)
         "height": p.grid.height(),
         "area_mm2": (profile.area() * 100.0).round() / 100.0,
         "end_taps": p.taps.label(),
-        "holes": p.holes,
-        "hole_face": p.hole_face.name(),
+        "holes": p.holes.iter().map(|(face, at)| json!({"face": face.name(), "at": at})).collect::<Vec<_>>(),
+        "thread_modeled": p.modeled,
         "count": places.len(),
         "placed": places[0].source.words(),
         "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
@@ -371,6 +404,7 @@ mod tests {
             schema["properties"]["end_taps"]["default"],
             rail::DEFAULT_TAPS
         );
+        assert_eq!(schema["properties"]["thread_modeled"]["default"], true);
         let faces: Vec<&str> = extrusions::machining::FACES
             .iter()
             .map(|f| f.name())
@@ -532,6 +566,14 @@ mod tests {
         let p = rail::parse(&json!({"size": "2040", "length": 300, "end_taps": "Start"})).unwrap();
         assert_eq!(body_base(&p), "T-slot 2040 x 300 taps start");
         assert!(description(&p).ends_with("300 mm long, start tapped M5"));
+        let p = rail::parse(&json!({
+            "size": "2020", "length": 300, "holes": "-Y 10 290 +X 150",
+        }))
+        .unwrap();
+        assert_eq!(body_base(&p), "T-slot 2020 x 300 holes -Y 10 290 +X 150");
+        assert!(
+            description(&p).ends_with("M5 screw holes from -Y at 10, 290 and from +X at 150 mm")
+        );
         // A plain rail keeps the name it had.
         let p = rail::parse(&json!({"size": "2020", "length": 300})).unwrap();
         assert_eq!(body_base(&p), "T-slot 2020 x 300");
@@ -561,8 +603,10 @@ mod tests {
             assert_eq!(cut["targets"], json!([name]));
         }
         assert!(all(&calls, "solid.hole").is_empty());
-        assert_eq!(summary["holes"], json!([10.0, 290.0]));
-        assert_eq!(summary["hole_face"], "-Y");
+        assert_eq!(
+            summary["holes"],
+            json!([{"face": "-Y", "at": 10.0}, {"face": "-Y", "at": 290.0}])
+        );
         // A 2040's wide face has two slots, so each position gets two holes.
         let (_, calls) = commands(json!({
             "size": "2040", "length": 100, "holes": "50", "hole_face": "+X",
@@ -593,13 +637,48 @@ mod tests {
         for tap in &taps {
             assert_eq!(tap["thread"], "M5");
             assert_eq!(tap["depth"], 12.0);
-            assert_eq!(tap["modeled"], false);
+            assert_eq!(tap["thread_depth"], 12.0);
+            assert_eq!(tap["modeled"], true);
             assert_eq!(tap["targets"], json!([name]));
         }
         assert!(all(&calls, "solid.cylinder").is_empty());
         assert_eq!(summary["end_taps"], "Both");
-        let (_, calls) = commands(json!({"size": "2020", "length": 300, "end_taps": "End"}));
-        assert_eq!(all(&calls, "solid.hole").len(), 1);
+        let (summary, calls) = commands(json!({
+            "size": "2020", "length": 300, "end_taps": "End", "thread_modeled": false,
+        }));
+        let taps = all(&calls, "solid.hole");
+        assert_eq!(taps.len(), 1);
+        assert_eq!(taps[0]["modeled"], false);
+        assert_eq!(summary["thread_modeled"], false);
+    }
+
+    #[test]
+    fn a_rail_with_a_cut_thread_is_built_on_a_site_of_its_own() {
+        let site = |v: Value| {
+            let p = rail::parse(&v).unwrap();
+            built_at(&p, &body_base(&p))
+        };
+        // A plain rail, and one whose thread is only listed, stay on the origin.
+        assert_eq!(site(json!({"length": 300})), component::ORIGIN);
+        assert_eq!(
+            site(json!({"length": 300, "end_taps": "Both", "thread_modeled": false})),
+            component::ORIGIN
+        );
+        let mut sites = Vec::new();
+        for v in [
+            json!({"length": 260, "end_taps": "Both", "holes": "10, 30, 230, 250"}),
+            json!({"length": 260, "end_taps": "Both", "holes": "-Y 10, 30, 230, 250"}),
+            json!({"slot": "V-slot", "size": "2040", "length": 300, "end_taps": "Both"}),
+            json!({"length": 300, "end_taps": "Start"}),
+        ] {
+            let at = site(v.clone());
+            // Off the origin, and off every bore of a rail that stands on it.
+            assert!(at[0] >= 1005.0 && at[1] >= 1005.0, "{v}");
+            assert_eq!(at[0] % 100.0, 5.0, "{v}");
+            assert_eq!(at[1] % 100.0, 5.0, "{v}");
+            assert!(!sites.contains(&at), "{v}");
+            sites.push(at);
+        }
     }
 
     #[test]

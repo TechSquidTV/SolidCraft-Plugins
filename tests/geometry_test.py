@@ -664,12 +664,54 @@ def webs_removed(access=9.5, core=4.0, web=1.5, steps=4000):
 
 # The groove is narrow beside the hole, so it is taken as crossing the hole's middle.
 HOLE_2020 = lips_removed() + webs_removed() + core_removed() - 2 * misumi_floor() * 5.5
-machined_rail("rail: a tapped 2020 is named for its taps and weighs what the plain one does",
-              {"slot": "T-slot", "size": "2020", "length": 100, "end_taps": "Both"},
+machined_rail("rail: a 2020 with listed taps is named for them and weighs what the plain one does",
+              {"slot": "T-slot", "size": "2020", "length": 100, "end_taps": "Both",
+               "thread_modeled": False},
               rail_area(T, 1, 1.0), 0)
+
+
+@case
+def cut_taps(name, params, taps):
+    """A thread cut into each tapped bore takes metal out of the 12 mm it runs, and no
+    more than the ring between the bore and the thread's 5 mm."""
+    plain, _ = plugin_run("techsquid-extrusions", "make-extrusion", dict(params, thread_modeled=False))
+    found, reply = plugin_run("techsquid-extrusions", "make-extrusion", params)
+    if found is None or plain is None:
+        check(name, False, "| " + str(reply))
+        return
+    cut = list(plain.values())[0]["volume_mm3"] - list(found.values())[0]["volume_mm3"]
+    ring = PI * (2.5 ** 2 - 2.1 ** 2) * 12
+    ok = list(found.values())[0]["closed"] and 0.25 * ring * taps < cut < ring * taps
+    check(name, ok, f"| {taps} taps removed {cut:.2f} mm3, each under the {ring:.2f} of the full ring")
+
+
+cut_taps("rail: a thread is cut into both ends of a 2020",
+         {"slot": "T-slot", "size": "2020", "length": 100, "end_taps": "Both"}, 2)
+cut_taps("rail: a thread is cut into both bores of a V-slot 2040's start",
+         {"slot": "V-slot", "size": "2040", "length": 100, "end_taps": "Start"}, 2)
+refused("rail: both ends of a 2080 are too many bores to cut a thread into", "techsquid-extrusions",
+        "make-extrusion", {"size": "2080", "end_taps": "Both"}, "turn it off")
+
+
+@case
+def holes_from_two_faces(name):
+    """Holes from two faces of one rail: each takes what one hole takes."""
+    params = {"slot": "T-slot", "size": "2020", "length": 100, "holes": "+Y 20 -X 60"}
+    found, reply = plugin_run("techsquid-extrusions", "make-extrusion", params)
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    rail = list(found.values())[0]
+    want = rail_area(T, 1, 1.0) * 100 - 2 * HOLE_2020
+    ok = (rail["closed"] and abs(rail["volume_mm3"] - want) < 1.5
+          and list(found) == ["T-slot 2020 x 100 holes +Y 20 -X 60"])
+    check(name, ok, f"| {rail['volume_mm3']:.2f}, expected {want:.2f}; bodies {sorted(found)}")
 machined_rail("rail: two screw holes take the lips and the core out of a 2020",
               {"slot": "T-slot", "size": "2020", "length": 100, "holes": "10, 90", "hole_face": "-Y"},
               rail_area(T, 1, 1.0), 2 * HOLE_2020)
+holes_from_two_faces("rail: holes from two faces of a 2020 each take one hole's metal")
+refused("rail: holes from two faces at one place are refused", "techsquid-extrusions", "make-extrusion",
+        {"length": 100, "holes": "+Y 50 +X 52"}, "would meet inside the rail")
 
 
 @case
@@ -724,6 +766,34 @@ def screwed_joint(name):
 screwed_joint("rail: two screws through a drilled rail hold a tapped post and miss the rail")
 refused("rail: a screw hole too close to an end is refused", "techsquid-extrusions", "make-extrusion",
         {"length": 100, "holes": "3"}, "too close to an end")
+
+
+
+@case
+def two_lengths_of_one_screw(name):
+    """SolidCraft 0.42 cuts a modeled thread onto any cylinder of that size on the same
+    axis. A second length of a screw must leave the first as it was, and take its own
+    thread: each must weigh what it weighs built alone."""
+    def screw(length, point):
+        return {"command": "plugin.run", "params": {
+            "path": os.path.join(ROOT, "dist", "techsquid-screws"),
+            "approval": approval("techsquid-screws"), "entry": "make-screw",
+            "params": {"size": "M5", "length": length, "sketch": "Holes", "sketch_point": point}}}
+    sketch = plate(10, True)
+    long_alone, _ = measured(sketch + [screw(25, "c1")])
+    short_alone, _ = measured(sketch + [screw(20, "c1")])
+    found, hits = measured(sketch + [screw(25, "c1"), screw(20, "c2")])
+    if found is None or long_alone is None or short_alone is None:
+        check(name, False, "| " + str(hits))
+        return
+    long, short = "Screw M5 x 25 socket", "Screw M5 x 20 socket"
+    ok = (abs(found[long]["volume_mm3"] - long_alone[long]["volume_mm3"]) < 1e-6
+          and abs(found[short]["volume_mm3"] - short_alone[short]["volume_mm3"]) < 1e-6
+          and found[short]["volume_mm3"] < found[long]["volume_mm3"] - 50)
+    check(name, ok, f"| {long} {found[long]['volume_mm3']:.2f}, {short} {found[short]['volume_mm3']:.2f}")
+
+
+two_lengths_of_one_screw("screw: a second length of an M5 screw leaves the first as built")
 
 
 finish()

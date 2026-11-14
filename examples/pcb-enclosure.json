@@ -2675,6 +2675,26 @@
     },
     {
       "id": 39,
+      "name": "Move1",
+      "suppressed": false,
+      "param_names": [
+        "d46",
+        "d47",
+        "d48"
+      ],
+      "component": 33,
+      "type": "move",
+      "bodies": [
+        "Screw M3 x 6 socket"
+      ],
+      "translate": [
+        "-665",
+        "-625",
+        "0"
+      ]
+    },
+    {
+      "id": 40,
       "name": "Screw M3 x 6 socket: Thread",
       "suppressed": false,
       "component": 33,
@@ -2683,21 +2703,21 @@
       ],
       "type": "thread",
       "face": [
-        1.5,
-        0.0,
+        -663.5,
+        -625.0,
         -5.0
       ],
       "designation": "M3",
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        1.5,
-        0.0,
+        -663.5,
+        -625.0,
         -5.0
       ]
     }
   ],
-  "next_id": 43,
+  "next_id": 44,
   "components": [
     {
       "id": 12,
@@ -2740,8 +2760,8 @@
           "geometry": "6fb5a1d4e19926cb",
           "plugin": "techsquid-screws",
           "site": [
-            0.0,
-            0.0,
+            -665.0,
+            -625.0,
             0.0
           ]
         },
@@ -2941,8 +2961,8 @@
           0.0
         ],
         [
-          34.0,
-          24.0,
+          699.0,
+          649.0,
           27.0,
           1.0
         ]
@@ -2950,7 +2970,7 @@
       "grounded": false
     },
     {
-      "id": 40,
+      "id": 41,
       "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:2",
@@ -2974,8 +2994,8 @@
           0.0
         ],
         [
-          -34.0,
-          24.0,
+          631.0,
+          649.0,
           27.0,
           1.0
         ]
@@ -2983,7 +3003,7 @@
       "grounded": false
     },
     {
-      "id": 41,
+      "id": 42,
       "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:3",
@@ -3007,8 +3027,8 @@
           0.0
         ],
         [
-          -34.0,
-          -24.0,
+          631.0,
+          601.0,
           27.0,
           1.0
         ]
@@ -3016,7 +3036,7 @@
       "grounded": false
     },
     {
-      "id": 42,
+      "id": 43,
       "component": 33,
       "parent": 12,
       "name": "Screw M3 x 6 socket:4",
@@ -3040,8 +3060,8 @@
           0.0
         ],
         [
-          34.0,
-          -24.0,
+          699.0,
+          601.0,
           27.0,
           1.0
         ]

@@ -143,6 +143,7 @@
       "sketch.finish",
       "solid.extrude",
       "solid.hole",
+      "solid.move",
       "solid.cylinder",
       "solid.sphere",
       "component.list",

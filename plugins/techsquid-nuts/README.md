@@ -6,7 +6,7 @@ The sizes below are the ISO 4032 table, preferred and second-choice. ISO 4032 re
 
 ## Install
 
-You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it.
+You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it, and this package is tested on a development build of 0.41.0.
 
 1. Download `techsquid-nuts-<version>.zip` from the latest release.
 2. Unzip it into SolidCraft's plugins folder, so you end up with a `techsquid-nuts` folder holding `plugin.json` and `plugin.wasm`:

@@ -19,7 +19,7 @@ use fasteners::hex::{self, Hex};
 use fasteners::phillips;
 use fasteners::torx;
 use fasteners::FOLDER;
-use plugin_kit::component::{self as fasten, Definition, Placed};
+use plugin_kit::component::{self as fasten, Definition, Placed, Site};
 use plugin_kit::host::{body_name_of, changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
@@ -98,7 +98,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             description: p.standard.unwrap_or(""),
             folder: FOLDER,
             bom_type: "purchased",
-            site: built_at(p, &base),
+            site: built_at(p),
         };
         Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
             build_screw(&mut r, p, site, name)
@@ -178,21 +178,15 @@ fn hole_args(p: &Params, hole: &Hole, sketch: &str, points: &[&str]) -> Value {
 /// The plugin id, which a screw component's metadata names.
 pub const PLUGIN: &str = "techsquid-screws";
 
-/// Where the first screw with a cut thread is built, how far apart they are, and how
-/// many there are along each axis. They run away from the origin towards -X and -Y,
-/// clear of the sites of the other parts.
-const SCREW_SITE_FIRST: [f64; 2] = [-105.0, -105.0];
-const SCREW_SITE_PITCH: f64 = -20.0;
-const SCREW_SITE_ROWS: u64 = 32;
-
-/// Where a screw is built. One whose thread is cut gets a site by its name, so that no
+/// Where a screw is built. One whose thread is cut gets a site of its own, so that no
 /// other screw of its size is on its axis: see [`plugin_kit::component`]. One whose
 /// thread is only listed is built on the origin.
-pub fn built_at(p: &Params, base: &str) -> [f64; 2] {
-    if !p.modeled {
-        return fasten::ORIGIN;
+pub fn built_at(p: &Params) -> Site {
+    if p.modeled {
+        Site::Compact
+    } else {
+        Site::Origin
     }
-    fasten::site_by_name(base, SCREW_SITE_FIRST, SCREW_SITE_PITCH, SCREW_SITE_ROWS)
 }
 
 /// One screw named `body_name` with the top of its shank on `site`, whose axes are the
@@ -1019,25 +1013,12 @@ mod tests {
     }
 
     #[test]
-    fn a_screw_with_a_cut_thread_is_built_on_a_site_by_its_name() {
-        let site = |v: Value| {
-            let p = screw::parse(&v).unwrap();
-            built_at(&p, &body_base(&p))
-        };
-        let (long, short) = (
-            site(json!({"size": "M5", "length": 25})),
-            site(json!({"size": "M5", "length": 20})),
-        );
-        assert_ne!(long, short);
-        for at in [long, short] {
-            // Away from the origin, and off the 10 mm grid of a rail's bores.
-            assert!(at[0] <= -105.0 && at[1] <= -105.0);
-            assert_eq!(at[0].rem_euclid(20.0), 15.0);
-            assert_eq!(at[1].rem_euclid(20.0), 15.0);
-        }
+    fn a_screw_with_a_cut_thread_is_built_on_a_site_of_its_own() {
+        let site = |v: Value| built_at(&screw::parse(&v).unwrap());
+        assert_eq!(site(json!({"size": "M5", "length": 25})), Site::Compact);
         assert_eq!(
             site(json!({"size": "M5", "length": 25, "thread_modeled": false})),
-            fasten::ORIGIN
+            Site::Origin
         );
     }
 

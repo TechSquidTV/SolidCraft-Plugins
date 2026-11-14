@@ -19,21 +19,20 @@
 //! names, which the metadata keeps. A placement turns that frame onto the sketch: X onto
 //! the sketch x, Y onto the sketch y, Z onto the normal, the site onto the point.
 //!
-//! The site is there because of how SolidCraft 0.42 cuts a modeled thread into a hole.
+//! The site is there because of how SolidCraft 0.41 cuts a modeled thread into a hole.
 //! It finds the wall by a point, among every body in the design and whatever the hole's
 //! targets are, and every component is built where the design's origin is. A bore of the
 //! tap drill's size on the same axis there took the thread: an M5 nut built on the origin
 //! threaded the 4.2 mm bore of a 2020 rail standing on it, and stayed plain itself. So
 //! a part with a tapped hole is built on a site off the origin, off the axes a rail's
-//! bores can be on, and no two kinds of such a part share a site. The same goes for a
-//! thread cut onto a screw: a second length of one screw size, built on the first one's
-//! axis, put its thread on the first. A nut, an insert or a slot nut has a fixed site
-//! ([`site`]). A screw or a tapped rail comes in too many sizes for that, and has one
-//! picked by its name ([`site_by_name`]).
+//! bores can be on, and no two such definitions share a site. The same goes for a thread
+//! cut onto a screw: a second length of one screw size, built on the first one's axis,
+//! put its thread on the first. The site comes from the component's id ([`Site::of`]),
+//! so it is the definition's alone.
 //!
 //! The kernel refuses some cuts, such as the chamfer of a hexagon, at positions it
-//! accepts at others. A part with such a cut is made on the origin and moved to its site
-//! with `solid.move` before its thread is cut, as the hex nut and the screw are.
+//! accepts at others. So a small part is made on the origin and moved to its site with
+//! `solid.move` before its thread is cut. A rail is built on its site as it stands.
 
 use serde_json::{json, Value};
 
@@ -73,13 +72,10 @@ pub struct Definition<'a> {
     pub folder: &'a str,
     /// The bill of materials type, `purchased`.
     pub bom_type: &'a str,
-    /// Where the definition is built, as (x, y): [`ORIGIN`], or a [`site`] of its own
-    /// for a part with a tapped hole.
-    pub site: [f64; 2],
+    /// Where the definition is built: [`Site::Origin`], or a site of its own for a part
+    /// with a cut thread.
+    pub site: Site,
 }
-
-/// The site of a part that has no tapped hole.
-pub const ORIGIN: [f64; 2] = [0.0, 0.0];
 
 /// What [`place_all`] did, for the run's reply.
 #[derive(Clone, Debug, PartialEq)]
@@ -102,29 +98,36 @@ impl Placed {
     }
 }
 
-/// How far apart two build sites are. A rail's bores are on multiples of 10 mm, so a
-/// rail built on one site has no bore on another.
-pub const SITE_PITCH: f64 = 20.0;
-
-/// The build site in column `column` and row `row` of the grid, as [`Definition::site`]
-/// takes it. No site is on the origin or on the 10 mm grid of a rail standing on it.
-pub const fn site(column: u8, row: u8) -> [f64; 2] {
-    [
-        5.0 + SITE_PITCH * column as f64,
-        5.0 + SITE_PITCH * row as f64,
-    ]
+/// Where a definition is built.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Site {
+    /// On the origin: a part with no cut thread.
+    Origin,
+    /// On a site of its own among the small parts, 20 mm from the next: a screw, a nut
+    /// or an insert whose thread is cut.
+    Compact,
+    /// On a site of its own among the rails, 100 mm from the next, because a rail's
+    /// bores reach 30 mm from its middle: a rail with a thread cut into an end.
+    Apart,
 }
 
-/// A site picked by a definition's name, for a kind of part that has too many sizes to
-/// give each a fixed site: one of `rows` x `rows` points `pitch` apart, the first at
-/// `first`. Two names seldom share one. A plugin gives each kind its own `first`, far
-/// enough from the others that their grids do not meet.
-pub fn site_by_name(name: &str, first: [f64; 2], pitch: f64, rows: u64) -> [f64; 2] {
-    let key = fnv1a(name.as_bytes());
-    [
-        first[0] + pitch * (key % rows) as f64,
-        first[1] + pitch * ((key / rows) % rows) as f64,
-    ]
+/// How many sites a row holds.
+const SITE_ROW: u64 = 64;
+
+impl Site {
+    /// The site of the component `component`, as (x, y). Every component of a design
+    /// has its own id, so no two definitions share a site. A rail's bores are on
+    /// multiples of 10 mm from its middle, and no site is on such a point of a rail
+    /// that stands on the origin, or of one built on another site.
+    pub fn of(self, component: u64) -> [f64; 2] {
+        let (column, row) = ((component % SITE_ROW) as f64, (component / SITE_ROW) as f64);
+        match self {
+            Site::Origin => [0.0, 0.0],
+            // Towards -X and -Y, clear of the rails.
+            Site::Compact => [-105.0 - 20.0 * column, -105.0 - 20.0 * row],
+            Site::Apart => [1005.0 + 100.0 * column, 1005.0 + 100.0 * row],
+        }
+    }
 }
 
 /// The frame a definition is built on: `at` in the XY plane, the axes the world's.
@@ -164,7 +167,6 @@ where
     let (component, name, site) = match found {
         Some(found) => found,
         None => {
-            let site = r.site(def.site);
             let mut taken = r.body_names();
             taken.extend(components.iter().map(|c| c.name.clone()));
             let name = free_body_name(&mut taken, def.base);
@@ -174,6 +176,7 @@ where
             )?;
             let component = id_of(&made, "component")?;
             let first = id_of(&made, "occurrence")?;
+            let site = r.site(def.site.of(component));
             build(r, &name, &site)?;
             let site = site.point;
             let mut meta = json!({
@@ -517,7 +520,7 @@ mod tests {
         description: "ISO 4762",
         folder: "Fasteners",
         bom_type: "purchased",
-        site: site(1, 2),
+        site: Site::Compact,
     };
 
     #[test]
@@ -562,7 +565,8 @@ mod tests {
         assert_eq!(calls[3].1["grounded"], false);
         assert_eq!(calls[4].1["body_name"], "Screw M3 x 12 socket");
         // It is built on its site, which the metadata keeps.
-        let site = [25.0, 45.0, 0.0];
+        // The screw's component is 104.
+        let site = [-105.0 - 20.0 * 40.0, -105.0 - 20.0, 0.0];
         assert_eq!(calls[4].1["base"], json!(site));
         assert_eq!(calls[5].1["values"][METADATA_KEY]["site"], json!(site));
         let meta = &calls[5].1;
@@ -623,8 +627,13 @@ mod tests {
         assert!(placed.reused);
         assert_eq!(placed.component, "Screw M3 x 12 socket");
         // It goes back by the site the definition was built on.
-        assert_eq!(host.calls[3].1["to_matrix"][0][3], -25.0);
-        assert_eq!(host.calls[3].1["to_matrix"][2][3], -45.0);
+        let built = Site::Compact.of(104);
+        assert_eq!(
+            host.metadata[METADATA_KEY]["site"],
+            json!([built[0], built[1], 0.0])
+        );
+        assert_eq!(host.calls[3].1["to_matrix"][0][3], -built[0]);
+        assert_eq!(host.calls[3].1["to_matrix"][2][3], -built[1]);
     }
 
     #[test]
@@ -652,24 +661,26 @@ mod tests {
     }
 
     #[test]
-    fn a_site_is_off_the_origin_and_off_every_rail_bore() {
-        for (column, row) in [(0, 0), (1, 0), (3, 7)] {
-            let at = site(column, row);
-            assert_eq!(at[0] % 10.0, 5.0);
-            assert_eq!(at[1] % 10.0, 5.0);
-            assert_eq!(site_at(at).point, [at[0], at[1], 0.0]);
-            assert_eq!(site_at(at).normal, [0.0, 0.0, 1.0]);
+    fn a_site_is_the_components_own_and_off_every_rail_bore() {
+        assert_eq!(Site::Origin.of(7), [0.0, 0.0]);
+        assert_eq!(site_at(Site::Origin.of(7)), Placement::on_origin());
+        let mut seen = Vec::new();
+        for component in [1, 2, 63, 64, 65, 1000, 5000] {
+            for site in [Site::Compact, Site::Apart] {
+                let at = site.of(component);
+                // A rail's bores are on multiples of 10 from its middle.
+                assert_eq!(at[0].rem_euclid(10.0), 5.0, "{component}");
+                assert_eq!(at[1].rem_euclid(10.0), 5.0, "{component}");
+                assert!(!seen.contains(&at), "{component}");
+                seen.push(at);
+                assert_eq!(site_at(at).point, [at[0], at[1], 0.0]);
+                assert_eq!(site_at(at).normal, [0.0, 0.0, 1.0]);
+            }
         }
-        assert_eq!(site(1, 2), [25.0, 45.0]);
-        // A site by name is on its own grid, and follows the name.
-        let named = |name| site_by_name(name, [5.0, -5.0], -20.0, 32);
-        let at = named("Screw M5 x 25 socket");
-        assert_eq!(at, named("Screw M5 x 25 socket"));
-        assert_ne!(at, named("Screw M5 x 20 socket"));
-        assert_eq!(at[0].rem_euclid(20.0), 5.0);
-        assert_eq!(at[1].rem_euclid(20.0), 15.0);
-        assert!(at[0] <= 5.0 && at[1] <= -5.0);
-        assert_eq!(site_at(ORIGIN), Placement::on_origin());
+        // Two rails are far enough apart that no bore of one is a bore of the other.
+        let (a, b) = (Site::Apart.of(1), Site::Apart.of(2));
+        assert!((a[0] - b[0]).abs() > 60.0);
+        assert!((Site::Apart.of(1)[1] - Site::Apart.of(65)[1]).abs() > 60.0);
     }
 
     #[test]

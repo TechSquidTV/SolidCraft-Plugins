@@ -158,6 +158,7 @@
       "browser.visibility",
       "solid.chamfer",
       "solid.hole",
+      "solid.move",
       "component.list",
       "component.create",
       "component.metadata",

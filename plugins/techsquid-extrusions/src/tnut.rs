@@ -5,7 +5,7 @@
 
 use extrusions::slot::{Slot, T5, V5};
 use extrusions::tnut::{TNut, NUTS, THREADS};
-use plugin_kit::component::{self, Definition, Placed};
+use plugin_kit::component::{self, Definition, Placed, Site};
 use plugin_kit::host::sketch_id;
 use plugin_kit::input::{self, FieldError};
 use plugin_kit::name;
@@ -20,11 +20,14 @@ pub const DEFAULT_TYPE: &str = "Pre-assembly";
 pub const DEFAULT_SIZE: &str = "M5";
 pub const DEFAULT_ALONG: &str = "Sketch X";
 
-/// The site a nut is built on: see [`component::site`]. Each kind of nut has its own,
-/// and so has the same nut with a plain hole, which is a definition of its own.
-pub fn built_at(p: &Params) -> [f64; 2] {
-    let kind = NUTS.iter().position(|nut| *nut == p.nut).unwrap_or(0);
-    component::site(1 + kind as u8, u8::from(p.modeled))
+/// Where a nut is built: on a site of its own when its thread is cut, on the origin
+/// when the thread is only listed. See [`plugin_kit::component`].
+pub fn built_at(p: &Params) -> Site {
+    if p.modeled {
+        Site::Compact
+    } else {
+        Site::Origin
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -152,7 +155,8 @@ pub fn make_t_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
 
 /// One nut named `body_name`, standing on `site`, whose axes are the world's: the
 /// tapped hole runs down along Z through the site, the shoulders are level with it and
-/// the length is along X.
+/// the length is along X. The bar and its ball are made on the origin and moved to the
+/// site before the hole is tapped: see [`plugin_kit::component`].
 pub fn build_nut<R: Runner>(
     r: &mut R,
     p: &Params,
@@ -160,7 +164,7 @@ pub fn build_nut<R: Runner>(
     body_name: &str,
 ) -> Result<(), String> {
     let nut = &p.nut;
-    let [x, y, z] = site.point;
+    let [x, y, z] = [0.0, 0.0, 0.0];
     let created = r.run(
         "sketch.create",
         json!({
@@ -184,18 +188,6 @@ pub fn build_nut<R: Runner>(
             "operation": "new",
             "body_name": body_name,
             "name": name::part(body_name, "Bar"),
-        }),
-    )?;
-    r.run(
-        "solid.hole",
-        json!({
-            "position": [x, y, z + nut.boss_height],
-            "direction": [0.0, 0.0, -1.0],
-            "depth": nut.height(),
-            "thread": p.thread,
-            "modeled": p.modeled,
-            "targets": [body_name],
-            "name": name::part(body_name, "Thread"),
         }),
     )?;
     if let Some(ball) = nut.ball {
@@ -222,6 +214,25 @@ pub fn build_nut<R: Runner>(
             }),
         )?;
     }
+    if site.point != [x, y, z] {
+        r.run(
+            "solid.move",
+            json!({"bodies": [body_name], "translate": site.point}),
+        )?;
+    }
+    let [x, y, z] = site.point;
+    r.run(
+        "solid.hole",
+        json!({
+            "position": [x, y, z + nut.boss_height],
+            "direction": [0.0, 0.0, -1.0],
+            "depth": nut.height(),
+            "thread": p.thread,
+            "modeled": p.modeled,
+            "targets": [body_name],
+            "name": name::part(body_name, "Thread"),
+        }),
+    )?;
     Ok(())
 }
 

@@ -61,7 +61,7 @@ cargo test
 
 ## Test against the host
 
-`tests/cli_test.py` needs the package from `./build.sh` and a `solidcraft-cli` with the plugin host (SolidCraft 0.41 or newer).
+`tests/cli_test.py` needs the package from `./build.sh` and a `solidcraft-cli` with the plugin host (SolidCraft 0.41 or newer). The tests are run on a development build of SolidCraft 0.41.0.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py
@@ -118,7 +118,7 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 Each fastener and each rail is a component of its own. This section describes fasteners; a rail is placed the same way, in an `Extrusions` folder instead of `Fasteners`. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
 
-- **One definition, many placements.** A run builds the fastener once, in a component of its own, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with its outer side up +Z; each placement turns that onto the sketch. A part with no cut thread stands on the component's origin. A part with one (a screw, a nut, an insert, a slot nut, a rail with a tapped end) stands on a point of its own away from it, because SolidCraft 0.42 puts a modeled thread on any bore or shank of the same size on the same axis: the bore of a rail standing on the origin, or a second length of the same screw.
+- **One definition, many placements.** A run builds the fastener once, in a component of its own, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with its outer side up +Z; each placement turns that onto the sketch. A part with no cut thread stands on the component's origin. A part with one (a screw, a nut, an insert, a slot nut, a rail with a tapped end) stands on a point of its own away from it, which no other part shares. SolidCraft 0.41 puts a modeled thread on any bore or shank of the same size on the same axis, such as the bore of a rail standing on the origin, a second length of the same screw, or a thicker nut of the same thread.
 - **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.
 - **A Fasteners folder.** Every placement goes in one `Fasteners` component in the design, made the first time it is needed. It is a phantom, so the bill of materials counts what it holds and has no row of its own.
 - **A bill of materials.** Each definition is `purchased`, its part number is its name and its description the standard it follows (`ISO 4762`, `ISO 4032`) or the insert it is (`CNC Kitchen heat-set insert M3 × 5.7`). `assembly.bom` on the example lists 4 inserts and 4 screws.

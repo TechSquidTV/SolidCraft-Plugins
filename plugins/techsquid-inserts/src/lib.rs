@@ -12,7 +12,7 @@ pub mod knurl;
 
 use fasteners::FOLDER;
 use insert::{HoleCut, HoleShape, Params};
-use plugin_kit::component::{self as fasten, Definition, Placed};
+use plugin_kit::component::{self as fasten, Definition, Placed, Site};
 use plugin_kit::host::{body_name_of, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement, Spot};
@@ -72,8 +72,11 @@ fn place_inserts<R: Runner>(r: &mut R, p: &Params, places: &[Placement]) -> Resu
         description: &description,
         folder: FOLDER,
         bom_type: "purchased",
-        // Column 3 is the inserts': one site for a plain bore, one for a thread.
-        site: fasten::site(3, u8::from(p.modeled)),
+        site: if p.modeled && p.plain_bore.is_none() {
+            Site::Compact
+        } else {
+            Site::Origin
+        },
     };
     fasten::place_all(r, &def, places, |mut r, name, site| {
         build_insert(&mut r, p, site, name)
@@ -185,6 +188,13 @@ fn build_insert<R: Runner>(
     place: &Placement,
     body_name: &str,
 ) -> Result<(), String> {
+    // The insert is made on the origin and moved to `place` before its bore is tapped:
+    // see [`plugin_kit::component`].
+    let site = place;
+    let place = &Placement {
+        point: [0.0, 0.0, 0.0],
+        ..*site
+    };
     let shape = knurl::shape(p.length, p.diameter, p.major);
     let tip = place.tip(p.length);
     // Every feature and sketch of this insert starts with its name.
@@ -242,6 +252,13 @@ fn build_insert<R: Runner>(
             "name": named("Tip chamfer"),
         }),
     )?;
+    if site.point != place.point {
+        r.run(
+            "solid.move",
+            json!({"bodies": [body], "translate": site.point}),
+        )?;
+    }
+    let place = site;
     let mut hole = json!({
         "position": place.point,
         "direction": opposite(place.normal),
@@ -935,6 +952,7 @@ mod tests {
                 "browser.visibility",
                 "solid.chamfer",
                 "solid.hole",
+                "solid.move",
                 "component.list",
                 "component.create",
                 "component.metadata",

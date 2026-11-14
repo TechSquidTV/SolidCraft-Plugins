@@ -109,8 +109,10 @@ pub struct CrossHole {
     pub inward: P,
     /// The access hole, from the face down to the slot floor: (diameter, depth).
     pub access: (f64, f64),
-    /// The clearance hole, from the slot floor out through the far face: (diameter,
-    /// where it starts below the face, how long it is).
+    /// The clearance hole, right through the rail: (diameter, where it starts below the
+    /// face, how long it is). It starts on the face, inside the access hole, and not on
+    /// the slot floor where the screw's shank starts: the kernel refuses some cuts whose
+    /// end lies in a face of the body, and the slot floor is one.
     pub clearance: (f64, f64, f64),
 }
 
@@ -131,7 +133,7 @@ pub fn cross_holes(slot: &Slot, grid: &Grid, face: Face) -> Vec<CrossHole> {
             at,
             inward: [-out[0], -out[1]],
             access: (ACCESS, seat),
-            clearance: (CLEARANCE, seat, 2.0 * face.half(grid) - seat),
+            clearance: (CLEARANCE, 0.0, 2.0 * face.half(grid)),
         })
         .collect()
 }
@@ -195,9 +197,9 @@ mod tests {
         assert_eq!(hole.at, [0.0, -10.0]);
         assert_eq!(hole.inward, [0.0, 1.0]);
         assert_eq!(hole.access, (9.5, 6.0));
-        assert_eq!(hole.clearance, (5.5, 6.0, 14.0));
+        assert_eq!(hole.clearance, (5.5, 0.0, 20.0));
         // Across the 40 mm of a 2040 the clearance hole is 20 mm longer.
         let long = cross_holes(&T5, &Grid { nx: 1, ny: 2 }, Face::YPlus)[0];
-        assert_eq!(long.clearance, (5.5, 6.0, 34.0));
+        assert_eq!(long.clearance, (5.5, 0.0, 40.0));
     }
 }

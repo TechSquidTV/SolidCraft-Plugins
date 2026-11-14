@@ -11,7 +11,7 @@ use fasteners::hex::{self, Hex};
 use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
-use plugin_kit::component::{self as fasten, Definition, Placed};
+use plugin_kit::component::{self as fasten, Definition, Placed, Site};
 use plugin_kit::host::{changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
@@ -81,8 +81,11 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             description: "ISO 4032",
             folder: FOLDER,
             bom_type: "purchased",
-            // Column 0 is the hexagon nuts': one site for a plain hole, one for a thread.
-            site: fasten::site(0, u8::from(p.modeled)),
+            site: if p.modeled {
+                Site::Compact
+            } else {
+                Site::Origin
+            },
         };
         Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
             build_nut(&mut r, p, site, name).map(|_| ())

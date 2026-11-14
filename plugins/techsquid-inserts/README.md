@@ -6,7 +6,7 @@ Sizes are [CNC Kitchen](https://cnckitchen.store/)'s. The outside is the knurl. 
 
 ## Install
 
-You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it.
+You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it, and this package is tested on a development build of 0.41.0.
 
 1. Download `techsquid-inserts-<version>.zip` from the latest release.
 2. Unzip it into SolidCraft's plugins folder, so you end up with a `techsquid-inserts` folder holding `plugin.json` and `plugin.wasm`:
@@ -57,7 +57,7 @@ The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall 
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas: `c1, c2` |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.cylinder`, `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.chamfer`, `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.cylinder`, `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.chamfer`, `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 `short` and `Voron` mark a second row of the same thread. D1 is the insert diameter, D2 is the plastic hole, and W is the minimum wall beside that hole.
 

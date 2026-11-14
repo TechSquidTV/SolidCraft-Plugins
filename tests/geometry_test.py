@@ -533,7 +533,7 @@ for slot in ("T-slot", "V-slot"):
 
 @case
 def nuts_keep_their_own_threads(name):
-    """SolidCraft 0.42 cuts a modeled thread into any bore of that size on the same
+    """SolidCraft 0.41 cuts a modeled thread into any bore of that size on the same
     axis. A second kind of nut must leave the first as it was built."""
     before = rail_and_face("T-slot")
     place = {"along": "Sketch Y", "sketch": "Face"}
@@ -771,7 +771,7 @@ refused("rail: a screw hole too close to an end is refused", "techsquid-extrusio
 
 @case
 def two_lengths_of_one_screw(name):
-    """SolidCraft 0.42 cuts a modeled thread onto any cylinder of that size on the same
+    """SolidCraft 0.41 cuts a modeled thread onto any cylinder of that size on the same
     axis. A second length of a screw must leave the first as it was, and take its own
     thread: each must weigh what it weighs built alone."""
     def screw(length, point):
@@ -794,6 +794,61 @@ def two_lengths_of_one_screw(name):
 
 
 two_lengths_of_one_screw("screw: a second length of an M5 screw leaves the first as built")
+
+
+
+def run_of(plugin_id, entry, params):
+    return lambda point: {"command": "plugin.run", "params": {
+        "path": os.path.join(ROOT, "dist", plugin_id), "approval": approval(plugin_id),
+        "entry": entry, "params": dict(params, sketch="Holes", sketch_point=point)}}
+
+
+@case
+def parts_keep_their_own_threads(name, first, second):
+    """Two parts with the same thread in one design. SolidCraft 0.41 puts a modeled
+    thread on any bore or shank of that size on the same axis, so each is built on a
+    site of its own: both must weigh what they weigh built alone."""
+    sketch = plate(10, True)
+    alone = []
+    for part in (first, second):
+        found, hits = measured(sketch + [part("c1")])
+        if found is None:
+            check(name, False, "| " + str(hits))
+            return
+        alone.append(sorted(b["volume_mm3"] for n, b in found.items() if n not in ("Plate", "Under")))
+    found, hits = measured(sketch + [first("c1"), second("c2")])
+    if found is None:
+        check(name, False, "| " + str(hits))
+        return
+    both = sorted(b["volume_mm3"] for n, b in found.items() if n not in ("Plate", "Under"))
+    want = sorted(alone[0] + alone[1])
+    ok = len(both) == 2 and all(abs(a - b) < 1e-6 for a, b in zip(both, want))
+    check(name, ok, f"| together {[round(v, 3) for v in both]}, alone {[round(v, 3) for v in want]}")
+
+
+NUT, INSERT, SCREW = (("techsquid-nuts", "make-nut"), ("techsquid-inserts", "make-insert"),
+                      ("techsquid-screws", "make-screw"))
+TNUT = ("techsquid-extrusions", "make-t-nut")
+parts_keep_their_own_threads("threads: an M5 nut and a thicker M5 nut",
+                             run_of(*NUT, {"size": "M5"}), run_of(*NUT, {"size": "M5", "custom_thickness": 8}))
+parts_keep_their_own_threads("threads: an M5 nut with a plain hole and one with a thread",
+                             run_of(*NUT, {"size": "M5", "thread_modeled": False}), run_of(*NUT, {"size": "M5"}))
+parts_keep_their_own_threads("threads: two M3 inserts of different lengths",
+                             run_of(*INSERT, {"size": "M3 × 3 short", "create": "Insert only"}),
+                             run_of(*INSERT, {"size": "M3 × 5.7", "create": "Insert only"}))
+parts_keep_their_own_threads("threads: an M5 insert and an M5 nut",
+                             run_of(*INSERT, {"size": "M5 × 5.8 short", "create": "Insert only"}),
+                             run_of(*NUT, {"size": "M5"}))
+parts_keep_their_own_threads("threads: an M5 socket screw and an M5 button screw",
+                             run_of(*SCREW, {"size": "M5", "length": 16}),
+                             run_of(*SCREW, {"size": "M5", "length": 16, "head": "Button head"}))
+parts_keep_their_own_threads("threads: an M5 nut and an M5 slot nut",
+                             run_of(*NUT, {"size": "M5"}), run_of(*TNUT, {"type": "Pre-assembly"}))
+parts_keep_their_own_threads("threads: two tapped 2040 rails of different lengths",
+                             run_of("techsquid-extrusions", "make-extrusion",
+                                    {"size": "2040", "length": 60, "end_taps": "Start"}),
+                             run_of("techsquid-extrusions", "make-extrusion",
+                                    {"size": "2040", "length": 80, "end_taps": "Start"}))
 
 
 finish()

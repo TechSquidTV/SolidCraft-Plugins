@@ -6,7 +6,7 @@ A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot for M5 hardware. 
 
 ## Install
 
-You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it.
+You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it, and this package is tested on a development build of 0.41.0.
 
 1. Download `techsquid-extrusions-<version>.zip` from the latest release.
 2. Unzip it into SolidCraft's plugins folder, so you end up with a `techsquid-extrusions` folder holding `plugin.json` and `plugin.wasm`:
@@ -74,7 +74,7 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`.
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a screw hole, and a nut's ball recess), `solid.sphere` (a nut's ball), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a screw hole, and a nut's ball recess), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 ## Sizes
 

@@ -10,7 +10,7 @@ pub mod tnut;
 
 use extrusions::machining::{self, TAP_DEPTH, TAP_THREAD};
 use extrusions::{Profile, Seg};
-use plugin_kit::component::{self, Definition, Placed};
+use plugin_kit::component::{self, Definition, Placed, Site};
 use plugin_kit::host::sketch_id;
 use plugin_kit::name;
 use plugin_kit::place::{self, Placement};
@@ -84,20 +84,15 @@ fn holes_by_face(p: &Params, after_face: &str, between: &str) -> String {
     text
 }
 
-/// How far apart two rails with cut threads are built, and where the first is. The
-/// widest rail has bores 60 mm apart.
-const TAP_SITE_PITCH: f64 = 100.0;
-const TAP_SITE_FIRST: [f64; 2] = [1005.0, 1005.0];
-const TAP_SITE_ROWS: u64 = 16;
-
-/// Where a rail is built. A rail with a thread cut into an end has a tapped hole, so it
-/// is built away from the origin and from every other such rail, on a site picked by
-/// its name: see [`plugin_kit::component`]. Any other rail is built on the origin.
-pub fn built_at(p: &Params, base: &str) -> [f64; 2] {
+/// Where a rail is built. A rail with a thread cut into an end is built away from the
+/// origin and from every other such rail: see [`plugin_kit::component`]. Any other rail
+/// is built on the origin.
+pub fn built_at(p: &Params) -> Site {
     if p.taps == Taps::None || !p.modeled {
-        return component::ORIGIN;
+        Site::Origin
+    } else {
+        Site::Apart
     }
-    component::site_by_name(base, TAP_SITE_FIRST, TAP_SITE_PITCH, TAP_SITE_ROWS)
 }
 
 /// Build the rail on every point. Returns a summary of what was made.
@@ -117,7 +112,7 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
         description: &description,
         folder: FOLDER,
         bom_type: "purchased",
-        site: built_at(p, &base),
+        site: built_at(p),
     };
     let placed = component::place_all(r, &def, &places, |mut r, name, site| {
         build_rail(&mut r, &profile, p, site, name)
@@ -595,8 +590,9 @@ mod tests {
         assert_eq!(cuts[0]["axis"], json!([0.0, 1.0, 0.0]));
         assert_eq!(cuts[1]["name"], format!("{name}: Hole at 10: Clearance"));
         assert_eq!(cuts[1]["diameter"], 5.5);
-        assert_eq!(cuts[1]["height"], 14.0);
-        assert_eq!(cuts[1]["base"], json!([0.0, -4.0, 10.0]));
+        // The clearance hole starts on the face too, and runs right through.
+        assert_eq!(cuts[1]["height"], 20.0);
+        assert_eq!(cuts[1]["base"], json!([0.0, -10.0, 10.0]));
         assert_eq!(cuts[2]["base"], json!([0.0, -10.0, 290.0]));
         for cut in &cuts {
             assert_eq!(cut["operation"], "cut");
@@ -654,31 +650,18 @@ mod tests {
 
     #[test]
     fn a_rail_with_a_cut_thread_is_built_on_a_site_of_its_own() {
-        let site = |v: Value| {
-            let p = rail::parse(&v).unwrap();
-            built_at(&p, &body_base(&p))
-        };
+        let site = |v: Value| built_at(&rail::parse(&v).unwrap());
         // A plain rail, and one whose thread is only listed, stay on the origin.
-        assert_eq!(site(json!({"length": 300})), component::ORIGIN);
+        assert_eq!(site(json!({"length": 300})), Site::Origin);
+        assert_eq!(site(json!({"length": 300, "holes": "10"})), Site::Origin);
         assert_eq!(
             site(json!({"length": 300, "end_taps": "Both", "thread_modeled": false})),
-            component::ORIGIN
+            Site::Origin
         );
-        let mut sites = Vec::new();
-        for v in [
-            json!({"length": 260, "end_taps": "Both", "holes": "10, 30, 230, 250"}),
-            json!({"length": 260, "end_taps": "Both", "holes": "-Y 10, 30, 230, 250"}),
-            json!({"slot": "V-slot", "size": "2040", "length": 300, "end_taps": "Both"}),
-            json!({"length": 300, "end_taps": "Start"}),
-        ] {
-            let at = site(v.clone());
-            // Off the origin, and off every bore of a rail that stands on it.
-            assert!(at[0] >= 1005.0 && at[1] >= 1005.0, "{v}");
-            assert_eq!(at[0] % 100.0, 5.0, "{v}");
-            assert_eq!(at[1] % 100.0, 5.0, "{v}");
-            assert!(!sites.contains(&at), "{v}");
-            sites.push(at);
-        }
+        assert_eq!(
+            site(json!({"length": 300, "end_taps": "Start"})),
+            Site::Apart
+        );
     }
 
     #[test]

@@ -85,8 +85,8 @@
         "type": "custom",
         "plane": {
           "origin": [
-            1605.0,
-            2005.0,
+            1405.0,
+            1005.0,
             0.0
           ],
           "x_dir": [
@@ -1846,8 +1846,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2015.0,
+        1405.0,
+        1015.0,
         10.0
       ],
       "axis": [
@@ -1873,8 +1873,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2009.0,
+        1405.0,
+        1015.0,
         10.0
       ],
       "axis": [
@@ -1883,7 +1883,7 @@
         -0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -1900,8 +1900,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2015.0,
+        1405.0,
+        1015.0,
         30.0
       ],
       "axis": [
@@ -1927,8 +1927,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2009.0,
+        1405.0,
+        1015.0,
         30.0
       ],
       "axis": [
@@ -1937,7 +1937,7 @@
         -0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -1954,8 +1954,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2015.0,
+        1405.0,
+        1015.0,
         230.0
       ],
       "axis": [
@@ -1981,8 +1981,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2009.0,
+        1405.0,
+        1015.0,
         230.0
       ],
       "axis": [
@@ -1991,7 +1991,7 @@
         -0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -2008,8 +2008,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2015.0,
+        1405.0,
+        1015.0,
         250.0
       ],
       "axis": [
@@ -2035,8 +2035,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1605.0,
-        2009.0,
+        1405.0,
+        1015.0,
         250.0
       ],
       "axis": [
@@ -2045,7 +2045,7 @@
         -0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -2066,8 +2066,8 @@
       ],
       "type": "hole",
       "position": [
-        1605.0,
-        2005.0,
+        1405.0,
+        1005.0,
         0.0
       ],
       "direction": [
@@ -2102,8 +2102,8 @@
       ],
       "type": "hole",
       "position": [
-        1605.0,
-        2005.0,
+        1405.0,
+        1005.0,
         260.0
       ],
       "direction": [
@@ -2130,7 +2130,7 @@
         "type": "custom",
         "plane": {
           "origin": [
-            1005.0,
+            2905.0,
             1005.0,
             0.0
           ],
@@ -3891,7 +3891,7 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
+        2905.0,
         995.0,
         10.0
       ],
@@ -3918,8 +3918,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
-        1001.0,
+        2905.0,
+        995.0,
         10.0
       ],
       "axis": [
@@ -3928,7 +3928,7 @@
         0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -3945,7 +3945,7 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
+        2905.0,
         995.0,
         30.0
       ],
@@ -3972,8 +3972,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
-        1001.0,
+        2905.0,
+        995.0,
         30.0
       ],
       "axis": [
@@ -3982,7 +3982,7 @@
         0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -3999,7 +3999,7 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
+        2905.0,
         995.0,
         230.0
       ],
@@ -4026,8 +4026,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
-        1001.0,
+        2905.0,
+        995.0,
         230.0
       ],
       "axis": [
@@ -4036,7 +4036,7 @@
         0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -4053,7 +4053,7 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
+        2905.0,
         995.0,
         250.0
       ],
@@ -4080,8 +4080,8 @@
       ],
       "type": "cylinder",
       "base": [
-        1005.0,
-        1001.0,
+        2905.0,
+        995.0,
         250.0
       ],
       "axis": [
@@ -4090,7 +4090,7 @@
         0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -4111,7 +4111,7 @@
       ],
       "type": "hole",
       "position": [
-        1005.0,
+        2905.0,
         1005.0,
         0.0
       ],
@@ -4147,7 +4147,7 @@
       ],
       "type": "hole",
       "position": [
-        1005.0,
+        2905.0,
         1005.0,
         260.0
       ],
@@ -6027,7 +6027,7 @@
       ],
       "type": "cylinder",
       "base": [
-        4.0,
+        10.0,
         0.0,
         10.0
       ],
@@ -6037,7 +6037,7 @@
         -0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -6081,7 +6081,7 @@
       ],
       "type": "cylinder",
       "base": [
-        4.0,
+        10.0,
         0.0,
         290.0
       ],
@@ -6091,7 +6091,7 @@
         -0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -7892,7 +7892,7 @@
       ],
       "type": "cylinder",
       "base": [
-        -4.0,
+        -10.0,
         0.0,
         10.0
       ],
@@ -7902,7 +7902,7 @@
         0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -7946,7 +7946,7 @@
       ],
       "type": "cylinder",
       "base": [
-        -4.0,
+        -10.0,
         0.0,
         290.0
       ],
@@ -7956,7 +7956,7 @@
         0.0
       ],
       "radius": "(5.5 mm) / 2",
-      "height": "14",
+      "height": "20",
       "operation": "cut"
     },
     {
@@ -8033,8 +8033,8 @@
         "type": "custom",
         "plane": {
           "origin": [
-            2005.0,
-            1405.0,
+            6405.0,
+            1005.0,
             0.0
           ],
           "x_dir": [
@@ -10051,8 +10051,8 @@
       ],
       "type": "hole",
       "position": [
-        2005.0,
-        1395.0,
+        6405.0,
+        995.0,
         0.0
       ],
       "direction": [
@@ -10087,8 +10087,8 @@
       ],
       "type": "hole",
       "position": [
-        2005.0,
-        1415.0,
+        6405.0,
+        1015.0,
         0.0
       ],
       "direction": [
@@ -10123,8 +10123,8 @@
       ],
       "type": "hole",
       "position": [
-        2005.0,
-        1395.0,
+        6405.0,
+        995.0,
         300.0
       ],
       "direction": [
@@ -10159,8 +10159,8 @@
       ],
       "type": "hole",
       "position": [
-        2005.0,
-        1415.0,
+        6405.0,
+        1015.0,
         300.0
       ],
       "direction": [
@@ -10509,8 +10509,8 @@
         "Screw M5 x 25 socket"
       ],
       "translate": [
-        "-445",
         "-185",
+        "-125",
         "0"
       ]
     },
@@ -10524,16 +10524,16 @@
       ],
       "type": "thread",
       "face": [
-        -442.5,
-        -185.0,
+        -182.5,
+        -125.0,
         -20.833333333333332
       ],
       "designation": "M5",
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -442.5,
-        -185.0,
+        -182.5,
+        -125.0,
         -20.833333333333332
       ]
     },
@@ -10933,8 +10933,8 @@
         "Screw M5 x 20 socket"
       ],
       "translate": [
-        "-665",
-        "-225",
+        "-685",
+        "-125",
         "0"
       ]
     },
@@ -10948,16 +10948,16 @@
       ],
       "type": "thread",
       "face": [
-        -662.5,
-        -225.0,
+        -682.5,
+        -125.0,
         -16.666666666666668
       ],
       "designation": "M5",
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -662.5,
-        -225.0,
+        -682.5,
+        -125.0,
         -16.666666666666668
       ]
     },
@@ -11108,8 +11108,8 @@
         "type": "custom",
         "plane": {
           "origin": [
-            39.0,
-            25.0,
+            -6.0,
+            0.0,
             0.0
           ],
           "x_dir": [
@@ -11673,11 +11673,78 @@
     },
     {
       "id": 114,
-      "name": "T-nut M5 post-assembly: Thread",
+      "name": "T-nut M5 post-assembly: Ball recess",
       "suppressed": false,
       "param_names": [
         "d100",
         "d101"
+      ],
+      "component": 110,
+      "participants": [
+        "T-nut M5 post-assembly"
+      ],
+      "type": "cylinder",
+      "base": [
+        7.5,
+        0.0,
+        -3.2
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "2.1",
+      "height": "0.2",
+      "operation": "cut"
+    },
+    {
+      "id": 115,
+      "name": "T-nut M5 post-assembly: Ball",
+      "suppressed": false,
+      "param_names": [
+        "d102"
+      ],
+      "component": 110,
+      "participants": [
+        "T-nut M5 post-assembly"
+      ],
+      "type": "sphere",
+      "center": [
+        7.5,
+        0.0,
+        -2.0
+      ],
+      "radius": "2",
+      "operation": "join"
+    },
+    {
+      "id": 116,
+      "name": "Move3",
+      "suppressed": false,
+      "param_names": [
+        "d103",
+        "d104",
+        "d105"
+      ],
+      "component": 110,
+      "type": "move",
+      "bodies": [
+        "T-nut M5 post-assembly"
+      ],
+      "translate": [
+        "-1025",
+        "-125",
+        "0"
+      ]
+    },
+    {
+      "id": 117,
+      "name": "T-nut M5 post-assembly: Thread",
+      "suppressed": false,
+      "param_names": [
+        "d106",
+        "d107"
       ],
       "component": 110,
       "face_names": [
@@ -11688,8 +11755,8 @@
       ],
       "type": "hole",
       "position": [
-        45.0,
-        25.0,
+        -1025.0,
+        -125.0,
         0.7
       ],
       "direction": [
@@ -11706,58 +11773,11 @@
       "modeled": true
     },
     {
-      "id": 115,
-      "name": "T-nut M5 post-assembly: Ball recess",
-      "suppressed": false,
-      "param_names": [
-        "d102",
-        "d103"
-      ],
-      "component": 110,
-      "participants": [
-        "T-nut M5 post-assembly"
-      ],
-      "type": "cylinder",
-      "base": [
-        52.5,
-        25.0,
-        -3.2
-      ],
-      "axis": [
-        0.0,
-        0.0,
-        1.0
-      ],
-      "radius": "2.1",
-      "height": "0.2",
-      "operation": "cut"
-    },
-    {
-      "id": 116,
-      "name": "T-nut M5 post-assembly: Ball",
-      "suppressed": false,
-      "param_names": [
-        "d104"
-      ],
-      "component": 110,
-      "participants": [
-        "T-nut M5 post-assembly"
-      ],
-      "type": "sphere",
-      "center": [
-        52.5,
-        25.0,
-        -2.0
-      ],
-      "radius": "2",
-      "operation": "join"
-    },
-    {
-      "id": 120,
+      "id": 121,
       "name": "Post nut points",
       "suppressed": false,
       "param_names": [
-        "d105"
+        "d108"
       ],
       "type": "sketch",
       "plane": {
@@ -11801,17 +11821,17 @@
       }
     },
     {
-      "id": 123,
+      "id": 124,
       "name": "T-nut M5 pre-assembly: Section",
       "suppressed": false,
-      "component": 121,
+      "component": 122,
       "type": "sketch",
       "plane": {
         "type": "custom",
         "plane": {
           "origin": [
-            20.0,
-            25.0,
+            -5.0,
+            0.0,
             0.0
           ],
           "x_dir": [
@@ -12331,18 +12351,18 @@
       }
     },
     {
-      "id": 124,
+      "id": 125,
       "name": "T-nut M5 pre-assembly: Bar",
       "suppressed": false,
       "body_names": [
         "T-nut M5 pre-assembly"
       ],
       "param_names": [
-        "d106"
+        "d109"
       ],
-      "component": 121,
+      "component": 122,
       "type": "extrude",
-      "sketch": 123,
+      "sketch": 124,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -12374,24 +12394,44 @@
       "operation": "new_body"
     },
     {
-      "id": 125,
+      "id": 126,
+      "name": "Move4",
+      "suppressed": false,
+      "param_names": [
+        "d110",
+        "d111",
+        "d112"
+      ],
+      "component": 122,
+      "type": "move",
+      "bodies": [
+        "T-nut M5 pre-assembly"
+      ],
+      "translate": [
+        "-1265",
+        "-125",
+        "0"
+      ]
+    },
+    {
+      "id": 127,
       "name": "T-nut M5 pre-assembly: Thread",
       "suppressed": false,
       "param_names": [
-        "d107",
-        "d108"
+        "d113",
+        "d114"
       ],
-      "component": 121,
+      "component": 122,
       "face_names": [
-        "F124:side:l1"
+        "F125:side:l1"
       ],
       "participants": [
         "T-nut M5 pre-assembly"
       ],
       "type": "hole",
       "position": [
-        25.0,
-        25.0,
+        -1265.0,
+        -125.0,
         0.8
       ],
       "direction": [
@@ -12408,7 +12448,7 @@
       "modeled": true
     }
   ],
-  "next_id": 127,
+  "next_id": 129,
   "components": [
     {
       "id": 2,
@@ -12428,11 +12468,11 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from +Y at 10, 30, 230, 250 mm",
         "dev.threadcraft": {
-          "geometry": "5759961003e8bdfc",
+          "geometry": "b843dd4d038df218",
           "plugin": "techsquid-extrusions",
           "site": [
-            1605.0,
-            2005.0,
+            1405.0,
+            1005.0,
             0.0
           ]
         },
@@ -12448,10 +12488,10 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from -Y at 10, 30, 230, 250 mm",
         "dev.threadcraft": {
-          "geometry": "9a8ea4d5ae00e3cc",
+          "geometry": "59ff5d8e633300a8",
           "plugin": "techsquid-extrusions",
           "site": [
-            1005.0,
+            2905.0,
             1005.0,
             0.0
           ]
@@ -12468,7 +12508,7 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from +X at 10, 290 mm",
         "dev.threadcraft": {
-          "geometry": "b053950aba291445",
+          "geometry": "643664bbd27bfb0b",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -12488,7 +12528,7 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from -X at 10, 290 mm",
         "dev.threadcraft": {
-          "geometry": "83fd14254c9fcfd5",
+          "geometry": "c5542635fde3743b",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -12511,8 +12551,8 @@
           "geometry": "39318f0152eab94c",
           "plugin": "techsquid-extrusions",
           "site": [
-            2005.0,
-            1405.0,
+            6405.0,
+            1005.0,
             0.0
           ]
         },
@@ -12540,8 +12580,8 @@
           "geometry": "8621727bf5003b53",
           "plugin": "techsquid-screws",
           "site": [
-            -445.0,
             -185.0,
+            -125.0,
             0.0
           ]
         },
@@ -12560,8 +12600,8 @@
           "geometry": "1a156d2eb025e125",
           "plugin": "techsquid-screws",
           "site": [
-            -665.0,
-            -225.0,
+            -685.0,
+            -125.0,
             0.0
           ]
         },
@@ -12577,11 +12617,11 @@
         "bom_type": "purchased",
         "description": "MISUMI HNTP5-5 post-assembly insertion nut for a 6 mm slot",
         "dev.threadcraft": {
-          "geometry": "9c597f8363838195",
+          "geometry": "c408132f9513dea5",
           "plugin": "techsquid-extrusions",
           "site": [
-            45.0,
-            25.0,
+            -1025.0,
+            -125.0,
             0.0
           ]
         },
@@ -12589,7 +12629,7 @@
       }
     },
     {
-      "id": 121,
+      "id": 122,
       "identification_color_index": 10,
       "name": "T-nut M5 pre-assembly",
       "parent": 2,
@@ -12600,8 +12640,8 @@
           "geometry": "2fa207adbd6f638b",
           "plugin": "techsquid-extrusions",
           "site": [
-            25.0,
-            25.0,
+            -1265.0,
+            -125.0,
             0.0
           ]
         },
@@ -12669,9 +12709,9 @@
           0.0
         ],
         [
-          -1465.0,
+          -1265.0,
           -130.0,
-          2015.0,
+          1015.0,
           1.0
         ]
       ],
@@ -12702,9 +12742,9 @@
           0.0
         ],
         [
-          -1745.0,
+          -1545.0,
           -130.0,
-          2015.0,
+          1015.0,
           1.0
         ]
       ],
@@ -12735,7 +12775,7 @@
           0.0
         ],
         [
-          -865.0,
+          -2765.0,
           -130.0,
           1335.0,
           1.0
@@ -12768,7 +12808,7 @@
           0.0
         ],
         [
-          -1145.0,
+          -3045.0,
           -130.0,
           1335.0,
           1.0
@@ -12933,8 +12973,8 @@
           0.0
         ],
         [
-          -1865.0,
-          -1295.0,
+          -6265.0,
+          -895.0,
           20.0,
           1.0
         ]
@@ -12966,8 +13006,8 @@
           0.0
         ],
         [
-          -2145.0,
-          -1295.0,
+          -6545.0,
+          -895.0,
           20.0,
           1.0
         ]
@@ -12999,8 +13039,8 @@
           0.0
         ],
         [
-          -2145.0,
-          -1515.0,
+          -6545.0,
+          -1115.0,
           20.0,
           1.0
         ]
@@ -13032,8 +13072,8 @@
           0.0
         ],
         [
-          -1865.0,
-          -1515.0,
+          -6265.0,
+          -1115.0,
           20.0,
           1.0
         ]
@@ -13098,8 +13138,8 @@
           0.0
         ],
         [
-          585.0,
-          -65.0,
+          325.0,
+          -5.0,
           6.0,
           1.0
         ]
@@ -13131,8 +13171,8 @@
           0.0
         ],
         [
-          585.0,
-          -85.0,
+          325.0,
+          -25.0,
           6.0,
           1.0
         ]
@@ -13164,8 +13204,8 @@
           0.0
         ],
         [
-          585.0,
-          -285.0,
+          325.0,
+          -225.0,
           6.0,
           1.0
         ]
@@ -13197,8 +13237,8 @@
           0.0
         ],
         [
-          585.0,
-          -305.0,
+          325.0,
+          -245.0,
           6.0,
           1.0
         ]
@@ -13230,8 +13270,8 @@
           0.0
         ],
         [
-          305.0,
-          -65.0,
+          45.0,
+          -5.0,
           6.0,
           1.0
         ]
@@ -13263,8 +13303,8 @@
           0.0
         ],
         [
-          305.0,
-          -85.0,
+          45.0,
+          -25.0,
           6.0,
           1.0
         ]
@@ -13296,8 +13336,8 @@
           0.0
         ],
         [
-          305.0,
-          -285.0,
+          45.0,
+          -225.0,
           6.0,
           1.0
         ]
@@ -13329,8 +13369,8 @@
           0.0
         ],
         [
-          305.0,
-          -305.0,
+          45.0,
+          -245.0,
           6.0,
           1.0
         ]
@@ -13362,8 +13402,8 @@
           0.0
         ],
         [
-          585.0,
-          305.0,
+          325.0,
+          245.0,
           334.0,
           1.0
         ]
@@ -13395,8 +13435,8 @@
           0.0
         ],
         [
-          585.0,
-          285.0,
+          325.0,
+          225.0,
           334.0,
           1.0
         ]
@@ -13428,8 +13468,8 @@
           0.0
         ],
         [
-          585.0,
-          85.0,
+          325.0,
+          25.0,
           334.0,
           1.0
         ]
@@ -13461,8 +13501,8 @@
           0.0
         ],
         [
-          585.0,
-          65.0,
+          325.0,
+          5.0,
           334.0,
           1.0
         ]
@@ -13494,8 +13534,8 @@
           0.0
         ],
         [
-          305.0,
-          305.0,
+          45.0,
+          245.0,
           334.0,
           1.0
         ]
@@ -13527,8 +13567,8 @@
           0.0
         ],
         [
-          305.0,
-          285.0,
+          45.0,
+          225.0,
           334.0,
           1.0
         ]
@@ -13560,8 +13600,8 @@
           0.0
         ],
         [
-          305.0,
-          85.0,
+          45.0,
+          25.0,
           334.0,
           1.0
         ]
@@ -13593,8 +13633,8 @@
           0.0
         ],
         [
-          305.0,
-          65.0,
+          45.0,
+          5.0,
           334.0,
           1.0
         ]
@@ -13626,9 +13666,9 @@
           0.0
         ],
         [
-          365.0,
+          265.0,
           144.0,
-          675.0,
+          695.0,
           1.0
         ]
       ],
@@ -13659,9 +13699,9 @@
           0.0
         ],
         [
-          85.0,
+          -15.0,
           144.0,
-          675.0,
+          695.0,
           1.0
         ]
       ],
@@ -13692,9 +13732,9 @@
           0.0
         ],
         [
-          365.0,
+          265.0,
           144.0,
-          995.0,
+          1015.0,
           1.0
         ]
       ],
@@ -13725,9 +13765,9 @@
           0.0
         ],
         [
-          85.0,
+          -15.0,
           144.0,
-          995.0,
+          1015.0,
           1.0
         ]
       ],
@@ -13758,9 +13798,9 @@
           0.0
         ],
         [
-          805.0,
+          825.0,
           -144.0,
-          235.0,
+          135.0,
           1.0
         ]
       ],
@@ -13791,9 +13831,9 @@
           0.0
         ],
         [
-          525.0,
+          545.0,
           -144.0,
-          235.0,
+          135.0,
           1.0
         ]
       ],
@@ -13824,9 +13864,9 @@
           0.0
         ],
         [
-          805.0,
+          825.0,
           -144.0,
-          555.0,
+          455.0,
           1.0
         ]
       ],
@@ -13857,9 +13897,9 @@
           0.0
         ],
         [
-          525.0,
+          545.0,
           -144.0,
-          555.0,
+          455.0,
           1.0
         ]
       ],
@@ -13890,8 +13930,8 @@
           0.0
         ],
         [
-          15.0,
-          115.0,
+          1085.0,
+          265.0,
           338.0,
           1.0
         ]
@@ -13899,7 +13939,7 @@
       "grounded": false
     },
     {
-      "id": 117,
+      "id": 118,
       "component": 110,
       "parent": 2,
       "name": "T-nut M5 post-assembly:2",
@@ -13923,8 +13963,8 @@
           0.0
         ],
         [
-          -105.0,
-          115.0,
+          965.0,
+          265.0,
           338.0,
           1.0
         ]
@@ -13932,7 +13972,7 @@
       "grounded": false
     },
     {
-      "id": 118,
+      "id": 119,
       "component": 110,
       "parent": 2,
       "name": "T-nut M5 post-assembly:3",
@@ -13956,8 +13996,8 @@
           0.0
         ],
         [
-          15.0,
-          -165.0,
+          1085.0,
+          -15.0,
           338.0,
           1.0
         ]
@@ -13965,7 +14005,7 @@
       "grounded": false
     },
     {
-      "id": 119,
+      "id": 120,
       "component": 110,
       "parent": 2,
       "name": "T-nut M5 post-assembly:4",
@@ -13989,8 +14029,8 @@
           0.0
         ],
         [
-          -105.0,
-          -165.0,
+          965.0,
+          -15.0,
           338.0,
           1.0
         ]
@@ -13998,8 +14038,8 @@
       "grounded": false
     },
     {
-      "id": 122,
-      "component": 121,
+      "id": 123,
+      "component": 122,
       "parent": 2,
       "name": "T-nut M5 pre-assembly:1",
       "transform": [
@@ -14023,16 +14063,16 @@
         ],
         [
           148.2,
-          125.0,
-          145.0,
+          -25.0,
+          1435.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 126,
-      "component": 121,
+      "id": 128,
+      "component": 122,
       "parent": 2,
       "name": "T-nut M5 pre-assembly:2",
       "transform": [
@@ -14056,8 +14096,8 @@
         ],
         [
           148.2,
-          -75.0,
-          145.0,
+          -225.0,
+          1435.0,
           1.0
         ]
       ],

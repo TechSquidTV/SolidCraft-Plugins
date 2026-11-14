@@ -24,22 +24,20 @@ A new family of plugins, such as aluminium extrusions, gets its own crate beside
 
 The plugin id, the folder name under `plugins/`, the Cargo package name and the `dist/<id>/` folder are all the same string, `techsquid-<name>`. SolidCraft plugin ids share one flat namespace (1 to 64 lowercase letters, digits and inner hyphens), and they key the install folder, Preferences and plugin data saved in designs. Treat an id as permanent once it has shipped.
 
-Adding a plugin means updating every place that lists the ids:
-- `members` in `Cargo.toml`
-- `build_one` in `build.sh` (the wasm file is the package name with `_` instead of `-`)
-- the `-p` list and the package loop in `.github/workflows/ci.yml`
-- the package loop in `.github/workflows/release.yml`
-- the package lists in `tests/cli_test.py` and `tests/geometry_test.py`
-- the Plugins table in README.md
+The workspace members, `build.sh`, both workflows and the host tests find the plugins themselves: they take every folder under `plugins/` (the tests take those with a `plugin.json`). So adding a plugin means:
+- a folder `plugins/techsquid-<name>` with `Cargo.toml`, `plugin.json`, `README.md` and `src/lib.rs`
+- a test in `src/lib.rs` that asserts the manifest id
+- a case for it in `CASES` in `tests/cli_test.py`, which fails until it has one
+- a row in the Plugins table in README.md
 
-Each plugin's `src/lib.rs` has a test that asserts the manifest id.
+Don't put anything but plugins under `plugins/`, or anything but library crates under `crates/`. The globs would pick it up.
 
 ## Commands
 
 ```bash
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
-cargo clippy --locked --target wasm32-unknown-unknown -p techsquid-screws -p techsquid-inserts -p techsquid-nuts -- -D warnings
+cargo clippy --workspace --locked --target wasm32-unknown-unknown -- -D warnings
 cargo test --workspace --locked
 ./build.sh
 ```

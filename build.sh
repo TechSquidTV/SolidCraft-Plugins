@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Build each plugin into dist/<id>/ (plugin.wasm + plugin.json).
+# Build every plugin under plugins/ into dist/<id>/ (plugin.wasm + plugin.json).
+# The folder name is the plugin id and the Cargo package name.
 # Needs: rust with the wasm32-unknown-unknown target, and wasm-tools
 # (https://github.com/bytecodealliance/wasm-tools).
 set -euo pipefail
@@ -7,7 +8,7 @@ cd "$(dirname "$0")"
 
 build_one() {
   local id="$1"
-  local wasm_name="$2"
+  local wasm_name="${id//-/_}"
   cargo build --release --lib --target wasm32-unknown-unknown -p "$id"
   local out="dist/$id"
   rm -rf "$out"
@@ -20,6 +21,6 @@ build_one() {
   echo "built $out"
 }
 
-build_one techsquid-screws techsquid_screws
-build_one techsquid-inserts techsquid_inserts
-build_one techsquid-nuts techsquid_nuts
+for dir in plugins/*/; do
+  build_one "$(basename "$dir")"
+done

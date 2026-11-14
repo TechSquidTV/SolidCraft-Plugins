@@ -30,10 +30,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Clippy, native
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Clippy, wasm plugins
-        run: >
-          cargo clippy --locked --target wasm32-unknown-unknown
-          -p techsquid-screws -p techsquid-inserts -p techsquid-nuts -- -D warnings
+      - name: Clippy, wasm
+        run: cargo clippy --workspace --locked --target wasm32-unknown-unknown -- -D warnings
 
   test:
     runs-on: ubuntu-latest
@@ -57,7 +55,8 @@ jobs:
       - run: ./build.sh
       - name: Check the packaged plugins
         run: |
-          for id in techsquid-screws techsquid-inserts techsquid-nuts; do
+          for dir in plugins/*/; do
+            id=$(basename "$dir")
             test -s "dist/$id/plugin.wasm"
             test -s "dist/$id/plugin.json"
           done

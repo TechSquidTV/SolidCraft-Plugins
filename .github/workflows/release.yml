@@ -39,7 +39,8 @@ jobs:
       - name: Package
         run: |
           mkdir -p out
-          for id in techsquid-screws techsquid-inserts techsquid-nuts; do
+          for dir in plugins/*/; do
+            id=$(basename "$dir")
             (cd dist && zip -r "../out/${id}-${VERSION}.zip" "$id")
             (cd out && sha256sum "${id}-${VERSION}.zip" > "${id}-${VERSION}.zip.sha256")
           done
@@ -48,4 +49,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" out/* --title "TechSquid SolidCraft Plugins $VERSION" \
-            --notes "Screw, heat-set insert, and ISO 4032 hexagon nut plugins for SolidCraft. Unzip a folder into your SolidCraft plugins folder; see the README."
+            --notes "TechSquid's plugins for SolidCraft, one zip per plugin. Unzip a plugin's folder into your SolidCraft plugins folder; each plugin's README says more."

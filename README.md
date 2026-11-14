@@ -45,7 +45,7 @@ cargo test
 ./build.sh
 ```
 
-`cargo test` checks the parameter rules and the commands each run sends. `./build.sh` wraps each core module as a component and leaves `dist/techsquid-screws/`, `dist/techsquid-inserts/`, and `dist/techsquid-nuts/`.
+`cargo test` checks the parameter rules and the commands each run sends. `./build.sh` wraps each core module as a component and leaves one `dist/<id>/` for every folder under `plugins/`.
 
 ## Test against the host
 
@@ -93,7 +93,7 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 ## Releases
 
-Pushing a tag like `v0.1.0` runs `.github/workflows/release.yml`, which builds the plugins and attaches `techsquid-screws-0.1.0.zip`, `techsquid-inserts-0.1.0.zip`, and `techsquid-nuts-0.1.0.zip`, each with a `.sha256`. The tag has to match `workspace.package.version` and every `plugins/*/plugin.json`.
+Pushing a tag like `v0.1.0` runs `.github/workflows/release.yml`, which builds the plugins and attaches `<id>-0.1.0.zip` for every plugin under `plugins/`, such as `techsquid-screws-0.1.0.zip`, each with a `.sha256`. The tag has to match `workspace.package.version` and every `plugins/*/plugin.json`.
 
 ## License
 

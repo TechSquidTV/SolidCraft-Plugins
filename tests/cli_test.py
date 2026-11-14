@@ -3,9 +3,9 @@
 
     SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py
 
-The packages are dist/techsquid-screws/, dist/techsquid-inserts/, and
-dist/techsquid-nuts/. Needs a solidcraft-cli with the plugin host (SolidCraft
-0.41 or newer).
+Every folder under plugins/ is checked from its package in dist/<id>/, and each one
+needs a case in CASES, so a new plugin cannot be left out unnoticed. Needs a
+solidcraft-cli with the plugin host (SolidCraft 0.41 or newer).
 
 plugin.inspect must accept each package and list its entry. Each run must build
 one closed body of the measured size: an M3 x 12 socket head screw 5.5 across and
@@ -14,33 +14,31 @@ and 5.2 high. On the signed macOS build of SolidCraft 0.41.0, loading a componen
 kills the CLI with SIGKILL (hardened runtime, no JIT entitlement), and that case is
 reported and skipped.
 """
-from harness import check, finish, inspect, killed, package, run, skip
+from harness import check, finish, inspect, killed, package, plugin_ids, run, skip
 
 TOL = 1e-3
 
-PACKAGES = [
-    (
-        "techsquid-screws",
+# Plugin id: (entry, params, what the run builds, its size as (across, height)).
+CASES = {
+    "techsquid-screws": (
         "make-screw",
         {"size": "M3", "length": 12, "head": "Socket head", "drive": "Hex socket"},
         "builds an M3 x 12 socket head screw",
         (5.5, 15.0),
     ),
-    (
-        "techsquid-inserts",
+    "techsquid-inserts": (
         "make-insert",
         {"size": "M3 × 5.7", "create": "Insert only"},
         "builds the M3 x 5.7 insert",
         (4.6, 5.7),
     ),
-    (
-        "techsquid-nuts",
+    "techsquid-nuts": (
         "make-nut",
         {"size": "M6"},
         "builds the M6 nut",
         (10.0, 5.2),
     ),
-]
+}
 
 
 def size_of(bbox):
@@ -53,7 +51,15 @@ def size_of(bbox):
 screws_ran = False
 
 
-for plugin_id, entry, params, label, (across, height) in PACKAGES:
+PLUGINS = plugin_ids()
+for plugin_id in sorted(set(CASES) - set(PLUGINS)):
+    check(f"{plugin_id}: has a plugin for its case", False, "no plugins/<id>/plugin.json")
+
+for plugin_id in PLUGINS:
+    if plugin_id not in CASES:
+        check(f"{plugin_id}: has a case in CASES", False, "add one to tests/cli_test.py")
+        continue
+    entry, params, label, (across, height) = CASES[plugin_id]
     path = package(plugin_id)
     code, text, info = inspect(plugin_id)
     check(f"{plugin_id}: inspect", code == 0 and info, text[-500:])

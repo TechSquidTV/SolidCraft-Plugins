@@ -1,12 +1,7 @@
 [workspace]
 resolver = "2"
-members = [
-    "crates/plugin-kit",
-    "crates/fasteners",
-    "plugins/techsquid-screws",
-    "plugins/techsquid-inserts",
-    "plugins/techsquid-nuts",
-]
+# Every folder under crates/ and plugins/ is a member, so a new plugin needs no entry here.
+members = ["crates/*", "plugins/*"]
 
 [workspace.package]
 version = "0.1.0"

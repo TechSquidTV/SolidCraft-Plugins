@@ -13,7 +13,7 @@ The signed macOS build of SolidCraft 0.41.0 cannot load a component (hardened
 runtime, no JIT entitlement) and kills the CLI with SIGKILL. A case whose own run was
 killed that way is reported as SKIP, as in cli_test.py; any other failure is a FAIL.
 """
-import json, math, os, subprocess, sys
+import functools, json, math, os, subprocess, sys
 
 from harness import CLI, ROOT, TMP, check, finish, killed, last_line, skip
 
@@ -40,6 +40,7 @@ def body(item):
     return item.get("result", item)
 
 
+@functools.cache
 def approval(plugin_id):
     code, text, results = run([{"command": "plugin.inspect",
                                 "params": {"path": os.path.join(ROOT, "dist", plugin_id)}}])
@@ -73,7 +74,7 @@ def plugin_run(plugin_id, entry, params, before=()):
     (None, the error line). Raises Killed when solidcraft-cli was killed with SIGKILL."""
     steps = list(before) + [
         {"command": "plugin.run", "params": {
-            "path": os.path.join(ROOT, "dist", plugin_id), "approval": APPROVAL[plugin_id],
+            "path": os.path.join(ROOT, "dist", plugin_id), "approval": approval(plugin_id),
             "entry": entry, "params": params}},
         {"command": "inspect.measure", "params": {"summary": True}},
     ]
@@ -153,8 +154,6 @@ def strip(d, width, depth):
     return 2 * (h * math.sqrt(r * r - h * h) + r * r * math.asin(h / r)) * depth
 
 
-APPROVAL = {p: approval(p) for p in
-            ("techsquid-screws", "techsquid-inserts", "techsquid-nuts")}
 INSERT = ("techsquid-inserts", "make-insert")
 SCREW = ("techsquid-screws", "make-screw")
 NUT = ("techsquid-nuts", "make-nut")

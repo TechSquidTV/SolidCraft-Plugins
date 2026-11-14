@@ -78,6 +78,14 @@ def finish():
     sys.exit(1 if Tally.failed else 0)
 
 
+def plugin_ids():
+    """Every plugin in the repository: each folder under plugins/ with a plugin.json.
+    The folder name is the plugin id and the package lands in dist/<id>/."""
+    plugins = os.path.join(ROOT, "plugins")
+    return sorted(d for d in os.listdir(plugins)
+                  if os.path.isfile(os.path.join(plugins, d, "plugin.json")))
+
+
 def package(plugin_id):
     return os.path.join(ROOT, "dist", plugin_id)
 

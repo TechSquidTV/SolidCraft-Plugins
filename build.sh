@@ -17,7 +17,7 @@ build_one() {
     "${CARGO_TARGET_DIR:-target}/wasm32-unknown-unknown/release/${wasm_name}.wasm" \
     -o "$out/plugin.wasm"
   cp "plugins/$id/plugin.json" "$out/"
-  cp "plugins/$id/README.md" LICENSE "$out/"
+  cp "plugins/$id/README.md" "plugins/$id/REFERENCE.md" LICENSE "$out/"
   # The pictures the README shows sit beside it.
   for png in "plugins/$id/"*.png; do
     [ -e "$png" ] && cp "$png" "$out/"

@@ -1,6 +1,6 @@
 # Extrusions
 
-20 mm series T-slot and V-slot aluminium extrusions for [SolidCraft](https://github.com/tangency-labs/solidcraft), cut to any length, and the slot nuts that go in them. Two entries: `make-extrusion` builds a rail, and `make-t-nut` puts a nut in a rail's slot. Each builds its part as a component of its own, once, and places it on every point (see [Components](../../DEVELOPMENT.md#components)).
+20 mm series T-slot and V-slot aluminium extrusions for [SolidCraft](https://github.com/tangency-labs/solidcraft), cut to any length, and the slot nuts that go in them. Two entries: `make-extrusion` builds a rail, and `make-t-nut` puts a nut in a rail's slot. Fixed-length rails and nuts build a reusable component and place it on every point (see [Components](../../DEVELOPMENT.md#components)). Sketch-driven rails build independent bodies along source lines.
 
 ![Every rail it builds, 40 mm long, standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020, 2040, 2060 and 2080 in front](rails.png)
 
@@ -12,23 +12,68 @@ A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot for M5 hardware. 
 
 All sizes are millimetres. The form opens on a 2020 T-slot, 500 mm long.
 
-Select a sketch point, or a circle, before you open the dialog. Leave Sketch and Sketch point empty. The rail's section is centred on that point, and the rail runs out of the sketch along its normal for its length. The section's width is along the sketch X and its height along the sketch Y, so a 2040 is 20 mm along X and 40 mm along Y. With nothing selected, the rail stands on the origin: the section is on the XY plane and the rail runs along +Z. The reply says which of these happened in `placed`. Select several points or circles and each one gets a rail, as one undo step; `count` and `points` in the reply list them. By name, Sketch point takes several ids with commas, such as `c1, c2`.
+In the default **Fixed length** mode, select a sketch point, or a circle, before you open the dialog. Leave Sketch and Sketch point empty. The rail's section is centred on that point, and the rail runs out of the sketch along its normal for its length. The section's width is along the sketch X and its height along the sketch Y, so a 2040 is 20 mm along X and 40 mm along Y. With nothing selected, the rail stands on the origin: the section is on the XY plane and the rail runs along +Z. The reply says which of these happened in `placed`. Select several points or circles and each one gets a rail, as one undo step; `count` and `points` in the reply list them. By name, Sketch point takes several ids with commas, such as `c1, c2`.
 
 Name Sketch and Sketch point together to place the rail without a selection. Sketch point is a point id such as `c1.center`, or a circle id such as `c1`.
 
 | Parameter | Default | Meaning |
 |---|---|---|
+| `mode` | `Fixed length` | `Fixed length` places components on points; `Sketch driven` follows source lines |
 | `slot` | `T-slot` | `T-slot` or `V-slot` |
 | `size` | `2020` | `2020`, `2040`, `2060`, `2080` or `4040`. A V-slot comes as `2020` to `2080` |
-| `length` | 500 | How long the rail is cut, mm, up to 6000. Kept to 0.01 mm, as the rail's name shows it |
+| `length` | 500 | Fixed-length mode only. How long the rail is cut, mm, up to 6000. Kept to 0.01 mm, as the rail's name shows it |
 | `end_taps` | `None` | `None`, `Start`, `End` or `Both`: the ends whose bores are tapped M5. The start is the end on the sketch point |
 | `thread_modeled` | on | On cuts the thread into a tapped end. Off lists the thread and leaves the bore plain |
 | `holes` | empty | Where M5 screw holes go across the rail, as distances from the start in mm: `10, 290`. A face name puts the distances after it on that face: `+X 10, 290 -Y 150` |
 | `hole_face` | `+Y` | `+Y`, `-Y`, `+X` or `-X`: the face the screws go in from, for the holes that name none. Y is the section's height and X its width |
-| `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
+| `sketch` | empty | Sketch that holds the points or path lines. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 
-The reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `thread_modeled` and `holes`, each with its `face` and its distance `at`. It also says where the rails went: `count`, `points`, the first one's `at` and `normal`, `placed` (how the point was found) and `component`.
+In fixed-length mode, the reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `thread_modeled` and `holes`, each with its `face` and its distance `at`. It also says where the rails went: `count`, `points`, the first one's `at` and `normal`, `placed` (how the point was found) and `component`.
+
+### Sketch-driven mode
+
+Set `mode` to `Sketch driven`. Choose straight lines from one sketch, or set `sketch`
+to its name and `path_lines` to comma-separated ids such as `l1, l2`. A named sketch
+with empty `path_lines` uses every drawn, non-construction straight line. `sketch_point`
+must be empty. All nine catalog profiles work in this mode; `length` is ignored.
+
+| Parameter | Default | Meaning |
+|---|---|---|
+| `path_lines` | empty | Line ids in `sketch`; empty means all eligible lines, or the selected lines when `sketch` is empty |
+| `holes_from` | `Start` | `Start` or `End`: the endpoint used for every cross-hole distance in this run |
+
+Each source line creates one body in the active component, with a timeline group
+named `T-slot 2040 path l1` (for example). Repeated runs choose unique names. The reply
+contains `mode`, `count`, `bodies`, `lines` and `area_mm2`. These bodies have independent
+lengths and machining; they are not placements of one shared component definition.
+
+The plugin draws the catalog section once, then copies its fixed geometry into an
+independent section sketch for each remaining rail. A native straight-path sweep
+follows each source line. Start and end planes follow the path endpoints. Side planes
+follow the same path and fixed points in a **Side references** sketch. Cross-hole
+centers are dimensioned from a linked projection of the path. No machining feature
+references a generated body face or edge. Saving and reopening preserves these native
+dependencies; the plugin does not need to keep running.
+
+The section uses the path-normal plane's X/Y axes, rather than Weldments' world-up
+roll convention. Its **Section** sketch shows the orientation. Side reference sketches
+use X along the path and Y across the face; fixed-length hole sketches use the axes
+described below. Start and End mean the source line's drawing direction. Edit dimensions
+in a generated hole sketch to adjust offsets or diameters.
+
+Paths can lie on any 2D sketch plane. Arcs, construction lines, projected lines and 3D
+wires are rejected. There are no automatic corner joints, miters or trims between rails.
+The selected line set is captured at creation: added lines require another run; deleting
+a source line breaks its rail. Keep the edited paths long enough for their machining.
+
+A run accepts at most 16 rails and four modeled taps in total. SolidCraft also limits
+plugins to 256 host calls; the plugin estimates its full command count before creating
+anything and requests a smaller batch when needed. Taps and holes can therefore lower
+the batch size. Cosmetic taps avoid modeled-thread cost. Each initial length must be
+0.01–6000 mm and meet the same machining margins as fixed-length rails.
+
+This mode is additive: existing fixed-length rails keep their current behavior.
 
 ### Tapped ends and screw holes
 
@@ -72,6 +117,8 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas |
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`, and where the nuts went, as a rail's reply does.
+
+Sketch-driven mode additionally calls `solid.sweep`, `construct.plane.along_path`, `construct.plane.axis_point`, `sketch.replace`, `sketch.point`, `sketch.constraint.fix`, `sketch.constraint.coincident`, `sketch.dimension` and `sketch.project`.
 
 The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a nut's ball recess), `browser.visibility` (hides the reference sketches after their cuts), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 

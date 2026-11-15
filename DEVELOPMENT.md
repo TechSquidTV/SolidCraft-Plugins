@@ -21,7 +21,7 @@ The three fastener plugins share field names (`size`, `custom_size`, `create`, `
 
 ## Extrusions
 
-A rail is one sketch of lines and arcs, extruded once. Its section comes from `crates/extrusions`, which builds it from a slot shape and a grid of 20 mm cells. The T-slot is checked against MISUMI's STEP models and the V-slot against OpenBuilds' DXF files; the plugin's reference lists each source and its test.
+A fixed-length rail is one sketch of lines and arcs, extruded once. Sketch-driven mode uses the same section in a native straight-path sweep; start, end and side machining planes reference the source path rather than generated faces. Its section comes from `crates/extrusions`, which builds it from a slot shape and a grid of 20 mm cells. The T-slot is checked against MISUMI's STEP models and the V-slot against OpenBuilds' DXF files; the plugin's reference lists each source and its test.
 
 A rail can be built with its ends tapped M5 and with screw holes across it, so rails screw together with no bracket: see the plugin's README.
 
@@ -44,6 +44,8 @@ examples/                  designs built with the plugins: <name>.json opens in 
 tests/cli_test.py          runs the built package through solidcraft-cli
 tests/geometry_test.py     checks by volume what each plugin cuts and builds
 tests/rail_references_test.py checks rail hole edits, placed copies and save/reopen
+tests/sketch_rails_test.py  checks all profiles, multiple paths, machining edits and batch limits
+tests/sketch_selection_test.py checks selection identity when sketch names are duplicated
 tests/nut_references_test.py checks linked pockets, seated nuts, depth and save/reopen
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
@@ -74,6 +76,22 @@ It inspects each package. A screw run must build an M3, an insert run must build
 ### Rail hole references
 
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/rail_references_test.py` after building the packages. It edits the driving circle centers on all four rail faces and checks the actual access and clearance walls, recess depth and volume before and after reopening, including rotated copies, a wide V-slot rail and a tapped rail built away from the origin.
+
+Sketch-driven mode was verified with SolidCraft 0.42.0. Run
+`SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/sketch_rails_test.py` after building.
+It covers every profile with independent path lengths, translation and tilt edits,
+modeled end taps, end-relative cross-holes, selection, repeated runs, save/reopen,
+and the 16-rail limit. Run `python3 tests/sketch_selection_test.py` for the focused
+duplicate-name regression: it checks the selected rail’s position and length and
+rejects lines from different sketch IDs even when their names match.
+The plugin estimates its command count before creation;
+complex machining can require smaller batches. Its execution allowance also covers
+fixing copied section geometry, while the host's 256-call and 30-second limits remain.
+
+[Sketch-driven rails](examples/sketch-driven-rails.json) is a six-rail example with
+editable `Rail_X`, `Rail_Z`, `Rail_Rise` and `Rail_Tilt` parameters. Rebuild and verify it
+with `python3 tests/examples_test.py --update examples/sketch-driven-rails.steps.json`.
+
 
 ### Nut pocket references
 
@@ -124,7 +142,7 @@ The checks compare actual pocket floors, bolt-hole axes, nut bounding boxes, sea
 solidcraft-cli snapshot --in examples/nut-pockets.json --out examples/nut-pockets.png --width 1280 --height 600 --camera '{"target":[0,0,6],"yaw":0.18,"pitch":0.45,"distance":70}' --section y=0,flip --no-grid --no-axes --quality fine --body 'Plate:color=#708da5' --body 'Nut M6:color=#d7af57'
 ```
 
-Five smaller examples show one plugin's parts on their own, with nothing else in the design. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+Six standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
 
 | Example | Plugin | What it builds | Picture |
 |---|---|---|---|
@@ -132,7 +150,15 @@ Five smaller examples show one plugin's parts on their own, with nothing else in
 | `insert` | `techsquid-inserts` | One M3 × 5.7 insert on the origin | `insert.png` |
 | `nut` | `techsquid-nuts` | One M3 nut on the origin | `nut.png` |
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
+| `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
+
+The sketch-driven example uses three plugin runs on one fully constrained six-line
+sketch. The paired rails have different lengths; the 2020 pair has modeled M5 taps,
+and the 4040 and 2080 pairs have cosmetic taps. Change `Rail_Tilt` from `-35 mm`
+to `35 mm`, `Rail_Rise` from `150 mm` to `190 mm`, and the layout origin to
+`Rail_X = 90 mm`, `Rail_Z = 40 mm` to try a combined move, resize and reverse tilt.
+The cross-hole offsets stay 25 mm and 55 mm from the path ends.
 
 A new plugin gets an example like these and a picture in its README.
 
@@ -158,6 +184,7 @@ solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-
 solidcraft-cli snapshot --in examples/screws.json --out plugins/techsquid-screws/screws.png --width 1600 --height 700 --camera '{"target": [0, 0, -5], "yaw": 0, "pitch": 0.6, "distance": 92}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/insert.json --out plugins/techsquid-inserts/insert.png --width 1280 --height 800 --camera '{"target": [0, 0, -2.85], "yaw": 0.5, "pitch": 0.55, "distance": 14}' --no-grid --no-axes --quality ultra
 solidcraft-cli snapshot --in examples/nut.json --out plugins/techsquid-nuts/nut.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/sketch-driven-rails.json --out plugins/techsquid-extrusions/sketch-driven-rails.png --width 1280 --height 800 --camera '{"target": [245, 0, 140], "yaw": 0.35, "pitch": 0.4, "distance": 650}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/rails.json --out plugins/techsquid-extrusions/rails.png --width 1280 --height 800 --camera '{"target": [80, 0, 20], "yaw": 0.3, "pitch": 0.8, "distance": 330}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/slot-nuts.json --out plugins/techsquid-extrusions/slot-nuts.png --width 1280 --height 800 --camera '{"target": [0, 0, 14], "yaw": 0.45, "pitch": 0.6, "distance": 95}' --no-grid --no-axes --quality fine --body "T-slot 2020 x 80:opacity=0.3"
 ```
@@ -172,7 +199,7 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 ## Components
 
-Each fastener and each rail is a component of its own. This section describes fasteners; a rail is placed the same way, in an `Extrusions` folder instead of `Fasteners`. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
+Each fastener and each fixed-length rail is a component of its own. Sketch-driven rails are independent bodies in the active component, grouped by rail in the timeline. This section describes fasteners; a fixed-length rail is placed the same way, in an `Extrusions` folder instead of `Fasteners`. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
 
 - **One definition, many placements.** A run builds the fastener once, in a component of its own, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with its outer side up +Z; each placement turns that onto the sketch. A part with no cut thread stands on the component's origin. A part with one (a screw, a nut, an insert, a slot nut, a rail with a tapped end) stands on a point of its own away from it, which no other part shares. SolidCraft 0.41 puts a modeled thread on any bore or shank of the same size on the same axis, such as the bore of a rail standing on the origin, a second length of the same screw, or a thicker nut of the same thread.
 - **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.

@@ -70,9 +70,11 @@ pub struct Params {
     /// The face of the holes that name none.
     pub hole_face: Face,
     pub place: PlaceInput,
+    pub path: Option<crate::path::Input>,
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
+    let path = crate::path::parse(v)?;
     let slot = match input::choice(v, "slot", DEFAULT_SLOT)? {
         "T-slot" => T5,
         "V-slot" => V5,
@@ -98,8 +100,20 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             format!("a V-slot comes as 2020, 2040, 2060 or 2080 here; pick one of those, or T-slot for a {size}"),
         ));
     }
-    let length = match v.get("length") {
-        None | Some(Value::Null) => DEFAULT_LENGTH,
+    // Path lengths are read from the host before modeling. Apply the shared hole
+    // spacing checks here against the maximum; `path::make` checks each actual line.
+    let length = match if path.is_some() {
+        None
+    } else {
+        v.get("length")
+    } {
+        None | Some(Value::Null) => {
+            if path.is_some() {
+                MAX_LENGTH_MM
+            } else {
+                DEFAULT_LENGTH
+            }
+        }
         Some(Value::Number(n)) => n.as_f64().unwrap_or(f64::NAN),
         Some(_) => return Err(FieldError::new("length", "must be a number of millimetres")),
     };
@@ -161,7 +175,12 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         modeled,
         holes: holes(v, length, hole_face)?,
         hole_face,
-        place: place::parse_input(v)?,
+        place: if path.is_some() {
+            place::parse_input(&serde_json::json!({}))?
+        } else {
+            place::parse_input(v)?
+        },
+        path,
     })
 }
 

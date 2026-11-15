@@ -17,6 +17,8 @@ The default is an M3 nut. To recess it into a part, select points on the part an
 
 For the size table, custom dimensions and placement details, see the [nut reference](REFERENCE.md). ISO 4032 and DIN 934 dimensions differ for some sizes; use custom dimensions when matching a DIN nut.
 
+See the [pocketed-nut example](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/DEVELOPMENT.md#pocketed-nuts-that-follow-edits) for a saved design, before-and-after sections, and commands that move the sketch centers and deepen one pocket. Linked pocket hexes keep their corners ordered during large moves, with every corner driven by one editable across-flats dimension. Regenerate previously created pockets to use these constraints.
+
 ## License
 
 [MIT](../../LICENSE)

@@ -1,0 +1,1881 @@
+{
+  "format": "solidcraft/57",
+  "format_pending": [
+    "extrude-to-object-keeps-picked-placements",
+    "linked-cosmetic-threads",
+    "plane-at-angle-follows-named-axis"
+  ],
+  "name": "nut-pockets",
+  "units": "mm",
+  "params": [
+    {
+      "name": "d5",
+      "expr": "10.4",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "d5 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "60 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "d5 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "120 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "d5 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "180 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "d5 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "240 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "d5 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "300 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "d5 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d17",
+      "expr": "0 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d19",
+      "expr": "10.4",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d20",
+      "expr": "d19 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "60 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d22",
+      "expr": "d19 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d23",
+      "expr": "120 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "d19 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d25",
+      "expr": "180 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "d19 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "240 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "d19 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "300 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "d19 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d31",
+      "expr": "0 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d34",
+      "expr": "10",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "left_pocket_depth",
+      "expr": "8 mm",
+      "unit": "mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Box1",
+      "suppressed": false,
+      "body_names": [
+        "Plate"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        -35.0,
+        -16.0,
+        0.0
+      ],
+      "length": "70",
+      "width": "32",
+      "height": "12",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Nut centers",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "12"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "left",
+            "pos": [
+              -22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "right.center",
+            "pos": [
+              22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              1.0,
+              1.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "right",
+            "type": "circle",
+            "c": 2,
+            "r": 2.0,
+            "construction": false
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": true,
+            "fixed": true
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": true,
+            "fixed": true
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 2
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Nut pockets M6: Plane",
+      "suppressed": false,
+      "type": "construction_plane",
+      "plane": {
+        "type": "two_edges",
+        "a": {
+          "type": "sketch_curve",
+          "sketch": 2,
+          "curve": "l1"
+        },
+        "b": {
+          "type": "sketch_curve",
+          "sketch": 2,
+          "curve": "l2"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Nut pocket M6 profile",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 3
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -22.0,
+              0.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              -22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              -18.997778600213945,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              -25.002221399786052,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -28.004442799572107,
+              7.353321655159355e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -25.002221399786055,
+              -5.199999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -18.997778600213945,
+              -5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              -15.995557200427893,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 2,
+            "r": 5.2,
+            "construction": true
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 8,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 2,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 2,
+            "b": 6,
+            "construction": true
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 2,
+            "b": 7,
+            "construction": true
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 2,
+            "b": 8,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 10.4,
+            "param": "d5"
+          },
+          {
+            "id": "k3",
+            "type": "length",
+            "l": 7,
+            "value": 6.004442799572108,
+            "param": "d6"
+          },
+          {
+            "id": "k4",
+            "type": "line_angle",
+            "l": 7,
+            "value": 1.0471975511965976,
+            "param": "d7"
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 8,
+            "value": 6.004442799572108,
+            "param": "d8"
+          },
+          {
+            "id": "k6",
+            "type": "line_angle",
+            "l": 8,
+            "value": 2.0943951023931953,
+            "param": "d9"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 9,
+            "value": 6.004442799572108,
+            "param": "d10"
+          },
+          {
+            "id": "k8",
+            "type": "line_angle",
+            "l": 9,
+            "value": 3.141592653589793,
+            "param": "d11"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 10,
+            "value": 6.004442799572108,
+            "param": "d12"
+          },
+          {
+            "id": "k10",
+            "type": "line_angle",
+            "l": 10,
+            "value": 4.1887902047863905,
+            "param": "d13"
+          },
+          {
+            "id": "k11",
+            "type": "length",
+            "l": 11,
+            "value": 6.004442799572108,
+            "param": "d14"
+          },
+          {
+            "id": "k12",
+            "type": "line_angle",
+            "l": 11,
+            "value": 5.235987755982989,
+            "param": "d15"
+          },
+          {
+            "id": "k13",
+            "type": "length",
+            "l": 12,
+            "value": 6.004442799572108,
+            "param": "d16"
+          },
+          {
+            "id": "k14",
+            "type": "line_angle",
+            "l": 12,
+            "value": 0.0,
+            "param": "d17"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_point",
+              "sketch": 2,
+              "point": "left"
+            }
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "j": 1,
+          "k": 14,
+          "l": 12,
+          "p": 1
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Left nut pocket",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "extrude",
+      "sketch": 4,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "left_pocket_depth",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 6,
+      "name": "Nut pocket M6 profile",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 3
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              22.0,
+              0.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              25.002221399786055,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              18.997778600213948,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              15.995557200427893,
+              7.353321655159355e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              18.997778600213945,
+              -5.199999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              25.002221399786055,
+              -5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              28.004442799572107,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 2,
+            "r": 5.2,
+            "construction": true
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 8,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 2,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 2,
+            "b": 6,
+            "construction": true
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 2,
+            "b": 7,
+            "construction": true
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 2,
+            "b": 8,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 10.4,
+            "param": "d19"
+          },
+          {
+            "id": "k3",
+            "type": "length",
+            "l": 7,
+            "value": 6.004442799572108,
+            "param": "d20"
+          },
+          {
+            "id": "k4",
+            "type": "line_angle",
+            "l": 7,
+            "value": 1.0471975511965976,
+            "param": "d21"
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 8,
+            "value": 6.004442799572108,
+            "param": "d22"
+          },
+          {
+            "id": "k6",
+            "type": "line_angle",
+            "l": 8,
+            "value": 2.0943951023931953,
+            "param": "d23"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 9,
+            "value": 6.004442799572108,
+            "param": "d24"
+          },
+          {
+            "id": "k8",
+            "type": "line_angle",
+            "l": 9,
+            "value": 3.141592653589793,
+            "param": "d25"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 10,
+            "value": 6.004442799572108,
+            "param": "d26"
+          },
+          {
+            "id": "k10",
+            "type": "line_angle",
+            "l": 10,
+            "value": 4.1887902047863905,
+            "param": "d27"
+          },
+          {
+            "id": "k11",
+            "type": "length",
+            "l": 11,
+            "value": 6.004442799572108,
+            "param": "d28"
+          },
+          {
+            "id": "k12",
+            "type": "line_angle",
+            "l": 11,
+            "value": 5.235987755982989,
+            "param": "d29"
+          },
+          {
+            "id": "k13",
+            "type": "length",
+            "l": 12,
+            "value": 6.004442799572108,
+            "param": "d30"
+          },
+          {
+            "id": "k14",
+            "type": "line_angle",
+            "l": 12,
+            "value": 0.0,
+            "param": "d31"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_point",
+              "sketch": 2,
+              "point": "right.center"
+            }
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "j": 1,
+          "k": 14,
+          "l": 12,
+          "p": 1
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "Nut pocket M6",
+      "suppressed": false,
+      "param_names": [
+        "d32"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "5.2",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 8,
+      "name": "Bolt hole M6",
+      "suppressed": false,
+      "param_names": [
+        "d33"
+      ],
+      "participants": [
+        "Plate"
+      ],
+      "type": "hole",
+      "position": [
+        -14.0,
+        0.0,
+        12.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "6.6 mm",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 2,
+        "ids": [
+          "left",
+          "right.center"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "name": "Nut M6: Hex profile",
+      "suppressed": false,
+      "component": 12,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              2.8867513459394343,
+              4.999999999992265
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -2.886751345939232,
+              4.999999999992315
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -5.773502691880716,
+              6.618239633035943e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -2.886751345944682,
+              -4.999999999984011
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              2.886751345938594,
+              -4.999999999987507
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              5.77350269188067,
+              1.911209793802133e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 5.0,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 5.773502691881131,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 10.0,
+            "param": "d34"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "Nut M6: Hex",
+      "suppressed": false,
+      "body_names": [
+        "Nut M6"
+      ],
+      "param_names": [
+        "d35"
+      ],
+      "component": 12,
+      "type": "extrude",
+      "sketch": 14,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "5.2",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 16,
+      "name": "Nut M6: Bearing chamfer profile",
+      "suppressed": false,
+      "component": 12,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              5.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              5.823502691896258,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              5.823502691896258,
+              0.4754495008446859
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "Nut M6: Bearing chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d36"
+      ],
+      "component": 12,
+      "type": "revolve",
+      "sketch": 16,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "line",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "angle": "360",
+      "operation": "cut",
+      "targets": [
+        "Nut M6"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 18,
+      "name": "Nut M6: Outer chamfer profile",
+      "suppressed": false,
+      "component": 12,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            5.2
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              5.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              5.823502691896258,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              5.823502691896258,
+              0.4754495008446859
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 19,
+      "name": "Nut M6: Outer chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d37"
+      ],
+      "component": 12,
+      "type": "revolve",
+      "sketch": 18,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "line",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "angle": "360",
+      "operation": "cut",
+      "targets": [
+        "Nut M6"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 20,
+      "name": "Nut M6: Thread",
+      "suppressed": false,
+      "param_names": [
+        "d38",
+        "d39"
+      ],
+      "component": 12,
+      "face_names": [
+        "F15:start"
+      ],
+      "participants": [
+        "Nut M6"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "5 mm",
+      "depth": "5.2",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M6"
+    },
+    {
+      "id": 21,
+      "name": "Nut M6: Bearing countersink",
+      "suppressed": false,
+      "param_names": [
+        "d40",
+        "d41",
+        "d42"
+      ],
+      "component": 12,
+      "participants": [
+        "Nut M6"
+      ],
+      "type": "cone",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(6.75 mm) / 2",
+      "top_radius": "(6 mm) / 2",
+      "height": "0.2165063509461096",
+      "operation": "cut"
+    },
+    {
+      "id": 22,
+      "name": "Nut M6: Outer countersink",
+      "suppressed": false,
+      "param_names": [
+        "d43",
+        "d44",
+        "d45"
+      ],
+      "component": 12,
+      "participants": [
+        "Nut M6"
+      ],
+      "type": "cone",
+      "base": [
+        0.0,
+        0.0,
+        5.2
+      ],
+      "axis": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "radius": "(6.75 mm) / 2",
+      "top_radius": "(6 mm) / 2",
+      "height": "0.2165063509461096",
+      "operation": "cut"
+    }
+  ],
+  "next_id": 27,
+  "components": [
+    {
+      "id": 10,
+      "identification_color_index": 0,
+      "name": "Fasteners",
+      "parent": 0,
+      "metadata": {
+        "bom_type": "phantom"
+      }
+    },
+    {
+      "id": 12,
+      "identification_color_index": 1,
+      "name": "Nut M6",
+      "parent": 10,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4032",
+        "dev.threadcraft": {
+          "geometry": "7c44fa27c818b3dd",
+          "plugin": "techsquid-nuts",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "part_number": "Nut M6"
+      }
+    }
+  ],
+  "next_component_color_index": 2,
+  "occurrences": [
+    {
+      "id": 11,
+      "component": 10,
+      "parent": 0,
+      "name": "Fasteners:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 13,
+      "component": 12,
+      "parent": 10,
+      "name": "Nut M6:1",
+      "transform": [
+        [
+          1.0,
+          -2.958404132897789e-16,
+          0.0,
+          0.0
+        ],
+        [
+          2.958404132897789e-16,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -22.0,
+          1.7763568394002505e-15,
+          4.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 24,
+      "component": 12,
+      "parent": 10,
+      "name": "Nut M6:2",
+      "transform": [
+        [
+          1.0,
+          -2.958404132897789e-16,
+          0.0,
+          0.0
+        ],
+        [
+          2.958404132897789e-16,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          21.999999999999996,
+          -5.773159728050814e-15,
+          6.800000000000011,
+          1.0
+        ]
+      ],
+      "grounded": false
+    }
+  ],
+  "assembly": {
+    "joints": [
+      {
+        "id": 25,
+        "name": "Nut M6: Seat 13",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              -10.815482760750479,
+              -0.8653611690633068,
+              3.7062598696219027
+            ],
+            "face": "F8:bore:side:0#[F5:bottom]",
+            "end": "F5:bottom",
+            "x": {
+              "face": "F5:side:l4"
+            }
+          }
+        },
+        "b": {
+          "occurrence": 13,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "angle": 0.0
+      },
+      {
+        "id": 26,
+        "name": "Nut M6: Seat 24",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              13.06953791847406,
+              -3.166108070619578,
+              0.306259869621897
+            ],
+            "face": "F8:bore:side:0#[F7:bottom]",
+            "end": "F7:bottom",
+            "x": {
+              "face": "F7:side:l4"
+            }
+          }
+        },
+        "b": {
+          "occurrence": 24,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "angle": 0.0
+      }
+    ]
+  },
+  "timeline_groups": [
+    {
+      "id": 9,
+      "name": "Nut pockets M6",
+      "parent": null,
+      "features": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Nut M6",
+      "parent": null,
+      "features": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ]
+    }
+  ]
+}

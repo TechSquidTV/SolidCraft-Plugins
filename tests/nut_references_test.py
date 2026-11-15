@@ -16,11 +16,12 @@ def near(a, b):
     return abs(a - b) < 1e-4
 
 
-def test(with_nuts=False, modeled=False, reuse=False):
+def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
     code, text, info = inspect("techsquid-nuts")
     if code or not info:
         raise SystemExit(f"Build the packages first: {text}")
-    saved = os.path.join(TMP, f"nut-pockets-{with_nuts}-{modeled}.json")
+    saved = os.path.join(TMP, f"nut-pockets-{with_nuts}-{modeled}-{large_moves}.json")
+    initial = [(-14, 0), (14, 0)] if large_moves else [(15, 15), (-15, -15)]
     setup = [
         cmd("parameters.change", name="thickness", expression="12 mm"),
         cmd("parameters.change", name="yaw", expression="0 deg"),
@@ -33,8 +34,8 @@ def test(with_nuts=False, modeled=False, reuse=False):
         cmd("solid.extrude", sketch="Plate profile", distance="thickness", body_name="Plate"),
         cmd("construct.plane.offset", base="Plate plane", offset="thickness", name="Layout plane"),
         cmd("sketch.create", plane="Layout plane", name="Layout"),
-        cmd("sketch.point", point=[15, 15], id="p"),
-        cmd("sketch.circle.center", center=[-15, -15], radius=2, id="c"),
+        cmd("sketch.point", point=initial[0], id="p"),
+        cmd("sketch.circle.center", center=initial[1], radius=2, id="c"),
         cmd("sketch.finish"),
         cmd("plugin.run", path=package("techsquid-nuts"), approval=info["approval"], entry="make-nut",
             params={"size": "M6", "create": "Nut and pocket" if with_nuts else "Pocket only",
@@ -77,7 +78,7 @@ def test(with_nuts=False, modeled=False, reuse=False):
     reads = [cmd("sketch.inspect", sketch=p) for p in profiles]
     reads += [cmd("model.faces", body="Plate"), cmd("inspect.measure", summary=True), cmd("joint.inspect")]
 
-    def verify(label, edits, xy, thickness, yaw, depths, tilt=0, shift=(0, 0, 0)):
+    def verify(label, edits, xy, thickness, yaw, depths, tilt=0, shift=(0, 0, 0), widths=(10.4, 10.4)):
         code, text, results = run(edits + reads, inp=saved, save=saved)
         check(label + ": rebuilds", code == 0, text[-1000:])
         if code:
@@ -100,7 +101,8 @@ def test(with_nuts=False, modeled=False, reuse=False):
             center = next(p["world"] for p in profile["points"] if p["id"] == "c1.center")
             check(label + f": pocket {i + 1} follows point and plane",
                   all(near(v, w) for v, w in zip(center, centers[i]))
-                  and profile["fully_constrained"] and not profile["failing"])
+                  and profile["fully_constrained"] and not profile["failing"]
+                  and len(profile["profiles"]) == 1)
         faces = data[2]["faces"]
         bores = [f["cylinder"] for f in faces if f.get("cylinder") and near(f["cylinder"]["radius"], 3.3)]
         check(label + ": both bolt holes follow", len(bores) == 2
@@ -114,8 +116,8 @@ def test(with_nuts=False, modeled=False, reuse=False):
                       and near(sum(v * n for v, n in zip(f["point"], normal)), thickness - depth + sum(v * n for v, n in zip(shift, normal)))]
             check(label + f": pocket {i + 1} floor follows center and depth",
                   any(on_axis(f["centroid"], center) for f in floors))
-        hex_area = math.sqrt(3) / 2 * 10.4 ** 2
-        removed = sum(hex_area * d + math.pi * 3.3 ** 2 * (thickness - d) for d in depths)
+        removed = sum(math.sqrt(3) / 2 * w ** 2 * d + math.pi * 3.3 ** 2 * (thickness - d)
+                      for w, d in zip(widths, depths))
         bodies = [b for b in data[3]["bodies"] if b["name"] == "Plate"]
         check(label + ": exact cut volume and closed body", len(bodies) == 1 and bodies[0]["closed"]
               and abs(bodies[0]["volume_mm3"] - (10000 * thickness - removed)) < 0.01)
@@ -141,6 +143,30 @@ def test(with_nuts=False, modeled=False, reuse=False):
                       any(all(near((lo + hi) / 2, want)
                               for lo, hi, want in zip(b["bbox"]["min"], b["bbox"]["max"], middle))
                           for b in nuts))
+
+    if large_moves:
+        verify("initial horizontal layout", [], initial, 12, 0, [5.2, 5.2])
+        # The first move used to collapse the hex. Subsequent moves cross both
+        # axes, passing through zero and changing quadrants by many hex widths.
+        for xy in ([(-22, 0), (22, 0)], [(-40, 0), (40, 0)], [(40, 0), (-40, 0)],
+                   [(0, 40), (0, -40)], [(0, -40), (0, 40)], [(-30, -30), (30, 30)]):
+            verify(f"large move {xy}", [
+                cmd("sketch.edit", sketch="Layout"),
+                cmd("sketch.move_point", point="p", to=xy[0]),
+                cmd("sketch.move_point", point="c.center", to=xy[1]),
+                cmd("sketch.finish"),
+            ], xy, 12, 0, [5.2, 5.2])
+        width = next(c["param"] for f in doc["features"] if f["id"] == profiles[0]
+                     for c in f["sketch"]["constraints"] if c["type"] == "diameter")
+        verify("change linked pocket width", [cmd("parameters.change", name=width, expression="12.4 mm")],
+               xy, 12, 0, [5.2, 5.2], widths=(12.4, 10.4))
+        verify("change depth after large moves", [
+            cmd("parameters.change", name="pocket_depth", expression="8 mm"),
+            cmd("timeline.edit", feature=pockets[0], set={"extent.distance": "pocket_depth"}),
+        ], xy, 12, 0, [8, 5.2], widths=(12.4, 10.4))
+        verify("reopen after large moves and width and depth edits", [], xy, 12, 0, [8, 5.2],
+               widths=(12.4, 10.4))
+        return
 
     if reuse:
         verify("initial rotated reused definition", [], [(15, 15), (-15, -15)],
@@ -178,4 +204,5 @@ if __name__ == "__main__":
     test()
     test(with_nuts=True)
     test(with_nuts=True, modeled=True, reuse=True)
+    test(with_nuts=True, large_moves=True)
     finish()

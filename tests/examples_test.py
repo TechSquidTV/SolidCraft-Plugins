@@ -26,6 +26,8 @@ because the approval changes with every build.
                overlap, each by a volume in that range, to within 0.1 mm3. Without it
                nothing is checked for overlap. This is for screws in tapped holes: two
                threads cut out of step overlap a little
+    nut_seats  [{body, at: [x, y], floor_z, bolt_radius}] a pocket floor and bolt-hole
+               axis at each center, with a healthy rigid joint holding its nut there
 
 Only `bodies` and `bbox` are required.
 
@@ -52,6 +54,16 @@ def near(a, b):
 
 def box_is(bbox, want):
     return all(near(bbox[k][i], want[k][i]) for k in ("min", "max") for i in range(3))
+
+
+def same_bodies(a, b):
+    """Saving must preserve placement as well as shape and body names."""
+    kept = {body["name"]: body for body in a}
+    fresh = {body["name"]: body for body in b}
+    return sorted(kept) == sorted(fresh) and all(
+        kept[n].get("closed") and fresh[n].get("closed")
+        and abs(kept[n]["volume_mm3"] - fresh[n]["volume_mm3"]) <= 1e-6 * max(1.0, abs(fresh[n]["volume_mm3"]))
+        and box_is(kept[n]["bbox"], fresh[n]["bbox"]) for n in fresh)
 
 
 def whole(bodies):
@@ -97,10 +109,14 @@ def example(path):
         doc = json.load(f)
     expect = doc["expect"]
     steps = commands(doc)
-    hole_bodies = sorted({h["body"] for h in expect.get("holes", [])})
+    seats = expect.get("nut_seats", [])
+    hole_bodies = sorted({h["body"] for h in expect.get("holes", []) + seats})
     measure_at = len(steps)
     steps.append({"command": "inspect.measure", "params": {}})
     steps += [{"command": "model.faces", "params": {"body": b}} for b in hole_bodies]
+    joint_at = len(steps)
+    if seats:
+        steps.append({"command": "joint.inspect", "params": {}})
     if "overlaps" in expect:
         steps.append({"command": "inspect.interference", "params": {}})
     design = path[: -len(".steps.json")] + ".json"
@@ -116,10 +132,31 @@ def example(path):
         return
     bodies = results[measure_at]["bodies"]
     by_name = {b["name"]: b for b in bodies}
-    cylinders = {
-        b: [f["cylinder"] for f in faces(results[measure_at + 1 + i]) if f.get("cylinder")]
+    body_faces = {
+        b: faces(results[measure_at + 1 + i])
         for i, b in enumerate(hole_bodies)
     }
+    cylinders = {b: [f["cylinder"] for f in fs if f.get("cylinder")] for b, fs in body_faces.items()}
+
+    if seats:
+        joints = results[joint_at]["joints"]
+        check(f"{name}: one healthy rigid joint per pocketed nut", len(joints) == len(seats)
+              and all(j["type"] == "rigid" and not j["errors"] and not j["conflicts"] for j in joints))
+        for seat in seats:
+            x, y = seat["at"]
+            floor = [x, y, seat["floor_z"]]
+            at_floor = lambda p: all(near(a, b) for a, b in zip(p, floor))
+            check(f"{name}: pocket floor at {floor}", any(
+                f.get("plane_normal") and near(f["plane_normal"][2], 1) and at_floor(f["centroid"])
+                for f in body_faces[seat["body"]]))
+            check(f"{name}: bolt-hole axis at ({x:g}, {y:g})", any(
+                near(c["radius"], seat["bolt_radius"]) and near(c["origin"][0], x)
+                and near(c["origin"][1], y) and near(abs(c["axis"][2]), 1)
+                for c in cylinders[seat["body"]]))
+            check(f"{name}: nut joint seated at {floor}", sum(
+                all(j[side]["resolves"] and at_floor(j[side]["frame"]["origin"])
+                    and all(near(a, b) for a, b in zip(j[side]["frame"]["z"], [0, 0, 1]))
+                    for side in ("a", "b")) for j in joints) == 1)
 
     check(f"{name}: {expect['bodies']} bodies", len(bodies) == expect["bodies"], f"got {len(bodies)}")
     check(f"{name}: every body is closed", all(b.get("closed") for b in bodies))
@@ -177,7 +214,7 @@ def example(path):
     reopened = results[0]["bodies"] if results else []
     check(
         f"{name}: the saved design reopens with the same bodies",
-        code == 0 and len(reopened) == len(bodies) and all(b.get("closed") for b in reopened),
+        code == 0 and len(reopened) == len(bodies) and same_bodies(reopened, bodies),
         text[-800:] or f"got {len(reopened)}",
     )
 
@@ -186,15 +223,13 @@ def example(path):
         print(f"wrote {os.path.relpath(design, ROOT)}")
         return
     code, text, results = run([{"command": "inspect.measure", "params": {}}], inp=design)
-    kept = {b["name"]: b["volume_mm3"] for b in results[0]["bodies"]} if code == 0 and results else None
-    fresh = {b["name"]: b["volume_mm3"] for b in reopened}
-    same = kept is not None and sorted(kept) == sorted(fresh) and all(
-        abs(kept[n] - fresh[n]) <= 1e-6 * max(1.0, abs(fresh[n])) for n in fresh)
+    kept = results[0]["bodies"] if code == 0 and results else None
+    same = kept is not None and len(kept) == len(reopened) and same_bodies(kept, reopened)
     check(
         f"{name}: {os.path.relpath(design, ROOT)} matches a fresh build",
         same,
         "run with --update to write it" if kept is None else
-        f"{len(kept)} bodies kept, {len(fresh)} built; after a plugin or example change, run with --update",
+        f"{len(kept)} bodies kept, {len(reopened)} built; after a plugin or example change, run with --update",
     )
 
 

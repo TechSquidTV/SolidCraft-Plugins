@@ -835,7 +835,8 @@ mod tests {
                 "occurrence.reparent",
                 "timeline.group",
                 "model.faces",
-                "joint.create"
+                "joint.create",
+                "sketch.circle.center"
             ])
         );
     }
@@ -948,6 +949,9 @@ mod tests {
                     {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
                 ]}),
+                "sketch.inspect" if args.get("sketch").is_none() => json!({
+                    "points": [{"id": "projected_center", "at": [10, 10]}],
+                }),
                 "sketch.inspect" => json!({
                     "plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
@@ -956,6 +960,12 @@ mod tests {
                     ],
                     "curves": [{"id": "c1", "center": "c1.center"}, {"id": "c2", "center": "c2.center"}]
                 }),
+                "sketch.circle.center" => json!({"curves": ["c1"]}),
+                "sketch.dimension" => json!({"param": "hex_width"}),
+                "sketch.line" if args["closed"] == true => {
+                    json!({"curves": ["l1", "l2", "l3", "l4", "l5", "l6"]})
+                }
+                "sketch.line" if args["points"][0].is_string() => json!({"curves": ["spoke"]}),
                 "sketch.line" => json!({"curves": ["frame_x", "frame_y"]}),
                 "construct.plane.two_edges" => json!({"feature": 100 + self.calls.len()}),
                 "sketch.project" => json!({"created": {"points": ["projected_center"]}}),
@@ -1105,12 +1115,9 @@ mod tests {
             call(&calls, "sketch.constraint.coincident")["b"],
             "projected_center"
         );
-        assert_eq!(
-            call(&calls, "sketch.polygon.circumscribed")["connect"],
-            false
-        );
+        assert_eq!(call(&calls, "sketch.circle.center")["connect"], false);
         assert!(
-            (call(&calls, "sketch.polygon.circumscribed")["radius"]
+            (call(&calls, "sketch.circle.center")["radius"]
                 .as_f64()
                 .unwrap()
                 - 5.2)

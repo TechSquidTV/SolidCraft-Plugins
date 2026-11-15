@@ -27,7 +27,7 @@ You need a SolidCraft build that has the plugin host (the `commands@0.1` capabil
 
 Sketch on the face of the part, put a point or a circle where each insert goes, select them all, and open Plugins > Heat-set insert. Pick a Size and press Run. Each point gets the hole for that insert and a placement of the insert, as one undo step.
 
-Create chooses what is made: `Hole and insert` (the default), `Hole only`, or `Insert only`. A hole needs a part, so the first two need a selection. `Insert only` with nothing selected puts a loose insert on the origin.
+Create chooses what is made: `Hole and insert` (the default), `Hole only`, or `Insert only`. A hole needs a part to drill. With nothing selected, `Hole and insert` and `Insert only` put a loose insert on the origin, and `Hole only` asks you to select the points. The reply's `note` says when no hole was drilled.
 
 The hole is an ordinary `solid.hole` feature on the sketch points, so it follows the sketch and can be edited afterwards. No body is named: the host drills the part under each point.
 

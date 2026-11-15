@@ -49,8 +49,11 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     }
     let spots = place::resolve_all(r, &p.place)?;
     let mut drilled: Vec<String> = Vec::new();
+    // Screw and hole with nothing selected still makes the screw. Only a run that
+    // would make nothing but a hole is refused.
+    let skipped = spots.is_empty() && p.create.hole();
     let places: Vec<Placement> = if spots.is_empty() {
-        if p.create.hole() {
+        if !p.create.screw() {
             return Err(place::nothing_selected(
                 "holes",
                 "Screw only for a loose screw on the origin",
@@ -106,7 +109,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     } else {
         None
     };
-    Ok(summary(p, &places, &drilled, placed.as_ref()))
+    Ok(summary(p, &places, &drilled, skipped, placed.as_ref()))
 }
 
 /// The body name before any number: what the screw is, its size, then its head, as a
@@ -858,9 +861,16 @@ fn shank_body(body: Option<String>) -> Result<String, String> {
     body.ok_or_else(|| "solid.cylinder did not name the shank body".to_string())
 }
 
-fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<&Placed>) -> Value {
+/// `skipped` is true when a hole was asked for and nothing was selected to drill.
+fn summary(
+    p: &Params,
+    places: &[Placement],
+    drilled: &[String],
+    skipped: bool,
+    placed: Option<&Placed>,
+) -> Value {
     let place = &places[0];
-    let hole = p.hole.as_ref().map(|hole| {
+    let hole = p.hole.as_ref().filter(|_| !skipped).map(|hole| {
         let kind = match &hole.kind {
             HoleKind::Clearance { size } => {
                 json!({"type": screw::CLEARANCE, "clearance": size.describe()})
@@ -928,8 +938,12 @@ fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<
         "normal": place.normal,
         "placed": place.source.words(),
         "component": placed.map(Placed::json),
+        "note": skipped.then_some(NO_HOLE),
     })
 }
+
+/// Why a Screw and hole run made no hole.
+const NO_HOLE: &str = "no hole was drilled because nothing was selected; select the sketch points or circles where the holes go to drill them";
 
 #[cfg(test)]
 mod tests {
@@ -1907,6 +1921,25 @@ mod tests {
         assert_eq!(hole["modeled"], true);
         assert_eq!(hole["depth"], 20.0);
         assert!(hole.get("clearance").is_none());
+    }
+
+    #[test]
+    fn screw_and_hole_with_nothing_selected_makes_a_loose_screw() {
+        let (summary, calls) = commands(json!({"create": "Screw and hole"}));
+        // No hole: there is no part to drill.
+        assert!(!calls
+            .iter()
+            .any(|(c, args)| c == "solid.hole" && args.get("sketch").is_some()));
+        assert_eq!(summary["hole"], Value::Null);
+        assert_eq!(summary["drilled"], json!([]));
+        assert_eq!(summary["note"], NO_HOLE);
+        assert_eq!(
+            summary["placed"],
+            "on the origin, because nothing was selected"
+        );
+        assert_eq!(summary["at"], json!([0.0, 0.0, 0.0]));
+        let (summary, _) = commands(json!({}));
+        assert_eq!(summary["note"], Value::Null);
     }
 
     #[test]

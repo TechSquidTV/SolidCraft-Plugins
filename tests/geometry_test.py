@@ -125,6 +125,16 @@ def refused(name, plugin_id, entry, params, words, before=()):
 
 
 @case
+def alone(name, plugin_id, entry, params, bodies):
+    """A run in an empty design, with nothing selected: just these bodies, on the origin."""
+    found, reply = plugin_run(plugin_id, entry, params)
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    check(name, sorted(found) == sorted(bodies), f"| bodies {sorted(found)}")
+
+
+@case
 def loose_screw(name, params, volume):
     """One screw on the origin: its whole volume. The thread is cosmetic unless `params`
     asks for it, so the shank is a plain cylinder and the volume is the head and drive's."""
@@ -183,8 +193,10 @@ on_plate("insert: blind hole on a loose sketch", *INSERT, {"create": "Hole only"
 refused("insert: through hole on a loose sketch is refused", *INSERT,
         {"sketch": "Holes", "sketch_point": "c1, c2", "hole_depth": "Through"},
         "Hole depth", plate(10, loose=True))
-refused("insert: a hole with nothing selected says what to select", *INSERT, {},
-        "select the sketch points")
+refused("insert: a hole with nothing selected says what to select", *INSERT,
+        {"create": "Hole only"}, "select the sketch points")
+alone("insert: the default with nothing selected is a loose insert", *INSERT, {},
+      ["Insert M3 x 5.7"])
 
 # Two M3 x 12 socket head screws: the second body name gets a number.
 SCREWS = ["Plate", "Screw M3 x 12 socket", second("Screw M3 x 12 socket"), "Under"]
@@ -215,6 +227,8 @@ on_plate("screw: no hole by default", *SCREW, {}, 0, 12,
          bodies=SCREWS)
 refused("screw: a hole with nothing selected says what to select", *SCREW,
         {"create": "Hole only"}, "select the sketch points")
+alone("screw: screw and hole with nothing selected is a loose screw", *SCREW,
+      {"create": "Screw and hole"}, ["Screw M3 x 12 socket"])
 
 # Nut pocket: ISO 4032 M6 is 10 across and 5.2 high. 0.2 a side, and a 6.6 bolt hole below.
 on_plate("nut: pocket and nut, flush", *NUT, {"size": "M6", "create": "Nut and pocket"},
@@ -226,6 +240,8 @@ on_plate("nut: no pocket by default", *NUT, {"size": "M6"}, 0, 12,
          bodies=["Nut M6", second("Nut M6"), "Plate", "Under"], top=17.2)
 refused("nut: a pocket with nothing selected says what to select", *NUT,
         {"create": "Pocket only"}, "select the sketch points")
+alone("nut: nut and pocket with nothing selected is a loose nut", *NUT,
+      {"size": "M6", "create": "Nut and pocket"}, ["Nut M6"])
 
 # Sizes the host's own clearance table lacks: the plugins pass the ISO 273 medium hole as
 # a diameter. M3.5 is 3.9; an ISO 4032 M3.5 nut is 6 across and 2.8 high.

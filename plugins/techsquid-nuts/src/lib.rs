@@ -27,8 +27,11 @@ pub fn body_base(p: &Params) -> String {
 pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     let spots = place::resolve_all(r, &p.place)?;
     let mut drilled: Vec<String> = Vec::new();
+    // Nut and pocket with nothing selected still makes the nut. Only a run that would
+    // make nothing but a pocket is refused.
+    let skipped = spots.is_empty() && p.create.pocket();
     let places: Vec<Placement> = if spots.is_empty() {
-        if p.create.pocket() {
+        if !p.create.nut() {
             return Err(place::nothing_selected(
                 "pockets",
                 "Nut only for a loose nut on the origin",
@@ -93,7 +96,14 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     } else {
         None
     };
-    Ok(summary(p, &places, &end, &drilled, placed.as_ref()))
+    Ok(summary(
+        p,
+        &places,
+        &end,
+        &drilled,
+        skipped,
+        placed.as_ref(),
+    ))
 }
 
 /// One hexagonal pocket, cut down from the surface at `place`. Returns the bodies it
@@ -313,10 +323,11 @@ fn summary(
     places: &[Placement],
     end: &EndChamfer,
     drilled: &[String],
+    skipped: bool,
     placed: Option<&Placed>,
 ) -> Value {
     let place = &places[0];
-    let pocket = p.pocket.as_ref().map(|pocket| {
+    let pocket = p.pocket.as_ref().filter(|_| !skipped).map(|pocket| {
         json!({
             "across_flats": pocket.across_flats,
             "depth": pocket.depth,
@@ -343,8 +354,12 @@ fn summary(
         "normal": place.normal,
         "placed": place.source.words(),
         "component": placed.map(Placed::json),
+        "note": skipped.then_some(NO_POCKET),
     })
 }
+
+/// Why a Nut and pocket run made no pocket.
+const NO_POCKET: &str = "no pocket was cut because nothing was selected; select the sketch points or circles where the pockets go to cut them";
 
 #[cfg(test)]
 mod tests {
@@ -956,6 +971,25 @@ mod tests {
         assert_eq!(nuts, 1);
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["pocket"]["bolt_hole"], "M6");
+    }
+
+    #[test]
+    fn nut_and_pocket_with_nothing_selected_makes_a_loose_nut() {
+        let (summary, calls) = commands(json!({"create": "Nut and pocket"}));
+        // No pocket and no bolt hole: there is no part to cut.
+        assert!(!calls
+            .iter()
+            .any(|(c, args)| c == "solid.hole" && args.get("sketch").is_some()));
+        assert_eq!(summary["pocket"], Value::Null);
+        assert_eq!(summary["drilled"], json!([]));
+        assert_eq!(summary["note"], NO_POCKET);
+        assert_eq!(
+            summary["placed"],
+            "on the origin, because nothing was selected"
+        );
+        assert_eq!(summary["at"], json!([0.0, 0.0, 0.0]));
+        let (summary, _) = commands(json!({}));
+        assert_eq!(summary["note"], Value::Null);
     }
 
     #[test]

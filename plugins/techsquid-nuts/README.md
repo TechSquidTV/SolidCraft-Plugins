@@ -31,7 +31,7 @@ Select a sketch point, or a circle, before you open the dialog. Leave Sketch and
 
 Name Sketch and Sketch point together to place the nut without a selection. Sketch point is a point id such as `c1.center`, or a circle id such as `c1`.
 
-Create decides whether the part gets a pocket. `Nut only`, the default, builds the nut and leaves the part alone. `Nut and pocket` first cuts a hexagonal pocket in the part under each selected point, as deep as the nut is tall, with an ISO 273 medium clearance hole for the bolt through the rest of that part, and then sets the nut in the pocket so it ends flush. `Pocket only` cuts without a nut. Both need selected points on a part. Pocket adjustment is the gap on each flat: printed pockets come out small, so raise it until the nut drops in.
+Create decides whether the part gets a pocket. `Nut only`, the default, builds the nut and leaves the part alone. `Nut and pocket` first cuts a hexagonal pocket in the part under each selected point, as deep as the nut is tall, with an ISO 273 medium clearance hole for the bolt through the rest of that part, and then sets the nut in the pocket so it ends flush. `Pocket only` cuts without a nut. A pocket needs selected points on a part. With nothing selected, `Nut and pocket` puts a loose nut on the origin and its reply's `note` says no pocket was cut, and `Pocket only` asks you to select the points. Pocket adjustment is the gap on each flat: printed pockets come out small, so raise it until the nut drops in.
 
 Leave the custom width and thickness empty to use the table. Fill one and the other stays the standard. A size with no row here, such as `M7x1`, needs both. A pocket also needs an ISO 273 clearance hole for the size: every ISO 273 size from M1 to M64 works, including M3.5, M7 and M18, and a size ISO 273 does not list is refused before anything is cut. A fine pitch such as `M8x1` keeps the M8 nut and taps that pitch. `M3.5` is in the table and takes its ISO 261 coarse pitch, 0.6.
 
@@ -40,7 +40,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | Parameter | Default | Meaning |
 |---|---|---|
 | `size` | `M3` | Shown as Size. A common size, `M1.6` to `M24` |
-| `create` | `Nut only` | `Nut only`, `Nut and pocket` or `Pocket only`. A pocket needs selected points on a part |
+| `create` | `Nut only` | `Nut only`, `Nut and pocket` or `Pocket only`. A pocket needs selected points on a part; with none, `Nut and pocket` makes the nut alone |
 | `pocket_adjust` | 0.2 | Gap between each flat of the nut and its pocket, mm, 0 to 1 |
 | `custom_size` | empty | Shown as Custom size. Any metric size, such as `M8x1` or `M3.5`. Replaces Size when filled |
 | `custom_thickness` | standard | Nut height, mm |

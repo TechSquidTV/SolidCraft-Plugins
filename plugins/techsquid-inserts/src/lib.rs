@@ -27,12 +27,14 @@ const NOTHING_SELECTED: &str = "sketch_point: select the sketch points or circle
 pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     let spots = place::resolve_all(r, &p.place)?;
     if spots.is_empty() {
-        if p.create.hole() {
+        // Hole and insert, the default, still makes the insert in an empty design. Only
+        // a run that would make nothing but a hole is refused.
+        if !p.create.insert() {
             return Err(NOTHING_SELECTED.into());
         }
         let places = [Placement::on_origin()];
         let placed = place_inserts(r, p, &places)?;
-        return Ok(summary(p, &places, &[], Some(&placed)));
+        return Ok(summary(p, &places, None, Some(&placed)));
     }
     // The holes go first: the insert would otherwise be a body under the point too.
     let mut drilled: Vec<String> = Vec::new();
@@ -57,7 +59,7 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     } else {
         None
     };
-    Ok(summary(p, &places, &drilled, placed.as_ref()))
+    Ok(summary(p, &places, Some(&drilled), placed.as_ref()))
 }
 
 /// The plugin id, which an insert component's metadata names.
@@ -401,9 +403,17 @@ fn created_curve(reply: &Value) -> Result<String, String> {
         .ok_or_else(|| "sketch.line did not return a curve id".to_string())
 }
 
-fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<&Placed>) -> Value {
+/// `drilled` is the bodies the holes went into, or `None` when no hole was drilled
+/// because nothing was selected.
+fn summary(
+    p: &Params,
+    places: &[Placement],
+    drilled: Option<&[String]>,
+    placed: Option<&Placed>,
+) -> Value {
     let place = &places[0];
-    let hole = p.cut.map(|cut| match cut.shape {
+    let cut = drilled.and(p.cut);
+    let hole = cut.map(|cut| match cut.shape {
         HoleShape::Straight { diameter } => json!({
             "type": insert::STRAIGHT,
             "diameter": diameter,
@@ -420,7 +430,7 @@ fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<
         "count": places.len(),
         "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
         "hole": hole,
-        "drilled": drilled,
+        "drilled": drilled.unwrap_or_default(),
         "size": p.size,
         "thread": p.thread,
         "length": p.length,
@@ -433,8 +443,13 @@ fn summary(p: &Params, places: &[Placement], drilled: &[String], placed: Option<
         "plastic_hole": p.hole,
         "min_wall": p.wall,
         "component": placed.map(Placed::json),
+        "note": (p.cut.is_some() && cut.is_none())
+            .then_some(NO_HOLE),
     })
 }
+
+/// Why a Hole and insert run made no hole.
+const NO_HOLE: &str = "no hole was drilled because nothing was selected; select the sketch points or circles where the holes go to drill them";
 
 #[cfg(test)]
 mod tests {
@@ -931,8 +946,37 @@ mod tests {
     }
 
     #[test]
-    fn a_hole_with_nothing_selected_says_what_to_select() {
+    fn the_default_with_nothing_selected_makes_a_loose_insert() {
         let p = insert::parse(&json!({})).unwrap();
+        let mut rec = Rec {
+            calls: vec![],
+            sketch: 0,
+        };
+        let summary = make_insert(&mut rec, &p).unwrap();
+        // No hole is drilled, and the insert sits on the origin.
+        assert!(!rec
+            .calls
+            .iter()
+            .any(|(c, args)| c == "solid.hole" && args.get("sketch").is_some()));
+        assert_eq!(
+            last(&rec.calls, "solid.hole")["targets"],
+            json!(["Insert M3 x 5.7"])
+        );
+        assert_eq!(summary["hole"], Value::Null);
+        assert_eq!(summary["drilled"], json!([]));
+        assert_eq!(summary["note"], NO_HOLE);
+        assert_eq!(
+            summary["placed"],
+            "on the origin, because nothing was selected"
+        );
+        // Insert only says nothing about a hole it was not asked for.
+        let (summary, _) = commands(json!({}));
+        assert_eq!(summary["note"], Value::Null);
+    }
+
+    #[test]
+    fn a_hole_only_with_nothing_selected_says_what_to_select() {
+        let p = insert::parse(&json!({"create": "Hole only"})).unwrap();
         let mut rec = Rec {
             calls: vec![],
             sketch: 0,

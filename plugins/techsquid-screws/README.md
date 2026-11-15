@@ -42,7 +42,7 @@ Blank head sizes are filled from the standard of the head and drive: socket M1.6
 | `drive` | `Standard` | `Standard`, `Hex socket`, `Phillips`, `Slotted`, `Torx` or `None`. Standard is the usual drive for the head: a hex socket in a socket, button or countersunk head and in a set screw, Phillips in a pan head and in a countersunk head below M3 (ISO 10642 starts at M3), a slot in a cheese head, none in a hex head or a threaded rod |
 | `drive_size` | standard | Shown as Drive size. Sizes whichever drive is chosen. Hex socket: the key size, or the key size and the depth, such as `2.5` or `2.5x1.3`. Torx: `T10`. Phillips: `PH1` or `PH2x1.7`. Slotted: width and depth, such as `0.8x0.7`. Empty uses the standard for that screw |
 | `tip` | `Flat` | `Flat`, `Point` or `Cup`. Point is a gimlet one diameter long, included in the length, and it is not itself threaded. Cup is a recess in the end |
-| `create` | `Screw only` | `Screw only`, `Screw and hole` or `Hole only`. A hole needs selected points on a part. Hole only skips the drive, and the head unless the hole recesses it |
+| `create` | `Screw only` | `Screw only`, `Screw and hole` or `Hole only`. A hole needs selected points on a part; with none, `Screw and hole` makes the screw alone. Hole only skips the drive, and the head unless the hole recesses it |
 | `hole_type` | `Clearance` | `Clearance` (ISO 273 normal fit), `Clearance, head recessed` or `Tapped`. Used when Create drills a hole |
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
@@ -53,7 +53,7 @@ Blank head sizes are filled from the standard of the head and drive: socket M1.6
 
 A set screw and a threaded rod have no head, so both head sizes stay empty.
 
-Create decides whether the part gets a hole. `Screw only`, the default, builds the screw and leaves the part alone. `Screw and hole` first drills the part under each selected point, and `Hole only` drills without a screw. Both need selected points on a part; the hole is one ordinary `solid.hole` feature on those sketch points, so it follows the sketch and can be edited afterwards. Every hole is as deep as the screw reaches, so it goes through a part thinner than that.
+Create decides whether the part gets a hole. `Screw only`, the default, builds the screw and leaves the part alone. `Screw and hole` first drills the part under each selected point, and `Hole only` drills without a screw. A hole needs selected points on a part. With nothing selected, `Screw and hole` puts a loose screw on the origin and its reply's `note` says no hole was drilled, and `Hole only` asks you to select the points; the hole is one ordinary `solid.hole` feature on those sketch points, so it follows the sketch and can be edited afterwards. Every hole is as deep as the screw reaches, so it goes through a part thinner than that.
 
 - **Clearance.** The ISO 273 normal clearance hole for the size: 3.4 mm for an M3. The head sits on the surface. A size SolidCraft's own clearance table leaves out, such as M3.5 or M18, is drilled at its ISO 273 diameter instead.
 - **Clearance, head recessed.** The same hole with a counterbore the head sits in, 0.5 mm wider than the head all round and as deep as the head is tall: 6.5 by 3 mm for an M3 socket head. A countersunk head gets a 90° countersink. The screw is set down into the recess, so the top of its head ends flush with the surface. A set screw and a rod have no head to recess.

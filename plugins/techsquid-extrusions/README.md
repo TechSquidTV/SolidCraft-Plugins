@@ -148,6 +148,7 @@ The catalog's areas are a loose check: its 2040 is 0.5% over MISUMI's own model 
 | Its taps and screw holes | `: Tap start 1`, `: Tap end 2`, `: Hole at 10: Access`, `: Hole at 10: Clearance`, and `: Hole at 50 (2): Access` on a face with two slots |
 | Nut body and component | `T-nut M5 pre-assembly`, `T-nut M5 post-assembly` |
 | Its sketch and features | `T-nut M5 pre-assembly: Section`, `: Bar`, `: Thread`, and `: Ball recess` and `: Ball` on a post-assembly nut |
+| Timeline folder | the rail's or the nut's name, `T-slot 2040 x 500`, holding every sketch and feature of it, folded |
 | The folder its placements go in | `Extrusions` |
 
 In the bill of materials a rail is `purchased`, its part number is its name, and its description reads `20 x 40 mm T-slot aluminium extrusion, 500 mm long`. A nut is `purchased` too, and its description reads `MISUMI HNTT5-5 pre-assembly insertion nut for a 6 mm slot`.

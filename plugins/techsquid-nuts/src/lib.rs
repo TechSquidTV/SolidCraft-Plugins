@@ -199,7 +199,7 @@ fn build_nut<R: Runner>(
     if site.point != place.point {
         r.run(
             "solid.move",
-            json!({"bodies": [body], "translate": site.point}),
+            json!({"bodies": [body], "translate": site.point, "name": named("Move to site")}),
         )?;
     }
     let place = *site;
@@ -741,7 +741,8 @@ mod tests {
                 "component.activate",
                 "occurrence.copy",
                 "occurrence.move",
-                "occurrence.reparent"
+                "occurrence.reparent",
+                "timeline.group"
             ])
         );
     }

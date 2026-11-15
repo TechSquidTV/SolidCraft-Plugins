@@ -112,6 +112,7 @@ The body, the hole and every feature say what the part is and its size, so a des
 | Screw body | `Screw M3 x 12 socket`, `Screw M8x1 x 25 hex`, `Set screw M3 x 6`, `Threaded rod M8 x 100` |
 | Screw hole | `Clearance hole M3`, `Counterbore M3`, `Countersink M3`, `Tapped hole M3` |
 | Features and sketches of a screw | the screw's name, then the feature: `Screw M3 x 12 socket: Head` |
+| Timeline folder | the screw's name, `Screw M3 x 12 socket`, holding every sketch and feature of the screw, folded |
 
 A hole keeps its kind and size in its own name because it stays in the part, and with Hole only there is no screw body at all.
 

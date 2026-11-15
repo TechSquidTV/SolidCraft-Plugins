@@ -217,7 +217,11 @@ pub fn build_nut<R: Runner>(
     if site.point != [x, y, z] {
         r.run(
             "solid.move",
-            json!({"bodies": [body_name], "translate": site.point}),
+            json!({
+                "bodies": [body_name],
+                "translate": site.point,
+                "name": name::part(body_name, "Move to site"),
+            }),
         )?;
     }
     let [x, y, z] = site.point;

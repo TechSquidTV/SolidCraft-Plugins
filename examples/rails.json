@@ -1866,10 +1866,10 @@
       "operation": "new_body"
     },
     {
-      "id": 10,
+      "id": 11,
       "name": "T-slot 2040 x 40: Section",
       "suppressed": false,
-      "component": 8,
+      "component": 9,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -4375,7 +4375,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 12,
       "name": "T-slot 2040 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -4384,9 +4384,9 @@
       "param_names": [
         "d2"
       ],
-      "component": 8,
+      "component": 9,
       "type": "extrude",
-      "sketch": 10,
+      "sketch": 11,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -4512,10 +4512,10 @@
       "operation": "new_body"
     },
     {
-      "id": 14,
+      "id": 16,
       "name": "T-slot 2060 x 40: Section",
       "suppressed": false,
-      "component": 12,
+      "component": 14,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -7888,7 +7888,7 @@
       }
     },
     {
-      "id": 15,
+      "id": 17,
       "name": "T-slot 2060 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -7897,9 +7897,9 @@
       "param_names": [
         "d3"
       ],
-      "component": 12,
+      "component": 14,
       "type": "extrude",
-      "sketch": 14,
+      "sketch": 16,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -8059,10 +8059,10 @@
       "operation": "new_body"
     },
     {
-      "id": 18,
+      "id": 21,
       "name": "T-slot 2080 x 40: Section",
       "suppressed": false,
-      "component": 16,
+      "component": 19,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12290,7 +12290,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 22,
       "name": "T-slot 2080 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -12299,9 +12299,9 @@
       "param_names": [
         "d4"
       ],
-      "component": 16,
+      "component": 19,
       "type": "extrude",
-      "sketch": 18,
+      "sketch": 21,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -12495,10 +12495,10 @@
       "operation": "new_body"
     },
     {
-      "id": 22,
+      "id": 26,
       "name": "T-slot 4040 x 40: Section",
       "suppressed": false,
-      "component": 20,
+      "component": 24,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16389,7 +16389,7 @@
       }
     },
     {
-      "id": 23,
+      "id": 27,
       "name": "T-slot 4040 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -16398,9 +16398,9 @@
       "param_names": [
         "d5"
       ],
-      "component": 20,
+      "component": 24,
       "type": "extrude",
-      "sketch": 22,
+      "sketch": 26,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -16560,10 +16560,10 @@
       "operation": "new_body"
     },
     {
-      "id": 26,
+      "id": 31,
       "name": "V-slot 2020 x 40: Section",
       "suppressed": false,
-      "component": 24,
+      "component": 29,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -17798,7 +17798,7 @@
       }
     },
     {
-      "id": 27,
+      "id": 32,
       "name": "V-slot 2020 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -17807,9 +17807,9 @@
       "param_names": [
         "d6"
       ],
-      "component": 24,
+      "component": 29,
       "type": "extrude",
-      "sketch": 26,
+      "sketch": 31,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -17893,10 +17893,10 @@
       "operation": "new_body"
     },
     {
-      "id": 30,
+      "id": 36,
       "name": "V-slot 2040 x 40: Section",
       "suppressed": false,
-      "component": 28,
+      "component": 34,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -19778,7 +19778,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 37,
       "name": "V-slot 2040 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -19787,9 +19787,9 @@
       "param_names": [
         "d7"
       ],
-      "component": 28,
+      "component": 34,
       "type": "extrude",
-      "sketch": 30,
+      "sketch": 36,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -19903,10 +19903,10 @@
       "operation": "new_body"
     },
     {
-      "id": 34,
+      "id": 41,
       "name": "V-slot 2060 x 40: Section",
       "suppressed": false,
-      "component": 32,
+      "component": 39,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -22447,7 +22447,7 @@
       }
     },
     {
-      "id": 35,
+      "id": 42,
       "name": "V-slot 2060 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -22456,9 +22456,9 @@
       "param_names": [
         "d8"
       ],
-      "component": 32,
+      "component": 39,
       "type": "extrude",
-      "sketch": 34,
+      "sketch": 41,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -22602,10 +22602,10 @@
       "operation": "new_body"
     },
     {
-      "id": 38,
+      "id": 46,
       "name": "V-slot 2080 x 40: Section",
       "suppressed": false,
-      "component": 36,
+      "component": 44,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -25793,7 +25793,7 @@
       }
     },
     {
-      "id": 39,
+      "id": 47,
       "name": "V-slot 2080 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -25802,9 +25802,9 @@
       "param_names": [
         "d9"
       ],
-      "component": 36,
+      "component": 44,
       "type": "extrude",
-      "sketch": 38,
+      "sketch": 46,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -25978,7 +25978,7 @@
       "operation": "new_body"
     }
   ],
-  "next_id": 40,
+  "next_id": 49,
   "components": [
     {
       "id": 2,
@@ -26010,7 +26010,7 @@
       }
     },
     {
-      "id": 8,
+      "id": 9,
       "identification_color_index": 2,
       "name": "T-slot 2040 x 40",
       "parent": 2,
@@ -26030,7 +26030,7 @@
       }
     },
     {
-      "id": 12,
+      "id": 14,
       "identification_color_index": 3,
       "name": "T-slot 2060 x 40",
       "parent": 2,
@@ -26050,7 +26050,7 @@
       }
     },
     {
-      "id": 16,
+      "id": 19,
       "identification_color_index": 4,
       "name": "T-slot 2080 x 40",
       "parent": 2,
@@ -26070,7 +26070,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 24,
       "identification_color_index": 5,
       "name": "T-slot 4040 x 40",
       "parent": 2,
@@ -26090,7 +26090,7 @@
       }
     },
     {
-      "id": 24,
+      "id": 29,
       "identification_color_index": 6,
       "name": "V-slot 2020 x 40",
       "parent": 2,
@@ -26110,7 +26110,7 @@
       }
     },
     {
-      "id": 28,
+      "id": 34,
       "identification_color_index": 7,
       "name": "V-slot 2040 x 40",
       "parent": 2,
@@ -26130,7 +26130,7 @@
       }
     },
     {
-      "id": 32,
+      "id": 39,
       "identification_color_index": 8,
       "name": "V-slot 2060 x 40",
       "parent": 2,
@@ -26150,7 +26150,7 @@
       }
     },
     {
-      "id": 36,
+      "id": 44,
       "identification_color_index": 9,
       "name": "V-slot 2080 x 40",
       "parent": 2,
@@ -26239,8 +26239,8 @@
       "grounded": false
     },
     {
-      "id": 9,
-      "component": 8,
+      "id": 10,
+      "component": 9,
       "parent": 2,
       "name": "T-slot 2040 x 40:1",
       "transform": [
@@ -26272,8 +26272,8 @@
       "grounded": false
     },
     {
-      "id": 13,
-      "component": 12,
+      "id": 15,
+      "component": 14,
       "parent": 2,
       "name": "T-slot 2060 x 40:1",
       "transform": [
@@ -26305,8 +26305,8 @@
       "grounded": false
     },
     {
-      "id": 17,
-      "component": 16,
+      "id": 20,
+      "component": 19,
       "parent": 2,
       "name": "T-slot 2080 x 40:1",
       "transform": [
@@ -26338,8 +26338,8 @@
       "grounded": false
     },
     {
-      "id": 21,
-      "component": 20,
+      "id": 25,
+      "component": 24,
       "parent": 2,
       "name": "T-slot 4040 x 40:1",
       "transform": [
@@ -26371,8 +26371,8 @@
       "grounded": false
     },
     {
-      "id": 25,
-      "component": 24,
+      "id": 30,
+      "component": 29,
       "parent": 2,
       "name": "V-slot 2020 x 40:1",
       "transform": [
@@ -26404,8 +26404,8 @@
       "grounded": false
     },
     {
-      "id": 29,
-      "component": 28,
+      "id": 35,
+      "component": 34,
       "parent": 2,
       "name": "V-slot 2040 x 40:1",
       "transform": [
@@ -26437,8 +26437,8 @@
       "grounded": false
     },
     {
-      "id": 33,
-      "component": 32,
+      "id": 40,
+      "component": 39,
       "parent": 2,
       "name": "V-slot 2060 x 40:1",
       "transform": [
@@ -26470,8 +26470,8 @@
       "grounded": false
     },
     {
-      "id": 37,
-      "component": 36,
+      "id": 45,
+      "component": 44,
       "parent": 2,
       "name": "V-slot 2080 x 40:1",
       "transform": [
@@ -26501,6 +26501,89 @@
         ]
       ],
       "grounded": false
+    }
+  ],
+  "timeline_groups": [
+    {
+      "id": 8,
+      "name": "T-slot 2020 x 40",
+      "parent": null,
+      "features": [
+        6,
+        7
+      ]
+    },
+    {
+      "id": 13,
+      "name": "T-slot 2040 x 40",
+      "parent": null,
+      "features": [
+        11,
+        12
+      ]
+    },
+    {
+      "id": 18,
+      "name": "T-slot 2060 x 40",
+      "parent": null,
+      "features": [
+        16,
+        17
+      ]
+    },
+    {
+      "id": 23,
+      "name": "T-slot 2080 x 40",
+      "parent": null,
+      "features": [
+        21,
+        22
+      ]
+    },
+    {
+      "id": 28,
+      "name": "T-slot 4040 x 40",
+      "parent": null,
+      "features": [
+        26,
+        27
+      ]
+    },
+    {
+      "id": 33,
+      "name": "V-slot 2020 x 40",
+      "parent": null,
+      "features": [
+        31,
+        32
+      ]
+    },
+    {
+      "id": 38,
+      "name": "V-slot 2040 x 40",
+      "parent": null,
+      "features": [
+        36,
+        37
+      ]
+    },
+    {
+      "id": 43,
+      "name": "V-slot 2060 x 40",
+      "parent": null,
+      "features": [
+        41,
+        42
+      ]
+    },
+    {
+      "id": 48,
+      "name": "V-slot 2080 x 40",
+      "parent": null,
+      "features": [
+        46,
+        47
+      ]
     }
   ]
 }

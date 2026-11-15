@@ -105,6 +105,7 @@ The body, the hole and every feature say what the part is and its size, so a des
 | Nut body | `Nut M3`, `Nut M8x1` |
 | Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
 | Features and sketches of a nut | the nut's name, then the feature: `Nut M3: Thread` |
+| Timeline folder | the nut's name, `Nut M3`, holding every sketch and feature of the nut, folded |
 
 A pocket keeps its kind and size in its own name because it stays in the part, and with Pocket only there is no nut body at all.
 

@@ -123,6 +123,7 @@ The body, the hole and every feature say what the part is and its size, so a des
 | Insert body | `Insert M3 x 5.7`, from the thread and length actually built |
 | Insert hole | `Heat-set hole M3 x 5.7`, or `Glue-in hole` and `Glue-in pilot` for a stepped hole |
 | Features and sketches of an insert | the insert's name, then the feature: `Insert M3 x 5.7: Upper knurl`, `Insert M3 x 5.7: Middle chamfer`, `Insert M3 x 5.7: Bore` |
+| Timeline folder | the insert's name, `Insert M3 x 5.7`, holding every sketch and feature of the insert, folded |
 
 A hole keeps its kind and size in its own name because it stays in the part, and with Hole only there is no insert body at all.
 

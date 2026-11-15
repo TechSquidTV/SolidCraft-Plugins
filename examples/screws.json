@@ -337,7 +337,7 @@
     },
     {
       "id": 10,
-      "name": "Move1",
+      "name": "Screw M5 x 16 socket: Move to site",
       "suppressed": false,
       "param_names": [
         "d6",
@@ -379,7 +379,7 @@
       ]
     },
     {
-      "id": 14,
+      "id": 15,
       "name": "Screw M5 x 16 socket (2): Shank",
       "suppressed": false,
       "body_names": [
@@ -389,7 +389,7 @@
         "d9",
         "d10"
       ],
-      "component": 12,
+      "component": 13,
       "type": "cylinder",
       "base": [
         0.0,
@@ -406,14 +406,14 @@
       "operation": "new_body"
     },
     {
-      "id": 15,
+      "id": 16,
       "name": "Screw M5 x 16 socket (2): Head",
       "suppressed": false,
       "param_names": [
         "d11",
         "d12"
       ],
-      "component": 12,
+      "component": 13,
       "participants": [
         "Screw M5 x 16 socket (2)"
       ],
@@ -433,10 +433,10 @@
       "operation": "join"
     },
     {
-      "id": 16,
+      "id": 17,
       "name": "Screw M5 x 16 socket (2): Torx profile",
       "suppressed": false,
-      "component": 12,
+      "component": 13,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -942,15 +942,15 @@
       }
     },
     {
-      "id": 17,
+      "id": 18,
       "name": "Screw M5 x 16 socket (2): Torx",
       "suppressed": false,
       "param_names": [
         "d13"
       ],
-      "component": 12,
+      "component": 13,
       "type": "extrude",
-      "sketch": 16,
+      "sketch": 17,
       "profiles": {
         "type": "all"
       },
@@ -965,36 +965,36 @@
       ]
     },
     {
-      "id": 18,
-      "name": "Move2",
+      "id": 19,
+      "name": "Screw M5 x 16 socket (2): Move to site",
       "suppressed": false,
       "param_names": [
         "d14",
         "d15",
         "d16"
       ],
-      "component": 12,
+      "component": 13,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 socket (2)"
       ],
       "translate": [
-        "-345",
+        "-365",
         "-105",
         "0"
       ]
     },
     {
-      "id": 19,
+      "id": 20,
       "name": "Screw M5 x 16 socket (2): Thread",
       "suppressed": false,
-      "component": 12,
+      "component": 13,
       "face_names": [
-        "F14:side"
+        "F15:side"
       ],
       "type": "thread",
       "face": [
-        -342.5,
+        -362.5,
         -105.0,
         -13.333333333333334
       ],
@@ -1002,13 +1002,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -342.5,
+        -362.5,
         -105.0,
         -13.333333333333334
       ]
     },
     {
-      "id": 22,
+      "id": 24,
       "name": "Screw M5 x 16 button: Shank",
       "suppressed": false,
       "body_names": [
@@ -1018,7 +1018,7 @@
         "d17",
         "d18"
       ],
-      "component": 20,
+      "component": 22,
       "type": "cylinder",
       "base": [
         0.0,
@@ -1035,10 +1035,10 @@
       "operation": "new_body"
     },
     {
-      "id": 23,
+      "id": 25,
       "name": "Screw M5 x 16 button: Head profile",
       "suppressed": false,
-      "component": 20,
+      "component": 22,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -1200,15 +1200,15 @@
       }
     },
     {
-      "id": 24,
+      "id": 26,
       "name": "Screw M5 x 16 button: Head",
       "suppressed": false,
       "param_names": [
         "d19"
       ],
-      "component": 20,
+      "component": 22,
       "type": "revolve",
-      "sketch": 23,
+      "sketch": 25,
       "profiles": {
         "type": "all"
       },
@@ -1233,10 +1233,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 25,
+      "id": 27,
       "name": "Screw M5 x 16 button: Torx profile",
       "suppressed": false,
-      "component": 20,
+      "component": 22,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -1742,15 +1742,15 @@
       }
     },
     {
-      "id": 26,
+      "id": 28,
       "name": "Screw M5 x 16 button: Torx",
       "suppressed": false,
       "param_names": [
         "d20"
       ],
-      "component": 20,
+      "component": 22,
       "type": "extrude",
-      "sketch": 25,
+      "sketch": 27,
       "profiles": {
         "type": "all"
       },
@@ -1765,36 +1765,36 @@
       ]
     },
     {
-      "id": 27,
-      "name": "Move3",
+      "id": 29,
+      "name": "Screw M5 x 16 button: Move to site",
       "suppressed": false,
       "param_names": [
         "d21",
         "d22",
         "d23"
       ],
-      "component": 20,
+      "component": 22,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 button"
       ],
       "translate": [
-        "-505",
+        "-545",
         "-105",
         "0"
       ]
     },
     {
-      "id": 28,
+      "id": 30,
       "name": "Screw M5 x 16 button: Thread",
       "suppressed": false,
-      "component": 20,
+      "component": 22,
       "face_names": [
-        "F22:side"
+        "F24:side"
       ],
       "type": "thread",
       "face": [
-        -502.5,
+        -542.5,
         -105.0,
         -13.333333333333334
       ],
@@ -1802,13 +1802,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -502.5,
+        -542.5,
         -105.0,
         -13.333333333333334
       ]
     },
     {
-      "id": 31,
+      "id": 34,
       "name": "Screw M5 x 16 countersunk: Shank",
       "suppressed": false,
       "body_names": [
@@ -1818,7 +1818,7 @@
         "d24",
         "d25"
       ],
-      "component": 29,
+      "component": 32,
       "type": "cylinder",
       "base": [
         0.0,
@@ -1835,7 +1835,7 @@
       "operation": "new_body"
     },
     {
-      "id": 32,
+      "id": 35,
       "name": "Screw M5 x 16 countersunk: Head",
       "suppressed": false,
       "param_names": [
@@ -1843,7 +1843,7 @@
         "d27",
         "d28"
       ],
-      "component": 29,
+      "component": 32,
       "participants": [
         "Screw M5 x 16 countersunk"
       ],
@@ -1864,14 +1864,14 @@
       "operation": "join"
     },
     {
-      "id": 33,
+      "id": 36,
       "name": "Screw M5 x 16 countersunk: Head land",
       "suppressed": false,
       "param_names": [
         "d29",
         "d30"
       ],
-      "component": 29,
+      "component": 32,
       "participants": [
         "Screw M5 x 16 countersunk"
       ],
@@ -1891,7 +1891,7 @@
       "operation": "join"
     },
     {
-      "id": 34,
+      "id": 37,
       "name": "Screw M5 x 16 countersunk: Phillips point",
       "suppressed": false,
       "body_names": [
@@ -1902,7 +1902,7 @@
         "d32",
         "d33"
       ],
-      "component": 29,
+      "component": 32,
       "type": "cone",
       "base": [
         0.0,
@@ -1920,7 +1920,7 @@
       "operation": "new_body"
     },
     {
-      "id": 35,
+      "id": 38,
       "name": "Screw M5 x 16 countersunk: Phillips envelope",
       "suppressed": false,
       "param_names": [
@@ -1928,7 +1928,7 @@
         "d35",
         "d36"
       ],
-      "component": 29,
+      "component": 32,
       "participants": [
         "Screw M5 x 16 countersunk: Phillips point"
       ],
@@ -1949,10 +1949,10 @@
       "operation": "join"
     },
     {
-      "id": 36,
+      "id": 39,
       "name": "Screw M5 x 16 countersunk: Phillips wings",
       "suppressed": false,
-      "component": 29,
+      "component": 32,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -2174,7 +2174,7 @@
       }
     },
     {
-      "id": 37,
+      "id": 40,
       "name": "Screw M5 x 16 countersunk: Phillips wings",
       "suppressed": false,
       "body_names": [
@@ -2183,9 +2183,9 @@
       "param_names": [
         "d37"
       ],
-      "component": 29,
+      "component": 32,
       "type": "extrude",
-      "sketch": 36,
+      "sketch": 39,
       "profiles": {
         "type": "all"
       },
@@ -2197,10 +2197,10 @@
       "operation": "new_body"
     },
     {
-      "id": 38,
+      "id": 41,
       "name": "Screw M5 x 16 countersunk: Phillips recess",
       "suppressed": false,
-      "component": 29,
+      "component": 32,
       "type": "combine",
       "target": "Screw M5 x 16 countersunk: Phillips wings",
       "tools": [
@@ -2210,10 +2210,10 @@
       "keep_tools": false
     },
     {
-      "id": 39,
+      "id": 42,
       "name": "Screw M5 x 16 countersunk: Phillips",
       "suppressed": false,
-      "component": 29,
+      "component": 32,
       "type": "combine",
       "target": "Screw M5 x 16 countersunk",
       "tools": [
@@ -2223,36 +2223,36 @@
       "keep_tools": false
     },
     {
-      "id": 40,
-      "name": "Move4",
+      "id": 43,
+      "name": "Screw M5 x 16 countersunk: Move to site",
       "suppressed": false,
       "param_names": [
         "d38",
         "d39",
         "d40"
       ],
-      "component": 29,
+      "component": 32,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 countersunk"
       ],
       "translate": [
-        "-685",
+        "-745",
         "-105",
         "0"
       ]
     },
     {
-      "id": 41,
+      "id": 44,
       "name": "Screw M5 x 16 countersunk: Thread",
       "suppressed": false,
-      "component": 29,
+      "component": 32,
       "face_names": [
-        "F31:side"
+        "F34:side"
       ],
       "type": "thread",
       "face": [
-        -682.5,
+        -742.5,
         -105.0,
         -11.083333333333334
       ],
@@ -2260,13 +2260,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -682.5,
+        -742.5,
         -105.0,
         -11.083333333333334
       ]
     },
     {
-      "id": 44,
+      "id": 48,
       "name": "Screw M5 x 16 hex: Shank",
       "suppressed": false,
       "body_names": [
@@ -2276,7 +2276,7 @@
         "d41",
         "d42"
       ],
-      "component": 42,
+      "component": 46,
       "type": "cylinder",
       "base": [
         0.0,
@@ -2293,10 +2293,10 @@
       "operation": "new_body"
     },
     {
-      "id": 45,
+      "id": 49,
       "name": "Screw M5 x 16 hex: Head profile",
       "suppressed": false,
-      "component": 42,
+      "component": 46,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -2564,15 +2564,15 @@
       }
     },
     {
-      "id": 46,
+      "id": 50,
       "name": "Screw M5 x 16 hex: Head",
       "suppressed": false,
       "param_names": [
         "d44"
       ],
-      "component": 42,
+      "component": 46,
       "type": "extrude",
-      "sketch": 45,
+      "sketch": 49,
       "profiles": {
         "type": "all"
       },
@@ -2587,10 +2587,10 @@
       ]
     },
     {
-      "id": 47,
+      "id": 51,
       "name": "Screw M5 x 16 hex: Head chamfer profile",
       "suppressed": false,
-      "component": 42,
+      "component": 46,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -2677,15 +2677,15 @@
       }
     },
     {
-      "id": 48,
+      "id": 52,
       "name": "Screw M5 x 16 hex: Head chamfer",
       "suppressed": false,
       "param_names": [
         "d45"
       ],
-      "component": 42,
+      "component": 46,
       "type": "revolve",
-      "sketch": 47,
+      "sketch": 51,
       "profiles": {
         "type": "all"
       },
@@ -2710,36 +2710,36 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 49,
-      "name": "Move5",
+      "id": 53,
+      "name": "Screw M5 x 16 hex: Move to site",
       "suppressed": false,
       "param_names": [
         "d46",
         "d47",
         "d48"
       ],
-      "component": 42,
+      "component": 46,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 hex"
       ],
       "translate": [
-        "-945",
+        "-1025",
         "-105",
         "0"
       ]
     },
     {
-      "id": 50,
+      "id": 54,
       "name": "Screw M5 x 16 hex: Thread",
       "suppressed": false,
-      "component": 42,
+      "component": 46,
       "face_names": [
-        "F44:side"
+        "F48:side"
       ],
       "type": "thread",
       "face": [
-        -942.5,
+        -1022.5,
         -105.0,
         -13.333333333333334
       ],
@@ -2747,13 +2747,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -942.5,
+        -1022.5,
         -105.0,
         -13.333333333333334
       ]
     },
     {
-      "id": 53,
+      "id": 58,
       "name": "Screw M5 x 16 pan: Shank",
       "suppressed": false,
       "body_names": [
@@ -2763,7 +2763,7 @@
         "d49",
         "d50"
       ],
-      "component": 51,
+      "component": 56,
       "type": "cylinder",
       "base": [
         0.0,
@@ -2780,7 +2780,7 @@
       "operation": "new_body"
     },
     {
-      "id": 54,
+      "id": 59,
       "name": "Screw M5 x 16 pan: Point",
       "suppressed": false,
       "param_names": [
@@ -2788,7 +2788,7 @@
         "d52",
         "d53"
       ],
-      "component": 51,
+      "component": 56,
       "participants": [
         "Screw M5 x 16 pan"
       ],
@@ -2809,10 +2809,10 @@
       "operation": "join"
     },
     {
-      "id": 55,
+      "id": 60,
       "name": "Screw M5 x 16 pan: Head profile",
       "suppressed": false,
-      "component": 51,
+      "component": 56,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -2974,15 +2974,15 @@
       }
     },
     {
-      "id": 56,
+      "id": 61,
       "name": "Screw M5 x 16 pan: Head",
       "suppressed": false,
       "param_names": [
         "d54"
       ],
-      "component": 51,
+      "component": 56,
       "type": "revolve",
-      "sketch": 55,
+      "sketch": 60,
       "profiles": {
         "type": "all"
       },
@@ -3007,7 +3007,7 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 57,
+      "id": 62,
       "name": "Screw M5 x 16 pan: Phillips point",
       "suppressed": false,
       "body_names": [
@@ -3018,7 +3018,7 @@
         "d56",
         "d57"
       ],
-      "component": 51,
+      "component": 56,
       "type": "cone",
       "base": [
         0.0,
@@ -3036,7 +3036,7 @@
       "operation": "new_body"
     },
     {
-      "id": 58,
+      "id": 63,
       "name": "Screw M5 x 16 pan: Phillips envelope",
       "suppressed": false,
       "param_names": [
@@ -3044,7 +3044,7 @@
         "d59",
         "d60"
       ],
-      "component": 51,
+      "component": 56,
       "participants": [
         "Screw M5 x 16 pan: Phillips point"
       ],
@@ -3065,10 +3065,10 @@
       "operation": "join"
     },
     {
-      "id": 59,
+      "id": 64,
       "name": "Screw M5 x 16 pan: Phillips wings",
       "suppressed": false,
-      "component": 51,
+      "component": 56,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -3290,7 +3290,7 @@
       }
     },
     {
-      "id": 60,
+      "id": 65,
       "name": "Screw M5 x 16 pan: Phillips wings",
       "suppressed": false,
       "body_names": [
@@ -3299,9 +3299,9 @@
       "param_names": [
         "d61"
       ],
-      "component": 51,
+      "component": 56,
       "type": "extrude",
-      "sketch": 59,
+      "sketch": 64,
       "profiles": {
         "type": "all"
       },
@@ -3313,10 +3313,10 @@
       "operation": "new_body"
     },
     {
-      "id": 61,
+      "id": 66,
       "name": "Screw M5 x 16 pan: Phillips recess",
       "suppressed": false,
-      "component": 51,
+      "component": 56,
       "type": "combine",
       "target": "Screw M5 x 16 pan: Phillips wings",
       "tools": [
@@ -3326,10 +3326,10 @@
       "keep_tools": false
     },
     {
-      "id": 62,
+      "id": 67,
       "name": "Screw M5 x 16 pan: Phillips",
       "suppressed": false,
-      "component": 51,
+      "component": 56,
       "type": "combine",
       "target": "Screw M5 x 16 pan",
       "tools": [
@@ -3339,36 +3339,36 @@
       "keep_tools": false
     },
     {
-      "id": 63,
-      "name": "Move6",
+      "id": 68,
+      "name": "Screw M5 x 16 pan: Move to site",
       "suppressed": false,
       "param_names": [
         "d62",
         "d63",
         "d64"
       ],
-      "component": 51,
+      "component": 56,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 pan"
       ],
       "translate": [
-        "-1125",
+        "-1225",
         "-105",
         "0"
       ]
     },
     {
-      "id": 64,
+      "id": 69,
       "name": "Screw M5 x 16 pan: Thread",
       "suppressed": false,
-      "component": 51,
+      "component": 56,
       "face_names": [
-        "F53:side"
+        "F58:side"
       ],
       "type": "thread",
       "face": [
-        -1122.5,
+        -1222.5,
         -105.0,
         -9.166666666666668
       ],
@@ -3376,13 +3376,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -1122.5,
+        -1222.5,
         -105.0,
         -9.166666666666668
       ]
     },
     {
-      "id": 67,
+      "id": 73,
       "name": "Screw M5 x 16 pan (2): Shank",
       "suppressed": false,
       "body_names": [
@@ -3392,7 +3392,7 @@
         "d65",
         "d66"
       ],
-      "component": 65,
+      "component": 71,
       "type": "cylinder",
       "base": [
         0.0,
@@ -3409,10 +3409,10 @@
       "operation": "new_body"
     },
     {
-      "id": 68,
+      "id": 74,
       "name": "Screw M5 x 16 pan (2): Head profile",
       "suppressed": false,
-      "component": 65,
+      "component": 71,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -3589,15 +3589,15 @@
       }
     },
     {
-      "id": 69,
+      "id": 75,
       "name": "Screw M5 x 16 pan (2): Head",
       "suppressed": false,
       "param_names": [
         "d67"
       ],
-      "component": 65,
+      "component": 71,
       "type": "revolve",
-      "sketch": 68,
+      "sketch": 74,
       "profiles": {
         "type": "all"
       },
@@ -3622,10 +3622,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 70,
+      "id": 76,
       "name": "Screw M5 x 16 pan (2): Slot profile",
       "suppressed": false,
-      "component": 65,
+      "component": 71,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -3784,15 +3784,15 @@
       }
     },
     {
-      "id": 71,
+      "id": 77,
       "name": "Screw M5 x 16 pan (2): Slot",
       "suppressed": false,
       "param_names": [
         "d68"
       ],
-      "component": 65,
+      "component": 71,
       "type": "extrude",
-      "sketch": 70,
+      "sketch": 76,
       "profiles": {
         "type": "all"
       },
@@ -3807,36 +3807,36 @@
       ]
     },
     {
-      "id": 72,
-      "name": "Move7",
+      "id": 78,
+      "name": "Screw M5 x 16 pan (2): Move to site",
       "suppressed": false,
       "param_names": [
         "d69",
         "d70",
         "d71"
       ],
-      "component": 65,
+      "component": 71,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 pan (2)"
       ],
       "translate": [
-        "-125",
+        "-245",
         "-125",
         "0"
       ]
     },
     {
-      "id": 73,
+      "id": 79,
       "name": "Screw M5 x 16 pan (2): Thread",
       "suppressed": false,
-      "component": 65,
+      "component": 71,
       "face_names": [
-        "F67:side"
+        "F73:side"
       ],
       "type": "thread",
       "face": [
-        -122.5,
+        -242.5,
         -125.0,
         -13.333333333333334
       ],
@@ -3844,13 +3844,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -122.5,
+        -242.5,
         -125.0,
         -13.333333333333334
       ]
     },
     {
-      "id": 76,
+      "id": 83,
       "name": "Screw M5 x 16 cheese: Shank",
       "suppressed": false,
       "body_names": [
@@ -3860,7 +3860,7 @@
         "d72",
         "d73"
       ],
-      "component": 74,
+      "component": 81,
       "type": "cylinder",
       "base": [
         0.0,
@@ -3877,14 +3877,14 @@
       "operation": "new_body"
     },
     {
-      "id": 77,
+      "id": 84,
       "name": "Screw M5 x 16 cheese: Head",
       "suppressed": false,
       "param_names": [
         "d74",
         "d75"
       ],
-      "component": 74,
+      "component": 81,
       "participants": [
         "Screw M5 x 16 cheese"
       ],
@@ -3904,10 +3904,10 @@
       "operation": "join"
     },
     {
-      "id": 78,
+      "id": 85,
       "name": "Screw M5 x 16 cheese: Slot profile",
       "suppressed": false,
-      "component": 74,
+      "component": 81,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -4066,15 +4066,15 @@
       }
     },
     {
-      "id": 79,
+      "id": 86,
       "name": "Screw M5 x 16 cheese: Slot",
       "suppressed": false,
       "param_names": [
         "d76"
       ],
-      "component": 74,
+      "component": 81,
       "type": "extrude",
-      "sketch": 78,
+      "sketch": 85,
       "profiles": {
         "type": "all"
       },
@@ -4089,36 +4089,36 @@
       ]
     },
     {
-      "id": 80,
-      "name": "Move8",
+      "id": 87,
+      "name": "Screw M5 x 16 cheese: Move to site",
       "suppressed": false,
       "param_names": [
         "d77",
         "d78",
         "d79"
       ],
-      "component": 74,
+      "component": 81,
       "type": "move",
       "bodies": [
         "Screw M5 x 16 cheese"
       ],
       "translate": [
-        "-305",
+        "-445",
         "-125",
         "0"
       ]
     },
     {
-      "id": 81,
+      "id": 88,
       "name": "Screw M5 x 16 cheese: Thread",
       "suppressed": false,
-      "component": 74,
+      "component": 81,
       "face_names": [
-        "F76:side"
+        "F83:side"
       ],
       "type": "thread",
       "face": [
-        -302.5,
+        -442.5,
         -125.0,
         -13.333333333333334
       ],
@@ -4126,13 +4126,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -302.5,
+        -442.5,
         -125.0,
         -13.333333333333334
       ]
     },
     {
-      "id": 84,
+      "id": 92,
       "name": "Set screw M5 x 16: Shank",
       "suppressed": false,
       "body_names": [
@@ -4142,7 +4142,7 @@
         "d80",
         "d81"
       ],
-      "component": 82,
+      "component": 90,
       "type": "cylinder",
       "base": [
         0.0,
@@ -4159,13 +4159,13 @@
       "operation": "new_body"
     },
     {
-      "id": 85,
+      "id": 93,
       "name": "Set screw M5 x 16: Point chamfer",
       "suppressed": false,
       "param_names": [
         "d82"
       ],
-      "component": 82,
+      "component": 90,
       "edge_refs": [
         {
           "dir": [
@@ -4186,7 +4186,7 @@
         }
       ],
       "edge_names": [
-        "F84:bottom|F84:side"
+        "F92:bottom|F92:side"
       ],
       "type": "chamfer",
       "edges": [
@@ -4200,13 +4200,13 @@
       "body": "Set screw M5 x 16"
     },
     {
-      "id": 86,
+      "id": 94,
       "name": "Set screw M5 x 16: Socket end chamfer",
       "suppressed": false,
       "param_names": [
         "d83"
       ],
-      "component": 82,
+      "component": 90,
       "edge_refs": [
         {
           "dir": [
@@ -4227,7 +4227,7 @@
         }
       ],
       "edge_names": [
-        "F84:side|F84:top"
+        "F92:side|F92:top"
       ],
       "type": "chamfer",
       "edges": [
@@ -4241,7 +4241,7 @@
       "body": "Set screw M5 x 16"
     },
     {
-      "id": 87,
+      "id": 95,
       "name": "Set screw M5 x 16: Cup",
       "suppressed": false,
       "param_names": [
@@ -4249,7 +4249,7 @@
         "d85",
         "d86"
       ],
-      "component": 82,
+      "component": 90,
       "participants": [
         "Set screw M5 x 16"
       ],
@@ -4270,10 +4270,10 @@
       "operation": "cut"
     },
     {
-      "id": 88,
+      "id": 96,
       "name": "Set screw M5 x 16: Hex socket profile",
       "suppressed": false,
-      "component": 82,
+      "component": 90,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -4405,15 +4405,15 @@
       }
     },
     {
-      "id": 89,
+      "id": 97,
       "name": "Set screw M5 x 16: Hex socket",
       "suppressed": false,
       "param_names": [
         "d87"
       ],
-      "component": 82,
+      "component": 90,
       "type": "extrude",
-      "sketch": 88,
+      "sketch": 96,
       "profiles": {
         "type": "all"
       },
@@ -4428,36 +4428,36 @@
       ]
     },
     {
-      "id": 90,
-      "name": "Move9",
+      "id": 98,
+      "name": "Set screw M5 x 16: Move to site",
       "suppressed": false,
       "param_names": [
         "d88",
         "d89",
         "d90"
       ],
-      "component": 82,
+      "component": 90,
       "type": "move",
       "bodies": [
         "Set screw M5 x 16"
       ],
       "translate": [
-        "-465",
+        "-625",
         "-125",
         "0"
       ]
     },
     {
-      "id": 91,
+      "id": 99,
       "name": "Set screw M5 x 16: Thread",
       "suppressed": false,
-      "component": 82,
+      "component": 90,
       "face_names": [
-        "F84:side"
+        "F92:side"
       ],
       "type": "thread",
       "face": [
-        -462.5,
+        -622.5,
         -125.0,
         -12.373453333333334
       ],
@@ -4465,13 +4465,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -462.5,
+        -622.5,
         -125.0,
         -12.373453333333334
       ]
     },
     {
-      "id": 94,
+      "id": 103,
       "name": "Threaded rod M5 x 16: Shank",
       "suppressed": false,
       "body_names": [
@@ -4481,7 +4481,7 @@
         "d91",
         "d92"
       ],
-      "component": 92,
+      "component": 101,
       "type": "cylinder",
       "base": [
         0.0,
@@ -4498,36 +4498,36 @@
       "operation": "new_body"
     },
     {
-      "id": 95,
-      "name": "Move10",
+      "id": 104,
+      "name": "Threaded rod M5 x 16: Move to site",
       "suppressed": false,
       "param_names": [
         "d93",
         "d94",
         "d95"
       ],
-      "component": 92,
+      "component": 101,
       "type": "move",
       "bodies": [
         "Threaded rod M5 x 16"
       ],
       "translate": [
-        "-665",
+        "-845",
         "-125",
         "0"
       ]
     },
     {
-      "id": 96,
+      "id": 105,
       "name": "Threaded rod M5 x 16: Thread",
       "suppressed": false,
-      "component": 92,
+      "component": 101,
       "face_names": [
-        "F94:side"
+        "F103:side"
       ],
       "type": "thread",
       "face": [
-        -662.5,
+        -842.5,
         -125.0,
         -13.333333333333334
       ],
@@ -4535,13 +4535,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -662.5,
+        -842.5,
         -125.0,
         -13.333333333333334
       ]
     }
   ],
-  "next_id": 97,
+  "next_id": 107,
   "components": [
     {
       "id": 2,
@@ -4573,7 +4573,7 @@
       }
     },
     {
-      "id": 12,
+      "id": 13,
       "identification_color_index": 2,
       "name": "Screw M5 x 16 socket (2)",
       "parent": 2,
@@ -4584,7 +4584,7 @@
           "geometry": "27f8591f0849bc60",
           "plugin": "techsquid-screws",
           "site": [
-            -345.0,
+            -365.0,
             -105.0,
             0.0
           ]
@@ -4593,7 +4593,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 22,
       "identification_color_index": 3,
       "name": "Screw M5 x 16 button",
       "parent": 2,
@@ -4604,7 +4604,7 @@
           "geometry": "ceefda471fcf01aa",
           "plugin": "techsquid-screws",
           "site": [
-            -505.0,
+            -545.0,
             -105.0,
             0.0
           ]
@@ -4613,7 +4613,7 @@
       }
     },
     {
-      "id": 29,
+      "id": 32,
       "identification_color_index": 4,
       "name": "Screw M5 x 16 countersunk",
       "parent": 2,
@@ -4624,7 +4624,7 @@
           "geometry": "b5ddf98024626843",
           "plugin": "techsquid-screws",
           "site": [
-            -685.0,
+            -745.0,
             -105.0,
             0.0
           ]
@@ -4633,7 +4633,7 @@
       }
     },
     {
-      "id": 42,
+      "id": 46,
       "identification_color_index": 5,
       "name": "Screw M5 x 16 hex",
       "parent": 2,
@@ -4644,7 +4644,7 @@
           "geometry": "85e1d7fd1394ebd4",
           "plugin": "techsquid-screws",
           "site": [
-            -945.0,
+            -1025.0,
             -105.0,
             0.0
           ]
@@ -4653,7 +4653,7 @@
       }
     },
     {
-      "id": 51,
+      "id": 56,
       "identification_color_index": 6,
       "name": "Screw M5 x 16 pan",
       "parent": 2,
@@ -4664,7 +4664,7 @@
           "geometry": "80fa99370b11ec87",
           "plugin": "techsquid-screws",
           "site": [
-            -1125.0,
+            -1225.0,
             -105.0,
             0.0
           ]
@@ -4673,7 +4673,7 @@
       }
     },
     {
-      "id": 65,
+      "id": 71,
       "identification_color_index": 7,
       "name": "Screw M5 x 16 pan (2)",
       "parent": 2,
@@ -4684,7 +4684,7 @@
           "geometry": "487574e1751dadf5",
           "plugin": "techsquid-screws",
           "site": [
-            -125.0,
+            -245.0,
             -125.0,
             0.0
           ]
@@ -4693,7 +4693,7 @@
       }
     },
     {
-      "id": 74,
+      "id": 81,
       "identification_color_index": 8,
       "name": "Screw M5 x 16 cheese",
       "parent": 2,
@@ -4704,7 +4704,7 @@
           "geometry": "60f399daa01de2a8",
           "plugin": "techsquid-screws",
           "site": [
-            -305.0,
+            -445.0,
             -125.0,
             0.0
           ]
@@ -4713,7 +4713,7 @@
       }
     },
     {
-      "id": 82,
+      "id": 90,
       "identification_color_index": 9,
       "name": "Set screw M5 x 16",
       "parent": 2,
@@ -4724,7 +4724,7 @@
           "geometry": "6bc15d4d6c7f157a",
           "plugin": "techsquid-screws",
           "site": [
-            -465.0,
+            -625.0,
             -125.0,
             0.0
           ]
@@ -4733,7 +4733,7 @@
       }
     },
     {
-      "id": 92,
+      "id": 101,
       "identification_color_index": 10,
       "name": "Threaded rod M5 x 16",
       "parent": 2,
@@ -4743,7 +4743,7 @@
           "geometry": "9ac04e14706cd9ee",
           "plugin": "techsquid-screws",
           "site": [
-            -665.0,
+            -845.0,
             -125.0,
             0.0
           ]
@@ -4821,8 +4821,8 @@
       "grounded": false
     },
     {
-      "id": 13,
-      "component": 12,
+      "id": 14,
+      "component": 13,
       "parent": 2,
       "name": "Screw M5 x 16 socket (2):1",
       "transform": [
@@ -4845,7 +4845,7 @@
           0.0
         ],
         [
-          292.5,
+          312.5,
           105.0,
           0.0,
           1.0
@@ -4854,8 +4854,8 @@
       "grounded": false
     },
     {
-      "id": 21,
-      "component": 20,
+      "id": 23,
+      "component": 22,
       "parent": 2,
       "name": "Screw M5 x 16 button:1",
       "transform": [
@@ -4878,7 +4878,7 @@
           0.0
         ],
         [
-          467.5,
+          507.5,
           105.0,
           0.0,
           1.0
@@ -4887,8 +4887,8 @@
       "grounded": false
     },
     {
-      "id": 30,
-      "component": 29,
+      "id": 33,
+      "component": 32,
       "parent": 2,
       "name": "Screw M5 x 16 countersunk:1",
       "transform": [
@@ -4911,7 +4911,7 @@
           0.0
         ],
         [
-          662.5,
+          722.5,
           105.0,
           0.0,
           1.0
@@ -4920,8 +4920,8 @@
       "grounded": false
     },
     {
-      "id": 43,
-      "component": 42,
+      "id": 47,
+      "component": 46,
       "parent": 2,
       "name": "Screw M5 x 16 hex:1",
       "transform": [
@@ -4944,7 +4944,7 @@
           0.0
         ],
         [
-          937.5,
+          1017.5,
           105.0,
           0.0,
           1.0
@@ -4953,8 +4953,8 @@
       "grounded": false
     },
     {
-      "id": 52,
-      "component": 51,
+      "id": 57,
+      "component": 56,
       "parent": 2,
       "name": "Screw M5 x 16 pan:1",
       "transform": [
@@ -4977,7 +4977,7 @@
           0.0
         ],
         [
-          1132.5,
+          1232.5,
           105.0,
           0.0,
           1.0
@@ -4986,8 +4986,8 @@
       "grounded": false
     },
     {
-      "id": 66,
-      "component": 65,
+      "id": 72,
+      "component": 71,
       "parent": 2,
       "name": "Screw M5 x 16 pan (2):1",
       "transform": [
@@ -5010,7 +5010,7 @@
           0.0
         ],
         [
-          147.5,
+          267.5,
           125.0,
           0.0,
           1.0
@@ -5019,8 +5019,8 @@
       "grounded": false
     },
     {
-      "id": 75,
-      "component": 74,
+      "id": 82,
+      "component": 81,
       "parent": 2,
       "name": "Screw M5 x 16 cheese:1",
       "transform": [
@@ -5043,7 +5043,7 @@
           0.0
         ],
         [
-          342.5,
+          482.5,
           125.0,
           0.0,
           1.0
@@ -5052,8 +5052,8 @@
       "grounded": false
     },
     {
-      "id": 83,
-      "component": 82,
+      "id": 91,
+      "component": 90,
       "parent": 2,
       "name": "Set screw M5 x 16:1",
       "transform": [
@@ -5076,7 +5076,7 @@
           0.0
         ],
         [
-          517.5,
+          677.5,
           125.0,
           0.0,
           1.0
@@ -5085,8 +5085,8 @@
       "grounded": false
     },
     {
-      "id": 93,
-      "component": 92,
+      "id": 102,
+      "component": 101,
       "parent": 2,
       "name": "Threaded rod M5 x 16:1",
       "transform": [
@@ -5109,13 +5109,158 @@
           0.0
         ],
         [
-          732.5,
+          912.5,
           125.0,
           0.0,
           1.0
         ]
       ],
       "grounded": false
+    }
+  ],
+  "timeline_groups": [
+    {
+      "id": 12,
+      "name": "Screw M5 x 16 socket",
+      "parent": null,
+      "features": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Screw M5 x 16 socket (2)",
+      "parent": null,
+      "features": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Screw M5 x 16 button",
+      "parent": null,
+      "features": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    },
+    {
+      "id": 45,
+      "name": "Screw M5 x 16 countersunk",
+      "parent": null,
+      "features": [
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "id": 55,
+      "name": "Screw M5 x 16 hex",
+      "parent": null,
+      "features": [
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54
+      ]
+    },
+    {
+      "id": 70,
+      "name": "Screw M5 x 16 pan",
+      "parent": null,
+      "features": [
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69
+      ]
+    },
+    {
+      "id": 80,
+      "name": "Screw M5 x 16 pan (2)",
+      "parent": null,
+      "features": [
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79
+      ]
+    },
+    {
+      "id": 89,
+      "name": "Screw M5 x 16 cheese",
+      "parent": null,
+      "features": [
+        83,
+        84,
+        85,
+        86,
+        87,
+        88
+      ]
+    },
+    {
+      "id": 100,
+      "name": "Set screw M5 x 16",
+      "parent": null,
+      "features": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99
+      ]
+    },
+    {
+      "id": 106,
+      "name": "Threaded rod M5 x 16",
+      "parent": null,
+      "features": [
+        103,
+        104,
+        105
+      ]
     }
   ]
 }

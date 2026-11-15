@@ -33,6 +33,9 @@
 //! The kernel refuses some cuts, such as the chamfer of a hexagon, at positions it
 //! accepts at others. So a small part is made on the origin and moved to its site with
 //! `solid.move` before its thread is cut. A rail is built on its site as it stands.
+//!
+//! Every sketch and feature a build makes is folded into one timeline folder named after
+//! the part, so a screw is one row of the timeline until it is opened, not a dozen.
 
 use serde_json::{json, Value};
 
@@ -48,7 +51,7 @@ pub const METADATA_KEY: &str = "dev.threadcraft";
 const DRY_NAME: &str = "fastener";
 
 /// Every command [`place_all`] sends. A plugin's manifest lists them.
-pub const COMMANDS: [&str; 8] = [
+pub const COMMANDS: [&str; 9] = [
     "component.list",
     "component.create",
     "component.metadata",
@@ -57,6 +60,7 @@ pub const COMMANDS: [&str; 8] = [
     "occurrence.copy",
     "occurrence.move",
     "occurrence.reparent",
+    "timeline.group",
 ];
 
 /// What a run places.
@@ -177,7 +181,13 @@ where
             let component = id_of(&made, "component")?;
             let first = id_of(&made, "occurrence")?;
             let site = r.site(def.site.of(component));
-            build(r, &name, &site)?;
+            let mut made = Made {
+                host: r,
+                features: Vec::new(),
+            };
+            build(&mut made, &name, &site)?;
+            let features = made.features;
+            fold(r, &name, features);
             let site = site.point;
             let mut meta = json!({
                 "component": component,
@@ -218,6 +228,50 @@ where
     })
 }
 
+/// A host that passes every command on and keeps the id of each sketch and feature the
+/// replies name, so the build's timeline rows can be folded.
+struct Made<'a, R: Runner> {
+    host: &'a mut R,
+    features: Vec<u64>,
+}
+
+impl<R: Runner> Runner for Made<'_, R> {
+    fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+        let reply = self.host.run(command, args)?;
+        // A new sketch is a timeline row too; its reply names it `sketch`.
+        let key = if command == "sketch.create" {
+            "sketch"
+        } else {
+            "feature"
+        };
+        if let Some(id) = reply.get(key).and_then(Value::as_u64) {
+            if !self.features.contains(&id) {
+                self.features.push(id);
+            }
+        }
+        Ok(reply)
+    }
+
+    fn body_names(&mut self) -> Vec<String> {
+        self.host.body_names()
+    }
+
+    fn site(&mut self, at: [f64; 2]) -> Placement {
+        self.host.site(at)
+    }
+}
+
+/// Folds a new part's timeline rows into one folder named after it. The folder is only
+/// for reading the timeline, so a host that cannot make one still keeps the part.
+fn fold<R: Runner>(r: &mut R, name: &str, features: Vec<u64>) {
+    if !features.is_empty() {
+        let _ = r.run(
+            "timeline.group",
+            json!({"name": name, "features": features}),
+        );
+    }
+}
+
 /// What a host with an empty design answers to the commands [`place_all`] sends, for a
 /// test host that records a build: the folder is component 1 and the fastener component 2,
 /// placed by occurrence 3, and a copy is occurrence 4. `None` for any other command.
@@ -227,6 +281,7 @@ pub fn stand_in(command: &str) -> Option<Value> {
         "component.create" => json!({"component": 2, "occurrence": 3}),
         "component.metadata" => json!({"metadata": {}}),
         "occurrence.copy" => json!({"occurrence": 4}),
+        "timeline.group" => json!({"group": 5}),
         "component.metadata.set"
         | "occurrence.move"
         | "occurrence.reparent"
@@ -597,6 +652,75 @@ mod tests {
                 occurrences: vec![154, 159],
             }
         );
+    }
+
+    #[test]
+    fn a_new_part_folds_its_sketches_and_features_under_its_name() {
+        /// Numbers every sketch and feature, as SolidCraft does.
+        struct Timeline(Vec<(String, Value)>, u64);
+        impl Runner for Timeline {
+            fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                self.0.push((command.to_string(), args));
+                self.1 += 1;
+                Ok(match command {
+                    "sketch.create" => json!({"sketch": self.1}),
+                    "sketch.line" => json!({"curves": ["l1"]}),
+                    "browser.visibility" => json!({"changed": 1}),
+                    c if c.starts_with("solid.") => json!({"feature": self.1}),
+                    c => stand_in(c).unwrap_or(json!({})),
+                })
+            }
+        }
+        let build = |r: &mut dyn Runner, name: &str, _: &Placement| {
+            r.run("sketch.create", json!({"name": format!("{name}: Profile")}))?;
+            r.run("sketch.line", json!({"points": [[0, 0], [1, 0]]}))?;
+            r.run("solid.extrude", json!({"name": format!("{name}: Body")}))?;
+            r.run("browser.visibility", json!({"visible": false}))?;
+            r.run("solid.hole", json!({"name": format!("{name}: Bore")}))?;
+            Ok(())
+        };
+        let mut host = Timeline(Vec::new(), 100);
+        place_all(&mut host, &SCREW, &[at([0.0; 3])], build).unwrap();
+        let folds: Vec<&Value> = host
+            .0
+            .iter()
+            .filter(|(c, _)| c == "timeline.group")
+            .map(|(_, args)| args)
+            .collect();
+        // The sketch, the extrude and the hole; not the line or the visibility.
+        assert_eq!(
+            folds,
+            [&json!({"name": "Screw M3 x 12 socket", "features": [105, 107, 109]})]
+        );
+        // The folder is made while the part's component is still the active one.
+        let commands: Vec<&str> = host.0.iter().map(|(c, _)| c.as_str()).collect();
+        let fold = commands
+            .iter()
+            .position(|c| *c == "timeline.group")
+            .unwrap();
+        assert_eq!(commands[fold - 1], "solid.hole");
+        assert_eq!(commands[fold + 1], "component.metadata.set");
+    }
+
+    #[test]
+    fn a_host_without_folders_still_keeps_the_part() {
+        struct Old(u64);
+        impl Runner for Old {
+            fn run(&mut self, command: &str, _: Value) -> Result<Value, String> {
+                self.0 += 1;
+                match command {
+                    "timeline.group" => Err("unknown command timeline.group".into()),
+                    "solid.extrude" => Ok(json!({"feature": self.0})),
+                    c => Ok(stand_in(c).unwrap_or(json!({}))),
+                }
+            }
+        }
+        let build = |r: &mut dyn Runner, _: &str, _: &Placement| {
+            r.run("solid.extrude", json!({})).map(|_| ())
+        };
+        let placed = place_all(&mut Old(0), &SCREW, &[at([0.0; 3])], build).unwrap();
+        assert!(!placed.reused);
+        assert_eq!(placed.occurrences, [3]);
     }
 
     #[test]

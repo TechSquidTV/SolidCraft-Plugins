@@ -130,7 +130,8 @@
       "component.activate",
       "occurrence.copy",
       "occurrence.move",
-      "occurrence.reparent"
+      "occurrence.reparent",
+      "timeline.group"
     ],
     "limits": {
       "fuel": 200000000,

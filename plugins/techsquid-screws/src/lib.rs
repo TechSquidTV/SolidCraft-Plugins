@@ -328,6 +328,7 @@ fn build_screw<R: Runner>(
             json!({
                 "bodies": [body.as_deref().unwrap_or(body_name)],
                 "translate": site.point,
+                "name": name::part(part, "Move to site"),
             }),
         )?;
     }

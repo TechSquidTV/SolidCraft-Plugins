@@ -137,7 +137,9 @@
       "occurrence.copy",
       "occurrence.move",
       "occurrence.reparent",
-      "timeline.group"
+      "timeline.group",
+      "model.faces",
+      "joint.create"
     ],
     "limits": {
       "fuel": 200000000,

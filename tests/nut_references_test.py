@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Check nut pocket and bolt-hole links through point, plane and depth edits."""
+import copy
 import json
 import math
 import os
@@ -15,11 +16,11 @@ def near(a, b):
     return abs(a - b) < 1e-4
 
 
-def test():
+def test(with_nuts=False, modeled=False, reuse=False):
     code, text, info = inspect("techsquid-nuts")
     if code or not info:
         raise SystemExit(f"Build the packages first: {text}")
-    saved = os.path.join(TMP, "nut-pockets.json")
+    saved = os.path.join(TMP, f"nut-pockets-{with_nuts}-{modeled}.json")
     setup = [
         cmd("parameters.change", name="thickness", expression="12 mm"),
         cmd("parameters.change", name="yaw", expression="0 deg"),
@@ -36,9 +37,20 @@ def test():
         cmd("sketch.circle.center", center=[-15, -15], radius=2, id="c"),
         cmd("sketch.finish"),
         cmd("plugin.run", path=package("techsquid-nuts"), approval=info["approval"], entry="make-nut",
-            params={"size": "M6", "create": "Pocket only", "sketch": "Layout", "sketch_point": "p,c"}),
+            params={"size": "M6", "create": "Nut and pocket" if with_nuts else "Pocket only",
+                    "thread_modeled": modeled, "sketch": "Layout", "sketch_point": "p,c"}),
         cmd("sketch.inspect", sketch="Layout"),
     ]
+    if reuse:
+        second = copy.deepcopy(setup[-2])
+        setup[-2]["params"]["params"]["sketch_point"] = "p"
+        second["params"]["params"]["sketch_point"] = "c"
+        setup.insert(-1, second)
+        # Build on an already rotated and tilted frame; the second invocation must
+        # reuse the off-origin threaded definition without moving the first nut.
+        setup[1]["params"]["expression"] = "90 deg"
+        setup[2]["params"]["expression"] = "60 deg"
+        setup.insert(0, cmd("component.create", name="Carrier", activate=True, grounded=True))
     code, text, results = run(setup, save=saved)
     if killed(code):
         skip("nut pocket references", "host killed while loading plugin")
@@ -46,10 +58,15 @@ def test():
     check("nut pockets: build from a point and a circle", code == 0, text[-1000:])
     if code:
         return
+    if reuse:
+        first, second = [r["component"] for r in results[-3:-1]]
+        check("separate runs reuse the nut definition", not first["reused"] and second["reused"]
+              and first["component"] == second["component"]
+              and first["occurrences"] != second["occurrences"])
     source = results[-1]
     check("source profiles stay unchanged", len(source["profiles"]) == 1
           and source["profiles"][0]["curves"] == ["c"])
-    check("source frame lines are construction geometry", len(source["curves"]) == 3
+    check("source frame lines are construction geometry", len(source["curves"]) == (5 if reuse else 3)
           and all(c["construction"] for c in source["curves"] if c["type"] == "line"))
     with open(saved) as f:
         doc = json.load(f)
@@ -58,9 +75,9 @@ def test():
     pockets = [f["id"] for f in doc["features"] if f["type"] == "extrude" and f["operation"] == "cut"]
     check("each pocket has a linked profile", len(profiles) == len(pockets) == 2)
     reads = [cmd("sketch.inspect", sketch=p) for p in profiles]
-    reads += [cmd("model.faces", body="Plate"), cmd("inspect.measure", summary=True)]
+    reads += [cmd("model.faces", body="Plate"), cmd("inspect.measure", summary=True), cmd("joint.inspect")]
 
-    def verify(label, edits, xy, thickness, yaw, depths, tilt=0):
+    def verify(label, edits, xy, thickness, yaw, depths, tilt=0, shift=(0, 0, 0)):
         code, text, results = run(edits + reads, inp=saved, save=saved)
         check(label + ": rebuilds", code == 0, text[-1000:])
         if code:
@@ -69,9 +86,11 @@ def test():
         a = math.radians(yaw)
         t = math.radians(tilt)
         normal = [0, -math.sin(t), math.cos(t)]
-        def world(x, y, z):
+        def rotated(x, y, z):
             u, v = x * math.cos(a) - y * math.sin(a), x * math.sin(a) + y * math.cos(a)
             return [u, v * math.cos(t) - z * math.sin(t), v * math.sin(t) + z * math.cos(t)]
+        def world(x, y, z):
+            return [v + offset for v, offset in zip(rotated(x, y, z), shift)]
         centers = [world(x, y, thickness) for x, y in xy]
         def on_axis(point, center):
             delta = [v - w for v, w in zip(point, center)]
@@ -92,16 +111,43 @@ def test():
         for i, (depth, center) in enumerate(zip(depths, centers)):
             floors = [f for f in faces if f.get("plane_normal")
                       and near(abs(sum(v * n for v, n in zip(f["plane_normal"], normal))), 1)
-                      and near(sum(v * n for v, n in zip(f["point"], normal)), thickness - depth)]
+                      and near(sum(v * n for v, n in zip(f["point"], normal)), thickness - depth + sum(v * n for v, n in zip(shift, normal)))]
             check(label + f": pocket {i + 1} floor follows center and depth",
                   any(on_axis(f["centroid"], center) for f in floors))
         hex_area = math.sqrt(3) / 2 * 10.4 ** 2
         removed = sum(hex_area * d + math.pi * 3.3 ** 2 * (thickness - d) for d in depths)
-        bodies = data[3]["bodies"]
+        bodies = [b for b in data[3]["bodies"] if b["name"] == "Plate"]
         check(label + ": exact cut volume and closed body", len(bodies) == 1 and bodies[0]["closed"]
               and abs(bodies[0]["volume_mm3"] - (10000 * thickness - removed)) < 0.01)
 
-    verify("initial", [], [(15, 15), (-15, -15)], 12, 0, [5.2, 5.2])
+        joints = data[4]["joints"]
+        check(label + ": one healthy seat per nut", len(joints) == (2 if with_nuts else 0)
+              and all(not j["errors"] and not j["conflicts"] for j in joints))
+        if with_nuts:
+            nuts = [b for b in data[3]["bodies"] if b["name"] != "Plate"]
+            check(label + ": both nut bodies stay closed", len(nuts) == 2 and all(b["closed"] for b in nuts))
+            for i, (joint, center, depth) in enumerate(zip(joints, centers, depths)):
+                floor = [v - n * depth for v, n in zip(center, normal)]
+                # X of the seat is the inward normal of the low-Y pocket wall.
+                turn = rotated(0, 1, 0)
+                check(label + f": nut {i + 1} follows seat position and rotation",
+                      all(joint[side]["resolves"]
+                          and all(near(v, w) for v, w in zip(joint[side]["frame"]["origin"], floor))
+                          and all(near(v, w) for v, w in zip(joint[side]["frame"]["z"], normal))
+                          and all(near(v, w) for v, w in zip(joint[side]["frame"]["x"], turn))
+                          for side in ("a", "b")))
+                middle = [v + n * 2.6 for v, n in zip(floor, normal)]
+                check(label + f": actual nut {i + 1} body follows seat",
+                      any(all(near((lo + hi) / 2, want)
+                              for lo, hi, want in zip(b["bbox"]["min"], b["bbox"]["max"], middle))
+                          for b in nuts))
+
+    if reuse:
+        verify("initial rotated reused definition", [], [(15, 15), (-15, -15)],
+               12, 90, [5.2, 5.2], tilt=60)
+    verify("initial", [cmd("parameters.change", name="yaw", expression="0 deg"),
+                       cmd("parameters.change", name="tilt", expression="0 deg")] if reuse else [],
+           [(15, 15), (-15, -15)], 12, 0, [5.2, 5.2])
     move = [cmd("sketch.edit", sketch="Layout"), cmd("sketch.move_point", point="p", to=[25, 20]), cmd("sketch.finish")]
     verify("move point", move, [(25, 20), (-15, -15)], 12, 0, [5.2, 5.2])
     verify("raise source plane", [cmd("parameters.change", name="thickness", expression="16 mm")],
@@ -120,8 +166,16 @@ def test():
                    cmd("sketch.move_point", point="c.center", to=[-25, -20]), cmd("sketch.finish")]
     verify("move circle center", move_circle, [(25, 20), (-25, -20)], 16, 90, [8, 5.2], tilt=60)
     verify("reopen", [], [(25, 20), (-25, -20)], 16, 90, [8, 5.2], tilt=60)
+    if reuse:
+        verify("move carrier component", [cmd("occurrence.move", occurrence="Carrier:1",
+                                               translate=[100, 50, 20], move_grounded=True)],
+               [(25, 20), (-25, -20)], 16, 90, [8, 5.2], tilt=60, shift=(100, 50, 20))
+        verify("reopen moved carrier", [], [(25, 20), (-25, -20)], 16, 90, [8, 5.2],
+               tilt=60, shift=(100, 50, 20))
 
 
 if __name__ == "__main__":
     test()
+    test(with_nuts=True)
+    test(with_nuts=True, modeled=True, reuse=True)
     finish()

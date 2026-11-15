@@ -6,13 +6,14 @@
 //! both ends of the bore are countersunk.
 
 pub mod nut;
+mod seat;
 
 use fasteners::hex::{self, Hex};
 use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{add_new, changed_bodies, sketch_id};
+use plugin_kit::host::{add_new, changed_bodies, free_body_name, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::timeline;
@@ -76,6 +77,16 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             })
             .collect()
     };
+    // Resolve the finished pockets before adding hardware, so the nut's own bore
+    // cannot be mistaken for the bolt hole it sits over.
+    let seats = if p.create.part() && !spots.is_empty() {
+        match &p.pocket {
+            Some(pocket) => seat::Seat::find_all(r, &drilled, &places, pocket, p.major)?,
+            None => Vec::new(),
+        }
+    } else {
+        Vec::new()
+    };
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
     let placed = if p.create.part() {
         let base = body_base(p);
@@ -87,9 +98,13 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             bom_type: "purchased",
             site: Site::for_thread(p.modeled),
         };
-        Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
+        let placed = fasten::place_all(r, &def, &places, |mut r, name, site| {
             build_nut(&mut r, p, site, name).map(|_| ())
-        })?)
+        })?;
+        for ((seat, place), occurrence) in seats.iter().zip(&places).zip(&placed.occurrences) {
+            seat.attach(r, *occurrence, place, &p.designation)?;
+        }
+        Some(placed)
     } else {
         None
     };
@@ -111,6 +126,23 @@ pub fn pockets_name(p: &Params) -> String {
 /// Keep the pocket plane tied to the source sketch's axes. Construction lines do
 /// not split its profiles, and their ends are not standalone hole-placement points.
 fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, designation: &str) -> Result<Value, String> {
+    // Construction planes reject duplicate names, unlike auto-numbered sketches.
+    // A later run (or another source sketch) needs a free name too.
+    let listed = r.run("component.list", json!({}))?;
+    let mut names = listed
+        .get("components")
+        .and_then(Value::as_array)
+        .ok_or("component.list did not return components for the pocket plane name")?
+        .iter()
+        .flat_map(|c| {
+            ["features", "sketches", "construction"]
+                .into_iter()
+                .flat_map(move |key| c.get(key).and_then(Value::as_array).into_iter().flatten())
+        })
+        .filter_map(Value::as_str)
+        .map(str::to_string)
+        .collect();
+    let name = free_body_name(&mut names, &format!("Nut pockets {designation}: Plane"));
     r.run("sketch.edit", json!({"sketch": sketch}))?;
     let drawn = r.run(
         "sketch.line",
@@ -135,7 +167,7 @@ fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, designation: &str) -> Result
         json!({
             "a": {"sketch": sketch, "curve": curves[0]},
             "b": {"sketch": sketch, "curve": curves[1]},
-            "name": format!("Nut pockets {designation}: Plane"),
+            "name": name,
         }),
     )?;
     let plane = made
@@ -801,7 +833,9 @@ mod tests {
                 "occurrence.copy",
                 "occurrence.move",
                 "occurrence.reparent",
-                "timeline.group"
+                "timeline.group",
+                "model.faces",
+                "joint.create"
             ])
         );
     }
@@ -929,6 +963,14 @@ mod tests {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
+                "model.faces" => json!({"faces": ([10.0, 30.0].into_iter().flat_map(|x| [
+                    json!({"name": format!("floor{x}"), "centroid": [x, 10.0, 4.8], "plane_normal": [0, 0, 1]}),
+                    json!({"name": format!("wall{x}"), "centroid": [x, 4.8, 7.4], "plane_normal": [0, 1, 0]}),
+                    json!({"name": format!("bore{x}"), "centroid": [x, 10.0, 2.4], "cylinder": {
+                        "origin": [x, 10.0, 0], "axis": [0, 0, 1], "radius": 3.3
+                    }}),
+                ]).collect::<Vec<_>>())}),
+                "joint.create" => json!({"joint": 999, "errors": [], "conflicts": []}),
                 // A cut and a bolt hole are numbered features, as in SolidCraft.
                 "solid.extrude" if args["operation"] == "cut" => {
                     json!({"changed_bodies": self.changed, "feature": 100 + self.calls.len()})
@@ -1115,6 +1157,28 @@ mod tests {
             .filter(|(c, args)| c == "solid.extrude" && args["operation"] == "new")
             .count();
         assert_eq!(nuts, 1);
+        assert_eq!(calls.iter().filter(|(c, _)| c == "model.faces").count(), 1);
+        let joints: Vec<&Value> = calls
+            .iter()
+            .filter(|(c, _)| c == "joint.create")
+            .map(|(_, a)| a)
+            .collect();
+        assert_eq!(joints.len(), 2);
+        for (i, joint) in joints.iter().enumerate() {
+            let x = [10, 30][i];
+            assert_eq!(
+                joint["a"],
+                json!({
+                    "body": "Plate", "circle": format!("bore{x}"),
+                    "end": format!("floor{x}"), "x": format!("wall{x}"),
+                })
+            );
+            assert_eq!(joint["b"]["occurrence"], [3, 4][i]);
+            assert_eq!(joint["b"]["point"], summary["points"][i]);
+            assert_eq!(joint["b"]["x"], json!([0.0, 1.0, 0.0]));
+            assert_eq!(joint["flip"], true);
+            assert_eq!(joint["angle"], 0);
+        }
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["pocket"]["bolt_hole"], "M6");
     }

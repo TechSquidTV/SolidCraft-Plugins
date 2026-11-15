@@ -44,7 +44,7 @@ examples/                  designs built with the plugins: <name>.json opens in 
 tests/cli_test.py          runs the built package through solidcraft-cli
 tests/geometry_test.py     checks by volume what each plugin cuts and builds
 tests/rail_references_test.py checks rail hole edits, placed copies and save/reopen
-tests/nut_references_test.py checks linked pocket centers, planes, depth and save/reopen
+tests/nut_references_test.py checks linked pockets, seated nuts, depth and save/reopen
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
 
@@ -77,7 +77,7 @@ Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/rail_references_test.p
 
 ### Nut pocket references
 
-Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles.
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut.
 
 ## Examples
 

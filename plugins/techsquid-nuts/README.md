@@ -5,7 +5,7 @@ Add ISO 4032 hex nuts to your [SolidCraft](https://github.com/tangency-labs/soli
 ![An M3 hexagon nut with a threaded bore](nut.png)
 
 - Choose a common metric size or enter a custom size and pitch.
-- Create nuts, pockets or both. Pockets include a clearance hole for the bolt.
+- Create nuts, pockets or both. Pockets include a clearance hole for the bolt. Both cuts follow the selected sketch point when it moves.
 - Adjust pocket clearance for your manufacturing process and customize nut width and thickness when needed.
 - Use modeled threads for detail or cosmetic threads for faster rebuilds.
 

@@ -45,23 +45,7 @@ pub fn extrude_reply<R: Runner>(r: &mut R, hex: &Hex) -> Result<serde_json::Valu
         }),
     )?;
     let sketch = sketch_id(&created)?;
-    r.run(
-        "sketch.polygon.circumscribed",
-        json!({
-            "center": [0.0, 0.0],
-            "radius": hex.across_flats / 2.0,
-            "sides": 6,
-        }),
-    )?;
-    // The centre is already on the origin. The circle through the flats fixes the size.
-    r.run(
-        "sketch.dimension",
-        json!({"entities": ["c1"], "type": "diameter", "value": hex.across_flats}),
-    )?;
-    r.run(
-        "sketch.constraint.horizontal_vertical",
-        json!({"line": "l1", "mode": "horizontal"}),
-    )?;
+    draw_profile(r, hex.across_flats, None)?;
     r.run("sketch.finish", json!({}))?;
     let mut extrude = json!({
         "distance": hex.height,
@@ -76,6 +60,36 @@ pub fn extrude_reply<R: Runner>(r: &mut R, hex: &Hex) -> Result<serde_json::Valu
         extrude["body_name"] = json!(body_name);
     }
     r.run("solid.extrude", extrude)
+}
+
+/// Draw a dimensioned hex in a fresh sketch. With a projected center, constrain
+/// the support circle to it; otherwise drawing connects the center to the origin.
+pub fn draw_profile<R: Runner>(
+    r: &mut R,
+    across_flats: f64,
+    center: Option<&str>,
+) -> Result<(), String> {
+    let mut polygon = json!({"center": [0.0, 0.0], "radius": across_flats / 2.0, "sides": 6});
+    if center.is_some() {
+        polygon["connect"] = json!(false);
+    }
+    r.run("sketch.polygon.circumscribed", polygon)?;
+    // The circle through the flats fixes the size without fixing the center.
+    r.run(
+        "sketch.dimension",
+        json!({"entities": ["c1"], "type": "diameter", "value": across_flats}),
+    )?;
+    r.run(
+        "sketch.constraint.horizontal_vertical",
+        json!({"line": "l1", "mode": "horizontal"}),
+    )?;
+    if let Some(center) = center {
+        r.run(
+            "sketch.constraint.coincident",
+            json!({"a": "c1.center", "b": center}),
+        )?;
+    }
+    Ok(())
 }
 
 #[cfg(test)]

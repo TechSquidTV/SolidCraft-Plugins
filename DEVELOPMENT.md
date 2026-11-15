@@ -44,6 +44,7 @@ examples/                  designs built with the plugins: <name>.json opens in 
 tests/cli_test.py          runs the built package through solidcraft-cli
 tests/geometry_test.py     checks by volume what each plugin cuts and builds
 tests/rail_references_test.py checks rail hole edits, placed copies and save/reopen
+tests/nut_references_test.py checks linked pocket centers, planes, depth and save/reopen
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
 
@@ -73,6 +74,10 @@ It inspects each package. A screw run must build an M3, an insert run must build
 ### Rail hole references
 
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/rail_references_test.py` after building the packages. It edits the driving circle centers on all four rail faces and checks the actual access and clearance walls, recess depth and volume before and after reopening, including rotated copies, a wide V-slot rail and a tapped rail built away from the origin.
+
+### Nut pocket references
+
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles.
 
 ## Examples
 

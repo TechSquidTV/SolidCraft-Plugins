@@ -18,6 +18,12 @@ Name Sketch and Sketch point together to place the nut without a selection. Sket
 
 Create decides whether the part gets a pocket. `Nut only`, the default, builds the nut and leaves the part alone. `Nut and pocket` first cuts a hexagonal pocket in the part under each selected point, as deep as the nut is tall, with an ISO 273 medium clearance hole for the bolt through the rest of that part, and then sets the nut in the pocket so it ends flush. `Pocket only` cuts without a nut. A pocket needs selected points on a part. With nothing selected, `Nut and pocket` puts a loose nut on the origin and its reply's `note` says no pocket was cut, and `Pocket only` asks you to select the points. Pocket adjustment is the gap on each flat: printed pockets come out small, so raise it until the nut drops in.
 
+The pocket and bolt hole follow the same source sketch point. Move that point or change the source sketch's plane and both cuts rebuild together, including after saving and reopening. Each pocket profile projects the source point and constrains the hexagon's center to it. The profile's diameter dimension sets the width across flats. The pocket cuts inward from the source plane, so editing its extrusion depth moves the floor while keeping its opening on that plane; the depth can be an expression over design parameters.
+
+To follow the source plane, each run adds two fixed construction lines to each source sketch it uses and a hidden `Nut pockets M6: Plane` feature linked to those lines. The lines are fixed in sketch coordinates, so they follow its position and orientation without changing its closed profiles. Keep these construction references and the projected point links intact. The generated pocket profiles and plane are in the pocket timeline folder.
+
+**Breaking change to generated pocket history:** new pocket profiles are on the source surface and extrude in the negative direction, replacing fixed profiles on the pocket floor. Existing saved pockets are not upgraded automatically. Placed nut components still use their initial placement; attaching the hardware itself to later sketch edits is separate from these linked cuts.
+
 Leave the custom width and thickness empty to use the table. Fill one and the other stays the standard. A size with no row here, such as `M7x1`, needs both. A pocket also needs an ISO 273 clearance hole for the size: every ISO 273 size from M1 to M64 works, including M3.5, M7 and M18, and a size ISO 273 does not list is refused before anything is cut. A fine pitch such as `M8x1` keeps the M8 nut and taps that pitch. `M3.5` is in the table and takes its ISO 261 coarse pitch, 0.6.
 
 The chamfer on each end is 30° from the face, the steep side of the drawing's 15° to 30°. It runs out to the across-flats circle, and it stops at `c` max when that would be a taller chamfer than the standard allows. The bore is countersunk on both ends, about 120° included, out to `da` max. A listed size keeps that countersink, so a width you type has to stay wider than `da` and a height has to stay taller than the two countersinks. A size you type in yourself has the chamfer and no countersink.
@@ -34,7 +40,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 | `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.move` (the nut is cut on the origin and moved aside before it is tapped), `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it. The hexagon is the same profile a hex-head screw uses.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.edit`, `sketch.project`, `sketch.constraint.fix`, `sketch.constraint.coincident`, `construct.plane.two_edges`, `browser.visibility`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.move` (the nut is cut on the origin and moved aside before it is tapped), `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it. The hexagon is the same profile a hex-head screw uses.
 
 ## Sizes
 
@@ -89,7 +95,9 @@ The body, the hole and every feature say what the part is and its size, so a des
 |---|---|
 | Nut body | `Nut M3`, `Nut M8x1` |
 | Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
-| Pocket folder | `Nut pockets M3`, holding one run's pockets, their sketches and the bolt holes, folded |
+| Pocket reference plane | `Nut pockets M3: Plane`, linked to the source sketch |
+| Pocket profile | `Nut pocket M3 profile`, with a projected source point and a constrained hexagon |
+| Pocket folder | `Nut pockets M3`, holding one run's pockets, their sketches, reference planes and bolt holes, folded |
 | Features and sketches of a nut | the nut's name, then the feature: `Nut M3: Thread` |
 | Timeline folder | the nut's name, `Nut M3`, holding every sketch and feature of the nut, folded |
 

@@ -42,8 +42,11 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                 // one folder in the part's timeline.
                 drilled = timeline::folded(r, &pockets_name(p), |mut r| {
                     let mut drilled: Vec<String> = Vec::new();
-                    for spot in &spots {
-                        add_new(&mut drilled, cut_pocket(&mut r, p, pocket, &spot.place)?);
+                    for (sketch, _) in place::by_sketch(&spots) {
+                        let plane = pocket_plane(&mut r, sketch, &p.designation)?;
+                        for spot in spots.iter().filter(|spot| spot.sketch == sketch) {
+                            add_new(&mut drilled, cut_pocket(&mut r, p, pocket, spot, &plane)?);
+                        }
                     }
                     for (sketch, points) in place::by_sketch(&spots) {
                         let mut hole = json!({
@@ -105,28 +108,88 @@ pub fn pockets_name(p: &Params) -> String {
     format!("Nut pockets {}", p.designation)
 }
 
-/// One hexagonal pocket, cut down from the surface at `place`. Returns the bodies it
-/// cut, when the host says.
+/// Keep the pocket plane tied to the source sketch's axes. Construction lines do
+/// not split its profiles, and their ends are not standalone hole-placement points.
+fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, designation: &str) -> Result<Value, String> {
+    r.run("sketch.edit", json!({"sketch": sketch}))?;
+    let drawn = r.run(
+        "sketch.line",
+        json!({
+            "points": [[0, 0], [1, 0], [1, 1]], "construction": true, "connect": false,
+        }),
+    )?;
+    let curves = drawn
+        .get("curves")
+        .and_then(Value::as_array)
+        .filter(|ids| {
+            ids.len() == 2
+                && ids
+                    .iter()
+                    .all(|id| id.as_str().is_some_and(|id| !id.is_empty()))
+        })
+        .ok_or("sketch.line did not return the two pocket frame lines")?;
+    r.run("sketch.constraint.fix", json!({"entities": curves}))?;
+    r.run("sketch.finish", json!({}))?;
+    let made = r.run(
+        "construct.plane.two_edges",
+        json!({
+            "a": {"sketch": sketch, "curve": curves[0]},
+            "b": {"sketch": sketch, "curve": curves[1]},
+            "name": format!("Nut pockets {designation}: Plane"),
+        }),
+    )?;
+    let plane = made
+        .get("feature")
+        .filter(|id| id.as_u64().is_some())
+        .ok_or("construct.plane.two_edges did not return a plane id")?
+        .clone();
+    r.run(
+        "browser.visibility",
+        json!({"items": [plane], "visible": false}),
+    )?;
+    Ok(plane)
+}
+
+/// A pocket starts on the source plane and cuts inward. Its center is projected
+/// from the same point used by the bolt hole, never copied from world coordinates.
 fn cut_pocket<R: Runner>(
     r: &mut R,
     p: &Params,
     pocket: &Pocket,
-    place: &Placement,
+    spot: &place::Spot,
+    plane: &Value,
 ) -> Result<Vec<String>, String> {
-    let made = hex::extrude_reply(
-        r,
-        &Hex {
-            origin: place.along(-pocket.depth),
-            x_dir: place.x_dir,
-            y_dir: place.y_dir,
-            across_flats: pocket.across_flats,
-            height: pocket.depth,
-            sketch_name: format!("Nut pocket {} profile", p.designation),
-            name: format!("Nut pocket {}", p.designation),
-            operation: "cut",
-            body_name: None,
-            target: None,
-        },
+    let created = r.run(
+        "sketch.create",
+        json!({
+            "plane": plane, "name": format!("Nut pocket {} profile", p.designation),
+        }),
+    )?;
+    let sketch = sketch_id(&created)?;
+    let projected = r.run(
+        "sketch.project",
+        json!({
+            "refs": [{"sketch": spot.sketch, "point": spot.point}], "projection_link": true,
+        }),
+    )?;
+    let points = projected
+        .get("created")
+        .and_then(|v| v.get("points"))
+        .and_then(Value::as_array)
+        .filter(|points| points.len() == 1)
+        .ok_or("sketch.project did not return one pocket center")?;
+    let center = points[0]
+        .as_str()
+        .filter(|id| !id.is_empty())
+        .ok_or("sketch.project did not name the pocket center")?;
+    hex::draw_profile(r, pocket.across_flats, Some(center))?;
+    r.run("sketch.finish", json!({}))?;
+    let made = r.run(
+        "solid.extrude",
+        json!({
+            "sketch": sketch, "distance": pocket.depth, "direction": "negative",
+            "operation": "cut", "name": format!("Nut pocket {}", p.designation),
+        }),
     )?;
     match changed_bodies(&made) {
         Some(bodies) if bodies.is_empty() => Err(
@@ -714,6 +777,12 @@ mod tests {
                 "inspect.measure",
                 "sketch.inspect",
                 "sketch.create",
+                "sketch.edit",
+                "sketch.project",
+                "sketch.constraint.fix",
+                "sketch.constraint.coincident",
+                "construct.plane.two_edges",
+                "browser.visibility",
                 "sketch.polygon.circumscribed",
                 "sketch.dimension",
                 "sketch.constraint.horizontal_vertical",
@@ -853,6 +922,9 @@ mod tests {
                     ],
                     "curves": [{"id": "c1", "center": "c1.center"}, {"id": "c2", "center": "c2.center"}]
                 }),
+                "sketch.line" => json!({"curves": ["frame_x", "frame_y"]}),
+                "construct.plane.two_edges" => json!({"feature": 100 + self.calls.len()}),
+                "sketch.project" => json!({"created": {"points": ["projected_center"]}}),
                 "sketch.create" => {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
@@ -896,7 +968,7 @@ mod tests {
             .map(|(_, args)| args)
             .collect();
         assert_eq!(folds.len(), 1);
-        // Both pocket sketches, both cuts and the one bolt hole, in the order made. The
+        // The linked plane, both pocket sketches, both cuts and the bolt hole. The
         // plate numbers sketches 1, 2, … and features by their place in the calls.
         let mut sketches = 0;
         let mut rows: Vec<u64> = Vec::new();
@@ -908,12 +980,13 @@ mod tests {
                         rows.push(sketches);
                     }
                 }
+                "construct.plane.two_edges" => rows.push(100 + i as u64),
                 "solid.extrude" if args["operation"] == "cut" => rows.push(100 + i as u64),
                 "solid.hole" if args.get("sketch").is_some() => rows.push(100 + i as u64),
                 _ => {}
             }
         }
-        assert_eq!(rows.len(), 5);
+        assert_eq!(rows.len(), 6);
         assert_eq!(folds[0]["features"], json!(rows));
         // The folder is made before the nut is built.
         let fold = calls
@@ -961,10 +1034,39 @@ mod tests {
         assert_eq!(cuts[0]["distance"], 5.2);
         assert_eq!(cuts[0]["name"], "Nut pocket M6");
         assert!(cuts[0].get("targets").is_none());
-        // The pocket sketch is on the pocket floor, 5.2 below the 10 mm surface, and
-        // 10.4 across: the nut and 0.2 on each flat.
-        let floor = named(&calls, "sketch.create", "Nut pocket M6 profile");
-        assert!((floor["plane"]["origin"][2].as_f64().unwrap() - 4.8).abs() < 1e-9);
+        // Both profiles follow the source frame and cut inward from its surface.
+        assert_eq!(cuts[0]["direction"], "negative");
+        assert_eq!(cuts[1]["direction"], "negative");
+        let plane_at = calls
+            .iter()
+            .position(|(c, _)| c == "construct.plane.two_edges")
+            .unwrap();
+        let plane = &calls[plane_at].1;
+        assert_eq!(plane["a"], json!({"sketch": "Holes", "curve": "frame_x"}));
+        assert_eq!(plane["b"], json!({"sketch": "Holes", "curve": "frame_y"}));
+        let profile = named(&calls, "sketch.create", "Nut pocket M6 profile");
+        assert_eq!(profile["plane"], 100 + plane_at);
+        let projected: Vec<&Value> = calls
+            .iter()
+            .filter(|(c, _)| c == "sketch.project")
+            .map(|(_, a)| a)
+            .collect();
+        assert_eq!(
+            projected[0]["refs"],
+            json!([{"sketch": "Holes", "point": "c1.center"}])
+        );
+        assert_eq!(
+            projected[1]["refs"],
+            json!([{"sketch": "Holes", "point": "c2.center"}])
+        );
+        assert_eq!(
+            call(&calls, "sketch.constraint.coincident")["b"],
+            "projected_center"
+        );
+        assert_eq!(
+            call(&calls, "sketch.polygon.circumscribed")["connect"],
+            false
+        );
         assert!(
             (call(&calls, "sketch.polygon.circumscribed")["radius"]
                 .as_f64()

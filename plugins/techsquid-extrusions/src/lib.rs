@@ -3,8 +3,11 @@
 //! Two entries. `make-extrusion` builds a rail: its section is centred on a sketch
 //! point, or on the origin when nothing is selected, and the rail runs out of the
 //! sketch for its length. The section is one sketch of lines and arcs, extruded once.
+//! Sketch-driven mode sweeps the same section along straight sketch lines, with
+//! path-derived machining planes: see [`path`].
 //! `make-t-nut` puts a slot nut under the lips of a rail: see [`tnut`].
 
+pub mod path;
 pub mod rail;
 pub mod tnut;
 
@@ -95,8 +98,11 @@ pub fn built_at(p: &Params) -> Site {
     }
 }
 
-/// Build the rail on every point. Returns a summary of what was made.
+/// Build fixed-length components on points or independent rails on sketch lines.
 pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
+    if let Some(path) = &p.path {
+        return path::make(r, p, path);
+    }
     let profile = Profile::new(p.slot, p.grid).ok_or("size: this size has no section")?;
     let spots = place::resolve_all(r, &p.place)?;
     let places: Vec<Placement> = if spots.is_empty() {
@@ -142,16 +148,7 @@ pub fn build_rail<R: Runner>(
         }),
     )?;
     let sketch = sketch_id(&created)?;
-    draw_loop(r, &profile.outer)?;
-    for cavity in &profile.cavities {
-        draw_loop(r, cavity)?;
-    }
-    for bore in &profile.bores {
-        r.run(
-            "sketch.circle.center",
-            json!({"center": bore, "diameter": profile.slot.bore}),
-        )?;
-    }
+    draw_profile(r, profile)?;
     r.run("sketch.finish", json!({}))?;
     // The region with the metal in it, so the cavities and bores stay open.
     r.run(
@@ -296,6 +293,21 @@ fn drill_cross_holes<R: Runner>(
     Ok(())
 }
 
+/// Draw the shared catalog section in the active sketch.
+fn draw_profile<R: Runner>(r: &mut R, profile: &Profile) -> Result<(), String> {
+    draw_loop(r, &profile.outer)?;
+    for cavity in &profile.cavities {
+        draw_loop(r, cavity)?;
+    }
+    for bore in &profile.bores {
+        r.run(
+            "sketch.circle.center",
+            json!({"center": bore, "diameter": profile.slot.bore}),
+        )?;
+    }
+    Ok(())
+}
+
 /// Draw a closed loop: each run of lines is one polyline, and each arc is its own
 /// command. Every piece starts on the exact point the one before it ended on.
 fn draw_loop<R: Runner>(r: &mut R, segs: &[Seg]) -> Result<(), String> {
@@ -357,7 +369,7 @@ plugin_kit::guest! {
             noun: "extrusion",
             parse: crate::rail::parse,
             make: crate::make_extrusion,
-            describe: |p: &crate::rail::Params| format!("making a {}", crate::body_base(p)),
+            describe: |p: &crate::rail::Params| if p.path.is_some() { format!("making sketch-driven {} {} rails", p.slot.name, p.size) } else { format!("making a {}", crate::body_base(p)) },
         },
         {
             entry: "make-t-nut",
@@ -434,7 +446,7 @@ mod tests {
         let entry = &entries[0];
         assert_eq!(entry["name"], "make-extrusion");
         let schema = &entry["input_schema"];
-        assert_eq!(schema["required"], json!(["slot", "size", "length"]));
+        assert_eq!(schema["required"], json!(["slot", "size"]));
         let sizes: Vec<Value> = SIZES.iter().map(|(name, _)| json!(name)).collect();
         assert_eq!(schema["properties"]["size"]["enum"], json!(sizes));
         assert_eq!(

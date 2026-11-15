@@ -26,16 +26,18 @@ def rotate(point, yaw, tilt):
     return [u, v * math.cos(t) - z * math.sin(t), v * math.sin(t) + z * math.cos(t)]
 
 
-def test(kind, modeled=False, reuse=False):
-    label = f"{kind}, {'modeled' if modeled else 'cosmetic'}" + (", reused" if reuse else "")
+def test(kind, modeled=False, reuse=False, layout="plane", active_root=False):
+    label = (f"{kind}, {'modeled' if modeled else 'cosmetic'}" + (", reused" if reuse else "")
+             + (", layout first" if layout == "first" else ", on face" if layout == "face" else "")
+             + (", root active" if active_root else ""))
     code, text, info = inspect("techsquid-screws")
     if code or not info:
         raise SystemExit(f"Build the packages first: {text}")
-    saved = os.path.join(TMP, f"screws-{kind}-{modeled}-{reuse}.json")
+    saved = os.path.join(TMP, f"screws-{kind}-{modeled}-{reuse}-{layout}-{active_root}.json")
     recessed = kind in ("counterbore", "countersink")
     sink = 3.0 if kind == "counterbore" else 1.86 if kind == "countersink" else 0.0
     rim = 0.2 if kind == "countersink" else 0.0
-    yaw, tilt = (35, 25) if reuse else (0, 0)
+    yaw, tilt = (35, 25) if reuse and layout != "face" else (0, 0)
     params = {
         "size": "M3", "length": 8, "create": "Screw and hole",
         "hole_type": "Clearance, head recessed" if recessed else "Tapped" if kind == "tapped" else "Clearance",
@@ -48,22 +50,30 @@ def test(kind, modeled=False, reuse=False):
         cmd("parameters.change", name="tilt", expression=f"{tilt} deg"),
         cmd("construct.plane.at_angle", base="XY", axis="Z", angle="yaw", name="Turned base"),
         cmd("construct.plane.at_angle", base="Turned base", axis="X", angle="tilt", name="Plate plane"),
+    ]
+    plate = [
         cmd("sketch.create", plane="Plate plane", name="Plate profile"),
         cmd("sketch.rectangle.two_point", p0=[-50, -50], p1=[50, 50]),
         cmd("sketch.finish"),
         cmd("solid.extrude", sketch="Plate profile", distance="thickness", body_name="Plate"),
+    ]
+    layout_steps = [
         cmd("construct.plane.offset", base="Plate plane", offset="thickness", name="Layout plane"),
-        cmd("sketch.create", plane="Layout plane", name="Layout"),
+        cmd("sketch.create", plane={"face": [0, 0, 16]} if layout == "face" else "Layout plane",
+            name="Layout", project_edges=False),
         cmd("sketch.point", point=[15, 15], id="p"),
         cmd("sketch.circle.center", center=[-15, -15], radius=2, id="c"),
         cmd("sketch.finish"),
     ]
+    setup += layout_steps + plate if layout == "first" else plate + layout_steps
     if reuse:
         setup.insert(0, cmd("component.create", name="Carrier", activate=True, grounded=True))
+    if active_root:
+        setup.append(cmd("component.activate", component=0))
     for points in ("p", "c") if reuse else ("p,c",):
         setup.append(cmd("plugin.run", path=package("techsquid-screws"), approval=info["approval"],
                          entry="make-screw", params={**params, "sketch_point": points}))
-    code, text, results = run(setup, save=saved)
+    code, text, results = run(setup + [cmd("component.list")], save=saved)
     if killed(code):
         skip(label, "host killed while loading plugin")
         return
@@ -71,11 +81,13 @@ def test(kind, modeled=False, reuse=False):
     if code:
         return
     if reuse:
-        first, second = [r["component"] for r in results[-2:]]
+        first, second = [r["component"] for r in results[-3:-1]]
         check(label + ": same definition reused", not first["reused"] and second["reused"]
               and first["component"] == second["component"])
     with open(saved) as f:
         doc = json.load(f)
+    active = next(c["id"] for c in doc["components"] if c["name"] == "Carrier") if reuse and not active_root else 0
+    check(label + ": active component restored", results[-1]["active"] == active)
     holes = [f["id"] for f in doc["features"] if f["type"] == "hole"]
     reads = [cmd("model.faces", body="Plate"), cmd("inspect.measure", summary=True), cmd("joint.inspect")]
     baseline = []
@@ -173,4 +185,7 @@ if __name__ == "__main__":
     test("countersink", modeled=True)
     test("tapped", modeled=True)
     test("tapped", modeled=True, reuse=True)
+    test("tapped", layout="first")
+    test("tapped", modeled=True, reuse=True, layout="first", active_root=True)
+    test("tapped", modeled=True, reuse=True, layout="face", active_root=True)
     finish()

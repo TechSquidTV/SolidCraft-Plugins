@@ -18,8 +18,9 @@ impl Attachment {
     }
 }
 
-/// Insert axes just after their source sketches, before earlier plugin runs can
-/// split the seating surface with thread cuts. Restore the user's history marker.
+/// Use each sketch's supporting plane or face, evaluated just after that sketch.
+/// Layout planes need no solid yet; later thread cuts cannot split support faces.
+/// Keep the plane in its sketch's component frame and restore the user's context.
 pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<String>, String> {
     if spots.is_empty() {
         return Ok(Vec::new());
@@ -32,20 +33,47 @@ pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<
         .get("marker")
         .and_then(Value::as_u64)
         .ok_or("document.inspect did not return the history marker")?;
+    let components = r.run("component.list", json!({}))?;
+    let active = components
+        .get("active")
+        .and_then(Value::as_u64)
+        .ok_or("component.list did not return the active component")?;
+    let mut component = active;
     let mut added = 0;
-    let mut sketch = None;
+    let mut source: Option<(&str, Value)> = None;
     let axes: Result<Vec<String>, String> = spots
         .iter()
         .map(|spot| {
-            if sketch != Some(spot.sketch.as_str()) {
+            if source.as_ref().map(|(sketch, _)| *sketch) != Some(spot.sketch.as_str()) {
+                let inspected = r.run("timeline.inspect", json!({"feature": spot.sketch}))?;
+                let definition = &inspected["definition"];
+                let plane = definition
+                    .get("plane")
+                    .filter(|plane| plane.is_object())
+                    .ok_or("timeline.inspect did not return the sketch plane reference")?;
+                // The saved feature omits component 0 (the document root).
+                let owner = definition["component"].as_u64().unwrap_or(0);
+                if component != owner {
+                    r.run("component.activate", json!({"component": owner}))?;
+                    component = owner;
+                }
                 r.run("timeline.roll_to", json!({"feature": spot.sketch}))?;
-                sketch = Some(spot.sketch.as_str());
+                // Face-backed sketch planes store a snapshot as well as their
+                // attachment. Construction axes need the live face reference;
+                // evaluating that saved plane directly would use the snapshot.
+                let support = if plane["type"] == "face" {
+                    json!({"type": "face", "at": plane["at"], "name": plane["name"]})
+                } else {
+                    json!({"type": "plane", "plane": plane})
+                };
+                source = Some((&spot.sketch, support));
             }
+            let support = &source.as_ref().expect("inspected above").1;
             let reply = r.run(
                 "construct.axis.normal_to_face",
                 json!({
                     "name": format!("{name}: Seat axis {} {}", spot.sketch, spot.point),
-                    "face": {"face": spot.place.point},
+                    "face": support,
                     "point": {"sketch": spot.sketch, "point": spot.point},
                 }),
             )?;
@@ -60,8 +88,15 @@ pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<
         })
         .collect();
     let restored = r.run("timeline.roll_to", json!({"position": marker + added}));
+    let activated = if component != active {
+        r.run("component.activate", json!({"component": active}))
+            .map(|_| ())
+    } else {
+        Ok(())
+    };
     let axes = axes?;
     restored?;
+    activated?;
     Ok(axes)
 }
 
@@ -166,7 +201,7 @@ mod tests {
     use serde_json::json;
 
     #[test]
-    fn axis_failure_restores_the_history_marker_with_successful_insertions_counted() {
+    fn axis_failure_restores_history_and_active_component() {
         #[derive(Default)]
         struct Host {
             calls: Vec<(String, Value)>,
@@ -177,6 +212,10 @@ mod tests {
                 self.calls.push((command.into(), args.clone()));
                 match command {
                     "document.inspect" => Ok(json!({"marker": 40})),
+                    "component.list" => Ok(json!({"active": 7})),
+                    "timeline.inspect" => Ok(json!({"definition": {
+                        "plane": {"type": "origin", "name": "XY"}
+                    }})),
                     "construct.axis.normal_to_face" => {
                         self.axes += 1;
                         if self.axes == 2 {
@@ -200,8 +239,11 @@ mod tests {
             "missing seating surface"
         );
         assert_eq!(
-            host.calls.last(),
-            Some(&("timeline.roll_to".into(), json!({"position": 41})))
+            &host.calls[host.calls.len() - 2..],
+            &[
+                ("timeline.roll_to".into(), json!({"position": 41})),
+                ("component.activate".into(), json!({"component": 7})),
+            ]
         );
     }
 

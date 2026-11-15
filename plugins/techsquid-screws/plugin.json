@@ -202,6 +202,7 @@
       "construct.axis.normal_to_face",
       "document.inspect",
       "timeline.roll_to",
+      "timeline.inspect",
       "component.list",
       "component.create",
       "component.metadata",

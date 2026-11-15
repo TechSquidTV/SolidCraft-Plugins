@@ -104,6 +104,7 @@ The body, the hole and every feature say what the part is and its size, so a des
 |---|---|
 | Nut body | `Nut M3`, `Nut M8x1` |
 | Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
+| Pocket folder | `Nut pockets M3`, holding one run's pockets, their sketches and the bolt holes, folded |
 | Features and sketches of a nut | the nut's name, then the feature: `Nut M3: Thread` |
 | Timeline folder | the nut's name, `Nut M3`, holding every sketch and feature of the nut, folded |
 

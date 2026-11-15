@@ -11,7 +11,7 @@ A new plugin gets its own README with those sections, a small example and its pi
 
 ## Layout
 
-- `crates/plugin-kit`: code any plugin needs. It holds the `Runner` trait and the `guest!` macro that exports the wasm entry, or several entries (`host.rs`), dialog fields and `FieldError` (`input.rs`), placement on a selected or named sketch point (`place.rs`), parts placed as components (`component.rs`), and body and feature names (`name.rs`). Nothing fastener-specific goes here.
+- `crates/plugin-kit`: code any plugin needs. It holds the `Runner` trait and the `guest!` macro that exports the wasm entry, or several entries (`host.rs`), dialog fields and `FieldError` (`input.rs`), placement on a selected or named sketch point (`place.rs`), parts placed as components (`component.rs`), timeline folders (`timeline.rs`), and body and feature names (`name.rs`). Nothing fastener-specific goes here.
 - `crates/fasteners`: fastener standards and geometry, such as size designations, metric sizes, heads, drives, nuts, clearance holes and the hex profile. It depends on `plugin-kit`.
 - `crates/extrusions`: slotted aluminium rails. `slot.rs` holds the T-slot and V-slot shapes with their sources, `profile.rs` builds a rail's section from a slot and a grid of 20 mm cells, `machining.rs` holds the taps and screw holes cut into a rail, and `tnut.rs` holds the slot nuts. It depends on nothing.
 - `plugins/techsquid-<name>`: one plugin each, with its `plugin.json` manifest and README. The entry and its parameter parsing live in the plugin, and so does a catalog only one plugin uses (the insert catalog).

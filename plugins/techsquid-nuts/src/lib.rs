@@ -15,6 +15,7 @@ use plugin_kit::component::{self as fasten, Definition, Placed, Site};
 use plugin_kit::host::{changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
+use plugin_kit::timeline;
 use plugin_kit::Runner;
 use serde_json::{json, Value};
 
@@ -42,26 +43,32 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         // The pockets go first: a nut would otherwise be cut by the next one's pocket.
         let sink = match &p.pocket {
             Some(pocket) => {
-                for spot in &spots {
-                    for body in cut_pocket(r, p, pocket, &spot.place)? {
-                        if !drilled.contains(&body) {
-                            drilled.push(body);
+                // A sketch and a cut for every pocket and a bolt hole for every sketch:
+                // one folder in the part's timeline.
+                drilled = timeline::folded(r, &pockets_name(p), |mut r| {
+                    let mut drilled: Vec<String> = Vec::new();
+                    for spot in &spots {
+                        for body in cut_pocket(&mut r, p, pocket, &spot.place)? {
+                            if !drilled.contains(&body) {
+                                drilled.push(body);
+                            }
                         }
                     }
-                }
-                for (sketch, points) in place::by_sketch(&spots) {
-                    let mut hole = json!({
-                        "sketch": sketch,
-                        "points": points,
-                        "name": format!("Bolt hole {}", p.designation),
-                    });
-                    pocket.clearance.apply(&mut hole);
-                    // Through the parts the pockets are in, and nothing beyond them.
-                    if !drilled.is_empty() {
-                        hole["targets"] = json!(drilled);
+                    for (sketch, points) in place::by_sketch(&spots) {
+                        let mut hole = json!({
+                            "sketch": sketch,
+                            "points": points,
+                            "name": format!("Bolt hole {}", p.designation),
+                        });
+                        pocket.clearance.apply(&mut hole);
+                        // Through the parts the pockets are in, and nothing beyond them.
+                        if !drilled.is_empty() {
+                            hole["targets"] = json!(drilled);
+                        }
+                        r.run("solid.hole", hole)?;
                     }
-                    r.run("solid.hole", hole)?;
-                }
+                    Ok(drilled)
+                })?;
                 pocket.depth
             }
             None => 0.0,
@@ -104,6 +111,11 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         skipped,
         placed.as_ref(),
     ))
+}
+
+/// The timeline folder one run's pockets and bolt holes go in: `Nut pockets M6`.
+pub fn pockets_name(p: &Params) -> String {
+    format!("Nut pockets {}", p.designation)
 }
 
 /// One hexagonal pocket, cut down from the surface at `place`. Returns the bodies it
@@ -867,8 +879,12 @@ mod tests {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
+                // A cut and a bolt hole are numbered features, as in SolidCraft.
                 "solid.extrude" if args["operation"] == "cut" => {
-                    json!({"changed_bodies": self.changed})
+                    json!({"changed_bodies": self.changed, "feature": 100 + self.calls.len()})
+                }
+                "solid.hole" if args.get("sketch").is_some() => {
+                    json!({"feature": 100 + self.calls.len()})
                 }
                 "solid.extrude" => json!({"created_bodies": [args["body_name"]]}),
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
@@ -887,6 +903,55 @@ mod tests {
         };
         let made = make_nut(&mut rec, &p);
         (made, rec.calls)
+    }
+
+    #[test]
+    fn a_runs_pockets_and_bolt_holes_fold_into_one_folder() {
+        let (made, calls) = on_plate(
+            json!({"size": "M6", "create": "Nut and pocket"}),
+            json!(["Plate"]),
+        );
+        made.unwrap();
+        let folds: Vec<&Value> = calls
+            .iter()
+            .filter(|(c, args)| c == "timeline.group" && args["name"] == "Nut pockets M6")
+            .map(|(_, args)| args)
+            .collect();
+        assert_eq!(folds.len(), 1);
+        // Both pocket sketches, both cuts and the one bolt hole, in the order made. The
+        // plate numbers sketches 1, 2, … and features by their place in the calls.
+        let mut sketches = 0;
+        let mut rows: Vec<u64> = Vec::new();
+        for (i, (c, args)) in calls.iter().enumerate() {
+            match c.as_str() {
+                "sketch.create" => {
+                    sketches += 1;
+                    if args["name"] == "Nut pocket M6 profile" {
+                        rows.push(sketches);
+                    }
+                }
+                "solid.extrude" if args["operation"] == "cut" => rows.push(100 + i as u64),
+                "solid.hole" if args.get("sketch").is_some() => rows.push(100 + i as u64),
+                _ => {}
+            }
+        }
+        assert_eq!(rows.len(), 5);
+        assert_eq!(folds[0]["features"], json!(rows));
+        // The folder is made before the nut is built.
+        let fold = calls
+            .iter()
+            .position(|(c, _)| c == "timeline.group")
+            .unwrap();
+        let nut = calls
+            .iter()
+            .position(|(c, _)| c == "component.create")
+            .unwrap();
+        assert!(fold < nut);
+        // Nut only cuts nothing and folds nothing in the part.
+        let (_, calls) = on_plate(json!({"size": "M6"}), json!(["Plate"]));
+        assert!(!calls
+            .iter()
+            .any(|(c, args)| c == "timeline.group" && args["name"] == "Nut pockets M6"));
     }
 
     #[test]

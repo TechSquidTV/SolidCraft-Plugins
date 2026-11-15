@@ -40,6 +40,7 @@
 use serde_json::{json, Value};
 
 use crate::host::free_body_name;
+use crate::timeline::{self, folded};
 use crate::{Placement, Runner};
 
 /// The component metadata key that says which plugin built a definition and how. The
@@ -60,7 +61,7 @@ pub const COMMANDS: [&str; 9] = [
     "occurrence.copy",
     "occurrence.move",
     "occurrence.reparent",
-    "timeline.group",
+    timeline::COMMAND,
 ];
 
 /// What a run places.
@@ -181,13 +182,7 @@ where
             let component = id_of(&made, "component")?;
             let first = id_of(&made, "occurrence")?;
             let site = r.site(def.site.of(component));
-            let mut made = Made {
-                host: r,
-                features: Vec::new(),
-            };
-            build(&mut made, &name, &site)?;
-            let features = made.features;
-            fold(r, &name, features);
+            folded(r, &name, |r| build(r, &name, &site))?;
             let site = site.point;
             let mut meta = json!({
                 "component": component,
@@ -226,50 +221,6 @@ where
         reused,
         occurrences,
     })
-}
-
-/// A host that passes every command on and keeps the id of each sketch and feature the
-/// replies name, so the build's timeline rows can be folded.
-struct Made<'a, R: Runner> {
-    host: &'a mut R,
-    features: Vec<u64>,
-}
-
-impl<R: Runner> Runner for Made<'_, R> {
-    fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
-        let reply = self.host.run(command, args)?;
-        // A new sketch is a timeline row too; its reply names it `sketch`.
-        let key = if command == "sketch.create" {
-            "sketch"
-        } else {
-            "feature"
-        };
-        if let Some(id) = reply.get(key).and_then(Value::as_u64) {
-            if !self.features.contains(&id) {
-                self.features.push(id);
-            }
-        }
-        Ok(reply)
-    }
-
-    fn body_names(&mut self) -> Vec<String> {
-        self.host.body_names()
-    }
-
-    fn site(&mut self, at: [f64; 2]) -> Placement {
-        self.host.site(at)
-    }
-}
-
-/// Folds a new part's timeline rows into one folder named after it. The folder is only
-/// for reading the timeline, so a host that cannot make one still keeps the part.
-fn fold<R: Runner>(r: &mut R, name: &str, features: Vec<u64>) {
-    if !features.is_empty() {
-        let _ = r.run(
-            "timeline.group",
-            json!({"name": name, "features": features}),
-        );
-    }
 }
 
 /// What a host with an empty design answers to the commands [`place_all`] sends, for a

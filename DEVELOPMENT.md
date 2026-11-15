@@ -13,6 +13,12 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 
 Each plugin's README links to its detailed reference for dialog fields, standards and naming. Each release has one zip per plugin.
 
+## Preparing a release
+
+Keep the workspace version, Cargo lockfile and every plugin manifest on the same version. Add release notes at `release-notes/v<version>.md`, including breaking changes and migration steps, then run the build and relevant checks before tagging the release commit. A pushed `v*` tag builds packages and checksums and creates or updates an unpublished GitHub release draft using those notes. Review and publish that draft separately; rerunning the workflow leaves an already published release untouched.
+
+A draft can also be prepared from a pushed release branch before its tag exists. Set its target to the release commit and upload the versioned packages and example designs. Merge the release preparation before publishing.
+
 ## Fasteners
 
 Threads themselves are a host command. `solid.thread` cuts or annotates a cylindrical face from a designation such as `M6` or `M8x1`. The screw plugin places the screw and passes that designation through. The insert and nut plugins use `solid.hole` for the bore. Each plugin does the fastener geometry, and the host owns the thread form.

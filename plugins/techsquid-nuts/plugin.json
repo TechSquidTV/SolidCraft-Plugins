@@ -1,7 +1,7 @@
 {
   "id": "techsquid-nuts",
   "name": "Hex nuts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Based on ISO 4032. Select sketch points or circles: each gets a nut, and its pocket if you want one. With nothing selected, one nut sits on the origin.",
   "capabilities": [
     "commands@0.1"

@@ -44,9 +44,18 @@ jobs:
             (cd dist && zip -r "../out/${id}-${VERSION}.zip" "$id")
             (cd out && sha256sum "${id}-${VERSION}.zip" > "${id}-${VERSION}.zip.sha256")
           done
-      - name: Publish
+      - name: Prepare release draft
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" out/* --title "TechSquid SolidCraft Plugins $VERSION" \
-            --notes "TechSquid's plugins for SolidCraft, one zip per plugin. Unzip a plugin's folder into your SolidCraft plugins folder; each plugin's README says more."
+          notes="release-notes/${GITHUB_REF_NAME}.md"
+          test -s "$notes"
+          if draft=$(gh release view "$GITHUB_REF_NAME" --json isDraft --jq '.isDraft'); then
+            if [ "$draft" = true ]; then
+              gh release upload "$GITHUB_REF_NAME" out/* --clobber
+              gh release edit "$GITHUB_REF_NAME" --title "TechSquid SolidCraft Plugins $VERSION" --notes-file "$notes"
+            fi
+          else
+            gh release create "$GITHUB_REF_NAME" out/* --draft \
+              --title "TechSquid SolidCraft Plugins $VERSION" --notes-file "$notes"
+          fi

@@ -1,7 +1,7 @@
 {
   "id": "techsquid-screws",
   "name": "Screws",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Based on the ISO metric screw standards. Select sketch points or circles: each gets a screw, and its hole if you want one. With nothing selected, one screw sits on the origin.",
   "capabilities": [
     "commands@0.1"

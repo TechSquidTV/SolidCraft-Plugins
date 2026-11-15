@@ -37,6 +37,12 @@ Rails screw together with no bracket when one is drilled and the other tapped, w
 - **Tapped ends.** `end_taps` taps every bore of an end M5, 12 mm deep. A rail's bore is 4.2 mm, the tap drill of M5, so only the thread is cut. That takes a few seconds for each bore, and SolidCraft gives a plugin run 30, so a thread is cut into at most four bores of one rail: both ends of a 2040, or one end of a 2080 or a 4040. With Modeled thread off the thread is listed on the hole, the bore stays plain, and any rail can have both ends tapped.
 - **Screw holes.** Each distance in `holes` gets a hole from the middle of a slot on `hole_face`, straight through the rail. It is a 9.5 mm access hole through the lips, down to the slot floor, and a 5.5 mm clearance hole from there out through the far face. The head of an M5 socket head screw goes through the access hole and sits on the slot floor, 6 mm under the face of a T-slot and 6.1 mm under the face of a V-slot. A face with two slots or more gets a hole in each. A hole must be at least 5.75 mm from an end. A rail can have holes from several faces: write a face name in front of its distances. Holes from two faces meet in the core, so they must be 9.5 mm apart along the rail.
 
+Each drilled face has a **Hole references +Y** sketch (or the other face name), inside the rail's component and timeline folder. It is hidden after the cuts are made. Show it to select or project a hole center into another sketch, or edit it to move a hole. Sketch Y measures distance from the rail's start; sketch X runs across the face. Each clearance circle `hole1`, `hole2`, and so on shares its center point with its access circle `access1`, `access2`, and so on. Both cuts follow those circles, so moving `hole1.center` moves both diameters. The circles are ordinary profiles because they drive the cuts; changing a circle's diameter changes that cut too.
+
+The cuts select circles by their ids, so they follow edits and survive saving and reopening. Every placement of the rail shares the edited geometry. Keep the holes within the rail and clear of one another: the plugin's end-margin and spacing checks apply when it first generates the rail, not to later sketch edits. The generated part name and description retain the original input distances. Picking these centers in a technical drawing depends on the host's drawing support and is not verified here.
+
+**Breaking change to generated features:** new rails use one reference sketch and two extrusion cuts per drilled face, replacing the separate cylinder features for each hole. Scripts selecting the old `Hole at …` feature names must use the new names below. Existing saved rails keep their original features; they are not migrated automatically.
+
 An M5 x 25 screw on the slot floor of a 2020 rail reaches 11 mm into the end it holds, and an M5 x 20 reaches 6 mm. Place it with the screw plugin, Create set to Screw only, on a point on the slot floor: sketch on a plane 6 mm inside the drilled rail's face, facing out. Where a rail has a screw in its end and a screw hole 10 mm from that end, the first screw must be the M5 x 20, or the two meet inside the rail.
 
 No washer goes under the head. The slot floor is 5.9 mm wide between the webs, and the access hole cuts just enough of them for the 8.5 mm head. An M5 washer is 10 mm across, or 9 mm in the small series, and neither fits there.
@@ -67,7 +73,7 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`, and where the nuts went, as a rail's reply does.
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a screw hole, and a nut's ball recess), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a nut's ball recess), `browser.visibility` (hides the reference sketches after their cuts), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 ## Sizes
 
@@ -130,7 +136,9 @@ The catalog's areas are a loose check: its 2040 is 0.5% over MISUMI's own model 
 | Rail body and component | `T-slot 2040 x 500`, `V-slot 2020 x 122.5` |
 | A tapped or drilled rail | `T-slot 2040 x 300 taps start`, `T-slot 2020 x 300 taps both holes -Y 10 290 +X 150` |
 | Its sketch and feature | `T-slot 2040 x 500: Section`, `T-slot 2040 x 500: Rail` |
-| Its taps and screw holes | `: Tap start 1`, `: Tap end 2`, `: Hole at 10: Access`, `: Hole at 10: Clearance`, and `: Hole at 50 (2): Access` on a face with two slots |
+| Its taps | `: Tap start 1`, `: Tap end 2` |
+| Hole placement sketch, one per drilled face | `: Hole references +Y` (or `-Y`, `+X`, `-X`); circles `hole1` and `access1` share `hole1.center` |
+| Screw hole cuts, two per drilled face | `: Screw holes +Y: Access`, `: Screw holes +Y: Clearance` |
 | Nut body and component | `T-nut M5 pre-assembly`, `T-nut M5 post-assembly` |
 | Its sketch and features | `T-nut M5 pre-assembly: Section`, `: Bar`, `: Thread`, and `: Ball recess` and `: Ball` on a post-assembly nut |
 | Timeline folder | the rail's or the nut's name, `T-slot 2040 x 500`, holding every sketch and feature of it, folded |

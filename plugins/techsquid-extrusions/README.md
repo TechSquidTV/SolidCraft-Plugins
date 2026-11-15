@@ -5,7 +5,7 @@ Go from a sketch to a frame with configurable T-slot and V-slot rails for [Solid
 ![T-slot and V-slot rail profiles](rails.png)
 
 - Build MISUMI 5 series T-slot rails in 2020, 2040, 2060, 2080 and 4040 sizes, or OpenBuilds V-slot rails from 2020 through 2080.
-- Add M5 tapped ends and screw holes for rail-to-rail connections.
+- Add M5 tapped ends and screw holes for rail-to-rail connections. Edit a hole reference sketch to move both the access and clearance cuts together.
 - Add MISUMI pre-assembly or post-assembly slot nuts to your rails.
 - Place multiple copies at once as reusable components.
 

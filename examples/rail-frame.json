@@ -1,11 +1,9 @@
 {
-  "format": "solidcraft/56",
+  "format": "solidcraft/57",
   "format_pending": [
-    "cell-grid-feature",
-    "frame-member-locate",
-    "frame-standard-sizes",
-    "occurrence-move-expressions",
-    "pattern-names-by-source"
+    "extrude-to-object-keeps-picked-placements",
+    "linked-cosmetic-threads",
+    "plane-at-angle-follows-named-axis"
   ],
   "name": "rail-frame",
   "units": "mm",
@@ -1834,228 +1832,217 @@
     },
     {
       "id": 8,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 10: Access",
+      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole references +Y",
       "suppressed": false,
-      "param_names": [
-        "d3",
-        "d4"
-      ],
       "component": 4,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        10.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            1405.0,
+            1015.0,
+            0.0
+          ],
+          "x_dir": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "hole1.center",
+            "pos": [
+              0.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole2.center",
+            "pos": [
+              0.0,
+              30.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole3.center",
+            "pos": [
+              0.0,
+              230.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole4.center",
+            "pos": [
+              0.0,
+              250.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "hole1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access2",
+            "type": "circle",
+            "c": 2,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole3",
+            "type": "circle",
+            "c": 3,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access3",
+            "type": "circle",
+            "c": 3,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole4",
+            "type": "circle",
+            "c": 4,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access4",
+            "type": "circle",
+            "c": 4,
+            "r": 4.75,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
     },
     {
       "id": 9,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 10: Clearance",
+      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Screw holes +Y: Access",
       "suppressed": false,
       "param_names": [
-        "d5",
-        "d6"
+        "d3"
       ],
       "component": 4,
-      "participants": [
+      "type": "extrude",
+      "sketch": 8,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "access1"
+          ],
+          [
+            "access2"
+          ],
+          [
+            "access3"
+          ],
+          [
+            "access4"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "6",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        10.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
+      ]
     },
     {
       "id": 10,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 30: Access",
+      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Screw holes +Y: Clearance",
       "suppressed": false,
       "param_names": [
-        "d7",
-        "d8"
+        "d4"
       ],
       "component": 4,
-      "participants": [
+      "type": "extrude",
+      "sketch": 8,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "hole1"
+          ],
+          [
+            "hole2"
+          ],
+          [
+            "hole3"
+          ],
+          [
+            "hole4"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "20",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        30.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      ]
     },
     {
       "id": 11,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 30: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d9",
-        "d10"
-      ],
-      "component": 4,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        30.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 12,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 230: Access",
-      "suppressed": false,
-      "param_names": [
-        "d11",
-        "d12"
-      ],
-      "component": 4,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        230.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
-    },
-    {
-      "id": 13,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 230: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d13",
-        "d14"
-      ],
-      "component": 4,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        230.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 14,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 250: Access",
-      "suppressed": false,
-      "param_names": [
-        "d15",
-        "d16"
-      ],
-      "component": 4,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        250.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
-    },
-    {
-      "id": 15,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole at 250: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d17",
-        "d18"
-      ],
-      "component": 4,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        1405.0,
-        1015.0,
-        250.0
-      ],
-      "axis": [
-        -0.0,
-        -1.0,
-        -0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 16,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Tap start 1",
       "suppressed": false,
       "param_names": [
-        "d19",
-        "d20",
-        "d21"
+        "d5",
+        "d6",
+        "d7"
       ],
       "component": 4,
       "face_names": [
@@ -2085,13 +2072,13 @@
       "modeled": true
     },
     {
-      "id": 17,
+      "id": 12,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Tap end 1",
       "suppressed": false,
       "param_names": [
-        "d22",
-        "d23",
-        "d24"
+        "d8",
+        "d9",
+        "d10"
       ],
       "component": 4,
       "face_names": [
@@ -2121,16 +2108,16 @@
       "modeled": true
     },
     {
-      "id": 22,
+      "id": 17,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Section",
       "suppressed": false,
-      "component": 20,
+      "component": 15,
       "type": "sketch",
       "plane": {
         "type": "custom",
         "plane": {
           "origin": [
-            3005.0,
+            2505.0,
             1005.0,
             0.0
           ],
@@ -3775,18 +3762,18 @@
       }
     },
     {
-      "id": 23,
+      "id": 18,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Rail",
       "suppressed": false,
       "body_names": [
         "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
       ],
       "param_names": [
-        "d25"
+        "d11"
       ],
-      "component": 20,
+      "component": 15,
       "type": "extrude",
-      "sketch": 22,
+      "sketch": 17,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -3878,231 +3865,220 @@
       "operation": "new_body"
     },
     {
-      "id": 24,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 10: Access",
+      "id": 19,
+      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole references -Y",
       "suppressed": false,
-      "param_names": [
-        "d26",
-        "d27"
-      ],
-      "component": 20,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        10.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      "component": 15,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            2505.0,
+            995.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "hole1.center",
+            "pos": [
+              0.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole2.center",
+            "pos": [
+              0.0,
+              30.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole3.center",
+            "pos": [
+              0.0,
+              230.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole4.center",
+            "pos": [
+              0.0,
+              250.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "hole1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access2",
+            "type": "circle",
+            "c": 2,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole3",
+            "type": "circle",
+            "c": 3,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access3",
+            "type": "circle",
+            "c": 3,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole4",
+            "type": "circle",
+            "c": 4,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access4",
+            "type": "circle",
+            "c": 4,
+            "r": 4.75,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
     },
     {
-      "id": 25,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 10: Clearance",
+      "id": 20,
+      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Screw holes -Y: Access",
       "suppressed": false,
       "param_names": [
-        "d28",
-        "d29"
+        "d12"
       ],
-      "component": 20,
-      "participants": [
+      "component": 15,
+      "type": "extrude",
+      "sketch": 19,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "access1"
+          ],
+          [
+            "access2"
+          ],
+          [
+            "access3"
+          ],
+          [
+            "access4"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "6",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        10.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
+      ]
     },
     {
-      "id": 26,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 30: Access",
+      "id": 21,
+      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Screw holes -Y: Clearance",
       "suppressed": false,
       "param_names": [
-        "d30",
-        "d31"
+        "d13"
       ],
-      "component": 20,
-      "participants": [
+      "component": 15,
+      "type": "extrude",
+      "sketch": 19,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "hole1"
+          ],
+          [
+            "hole2"
+          ],
+          [
+            "hole3"
+          ],
+          [
+            "hole4"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "20",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        30.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      ]
     },
     {
-      "id": 27,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 30: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d32",
-        "d33"
-      ],
-      "component": 20,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        30.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 28,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 230: Access",
-      "suppressed": false,
-      "param_names": [
-        "d34",
-        "d35"
-      ],
-      "component": 20,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        230.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
-    },
-    {
-      "id": 29,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 230: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d36",
-        "d37"
-      ],
-      "component": 20,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        230.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 30,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 250: Access",
-      "suppressed": false,
-      "param_names": [
-        "d38",
-        "d39"
-      ],
-      "component": 20,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        250.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
-    },
-    {
-      "id": 31,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Hole at 250: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d40",
-        "d41"
-      ],
-      "component": 20,
-      "participants": [
-        "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
-      ],
-      "type": "cylinder",
-      "base": [
-        3005.0,
-        995.0,
-        250.0
-      ],
-      "axis": [
-        0.0,
-        1.0,
-        0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 32,
+      "id": 22,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Tap start 1",
       "suppressed": false,
       "param_names": [
-        "d42",
-        "d43",
-        "d44"
+        "d14",
+        "d15",
+        "d16"
       ],
-      "component": 20,
+      "component": 15,
       "face_names": [
         ""
       ],
@@ -4111,7 +4087,7 @@
       ],
       "type": "hole",
       "position": [
-        3005.0,
+        2505.0,
         1005.0,
         0.0
       ],
@@ -4130,15 +4106,15 @@
       "modeled": true
     },
     {
-      "id": 33,
+      "id": 23,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250: Tap end 1",
       "suppressed": false,
       "param_names": [
-        "d45",
-        "d46",
-        "d47"
+        "d17",
+        "d18",
+        "d19"
       ],
-      "component": 20,
+      "component": 15,
       "face_names": [
         ""
       ],
@@ -4147,7 +4123,7 @@
       ],
       "type": "hole",
       "position": [
-        3005.0,
+        2505.0,
         1005.0,
         260.0
       ],
@@ -4166,11 +4142,11 @@
       "modeled": true
     },
     {
-      "id": 36,
+      "id": 26,
       "name": "Side rail points",
       "suppressed": false,
       "param_names": [
-        "d48"
+        "d20"
       ],
       "type": "sketch",
       "plane": {
@@ -4230,10 +4206,10 @@
       }
     },
     {
-      "id": 39,
+      "id": 29,
       "name": "T-slot 2020 x 300 holes +X 10 290: Section",
       "suppressed": false,
-      "component": 37,
+      "component": 27,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -5884,18 +5860,18 @@
       }
     },
     {
-      "id": 40,
+      "id": 30,
       "name": "T-slot 2020 x 300 holes +X 10 290: Rail",
       "suppressed": false,
       "body_names": [
         "T-slot 2020 x 300 holes +X 10 290"
       ],
       "param_names": [
-        "d49"
+        "d21"
       ],
-      "component": 37,
+      "component": 27,
       "type": "extrude",
-      "sketch": 39,
+      "sketch": 29,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -5987,118 +5963,159 @@
       "operation": "new_body"
     },
     {
-      "id": 41,
-      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 10: Access",
+      "id": 31,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Hole references +X",
       "suppressed": false,
-      "param_names": [
-        "d50",
-        "d51"
-      ],
-      "component": 37,
-      "participants": [
-        "T-slot 2020 x 300 holes +X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        10.0,
-        0.0,
-        10.0
-      ],
-      "axis": [
-        -1.0,
-        -0.0,
-        -0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      "component": 27,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            10.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "hole1.center",
+            "pos": [
+              0.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole2.center",
+            "pos": [
+              0.0,
+              290.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "hole1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access2",
+            "type": "circle",
+            "c": 2,
+            "r": 4.75,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
     },
     {
-      "id": 42,
-      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 10: Clearance",
+      "id": 32,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Screw holes +X: Access",
       "suppressed": false,
       "param_names": [
-        "d52",
-        "d53"
+        "d22"
       ],
-      "component": 37,
-      "participants": [
+      "component": 27,
+      "type": "extrude",
+      "sketch": 31,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "access1"
+          ],
+          [
+            "access2"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "6",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 300 holes +X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        10.0,
-        0.0,
-        10.0
-      ],
-      "axis": [
-        -1.0,
-        -0.0,
-        -0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
+      ]
     },
     {
-      "id": 43,
-      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 290: Access",
+      "id": 33,
+      "name": "T-slot 2020 x 300 holes +X 10 290: Screw holes +X: Clearance",
       "suppressed": false,
       "param_names": [
-        "d54",
-        "d55"
+        "d23"
       ],
-      "component": 37,
-      "participants": [
+      "component": 27,
+      "type": "extrude",
+      "sketch": 31,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "hole1"
+          ],
+          [
+            "hole2"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "20",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 300 holes +X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        10.0,
-        0.0,
-        290.0
-      ],
-      "axis": [
-        -1.0,
-        -0.0,
-        -0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      ]
     },
     {
-      "id": 44,
-      "name": "T-slot 2020 x 300 holes +X 10 290: Hole at 290: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d56",
-        "d57"
-      ],
-      "component": 37,
-      "participants": [
-        "T-slot 2020 x 300 holes +X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        10.0,
-        0.0,
-        290.0
-      ],
-      "axis": [
-        -1.0,
-        -0.0,
-        -0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 49,
+      "id": 38,
       "name": "T-slot 2020 x 300 holes -X 10 290: Section",
       "suppressed": false,
-      "component": 47,
+      "component": 36,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -7749,18 +7766,18 @@
       }
     },
     {
-      "id": 50,
+      "id": 39,
       "name": "T-slot 2020 x 300 holes -X 10 290: Rail",
       "suppressed": false,
       "body_names": [
         "T-slot 2020 x 300 holes -X 10 290"
       ],
       "param_names": [
-        "d58"
+        "d24"
       ],
-      "component": 47,
+      "component": 36,
       "type": "extrude",
-      "sketch": 49,
+      "sketch": 38,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -7852,119 +7869,160 @@
       "operation": "new_body"
     },
     {
-      "id": 51,
-      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 10: Access",
+      "id": 40,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Hole references -X",
       "suppressed": false,
-      "param_names": [
-        "d59",
-        "d60"
-      ],
-      "component": 47,
-      "participants": [
-        "T-slot 2020 x 300 holes -X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        -10.0,
-        0.0,
-        10.0
-      ],
-      "axis": [
-        1.0,
-        0.0,
-        0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      "component": 36,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            -10.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            -0.0,
+            -1.0,
+            -0.0
+          ],
+          "y_dir": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "hole1.center",
+            "pos": [
+              0.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "hole2.center",
+            "pos": [
+              0.0,
+              290.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "hole1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.75,
+            "construction": false
+          },
+          {
+            "id": "hole2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.75,
+            "construction": false
+          },
+          {
+            "id": "access2",
+            "type": "circle",
+            "c": 2,
+            "r": 4.75,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
     },
     {
-      "id": 52,
-      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 10: Clearance",
+      "id": 41,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Screw holes -X: Access",
       "suppressed": false,
       "param_names": [
-        "d61",
-        "d62"
+        "d25"
       ],
-      "component": 47,
-      "participants": [
+      "component": 36,
+      "type": "extrude",
+      "sketch": 40,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "access1"
+          ],
+          [
+            "access2"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "6",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 300 holes -X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        -10.0,
-        0.0,
-        10.0
-      ],
-      "axis": [
-        1.0,
-        0.0,
-        0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
+      ]
     },
     {
-      "id": 53,
-      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 290: Access",
+      "id": 42,
+      "name": "T-slot 2020 x 300 holes -X 10 290: Screw holes -X: Clearance",
       "suppressed": false,
       "param_names": [
-        "d63",
-        "d64"
+        "d26"
       ],
-      "component": 47,
-      "participants": [
+      "component": 36,
+      "type": "extrude",
+      "sketch": 40,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "hole1"
+          ],
+          [
+            "hole2"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "20",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
         "T-slot 2020 x 300 holes -X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        -10.0,
-        0.0,
-        290.0
-      ],
-      "axis": [
-        1.0,
-        0.0,
-        0.0
-      ],
-      "radius": "(9.5 mm) / 2",
-      "height": "6",
-      "operation": "cut"
+      ]
     },
     {
-      "id": 54,
-      "name": "T-slot 2020 x 300 holes -X 10 290: Hole at 290: Clearance",
-      "suppressed": false,
-      "param_names": [
-        "d65",
-        "d66"
-      ],
-      "component": 47,
-      "participants": [
-        "T-slot 2020 x 300 holes -X 10 290"
-      ],
-      "type": "cylinder",
-      "base": [
-        -10.0,
-        0.0,
-        290.0
-      ],
-      "axis": [
-        1.0,
-        0.0,
-        0.0
-      ],
-      "radius": "(5.5 mm) / 2",
-      "height": "20",
-      "operation": "cut"
-    },
-    {
-      "id": 57,
+      "id": 45,
       "name": "Post points",
       "suppressed": false,
       "param_names": [
-        "d67"
+        "d27"
       ],
       "type": "sketch",
       "plane": {
@@ -8024,16 +8082,16 @@
       }
     },
     {
-      "id": 60,
+      "id": 48,
       "name": "V-slot 2040 x 300 taps both: Section",
       "suppressed": false,
-      "component": 58,
+      "component": 46,
       "type": "sketch",
       "plane": {
         "type": "custom",
         "plane": {
           "origin": [
-            6805.0,
+            5605.0,
             1005.0,
             0.0
           ],
@@ -9909,18 +9967,18 @@
       }
     },
     {
-      "id": 61,
+      "id": 49,
       "name": "V-slot 2040 x 300 taps both: Rail",
       "suppressed": false,
       "body_names": [
         "V-slot 2040 x 300 taps both"
       ],
       "param_names": [
-        "d68"
+        "d28"
       ],
-      "component": 58,
+      "component": 46,
       "type": "extrude",
-      "sketch": 60,
+      "sketch": 48,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -10034,15 +10092,15 @@
       "operation": "new_body"
     },
     {
-      "id": 62,
+      "id": 50,
       "name": "V-slot 2040 x 300 taps both: Tap start 1",
       "suppressed": false,
       "param_names": [
-        "d69",
-        "d70",
-        "d71"
+        "d29",
+        "d30",
+        "d31"
       ],
-      "component": 58,
+      "component": 46,
       "face_names": [
         ""
       ],
@@ -10051,7 +10109,7 @@
       ],
       "type": "hole",
       "position": [
-        6805.0,
+        5605.0,
         995.0,
         0.0
       ],
@@ -10070,15 +10128,15 @@
       "modeled": true
     },
     {
-      "id": 63,
+      "id": 51,
       "name": "V-slot 2040 x 300 taps both: Tap start 2",
       "suppressed": false,
       "param_names": [
-        "d72",
-        "d73",
-        "d74"
+        "d32",
+        "d33",
+        "d34"
       ],
-      "component": 58,
+      "component": 46,
       "face_names": [
         ""
       ],
@@ -10087,7 +10145,7 @@
       ],
       "type": "hole",
       "position": [
-        6805.0,
+        5605.0,
         1015.0,
         0.0
       ],
@@ -10106,15 +10164,15 @@
       "modeled": true
     },
     {
-      "id": 64,
+      "id": 52,
       "name": "V-slot 2040 x 300 taps both: Tap end 1",
       "suppressed": false,
       "param_names": [
-        "d75",
-        "d76",
-        "d77"
+        "d35",
+        "d36",
+        "d37"
       ],
-      "component": 58,
+      "component": 46,
       "face_names": [
         ""
       ],
@@ -10123,7 +10181,7 @@
       ],
       "type": "hole",
       "position": [
-        6805.0,
+        5605.0,
         995.0,
         300.0
       ],
@@ -10142,15 +10200,15 @@
       "modeled": true
     },
     {
-      "id": 65,
+      "id": 53,
       "name": "V-slot 2040 x 300 taps both: Tap end 2",
       "suppressed": false,
       "param_names": [
-        "d78",
-        "d79",
-        "d80"
+        "d38",
+        "d39",
+        "d40"
       ],
-      "component": 58,
+      "component": 46,
       "face_names": [
         ""
       ],
@@ -10159,7 +10217,7 @@
       ],
       "type": "hole",
       "position": [
-        6805.0,
+        5605.0,
         1015.0,
         300.0
       ],
@@ -10178,7 +10236,7 @@
       "modeled": true
     },
     {
-      "id": 70,
+      "id": 58,
       "name": "Base screw seats",
       "suppressed": false,
       "type": "sketch",
@@ -10283,17 +10341,17 @@
       }
     },
     {
-      "id": 75,
+      "id": 63,
       "name": "Screw M5 x 25 socket: Shank",
       "suppressed": false,
       "body_names": [
         "Screw M5 x 25 socket"
       ],
       "param_names": [
-        "d81",
-        "d82"
+        "d41",
+        "d42"
       ],
-      "component": 73,
+      "component": 61,
       "type": "cylinder",
       "base": [
         0.0,
@@ -10310,14 +10368,14 @@
       "operation": "new_body"
     },
     {
-      "id": 76,
+      "id": 64,
       "name": "Screw M5 x 25 socket: Head",
       "suppressed": false,
       "param_names": [
-        "d83",
-        "d84"
+        "d43",
+        "d44"
       ],
-      "component": 73,
+      "component": 61,
       "participants": [
         "Screw M5 x 25 socket"
       ],
@@ -10337,10 +10395,10 @@
       "operation": "join"
     },
     {
-      "id": 77,
+      "id": 65,
       "name": "Screw M5 x 25 socket: Hex socket profile",
       "suppressed": false,
-      "component": 73,
+      "component": 61,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -10472,15 +10530,15 @@
       }
     },
     {
-      "id": 78,
+      "id": 66,
       "name": "Screw M5 x 25 socket: Hex socket",
       "suppressed": false,
       "param_names": [
-        "d85"
+        "d45"
       ],
-      "component": 73,
+      "component": 61,
       "type": "extrude",
-      "sketch": 77,
+      "sketch": 65,
       "profiles": {
         "type": "all"
       },
@@ -10495,54 +10553,54 @@
       ]
     },
     {
-      "id": 79,
+      "id": 67,
       "name": "Screw M5 x 25 socket: Move to site",
       "suppressed": false,
       "param_names": [
-        "d86",
-        "d87",
-        "d88"
+        "d46",
+        "d47",
+        "d48"
       ],
-      "component": 73,
+      "component": 61,
       "type": "move",
       "bodies": [
         "Screw M5 x 25 socket"
       ],
       "translate": [
-        "-285",
-        "-125",
+        "-1325",
+        "-105",
         "0"
       ]
     },
     {
-      "id": 80,
+      "id": 68,
       "name": "Screw M5 x 25 socket: Thread",
       "suppressed": false,
-      "component": 73,
+      "component": 61,
       "face_names": [
-        "F75:side"
+        "F63:side"
       ],
       "type": "thread",
       "face": [
-        -282.5,
-        -125.0,
+        -1322.5,
+        -105.0,
         -20.833333333333332
       ],
       "designation": "M5",
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -282.5,
-        -125.0,
+        -1322.5,
+        -105.0,
         -20.833333333333332
       ]
     },
     {
-      "id": 89,
+      "id": 77,
       "name": "Top screw seats",
       "suppressed": false,
       "param_names": [
-        "d89"
+        "d49"
       ],
       "type": "sketch",
       "plane": {
@@ -10634,7 +10692,7 @@
       }
     },
     {
-      "id": 98,
+      "id": 86,
       "name": "Back screw seats",
       "suppressed": false,
       "type": "sketch",
@@ -10707,17 +10765,17 @@
       }
     },
     {
-      "id": 101,
+      "id": 89,
       "name": "Screw M5 x 20 socket: Shank",
       "suppressed": false,
       "body_names": [
         "Screw M5 x 20 socket"
       ],
       "param_names": [
-        "d90",
-        "d91"
+        "d50",
+        "d51"
       ],
-      "component": 99,
+      "component": 87,
       "type": "cylinder",
       "base": [
         0.0,
@@ -10734,14 +10792,14 @@
       "operation": "new_body"
     },
     {
-      "id": 102,
+      "id": 90,
       "name": "Screw M5 x 20 socket: Head",
       "suppressed": false,
       "param_names": [
-        "d92",
-        "d93"
+        "d52",
+        "d53"
       ],
-      "component": 99,
+      "component": 87,
       "participants": [
         "Screw M5 x 20 socket"
       ],
@@ -10761,10 +10819,10 @@
       "operation": "join"
     },
     {
-      "id": 103,
+      "id": 91,
       "name": "Screw M5 x 20 socket: Hex socket profile",
       "suppressed": false,
-      "component": 99,
+      "component": 87,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -10896,15 +10954,15 @@
       }
     },
     {
-      "id": 104,
+      "id": 92,
       "name": "Screw M5 x 20 socket: Hex socket",
       "suppressed": false,
       "param_names": [
-        "d94"
+        "d54"
       ],
-      "component": 99,
+      "component": 87,
       "type": "extrude",
-      "sketch": 103,
+      "sketch": 91,
       "profiles": {
         "type": "all"
       },
@@ -10919,36 +10977,36 @@
       ]
     },
     {
-      "id": 105,
+      "id": 93,
       "name": "Screw M5 x 20 socket: Move to site",
       "suppressed": false,
       "param_names": [
-        "d95",
-        "d96",
-        "d97"
+        "d55",
+        "d56",
+        "d57"
       ],
-      "component": 99,
+      "component": 87,
       "type": "move",
       "bodies": [
         "Screw M5 x 20 socket"
       ],
       "translate": [
-        "-805",
+        "-565",
         "-125",
         "0"
       ]
     },
     {
-      "id": 106,
+      "id": 94,
       "name": "Screw M5 x 20 socket: Thread",
       "suppressed": false,
-      "component": 99,
+      "component": 87,
       "face_names": [
-        "F101:side"
+        "F89:side"
       ],
       "type": "thread",
       "face": [
-        -802.5,
+        -562.5,
         -125.0,
         -16.666666666666668
       ],
@@ -10956,13 +11014,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -802.5,
+        -562.5,
         -125.0,
         -16.666666666666668
       ]
     },
     {
-      "id": 111,
+      "id": 99,
       "name": "Front screw seats",
       "suppressed": false,
       "type": "sketch",
@@ -11035,11 +11093,11 @@
       }
     },
     {
-      "id": 116,
+      "id": 104,
       "name": "Top nut points",
       "suppressed": false,
       "param_names": [
-        "d98"
+        "d58"
       ],
       "type": "sketch",
       "plane": {
@@ -11099,10 +11157,10 @@
       }
     },
     {
-      "id": 119,
+      "id": 107,
       "name": "T-nut M5 post-assembly: Section",
       "suppressed": false,
-      "component": 117,
+      "component": 105,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -11629,18 +11687,18 @@
       }
     },
     {
-      "id": 120,
+      "id": 108,
       "name": "T-nut M5 post-assembly: Bar",
       "suppressed": false,
       "body_names": [
         "T-nut M5 post-assembly"
       ],
       "param_names": [
-        "d99"
+        "d59"
       ],
-      "component": 117,
+      "component": 105,
       "type": "extrude",
-      "sketch": 119,
+      "sketch": 107,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -11672,14 +11730,14 @@
       "operation": "new_body"
     },
     {
-      "id": 121,
+      "id": 109,
       "name": "T-nut M5 post-assembly: Ball recess",
       "suppressed": false,
       "param_names": [
-        "d100",
-        "d101"
+        "d60",
+        "d61"
       ],
-      "component": 117,
+      "component": 105,
       "participants": [
         "T-nut M5 post-assembly"
       ],
@@ -11699,13 +11757,13 @@
       "operation": "cut"
     },
     {
-      "id": 122,
+      "id": 110,
       "name": "T-nut M5 post-assembly: Ball",
       "suppressed": false,
       "param_names": [
-        "d102"
+        "d62"
       ],
-      "component": 117,
+      "component": 105,
       "participants": [
         "T-nut M5 post-assembly"
       ],
@@ -11719,43 +11777,43 @@
       "operation": "join"
     },
     {
-      "id": 123,
+      "id": 111,
       "name": "T-nut M5 post-assembly: Move to site",
       "suppressed": false,
       "param_names": [
-        "d103",
-        "d104",
-        "d105"
+        "d63",
+        "d64",
+        "d65"
       ],
-      "component": 117,
+      "component": 105,
       "type": "move",
       "bodies": [
         "T-nut M5 post-assembly"
       ],
       "translate": [
-        "-1165",
+        "-925",
         "-125",
         "0"
       ]
     },
     {
-      "id": 124,
+      "id": 112,
       "name": "T-nut M5 post-assembly: Thread",
       "suppressed": false,
       "param_names": [
-        "d106",
-        "d107"
+        "d66",
+        "d67"
       ],
-      "component": 117,
+      "component": 105,
       "face_names": [
-        "F120:side:l1"
+        "F108:side:l1"
       ],
       "participants": [
         "T-nut M5 post-assembly"
       ],
       "type": "hole",
       "position": [
-        -1165.0,
+        -925.0,
         -125.0,
         0.7
       ],
@@ -11773,11 +11831,11 @@
       "modeled": true
     },
     {
-      "id": 129,
+      "id": 117,
       "name": "Post nut points",
       "suppressed": false,
       "param_names": [
-        "d108"
+        "d68"
       ],
       "type": "sketch",
       "plane": {
@@ -11821,10 +11879,10 @@
       }
     },
     {
-      "id": 132,
+      "id": 120,
       "name": "T-nut M5 pre-assembly: Section",
       "suppressed": false,
-      "component": 130,
+      "component": 118,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12351,18 +12409,18 @@
       }
     },
     {
-      "id": 133,
+      "id": 121,
       "name": "T-nut M5 pre-assembly: Bar",
       "suppressed": false,
       "body_names": [
         "T-nut M5 pre-assembly"
       ],
       "param_names": [
-        "d109"
+        "d69"
       ],
-      "component": 130,
+      "component": 118,
       "type": "extrude",
-      "sketch": 132,
+      "sketch": 120,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -12394,44 +12452,44 @@
       "operation": "new_body"
     },
     {
-      "id": 134,
+      "id": 122,
       "name": "T-nut M5 pre-assembly: Move to site",
       "suppressed": false,
       "param_names": [
-        "d110",
-        "d111",
-        "d112"
+        "d70",
+        "d71",
+        "d72"
       ],
-      "component": 130,
+      "component": 118,
       "type": "move",
       "bodies": [
         "T-nut M5 pre-assembly"
       ],
       "translate": [
-        "-145",
-        "-145",
+        "-1185",
+        "-125",
         "0"
       ]
     },
     {
-      "id": 135,
+      "id": 123,
       "name": "T-nut M5 pre-assembly: Thread",
       "suppressed": false,
       "param_names": [
-        "d113",
-        "d114"
+        "d73",
+        "d74"
       ],
-      "component": 130,
+      "component": 118,
       "face_names": [
-        "F133:side:l1"
+        "F121:side:l1"
       ],
       "participants": [
         "T-nut M5 pre-assembly"
       ],
       "type": "hole",
       "position": [
-        -145.0,
-        -145.0,
+        -1185.0,
+        -125.0,
         0.8
       ],
       "direction": [
@@ -12448,7 +12506,7 @@
       "modeled": true
     }
   ],
-  "next_id": 138,
+  "next_id": 126,
   "components": [
     {
       "id": 2,
@@ -12468,7 +12526,7 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from +Y at 10, 30, 230, 250 mm",
         "dev.threadcraft": {
-          "geometry": "b843dd4d038df218",
+          "geometry": "d4035ac64ae8e9af",
           "plugin": "techsquid-extrusions",
           "site": [
             1405.0,
@@ -12480,7 +12538,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 15,
       "identification_color_index": 2,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250",
       "parent": 2,
@@ -12488,10 +12546,10 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from -Y at 10, 30, 230, 250 mm",
         "dev.threadcraft": {
-          "geometry": "59ff5d8e633300a8",
+          "geometry": "134bf206d876f779",
           "plugin": "techsquid-extrusions",
           "site": [
-            3005.0,
+            2505.0,
             1005.0,
             0.0
           ]
@@ -12500,7 +12558,7 @@
       }
     },
     {
-      "id": 37,
+      "id": 27,
       "identification_color_index": 3,
       "name": "T-slot 2020 x 300 holes +X 10 290",
       "parent": 2,
@@ -12508,7 +12566,7 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from +X at 10, 290 mm",
         "dev.threadcraft": {
-          "geometry": "643664bbd27bfb0b",
+          "geometry": "950d1aaa7f8cba4d",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -12520,7 +12578,7 @@
       }
     },
     {
-      "id": 47,
+      "id": 36,
       "identification_color_index": 4,
       "name": "T-slot 2020 x 300 holes -X 10 290",
       "parent": 2,
@@ -12528,7 +12586,7 @@
         "bom_type": "purchased",
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from -X at 10, 290 mm",
         "dev.threadcraft": {
-          "geometry": "c5542635fde3743b",
+          "geometry": "dad39137738885cd",
           "plugin": "techsquid-extrusions",
           "site": [
             0.0,
@@ -12540,7 +12598,7 @@
       }
     },
     {
-      "id": 58,
+      "id": 46,
       "identification_color_index": 5,
       "name": "V-slot 2040 x 300 taps both",
       "parent": 2,
@@ -12551,7 +12609,7 @@
           "geometry": "39318f0152eab94c",
           "plugin": "techsquid-extrusions",
           "site": [
-            6805.0,
+            5605.0,
             1005.0,
             0.0
           ]
@@ -12560,7 +12618,7 @@
       }
     },
     {
-      "id": 71,
+      "id": 59,
       "identification_color_index": 6,
       "name": "Fasteners",
       "parent": 0,
@@ -12569,10 +12627,10 @@
       }
     },
     {
-      "id": 73,
+      "id": 61,
       "identification_color_index": 7,
       "name": "Screw M5 x 25 socket",
-      "parent": 71,
+      "parent": 59,
       "metadata": {
         "bom_type": "purchased",
         "description": "ISO 4762",
@@ -12580,8 +12638,8 @@
           "geometry": "8621727bf5003b53",
           "plugin": "techsquid-screws",
           "site": [
-            -285.0,
-            -125.0,
+            -1325.0,
+            -105.0,
             0.0
           ]
         },
@@ -12589,10 +12647,10 @@
       }
     },
     {
-      "id": 99,
+      "id": 87,
       "identification_color_index": 8,
       "name": "Screw M5 x 20 socket",
-      "parent": 71,
+      "parent": 59,
       "metadata": {
         "bom_type": "purchased",
         "description": "ISO 4762",
@@ -12600,7 +12658,7 @@
           "geometry": "1a156d2eb025e125",
           "plugin": "techsquid-screws",
           "site": [
-            -805.0,
+            -565.0,
             -125.0,
             0.0
           ]
@@ -12609,7 +12667,7 @@
       }
     },
     {
-      "id": 117,
+      "id": 105,
       "identification_color_index": 9,
       "name": "T-nut M5 post-assembly",
       "parent": 2,
@@ -12620,7 +12678,7 @@
           "geometry": "c408132f9513dea5",
           "plugin": "techsquid-extrusions",
           "site": [
-            -1165.0,
+            -925.0,
             -125.0,
             0.0
           ]
@@ -12629,7 +12687,7 @@
       }
     },
     {
-      "id": 130,
+      "id": 118,
       "identification_color_index": 10,
       "name": "T-nut M5 pre-assembly",
       "parent": 2,
@@ -12640,8 +12698,8 @@
           "geometry": "2fa207adbd6f638b",
           "plugin": "techsquid-extrusions",
           "site": [
-            -145.0,
-            -145.0,
+            -1185.0,
+            -125.0,
             0.0
           ]
         },
@@ -12718,7 +12776,7 @@
       "grounded": false
     },
     {
-      "id": 19,
+      "id": 14,
       "component": 4,
       "parent": 2,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250:2",
@@ -12751,8 +12809,8 @@
       "grounded": false
     },
     {
-      "id": 21,
-      "component": 20,
+      "id": 16,
+      "component": 15,
       "parent": 2,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250:1",
       "transform": [
@@ -12775,7 +12833,7 @@
           0.0
         ],
         [
-          -2865.0,
+          -2365.0,
           -130.0,
           1335.0,
           1.0
@@ -12784,8 +12842,8 @@
       "grounded": false
     },
     {
-      "id": 35,
-      "component": 20,
+      "id": 25,
+      "component": 15,
       "parent": 2,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250:2",
       "transform": [
@@ -12808,7 +12866,7 @@
           0.0
         ],
         [
-          -3145.0,
+          -2645.0,
           -130.0,
           1335.0,
           1.0
@@ -12817,8 +12875,8 @@
       "grounded": false
     },
     {
-      "id": 38,
-      "component": 37,
+      "id": 28,
+      "component": 27,
       "parent": 2,
       "name": "T-slot 2020 x 300 holes +X 10 290:1",
       "transform": [
@@ -12850,8 +12908,8 @@
       "grounded": false
     },
     {
-      "id": 46,
-      "component": 37,
+      "id": 35,
+      "component": 27,
       "parent": 2,
       "name": "T-slot 2020 x 300 holes +X 10 290:2",
       "transform": [
@@ -12883,8 +12941,8 @@
       "grounded": false
     },
     {
-      "id": 48,
-      "component": 47,
+      "id": 37,
+      "component": 36,
       "parent": 2,
       "name": "T-slot 2020 x 300 holes -X 10 290:1",
       "transform": [
@@ -12916,8 +12974,8 @@
       "grounded": false
     },
     {
-      "id": 56,
-      "component": 47,
+      "id": 44,
+      "component": 36,
       "parent": 2,
       "name": "T-slot 2020 x 300 holes -X 10 290:2",
       "transform": [
@@ -12949,8 +13007,8 @@
       "grounded": false
     },
     {
-      "id": 59,
-      "component": 58,
+      "id": 47,
+      "component": 46,
       "parent": 2,
       "name": "V-slot 2040 x 300 taps both:1",
       "transform": [
@@ -12973,7 +13031,7 @@
           0.0
         ],
         [
-          -6665.0,
+          -5465.0,
           -895.0,
           20.0,
           1.0
@@ -12982,8 +13040,8 @@
       "grounded": false
     },
     {
-      "id": 67,
-      "component": 58,
+      "id": 55,
+      "component": 46,
       "parent": 2,
       "name": "V-slot 2040 x 300 taps both:2",
       "transform": [
@@ -13006,7 +13064,7 @@
           0.0
         ],
         [
-          -6945.0,
+          -5745.0,
           -895.0,
           20.0,
           1.0
@@ -13015,8 +13073,8 @@
       "grounded": false
     },
     {
-      "id": 68,
-      "component": 58,
+      "id": 56,
+      "component": 46,
       "parent": 2,
       "name": "V-slot 2040 x 300 taps both:3",
       "transform": [
@@ -13039,7 +13097,7 @@
           0.0
         ],
         [
-          -6945.0,
+          -5745.0,
           -1115.0,
           20.0,
           1.0
@@ -13048,8 +13106,8 @@
       "grounded": false
     },
     {
-      "id": 69,
-      "component": 58,
+      "id": 57,
+      "component": 46,
       "parent": 2,
       "name": "V-slot 2040 x 300 taps both:4",
       "transform": [
@@ -13072,7 +13130,7 @@
           0.0
         ],
         [
-          -6665.0,
+          -5465.0,
           -1115.0,
           20.0,
           1.0
@@ -13081,8 +13139,8 @@
       "grounded": false
     },
     {
-      "id": 72,
-      "component": 71,
+      "id": 60,
+      "component": 59,
       "parent": 0,
       "name": "Fasteners:1",
       "transform": [
@@ -13114,9 +13172,9 @@
       "grounded": false
     },
     {
-      "id": 74,
-      "component": 73,
-      "parent": 71,
+      "id": 62,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:1",
       "transform": [
         [
@@ -13138,8 +13196,8 @@
           0.0
         ],
         [
-          425.0,
-          -5.0,
+          1465.0,
+          15.0,
           6.0,
           1.0
         ]
@@ -13147,9 +13205,9 @@
       "grounded": false
     },
     {
-      "id": 82,
-      "component": 73,
-      "parent": 71,
+      "id": 70,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:2",
       "transform": [
         [
@@ -13171,8 +13229,8 @@
           0.0
         ],
         [
-          425.0,
-          -25.0,
+          1465.0,
+          -5.0,
           6.0,
           1.0
         ]
@@ -13180,9 +13238,9 @@
       "grounded": false
     },
     {
-      "id": 83,
-      "component": 73,
-      "parent": 71,
+      "id": 71,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:3",
       "transform": [
         [
@@ -13204,8 +13262,8 @@
           0.0
         ],
         [
-          425.0,
-          -225.0,
+          1465.0,
+          -205.0,
           6.0,
           1.0
         ]
@@ -13213,9 +13271,9 @@
       "grounded": false
     },
     {
-      "id": 84,
-      "component": 73,
-      "parent": 71,
+      "id": 72,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:4",
       "transform": [
         [
@@ -13237,8 +13295,8 @@
           0.0
         ],
         [
-          425.0,
-          -245.0,
+          1465.0,
+          -225.0,
           6.0,
           1.0
         ]
@@ -13246,9 +13304,9 @@
       "grounded": false
     },
     {
-      "id": 85,
-      "component": 73,
-      "parent": 71,
+      "id": 73,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:5",
       "transform": [
         [
@@ -13270,8 +13328,8 @@
           0.0
         ],
         [
-          145.0,
-          -5.0,
+          1185.0,
+          15.0,
           6.0,
           1.0
         ]
@@ -13279,9 +13337,9 @@
       "grounded": false
     },
     {
-      "id": 86,
-      "component": 73,
-      "parent": 71,
+      "id": 74,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:6",
       "transform": [
         [
@@ -13303,8 +13361,8 @@
           0.0
         ],
         [
-          145.0,
-          -25.0,
+          1185.0,
+          -5.0,
           6.0,
           1.0
         ]
@@ -13312,9 +13370,9 @@
       "grounded": false
     },
     {
-      "id": 87,
-      "component": 73,
-      "parent": 71,
+      "id": 75,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:7",
       "transform": [
         [
@@ -13336,8 +13394,8 @@
           0.0
         ],
         [
-          145.0,
-          -225.0,
+          1185.0,
+          -205.0,
           6.0,
           1.0
         ]
@@ -13345,9 +13403,9 @@
       "grounded": false
     },
     {
-      "id": 88,
-      "component": 73,
-      "parent": 71,
+      "id": 76,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:8",
       "transform": [
         [
@@ -13369,8 +13427,8 @@
           0.0
         ],
         [
-          145.0,
-          -245.0,
+          1185.0,
+          -225.0,
           6.0,
           1.0
         ]
@@ -13378,9 +13436,9 @@
       "grounded": false
     },
     {
-      "id": 90,
-      "component": 73,
-      "parent": 71,
+      "id": 78,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:9",
       "transform": [
         [
@@ -13402,8 +13460,8 @@
           0.0
         ],
         [
-          425.0,
-          245.0,
+          1465.0,
+          225.0,
           334.0,
           1.0
         ]
@@ -13411,9 +13469,9 @@
       "grounded": false
     },
     {
-      "id": 91,
-      "component": 73,
-      "parent": 71,
+      "id": 79,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:10",
       "transform": [
         [
@@ -13435,8 +13493,8 @@
           0.0
         ],
         [
-          425.0,
-          225.0,
+          1465.0,
+          205.0,
           334.0,
           1.0
         ]
@@ -13444,9 +13502,9 @@
       "grounded": false
     },
     {
-      "id": 92,
-      "component": 73,
-      "parent": 71,
+      "id": 80,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:11",
       "transform": [
         [
@@ -13468,8 +13526,8 @@
           0.0
         ],
         [
-          425.0,
-          25.0,
+          1465.0,
+          5.0,
           334.0,
           1.0
         ]
@@ -13477,9 +13535,9 @@
       "grounded": false
     },
     {
-      "id": 93,
-      "component": 73,
-      "parent": 71,
+      "id": 81,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:12",
       "transform": [
         [
@@ -13501,8 +13559,8 @@
           0.0
         ],
         [
-          425.0,
-          5.0,
+          1465.0,
+          -15.0,
           334.0,
           1.0
         ]
@@ -13510,9 +13568,9 @@
       "grounded": false
     },
     {
-      "id": 94,
-      "component": 73,
-      "parent": 71,
+      "id": 82,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:13",
       "transform": [
         [
@@ -13534,8 +13592,8 @@
           0.0
         ],
         [
-          145.0,
-          245.0,
+          1185.0,
+          225.0,
           334.0,
           1.0
         ]
@@ -13543,9 +13601,9 @@
       "grounded": false
     },
     {
-      "id": 95,
-      "component": 73,
-      "parent": 71,
+      "id": 83,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:14",
       "transform": [
         [
@@ -13567,8 +13625,8 @@
           0.0
         ],
         [
-          145.0,
-          225.0,
+          1185.0,
+          205.0,
           334.0,
           1.0
         ]
@@ -13576,9 +13634,9 @@
       "grounded": false
     },
     {
-      "id": 96,
-      "component": 73,
-      "parent": 71,
+      "id": 84,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:15",
       "transform": [
         [
@@ -13600,8 +13658,8 @@
           0.0
         ],
         [
-          145.0,
-          25.0,
+          1185.0,
+          5.0,
           334.0,
           1.0
         ]
@@ -13609,9 +13667,9 @@
       "grounded": false
     },
     {
-      "id": 97,
-      "component": 73,
-      "parent": 71,
+      "id": 85,
+      "component": 61,
+      "parent": 59,
       "name": "Screw M5 x 25 socket:16",
       "transform": [
         [
@@ -13633,8 +13691,8 @@
           0.0
         ],
         [
-          145.0,
-          5.0,
+          1185.0,
+          -15.0,
           334.0,
           1.0
         ]
@@ -13642,9 +13700,9 @@
       "grounded": false
     },
     {
-      "id": 100,
-      "component": 99,
-      "parent": 71,
+      "id": 88,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:1",
       "transform": [
         [
@@ -13668,16 +13726,16 @@
         [
           265.0,
           144.0,
-          815.0,
+          575.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 108,
-      "component": 99,
-      "parent": 71,
+      "id": 96,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:2",
       "transform": [
         [
@@ -13701,16 +13759,16 @@
         [
           -15.0,
           144.0,
-          815.0,
+          575.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 109,
-      "component": 99,
-      "parent": 71,
+      "id": 97,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:3",
       "transform": [
         [
@@ -13734,16 +13792,16 @@
         [
           265.0,
           144.0,
-          1135.0,
+          895.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 110,
-      "component": 99,
-      "parent": 71,
+      "id": 98,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:4",
       "transform": [
         [
@@ -13767,16 +13825,16 @@
         [
           -15.0,
           144.0,
-          1135.0,
+          895.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 112,
-      "component": 99,
-      "parent": 71,
+      "id": 100,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:5",
       "transform": [
         [
@@ -13798,7 +13856,7 @@
           0.0
         ],
         [
-          945.0,
+          705.0,
           -144.0,
           135.0,
           1.0
@@ -13807,9 +13865,9 @@
       "grounded": false
     },
     {
-      "id": 113,
-      "component": 99,
-      "parent": 71,
+      "id": 101,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:6",
       "transform": [
         [
@@ -13831,7 +13889,7 @@
           0.0
         ],
         [
-          665.0,
+          425.0,
           -144.0,
           135.0,
           1.0
@@ -13840,9 +13898,9 @@
       "grounded": false
     },
     {
-      "id": 114,
-      "component": 99,
-      "parent": 71,
+      "id": 102,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:7",
       "transform": [
         [
@@ -13864,7 +13922,7 @@
           0.0
         ],
         [
-          945.0,
+          705.0,
           -144.0,
           455.0,
           1.0
@@ -13873,9 +13931,9 @@
       "grounded": false
     },
     {
-      "id": 115,
-      "component": 99,
-      "parent": 71,
+      "id": 103,
+      "component": 87,
+      "parent": 59,
       "name": "Screw M5 x 20 socket:8",
       "transform": [
         [
@@ -13897,7 +13955,7 @@
           0.0
         ],
         [
-          665.0,
+          425.0,
           -144.0,
           455.0,
           1.0
@@ -13906,8 +13964,8 @@
       "grounded": false
     },
     {
-      "id": 118,
-      "component": 117,
+      "id": 106,
+      "component": 105,
       "parent": 2,
       "name": "T-nut M5 post-assembly:1",
       "transform": [
@@ -13930,7 +13988,7 @@
           0.0
         ],
         [
-          1225.0,
+          985.0,
           265.0,
           338.0,
           1.0
@@ -13939,8 +13997,8 @@
       "grounded": false
     },
     {
-      "id": 126,
-      "component": 117,
+      "id": 114,
+      "component": 105,
       "parent": 2,
       "name": "T-nut M5 post-assembly:2",
       "transform": [
@@ -13963,7 +14021,7 @@
           0.0
         ],
         [
-          1105.0,
+          865.0,
           265.0,
           338.0,
           1.0
@@ -13972,8 +14030,8 @@
       "grounded": false
     },
     {
-      "id": 127,
-      "component": 117,
+      "id": 115,
+      "component": 105,
       "parent": 2,
       "name": "T-nut M5 post-assembly:3",
       "transform": [
@@ -13996,7 +14054,7 @@
           0.0
         ],
         [
-          1225.0,
+          985.0,
           -15.0,
           338.0,
           1.0
@@ -14005,8 +14063,8 @@
       "grounded": false
     },
     {
-      "id": 128,
-      "component": 117,
+      "id": 116,
+      "component": 105,
       "parent": 2,
       "name": "T-nut M5 post-assembly:4",
       "transform": [
@@ -14029,7 +14087,7 @@
           0.0
         ],
         [
-          1105.0,
+          865.0,
           -15.0,
           338.0,
           1.0
@@ -14038,8 +14096,8 @@
       "grounded": false
     },
     {
-      "id": 131,
-      "component": 130,
+      "id": 119,
+      "component": 118,
       "parent": 2,
       "name": "T-nut M5 pre-assembly:1",
       "transform": [
@@ -14063,16 +14121,16 @@
         ],
         [
           148.2,
-          -45.0,
-          315.0,
+          -25.0,
+          1355.0,
           1.0
         ]
       ],
       "grounded": false
     },
     {
-      "id": 137,
-      "component": 130,
+      "id": 125,
+      "component": 118,
       "parent": 2,
       "name": "T-nut M5 pre-assembly:2",
       "transform": [
@@ -14096,8 +14154,8 @@
         ],
         [
           148.2,
-          -245.0,
-          315.0,
+          -225.0,
+          1355.0,
           1.0
         ]
       ],
@@ -14106,7 +14164,7 @@
   ],
   "timeline_groups": [
     {
-      "id": 18,
+      "id": 13,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250",
       "parent": null,
       "features": [
@@ -14116,26 +14174,28 @@
         9,
         10,
         11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17
+        12
+      ]
+    },
+    {
+      "id": 24,
+      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250",
+      "parent": null,
+      "features": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
       ]
     },
     {
       "id": 34,
-      "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250",
+      "name": "T-slot 2020 x 300 holes +X 10 290",
       "parent": null,
       "features": [
-        22,
-        23,
-        24,
-        25,
-        26,
-        27,
-        28,
         29,
         30,
         31,
@@ -14144,92 +14204,78 @@
       ]
     },
     {
-      "id": 45,
-      "name": "T-slot 2020 x 300 holes +X 10 290",
-      "parent": null,
-      "features": [
-        39,
-        40,
-        41,
-        42,
-        43,
-        44
-      ]
-    },
-    {
-      "id": 55,
+      "id": 43,
       "name": "T-slot 2020 x 300 holes -X 10 290",
       "parent": null,
       "features": [
+        38,
+        39,
+        40,
+        41,
+        42
+      ]
+    },
+    {
+      "id": 54,
+      "name": "V-slot 2040 x 300 taps both",
+      "parent": null,
+      "features": [
+        48,
         49,
         50,
         51,
         52,
-        53,
-        54
+        53
       ]
     },
     {
-      "id": 66,
-      "name": "V-slot 2040 x 300 taps both",
-      "parent": null,
-      "features": [
-        60,
-        61,
-        62,
-        63,
-        64,
-        65
-      ]
-    },
-    {
-      "id": 81,
+      "id": 69,
       "name": "Screw M5 x 25 socket",
       "parent": null,
       "features": [
-        75,
-        76,
-        77,
-        78,
-        79,
-        80
+        63,
+        64,
+        65,
+        66,
+        67,
+        68
       ]
     },
     {
-      "id": 107,
+      "id": 95,
       "name": "Screw M5 x 20 socket",
       "parent": null,
       "features": [
-        101,
-        102,
-        103,
-        104,
-        105,
-        106
+        89,
+        90,
+        91,
+        92,
+        93,
+        94
       ]
     },
     {
-      "id": 125,
+      "id": 113,
       "name": "T-nut M5 post-assembly",
       "parent": null,
       "features": [
-        119,
-        120,
-        121,
-        122,
-        123,
-        124
+        107,
+        108,
+        109,
+        110,
+        111,
+        112
       ]
     },
     {
-      "id": 136,
+      "id": 124,
       "name": "T-nut M5 pre-assembly",
       "parent": null,
       "features": [
-        132,
-        133,
-        134,
-        135
+        120,
+        121,
+        122,
+        123
       ]
     }
   ]

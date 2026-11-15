@@ -141,6 +141,7 @@
       "sketch.arc.three_point",
       "sketch.circle.center",
       "sketch.finish",
+      "browser.visibility",
       "solid.extrude",
       "solid.hole",
       "solid.move",

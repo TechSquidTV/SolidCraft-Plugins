@@ -174,50 +174,7 @@ pub fn build_rail<R: Runner>(
                 + along * place.normal[i]
         })
     };
-    for (face, along) in &p.holes {
-        let holes = machining::cross_holes(&p.slot, &p.grid, *face);
-        for (n, hole) in holes.iter().enumerate() {
-            let axis: [f64; 3] = std::array::from_fn(|i| {
-                hole.inward[0] * place.x_dir[i] + hole.inward[1] * place.y_dir[i]
-            });
-            let label = if holes.len() > 1 {
-                format!("Hole at {} ({})", name::length(*along), n + 1)
-            } else {
-                format!("Hole at {}", name::length(*along))
-            };
-            // The head goes through the lips and sits on the slot floor.
-            let (access, seat) = hole.access;
-            r.run(
-                "solid.cylinder",
-                json!({
-                    "diameter": access,
-                    "height": seat,
-                    "base": at(hole.at, *along),
-                    "axis": axis,
-                    "operation": "cut",
-                    "targets": [body_name],
-                    "name": name::part(body_name, &format!("{label}: Access")),
-                }),
-            )?;
-            let (clearance, start, run) = hole.clearance;
-            let from = [
-                hole.at[0] + start * hole.inward[0],
-                hole.at[1] + start * hole.inward[1],
-            ];
-            r.run(
-                "solid.cylinder",
-                json!({
-                    "diameter": clearance,
-                    "height": run,
-                    "base": at(from, *along),
-                    "axis": axis,
-                    "operation": "cut",
-                    "targets": [body_name],
-                    "name": name::part(body_name, &format!("{label}: Clearance")),
-                }),
-            )?;
-        }
-    }
+    drill_cross_holes(r, p, place, body_name)?;
     // The bore is the tap drill already, so a tap only cuts the thread, or lists it.
     let ends = [
         (p.taps.start(), "start", 0.0, place.normal),
@@ -243,6 +200,98 @@ pub fn build_rail<R: Runner>(
                 }),
             )?;
         }
+    }
+    Ok(())
+}
+
+/// One editable sketch per drilled face. Each pair of circles shares one centre
+/// point, and both cuts select profiles by curve id so they follow sketch edits.
+fn drill_cross_holes<R: Runner>(
+    r: &mut R,
+    p: &Params,
+    place: &Placement,
+    body_name: &str,
+) -> Result<(), String> {
+    for face in machining::FACES {
+        let positions: Vec<f64> = p
+            .holes
+            .iter()
+            .filter(|(f, _)| *f == face)
+            .map(|(_, at)| *at)
+            .collect();
+        if positions.is_empty() {
+            continue;
+        }
+        let out = face.outward();
+        let across = [-out[1], out[0]];
+        let origin: [f64; 3] = std::array::from_fn(|i| {
+            place.point[i]
+                + face.half(&p.grid) * (out[0] * place.x_dir[i] + out[1] * place.y_dir[i])
+        });
+        let x_dir: [f64; 3] =
+            std::array::from_fn(|i| across[0] * place.x_dir[i] + across[1] * place.y_dir[i]);
+        // X runs across the face and Y along the rail: their cross product faces out.
+        let created = r.run(
+            "sketch.create",
+            json!({
+                "plane": {"origin": origin, "x_dir": x_dir, "y_dir": place.normal},
+                "name": name::part(body_name, &format!("Hole references {}", face.name())),
+            }),
+        )?;
+        let sketch = sketch_id(&created)?;
+        let holes = machining::cross_holes(&p.slot, &p.grid, face);
+        let mut clearance_profiles = Vec::new();
+        let mut access_profiles = Vec::new();
+        for along in positions {
+            for hole in &holes {
+                let id = format!("hole{}", clearance_profiles.len() + 1);
+                r.run(
+                    "sketch.circle.center",
+                    json!({
+                        "id": id,
+                        "center": [hole.at[0] * across[0] + hole.at[1] * across[1], along],
+                        "diameter": hole.clearance.0,
+                    }),
+                )?;
+                let access = format!("access{}", clearance_profiles.len() + 1);
+                r.run(
+                    "sketch.circle.center",
+                    json!({
+                        "id": access,
+                        "center": format!("{id}.center"),
+                        "diameter": hole.access.0,
+                    }),
+                )?;
+                clearance_profiles.push(json!({"curves": [id]}));
+                access_profiles.push(json!({"curves": [access]}));
+            }
+        }
+        r.run("sketch.finish", json!({}))?;
+        let hole = &holes[0];
+        // Hole features start at the first material on their axis, below the open
+        // slot. Extrusions start on this face plane, keeping the access depth correct.
+        // The access profiles are annuli; the clearance cut removes their centres.
+        for (label, profiles, depth) in [
+            ("Access", access_profiles, hole.access.1),
+            ("Clearance", clearance_profiles, hole.clearance.2),
+        ] {
+            r.run(
+                "solid.extrude",
+                json!({
+                    "sketch": sketch,
+                    "profiles": profiles,
+                    "distance": depth,
+                    "direction": "negative",
+                    "operation": "cut",
+                    "targets": [body_name],
+                    "name": name::part(body_name, &format!("Screw holes {}: {label}", face.name())),
+                }),
+            )?;
+        }
+        r.run(
+            "browser.visibility",
+            json!({"items": [sketch], "visible": false}),
+        )?;
     }
     Ok(())
 }
@@ -340,7 +389,9 @@ mod tests {
             }
             let reply = match command {
                 "selection.get" => json!({"count": 0, "items": []}),
-                "sketch.create" => json!({"sketch": 1}),
+                "sketch.create" => {
+                    json!({"sketch": self.calls.iter().filter(|(c, _)| c == "sketch.create").count() + 1})
+                }
                 _ => Value::Null,
             };
             self.calls.push((command.to_string(), args));
@@ -583,46 +634,112 @@ mod tests {
     }
 
     #[test]
-    fn a_screw_hole_is_an_access_hole_and_a_clearance_hole_cut_from_the_face() {
+    fn screw_holes_share_editable_centres_and_profile_references() {
         let (summary, calls) = commands(json!({
             "size": "2020", "length": 300, "holes": "10, 290", "hole_face": "-Y",
         }));
-        let cuts = all(&calls, "solid.cylinder");
-        assert_eq!(cuts.len(), 4);
         let name = "T-slot 2020 x 300 holes -Y 10 290";
-        // The first hole is 10 along the rail, in from the -Y face.
-        assert_eq!(cuts[0]["name"], format!("{name}: Hole at 10: Access"));
-        assert_eq!(cuts[0]["diameter"], 9.5);
-        assert_eq!(cuts[0]["height"], 6.0);
-        assert_eq!(cuts[0]["base"], json!([0.0, -10.0, 10.0]));
-        assert_eq!(cuts[0]["axis"], json!([0.0, 1.0, 0.0]));
-        assert_eq!(cuts[1]["name"], format!("{name}: Hole at 10: Clearance"));
-        assert_eq!(cuts[1]["diameter"], 5.5);
-        // The clearance hole starts on the face too, and runs right through.
-        assert_eq!(cuts[1]["height"], 20.0);
-        assert_eq!(cuts[1]["base"], json!([0.0, -10.0, 10.0]));
-        assert_eq!(cuts[2]["base"], json!([0.0, -10.0, 290.0]));
-        for cut in &cuts {
+        let sketches = all(&calls, "sketch.create");
+        assert_eq!(sketches.len(), 2);
+        assert_eq!(sketches[1]["name"], format!("{name}: Hole references -Y"));
+        assert_eq!(
+            sketches[1]["plane"],
+            json!({
+                "origin": [0.0, -10.0, 0.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 0.0, 1.0],
+            })
+        );
+        let circles = all(&calls, "sketch.circle.center");
+        assert_eq!(circles[1]["id"], "hole1");
+        assert_eq!(circles[1]["center"], json!([0.0, 10.0]));
+        assert_eq!(circles[1]["diameter"], 5.5);
+        assert_eq!(circles[2]["id"], "access1");
+        assert_eq!(circles[2]["center"], "hole1.center");
+        assert_eq!(circles[2]["diameter"], 9.5);
+        assert_eq!(circles[3]["center"], json!([0.0, 290.0]));
+        assert_eq!(circles[4]["center"], "hole2.center");
+        let extrudes = all(&calls, "solid.extrude");
+        assert_eq!(extrudes.len(), 3);
+        assert_eq!(
+            extrudes[1]["name"],
+            format!("{name}: Screw holes -Y: Access")
+        );
+        assert_eq!(
+            extrudes[1]["profiles"],
+            json!([{"curves": ["access1"]}, {"curves": ["access2"]}])
+        );
+        assert_eq!(extrudes[1]["distance"], 6.0);
+        assert_eq!(
+            extrudes[2]["profiles"],
+            json!([{"curves": ["hole1"]}, {"curves": ["hole2"]}])
+        );
+        assert_eq!(extrudes[2]["distance"], 20.0);
+        for cut in &extrudes[1..] {
+            assert_eq!(cut["sketch"], 2);
+            assert_eq!(cut["direction"], "negative");
             assert_eq!(cut["operation"], "cut");
             assert_eq!(cut["targets"], json!([name]));
         }
+        assert!(all(&calls, "solid.cylinder").is_empty());
         assert!(all(&calls, "solid.hole").is_empty());
+        assert_eq!(
+            all(&calls, "browser.visibility"),
+            vec![&json!({"items": [2], "visible": false})]
+        );
         assert_eq!(
             summary["holes"],
             json!([{"face": "-Y", "at": 10.0}, {"face": "-Y", "at": 290.0}])
         );
-        // A 2040's wide face has two slots, so each position gets two holes.
-        let (_, calls) = commands(json!({
-            "size": "2040", "length": 100, "holes": "50", "hole_face": "+X",
-        }));
-        let cuts = all(&calls, "solid.cylinder");
-        assert_eq!(cuts.len(), 4);
-        assert_eq!(cuts[0]["base"], json!([10.0, -10.0, 50.0]));
-        assert_eq!(cuts[2]["base"], json!([10.0, 10.0, 50.0]));
-        assert_eq!(
-            cuts[2]["name"],
-            "T-slot 2040 x 100 holes +X 50: Hole at 50 (2): Access"
-        );
+    }
+
+    #[test]
+    fn each_drilled_face_has_one_sketch_with_every_slot_and_correct_frame() {
+        let p = rail::parse(
+            &json!({"size": "2040", "length": 200, "holes": "+Y 25 -Y 75 +X 125 -X 175"}),
+        )
+        .unwrap();
+        let profile = Profile::new(p.slot, p.grid).unwrap();
+        // An offset, rotated build frame, as used for a tapped rail's build site.
+        let place = Placement {
+            point: [100.0, 200.0, 300.0],
+            x_dir: [0.0, 1.0, 0.0],
+            y_dir: [0.0, 0.0, 1.0],
+            normal: [1.0, 0.0, 0.0],
+            ..Placement::on_origin()
+        };
+        let mut rec = Rec { calls: vec![] };
+        build_rail(&mut rec, &profile, &p, &place, "Rail").unwrap();
+        let sketches = all(&rec.calls, "sketch.create");
+        assert_eq!(sketches.len(), 5);
+        let origins = [
+            [100.0, 200.0, 320.0],
+            [100.0, 200.0, 280.0],
+            [100.0, 210.0, 300.0],
+            [100.0, 190.0, 300.0],
+        ];
+        let across = [
+            [0.0, -1.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, -1.0],
+        ];
+        let cuts = all(&rec.calls, "solid.extrude");
+        for i in 0..4 {
+            assert_eq!(sketches[i + 1]["plane"]["origin"], json!(origins[i]));
+            assert_eq!(sketches[i + 1]["plane"]["x_dir"], json!(across[i]));
+            assert_eq!(sketches[i + 1]["plane"]["y_dir"], json!(place.normal));
+            assert_eq!(cuts[2 * i + 1]["sketch"], i + 2);
+            assert_eq!(cuts[2 * i + 2]["sketch"], i + 2);
+            assert_eq!(cuts[2 * i + 2]["distance"], if i < 2 { 40.0 } else { 20.0 });
+            assert_eq!(
+                cuts[2 * i + 2]["profiles"].as_array().unwrap().len(),
+                if i < 2 { 1 } else { 2 }
+            );
+        }
+        let circles = all(&rec.calls, "sketch.circle.center");
+        assert_eq!(circles[6]["center"], json!([-10.0, 125.0]));
+        assert_eq!(circles[8]["center"], json!([10.0, 125.0]));
+        assert_eq!(circles[10]["center"], json!([10.0, 175.0]));
+        assert_eq!(circles[12]["center"], json!([-10.0, 175.0]));
     }
 
     #[test]

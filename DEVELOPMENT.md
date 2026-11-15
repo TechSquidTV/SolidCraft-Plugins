@@ -43,6 +43,7 @@ build.sh                   the packages land in dist/<id>/, one per plugin
 examples/                  designs built with the plugins: <name>.json opens in SolidCraft, <name>.steps.json builds it
 tests/cli_test.py          runs the built package through solidcraft-cli
 tests/geometry_test.py     checks by volume what each plugin cuts and builds
+tests/rail_references_test.py checks rail hole edits, placed copies and save/reopen
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
 
@@ -68,6 +69,10 @@ SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py
 ```
 
 It inspects each package. A screw run must build an M3, an insert run must build the M3 × 5.7 insert, a nut run must build an ISO 4032 M6, an extrusion run must build a 120 mm V-slot 2040, and a bad `head` must be refused as invalid input. The signed macOS build of SolidCraft 0.41.0 has the hardened runtime and no JIT entitlement, so loading a component kills `solidcraft-cli` (`SIGKILL`, code signature invalid). Inspect still succeeds there, and the test skips a run check when the CLI dies that way.
+
+### Rail hole references
+
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/rail_references_test.py` after building the packages. It edits the driving circle centers on all four rail faces and checks the actual access and clearance walls, recess depth and volume before and after reopening, including rotated copies, a wide V-slot rail and a tapped rail built away from the origin.
 
 ## Examples
 

@@ -370,9 +370,20 @@ mod tests {
     fn the_manifest_is_this_plugin() {
         let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
         assert_eq!(manifest["id"], PLUGIN);
+        // Two entries make a submenu named after the plugin, holding each entry's name.
+        assert_eq!(manifest["name"], "Extrusions");
         let description = manifest["description"].as_str().unwrap();
         assert!(description.chars().count() <= 240, "{description}");
-        let entry = &manifest["runtime"]["entries"][0];
+        let entries = &manifest["runtime"]["entries"];
+        assert_eq!(
+            entries[0]["slots"],
+            json!([{"kind": "menu", "name": "Extrusion"}])
+        );
+        assert_eq!(
+            entries[1]["slots"],
+            json!([{"kind": "menu", "name": "Slot nut"}])
+        );
+        let entry = &entries[0];
         assert_eq!(entry["name"], "make-extrusion");
         let schema = &entry["input_schema"];
         assert_eq!(schema["required"], json!(["slot", "size", "length"]));

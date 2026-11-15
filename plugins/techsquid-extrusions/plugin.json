@@ -1,6 +1,6 @@
 {
   "id": "techsquid-extrusions",
-  "name": "Aluminium extrusions",
+  "name": "Extrusions",
   "version": "0.1.0",
   "description": "Based on MISUMI 5 series T-slot and OpenBuilds V-slot rails, 20 mm series, with their slot nuts. Select sketch points: each gets a rail or a nut. With nothing selected, one sits on the origin.",
   "capabilities": ["commands@0.1"],
@@ -74,7 +74,7 @@
             }
           }
         },
-        "slots": [{"kind": "menu", "name": "Aluminium extrusion"}]
+        "slots": [{"kind": "menu", "name": "Extrusion"}]
       },
       {
         "name": "make-t-nut",

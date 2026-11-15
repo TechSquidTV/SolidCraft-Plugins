@@ -1,4 +1,4 @@
-# Aluminium extrusions
+# Extrusions
 
 20 mm series T-slot and V-slot aluminium extrusions for [SolidCraft](https://github.com/tangency-labs/solidcraft), cut to any length, and the slot nuts that go in them. Two entries: `make-extrusion` builds a rail, and `make-t-nut` puts a nut in a rail's slot. Each builds its part as a component of its own, once, and places it on every point (see [Components](../../README.md#components)).
 

@@ -47,6 +47,7 @@ tests/rail_references_test.py checks rail hole edits, placed copies and save/reo
 tests/sketch_rails_test.py  checks all profiles, multiple paths, machining edits and batch limits
 tests/sketch_selection_test.py checks selection identity when sketch names are duplicated
 tests/nut_references_test.py checks linked pockets, seated nuts, depth and save/reopen
+tests/screw_references_test.py checks screw seats through sketch, recess and save/reopen edits
 tests/examples_test.py     builds every example through solidcraft-cli and measures it
 ```
 
@@ -96,6 +97,10 @@ with `python3 tests/examples_test.py --update examples/sketch-driven-rails.steps
 ### Nut pocket references
 
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut.
+
+### Screw seat references
+
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/screw_references_test.py` after building. It checks clearance, counterbored, countersunk and tapped holes with cosmetic and modeled threads. Point and circle moves, plane changes, parameter-driven recess depths, reused definitions, carrier movement and save/reopen must preserve each seat and the actual screw body's axial/radial mass-center offsets and volume. `crates/fasteners/src/seat.rs` shares face inspection and rigid-joint creation with the nut plugin; each plugin resolves its own seating geometry before adding hardware. Tapped screws use construction axes through the source points, normal to the seating face, inserted immediately after their source sketches with the original history marker restored afterwards. This avoids persisting thread-face indices that change on rebuild. Clearance and recessed screws use named round ends so their seats follow recess edits.
 
 ## Examples
 
@@ -177,7 +182,7 @@ Each fastener and each fixed-length rail is a component of its own. Sketch-drive
 - **A Fasteners folder.** Every placement goes in one `Fasteners` component in the design, made the first time it is needed. It is a phantom, so the bill of materials counts what it holds and has no row of its own.
 - **A bill of materials.** Each definition is `purchased`, its part number is its name and its description the standard it follows (`ISO 4762`, `ISO 4032`) or the insert it is (`CNC Kitchen heat-set insert M3 × 5.7`). `assembly.bom` on the example lists 4 inserts and 4 screws.
 - **The active component stays.** Fasteners are placed in the design whichever component is active, and the component that was active before the run is active again afterwards.
-- **Moving them.** A placement is free, not grounded, and can be moved, hidden or given joints on its own.
+- **Moving them.** A placement is not grounded. Screws created with holes and nuts created with pockets have rigid seat joints that follow the cut geometry. Loose hardware can be moved or given joints separately. New joints do not retrofit previously generated placements.
 
 The reply's `component` says which definition was placed (`component`), whether it was `reused`, and the `occurrences` made.
 

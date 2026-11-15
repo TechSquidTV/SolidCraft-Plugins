@@ -29,6 +29,7 @@ name = "fasteners"
 version = "0.1.0"
 dependencies = [
  "plugin-kit",
+ "serde",
  "serde_json",
 ]
 

@@ -13,6 +13,7 @@ pub mod hexsocket;
 pub mod metric;
 pub mod nut;
 pub mod phillips;
+pub mod seat;
 pub mod slot;
 pub mod torx;
 

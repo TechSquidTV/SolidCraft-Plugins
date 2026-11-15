@@ -13,6 +13,7 @@
 //! the shoulder when the end comes to a point.
 
 pub mod screw;
+mod seat;
 
 use fasteners::head;
 use fasteners::hex::{self, Hex};
@@ -44,10 +45,20 @@ const PHILLIPS_PAST: f64 = 0.5;
 /// Build a screw on every named or selected point, or one on the origin. Returns a
 /// summary of what was made.
 pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
-    if p.resolved.major.is_none() {
-        return Err(format!("{}: {NO_DIAMETER}", p.size_field));
-    }
+    let major = p
+        .resolved
+        .major
+        .ok_or_else(|| format!("{}: {NO_DIAMETER}", p.size_field))?;
     let spots = place::resolve_all(r, &p.place)?;
+    let axes = if p.create.part()
+        && p.hole
+            .as_ref()
+            .is_some_and(|h| matches!(h.kind, HoleKind::Tapped { .. }))
+    {
+        seat::tap_axes(r, &spots, &body_base(p))?
+    } else {
+        Vec::new()
+    };
     let mut drilled: Vec<String> = Vec::new();
     // Screw and hole with nothing selected still makes the screw. Only a run that
     // would make nothing but a hole is refused.
@@ -82,6 +93,16 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             })
             .collect()
     };
+    // Resolve the hole ends before building hardware, so its own cylindrical
+    // faces cannot be mistaken for the seats.
+    let seats = if p.create.part() && !spots.is_empty() {
+        match &p.hole {
+            Some(hole) => seat::find_all(r, &drilled, &places, &axes, hole, major)?,
+            None => Vec::new(),
+        }
+    } else {
+        Vec::new()
+    };
     let placed = if p.create.part() {
         let base = body_base(p);
         let def = Definition {
@@ -92,9 +113,13 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             bom_type: "purchased",
             site: built_at(p),
         };
-        Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
+        let placed = fasten::place_all(r, &def, &places, |mut r, name, site| {
             build_screw(&mut r, p, site, name)
-        })?)
+        })?;
+        for (seat, occurrence) in seats.iter().zip(&placed.occurrences) {
+            seat.attach(r, *occurrence, &base)?;
+        }
+        Some(placed)
     } else {
         None
     };
@@ -1788,6 +1813,20 @@ mod tests {
                     json!({"created_bodies": [args["body_name"]]})
                 }
                 "solid.hole" => json!({"changed_bodies": self.changed}),
+                "model.faces" => {
+                    let recessed = self
+                        .calls
+                        .iter()
+                        .any(|(c, a)| c == "solid.hole" && a["type"] == "counterbore");
+                    let z = if recessed { 7.0 } else { 10.0 };
+                    json!({"faces": ([10.0, 30.0].into_iter().flat_map(|x| [
+                        json!({"name": format!("seat{x}"), "centroid": [x, 10.0, z], "plane_normal": [0, 0, 1]}),
+                        json!({"name": format!("bore{x}"), "centroid": [x, 10.0, 4.0], "cylinder": {
+                            "origin": [x, 10.0, 0], "axis": [0, 0, 1], "radius": 1.7
+                        }}),
+                    ]).filter(|f| recessed || f["name"] != "seat30").collect::<Vec<_>>())})
+                }
+                "joint.create" => json!({"joint": 999, "errors": [], "conflicts": []}),
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             };
             self.calls.push((command.to_string(), args));
@@ -1854,6 +1893,18 @@ mod tests {
         assert!(hole.get("targets").is_none() && hole.get("type").is_none());
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["hole"]["clearance"], "M3");
+        let joints: Vec<&Value> = calls
+            .iter()
+            .filter(|(c, _)| c == "joint.create")
+            .map(|(_, p)| p)
+            .collect();
+        assert_eq!(joints.len(), 2);
+        for (i, joint) in joints.iter().enumerate() {
+            assert_eq!(joint["a"]["circle"], format!("bore{}", [10, 30][i]));
+            assert_eq!(joint["a"]["end"], "seat10");
+            assert_eq!(joint["b"]["occurrence"], [3, 4][i]);
+            assert_eq!(joint["b"]["point"], summary["points"][i]);
+        }
         // The head stays on the surface.
         assert_eq!(placed_at(&calls)[0], [10.0, 10.0, 10.0]);
     }

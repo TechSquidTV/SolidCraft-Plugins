@@ -15,6 +15,8 @@ Select one or more sketch points or circles and open **Plugins > Extrusion**. Ch
 
 ## Sketch-driven rails
 
+![Paired T-slot 2020, T-slot 4040 and V-slot 2080 rails with path-driven machining](sketch-driven-rails.png)
+
 Choose **Sketch driven** in the Extrusion dialog. Select straight lines from one
 sketch, or enter its name in **Sketch**. **Path lines** accepts ids such as `l1, l2`;
 leave it empty with a named sketch to use all its drawn straight lines. Each run
@@ -44,8 +46,18 @@ Keep it long enough for its holes and taps after editing. A run can model up to 
 taps across all rails; use cosmetic threads or smaller batches for more. Geometry
 kernel failures roll the plugin run back.
 
-Open the [four-rail example](../../examples/sketch-driven-rails.json) and edit
-`Rail_Rise`, `Rail_Tilt`, `Rail_X` or `Rail_Z` to try it.
+Open the [six-rail example](../../examples/sketch-driven-rails.json): two T-slot 2020,
+two T-slot 4040 and two V-slot 2080 rails, each with end-relative cross-holes.
+The 2020 rails have modeled M5 taps; the larger profiles use cosmetic taps.
+
+Try these parameter edits in SolidCraft:
+
+- Set `Rail_Tilt` from `-35 mm` to `35 mm` to reverse the lean.
+- Set `Rail_Rise` from `150 mm` to `190 mm` to lengthen every path while preserving their different lengths.
+- Change `Rail_X` or `Rail_Z` to move the layout.
+
+The holes remain 25 mm and 55 mm from each path's end. Keep the horizontal
+endpoint dimensions positive; for example, use `Rail_X = 90 mm` for a combined edit.
 
 This is an additional mode. Existing fixed-length instances are not converted.
 

@@ -88,7 +88,7 @@ The plugin estimates its command count before creation;
 complex machining can require smaller batches. Its execution allowance also covers
 fixing copied section geometry, while the host's 256-call and 30-second limits remain.
 
-[Sketch-driven rails](examples/sketch-driven-rails.json) is a four-rail example with
+[Sketch-driven rails](examples/sketch-driven-rails.json) is a six-rail example with
 editable `Rail_X`, `Rail_Z`, `Rail_Rise` and `Rail_Tilt` parameters. Rebuild and verify it
 with `python3 tests/examples_test.py --update examples/sketch-driven-rails.steps.json`.
 
@@ -113,7 +113,7 @@ A PCB enclosure. The base is a shelled block with a boss in each corner, fillete
 
 A 300 mm square frame, 340 mm tall, held together by screws alone, the way a Creality Ender 5 frame is. Five `make-extrusion` runs place twelve rails, already cut for their joints: cross rails with both ends tapped and four screw holes for the posts, side rails with a screw hole at each end, and four V-slot 2040 posts with both ends tapped, standing in the corners. Four `make-screw` runs place 24 M5 socket head screws on the slot floors. Sixteen M5 x 25 go through the cross rails and 11 mm into the ends of the posts. Eight M5 x 20 go through the side rails and 6 mm into the ends of the cross rails, short enough to stop before the post screws that cross those ends. Two `make-t-nut` runs put four M5 post-assembly nuts in the top slots and two M5 pre-assembly nuts in a slot of two posts. Every thread is cut. The only bodies that overlap are the screws and the tapped bores they are in, by the little that two threads cut out of step do.
 
-Five smaller examples show one plugin's parts on their own, with nothing else in the design. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+Six standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
 
 | Example | Plugin | What it builds | Picture |
 |---|---|---|---|
@@ -121,7 +121,15 @@ Five smaller examples show one plugin's parts on their own, with nothing else in
 | `insert` | `techsquid-inserts` | One M3 × 5.7 insert on the origin | `insert.png` |
 | `nut` | `techsquid-nuts` | One M3 nut on the origin | `nut.png` |
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
+| `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
+
+The sketch-driven example uses three plugin runs on one fully constrained six-line
+sketch. The paired rails have different lengths; the 2020 pair has modeled M5 taps,
+and the 4040 and 2080 pairs have cosmetic taps. Change `Rail_Tilt` from `-35 mm`
+to `35 mm`, `Rail_Rise` from `150 mm` to `190 mm`, and the layout origin to
+`Rail_X = 90 mm`, `Rail_Z = 40 mm` to try a combined move, resize and reverse tilt.
+The cross-hole offsets stay 25 mm and 55 mm from the path ends.
 
 A new plugin gets an example like these and a picture in its README.
 
@@ -147,6 +155,7 @@ solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-
 solidcraft-cli snapshot --in examples/screws.json --out plugins/techsquid-screws/screws.png --width 1600 --height 700 --camera '{"target": [0, 0, -5], "yaw": 0, "pitch": 0.6, "distance": 92}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/insert.json --out plugins/techsquid-inserts/insert.png --width 1280 --height 800 --camera '{"target": [0, 0, -2.85], "yaw": 0.5, "pitch": 0.55, "distance": 14}' --no-grid --no-axes --quality ultra
 solidcraft-cli snapshot --in examples/nut.json --out plugins/techsquid-nuts/nut.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/sketch-driven-rails.json --out plugins/techsquid-extrusions/sketch-driven-rails.png --width 1280 --height 800 --camera '{"target": [245, 0, 140], "yaw": 0.35, "pitch": 0.4, "distance": 650}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/rails.json --out plugins/techsquid-extrusions/rails.png --width 1280 --height 800 --camera '{"target": [80, 0, 20], "yaw": 0.3, "pitch": 0.8, "distance": 330}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/slot-nuts.json --out plugins/techsquid-extrusions/slot-nuts.png --width 1280 --height 800 --camera '{"target": [0, 0, 14], "yaw": 0.45, "pitch": 0.6, "distance": 95}' --no-grid --no-axes --quality fine --body "T-slot 2020 x 80:opacity=0.3"
 ```

@@ -1,5 +1,5 @@
 {
-  "description": "Four independent sketch-driven rails. Edit Rail_X, Rail_Z, Rail_Rise and Rail_Tilt to translate, resize and tilt their shared source sketch. The two 2020 rails have modeled M5 end taps; the two 4040 rails use cosmetic taps. Both have cross-holes measured from the path end.",
+  "description": "Six independent sketch-driven rails: paired T-slot 2020, T-slot 4040 and V-slot 2080 profiles. Edit Rail_X, Rail_Z, Rail_Rise and Rail_Tilt to translate, resize and tilt their shared source sketch. The two 2020 rails have modeled M5 end taps; the wider profiles use cosmetic taps. Every rail has cross-holes measured from its path end.",
   "steps": [
     {
       "command": "parameters.add",
@@ -284,6 +284,126 @@
       }
     },
     {
+      "caption": "Draw V-slot rail path l5",
+      "command": "sketch.line",
+      "params": {
+        "points": [
+          [
+            380,
+            20
+          ],
+          [
+            345,
+            250
+          ]
+        ]
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l5.start"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 320 mm"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l5.start"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l5.end"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 320 mm + Rail_Tilt"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l5.end"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z + Rail_Rise + 80 mm"
+      }
+    },
+    {
+      "caption": "Draw V-slot rail path l6",
+      "command": "sketch.line",
+      "params": {
+        "points": [
+          [
+            460,
+            20
+          ],
+          [
+            425,
+            270
+          ]
+        ]
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l6.start"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 400 mm"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l6.start"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l6.end"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 400 mm + Rail_Tilt"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l6.end"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z + Rail_Rise + 100 mm"
+      }
+    },
+    {
       "command": "sketch.finish",
       "params": {}
     },
@@ -326,20 +446,40 @@
           "holes_from": "End"
         }
       }
+    },
+    {
+      "caption": "Build two V-slot 2080 rails with cosmetic M5 end taps and end-relative cross-holes",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-extrusions",
+        "approval": "@approval",
+        "entry": "make-extrusion",
+        "params": {
+          "mode": "Sketch driven",
+          "slot": "V-slot",
+          "size": "2080",
+          "sketch": "Rail paths",
+          "path_lines": "l5,l6",
+          "end_taps": "Both",
+          "thread_modeled": false,
+          "holes": "+X 25 -Y 55",
+          "holes_from": "End"
+        }
+      }
     }
   ],
   "expect": {
-    "bodies": 4,
+    "bodies": 6,
     "bbox": {
       "min": [
         15.261587902582068,
-        -20,
+        -40,
         16.37675141046131
       ],
       "max": [
-        319.7278784766429,
-        20,
-        233.28797974610714
+        469.9034174667433,
+        40,
+        271.38647844534404
       ]
     },
     "parts": [
@@ -400,6 +540,36 @@
             319.7278784766429,
             20,
             233.28797974610714
+          ]
+        }
+      },
+      {
+        "body": "V-slot 2080 path l5",
+        "bbox": {
+          "min": [
+            335.1138116266039,
+            -40,
+            18.495580030135372
+          ],
+          "max": [
+            389.8861883733961,
+            40,
+            251.5044199698646
+          ]
+        }
+      },
+      {
+        "body": "V-slot 2080 path l6",
+        "bbox": {
+          "min": [
+            415.0965825332567,
+            -40,
+            18.61352155465594
+          ],
+          "max": [
+            469.9034174667433,
+            40,
+            271.38647844534404
           ]
         }
       }

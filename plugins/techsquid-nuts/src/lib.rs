@@ -81,7 +81,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     // cannot be mistaken for the bolt hole it sits over.
     let seats = if p.create.part() && !spots.is_empty() {
         match &p.pocket {
-            Some(pocket) => seat::Seat::find_all(r, &drilled, &places, pocket, p.major)?,
+            Some(pocket) => seat::find_all(r, &drilled, &places, pocket, p.major)?,
             None => Vec::new(),
         }
     } else {
@@ -102,7 +102,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             build_nut(&mut r, p, site, name).map(|_| ())
         })?;
         for ((seat, place), occurrence) in seats.iter().zip(&places).zip(&placed.occurrences) {
-            seat.attach(r, *occurrence, place, &p.designation)?;
+            seat.attach(r, *occurrence, place, &format!("Nut {}", p.designation))?;
         }
         Some(placed)
     } else {

@@ -1,11 +1,9 @@
 {
-  "format": "solidcraft/56",
+  "format": "solidcraft/57",
   "format_pending": [
-    "cell-grid-feature",
-    "frame-member-locate",
-    "frame-standard-sizes",
-    "occurrence-move-expressions",
-    "pattern-names-by-source"
+    "extrude-to-object-keeps-picked-placements",
+    "linked-cosmetic-threads",
+    "plane-at-angle-follows-named-axis"
   ],
   "name": "pcb-enclosure",
   "units": "mm",
@@ -2728,7 +2726,7 @@
       ]
     }
   ],
-  "next_id": 48,
+  "next_id": 52,
   "components": [
     {
       "id": 12,
@@ -3080,6 +3078,206 @@
       "grounded": false
     }
   ],
+  "assembly": {
+    "joints": [
+      {
+        "id": 48,
+        "name": "Screw M3 x 6 socket: Seat 37",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              34.57719571114827,
+              22.40098620674114,
+              26.84011061163694
+            ],
+            "face": "F35:bore:side:0#1",
+            "end": "F35:cbore:base#1",
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 37,
+          "snap": {
+            "type": "point",
+            "point": [
+              -825.0,
+              -105.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "angle": 0.0
+      },
+      {
+        "id": 49,
+        "name": "Screw M3 x 6 socket: Seat 45",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              -34.57719571114827,
+              25.599013793258845,
+              26.84011061163694
+            ],
+            "face": "F35:bore:side:0#2",
+            "end": "F35:cbore:base#2",
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 45,
+          "snap": {
+            "type": "point",
+            "point": [
+              -825.0,
+              -105.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "angle": 0.0
+      },
+      {
+        "id": 50,
+        "name": "Screw M3 x 6 socket: Seat 46",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              -34.86642235694829,
+              -22.53736118628687,
+              26.840110611636945
+            ],
+            "face": "F35:bore:side:0#3",
+            "end": "F35:cbore:base#3",
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 46,
+          "snap": {
+            "type": "point",
+            "point": [
+              -825.0,
+              -105.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "angle": 0.0
+      },
+      {
+        "id": 51,
+        "name": "Screw M3 x 6 socket: Seat 47",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              33.1335776430517,
+              -22.53736118628687,
+              26.840110611636945
+            ],
+            "face": "F35:bore:side:0#4",
+            "end": "F35:cbore:base#4",
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 47,
+          "snap": {
+            "type": "point",
+            "point": [
+              -825.0,
+              -105.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "angle": 0.0
+      }
+    ]
+  },
   "timeline_groups": [
     {
       "id": 28,

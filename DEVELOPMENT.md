@@ -77,7 +77,7 @@ Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/rail_references_test.p
 
 ### Nut pocket references
 
-Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut.
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut. A horizontal layout covers the previously failing move from -14 to -22 mm, larger horizontal and vertical moves across the origin, and pocket-width and depth edits followed by reopening.
 
 ## Examples
 
@@ -94,6 +94,35 @@ A PCB enclosure. The base is a shelled block with a boss in each corner, fillete
 ![A slot nut under the lips of a top rail, its tapped hole showing through the slot](examples/rail-frame-nuts.png)
 
 A 300 mm square frame, 340 mm tall, held together by screws alone, the way a Creality Ender 5 frame is. Five `make-extrusion` runs place twelve rails, already cut for their joints: cross rails with both ends tapped and four screw holes for the posts, side rails with a screw hole at each end, and four V-slot 2040 posts with both ends tapped, standing in the corners. Four `make-screw` runs place 24 M5 socket head screws on the slot floors. Sixteen M5 x 25 go through the cross rails and 11 mm into the ends of the posts. Eight M5 x 20 go through the side rails and 6 mm into the ends of the cross rails, short enough to stop before the post screws that cross those ends. Two `make-t-nut` runs put four M5 post-assembly nuts in the top slots and two M5 pre-assembly nuts in a slot of two posts. Every thread is cut. The only bodies that overlap are the screws and the tapped bores they are in, by the little that two threads cut out of step do.
+
+### Pocketed nuts that follow edits
+
+[Open the edited design](examples/nut-pockets.json) or read the [captioned command sequence](examples/nut-pockets.steps.json). The existing `nut` example stays a standalone M3 nut for the plugin guide's portrait; this companion shows how the pockets and hardware behave in a part.
+
+![Before editing: two M6 nuts flush in their pockets, 28 mm apart](examples/nut-pockets-before.png)
+
+Before the edits, two M6 nuts sit flush in a 12 mm plate. The left center is a sketch point and the right is a circle center. Both pockets are 5.2 mm deep. The section passes through their bolt-hole axes; the gold parts are the nuts.
+
+![After editing: the nuts and holes are 44 mm apart, and the left nut sits deeper on its pocket floor](examples/nut-pockets.png)
+
+The next steps move the centers from x = -14 and 14 to -22 and 22 mm, then change `left_pocket_depth` from 5.2 to 8 mm. The left nut moves down with its floor and ends 2.8 mm below the plate's top. The right nut stays flush. Both bolt holes remain centered under the nuts. Cosmetic threads keep this example quick to rebuild.
+
+The saved design is the final state. To try another edit, open **Nut centers**, move `left` or `right.center`, and finish the sketch. Change the `left_pocket_depth` parameter to move only the left pocket floor and nut. **Left nut pocket** reads that parameter; its seat joint reads the floor, so there is no second offset to adjust. Opening the saved design does not require the plugin.
+
+Each linked hex corner has a directed construction radius derived from the same across-flats dimension. This keeps the hex from folding during a large center move while leaving its width editable. Previously generated pockets keep their old sketch constraints; regenerate those pockets to get the improved construction.
+
+Build and verify both the saved geometry and its alignment with:
+
+```sh
+SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py --update examples/nut-pockets.steps.json
+SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py examples/nut-pockets.steps.json
+```
+
+The checks compare actual pocket floors, bolt-hole axes, nut bounding boxes, seat-joint frames, and zero interference. The checked-in design must match a fresh build in both volume and position. The before picture comes from the first nine commands, ending with the depth parameter linked at 5.2 mm; the after picture comes from the complete sequence. Both use a section at y = 0, retaining the positive-Y half, with this camera and colors:
+
+```sh
+solidcraft-cli snapshot --in examples/nut-pockets.json --out examples/nut-pockets.png --width 1280 --height 600 --camera '{"target":[0,0,6],"yaw":0.18,"pitch":0.45,"distance":70}' --section y=0,flip --no-grid --no-axes --quality fine --body 'Plate:color=#708da5' --body 'Nut M6:color=#d7af57'
+```
 
 Five smaller examples show one plugin's parts on their own, with nothing else in the design. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
 

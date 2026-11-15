@@ -139,7 +139,8 @@
       "occurrence.reparent",
       "timeline.group",
       "model.faces",
-      "joint.create"
+      "joint.create",
+      "sketch.circle.center"
     ],
     "limits": {
       "fuel": 200000000,

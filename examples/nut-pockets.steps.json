@@ -1,0 +1,239 @@
+{
+  "description": "Two captive M6 nuts in a 70 x 32 x 12 mm plate. A standalone sketch point and a circle center drive their pockets and bolt holes. After creating the nuts flush with the top, edit the sketch to spread the centers from 28 to 44 mm apart, then deepen the left pocket from 5.2 to 8 mm. Its nut stays seated and ends 2.8 mm below the top. Cosmetic threads keep this editing example quick to rebuild. The saved design is the final, edited state. Captions describe the sequence; @approval is filled by tests/examples_test.py.",
+  "steps": [
+    {
+      "caption": "A plate for two captive M6 nuts",
+      "command": "solid.box",
+      "params": {
+        "length": 70,
+        "width": 32,
+        "height": 12,
+        "corner": [
+          -35,
+          -16,
+          0
+        ],
+        "body_name": "Plate"
+      }
+    },
+    {
+      "caption": "Lay out the nut centers on the top of the plate",
+      "command": "sketch.create",
+      "params": {
+        "plane": "XY",
+        "offset": 12,
+        "name": "Nut centers"
+      }
+    },
+    {
+      "caption": "The left nut uses a standalone sketch point",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -14,
+          0
+        ],
+        "id": "left"
+      }
+    },
+    {
+      "caption": "The right nut uses a circle center",
+      "command": "sketch.circle.center",
+      "params": {
+        "center": [
+          14,
+          0
+        ],
+        "radius": 2,
+        "id": "right"
+      }
+    },
+    {
+      "caption": "Finish the layout",
+      "command": "sketch.finish",
+      "params": {}
+    },
+    {
+      "caption": "Cut both pockets and bolt holes, and seat two nuts",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-nuts",
+        "approval": "@approval",
+        "entry": "make-nut",
+        "params": {
+          "size": "M6",
+          "create": "Nut and pocket",
+          "sketch": "Nut centers",
+          "sketch_point": "left,right",
+          "thread_modeled": false
+        }
+      }
+    },
+    {
+      "caption": "Name the left pocket for its later depth edit",
+      "command": "timeline.rename",
+      "params": {
+        "feature": "Nut pocket M6",
+        "name": "Left nut pocket"
+      }
+    },
+    {
+      "caption": "Set an editable depth for the left pocket",
+      "command": "parameters.change",
+      "params": {
+        "name": "left_pocket_depth",
+        "expression": "5.2 mm"
+      }
+    },
+    {
+      "caption": "Drive the left pocket depth from that parameter",
+      "command": "timeline.edit",
+      "params": {
+        "feature": "Left nut pocket",
+        "set": {
+          "extent.distance": "left_pocket_depth"
+        }
+      }
+    },
+    {
+      "caption": "Edit the source layout; the nuts, pockets and bolt holes share these centers",
+      "command": "sketch.edit",
+      "params": {
+        "sketch": "Nut centers"
+      }
+    },
+    {
+      "caption": "Move the left center from -14 to -22 mm",
+      "command": "sketch.move_point",
+      "params": {
+        "point": "left",
+        "to": [
+          -22,
+          0
+        ]
+      }
+    },
+    {
+      "caption": "Move the right circle center from 14 to 22 mm",
+      "command": "sketch.move_point",
+      "params": {
+        "point": "right.center",
+        "to": [
+          22,
+          0
+        ]
+      }
+    },
+    {
+      "caption": "Finish the sketch: both nuts and both cuts move apart together",
+      "command": "sketch.finish",
+      "params": {}
+    },
+    {
+      "caption": "Deepen only the left pocket from 5.2 to 8 mm; its nut follows the floor",
+      "command": "parameters.change",
+      "params": {
+        "name": "left_pocket_depth",
+        "expression": "8 mm"
+      }
+    },
+    {
+      "caption": "Inspect the two rigid seat joints after the edits",
+      "command": "joint.inspect",
+      "params": {}
+    }
+  ],
+  "expect": {
+    "bodies": 3,
+    "bbox": {
+      "min": [
+        -35,
+        -16,
+        0
+      ],
+      "max": [
+        35,
+        16,
+        12
+      ]
+    },
+    "parts": [
+      {
+        "body": "Plate",
+        "bbox": {
+          "min": [
+            -35,
+            -16,
+            0
+          ],
+          "max": [
+            35,
+            16,
+            12
+          ]
+        }
+      }
+    ],
+    "placed": [
+      {
+        "label": "left M6 nut, 2.8 mm recessed",
+        "bbox": {
+          "min": [
+            -27.77350269,
+            -5,
+            4
+          ],
+          "max": [
+            -16.22649731,
+            5,
+            9.2
+          ]
+        },
+        "volume_mm3": 340.72535768
+      },
+      {
+        "label": "right M6 nut, flush",
+        "bbox": {
+          "min": [
+            16.22649731,
+            -5,
+            6.8
+          ],
+          "max": [
+            27.77350269,
+            5,
+            12
+          ]
+        },
+        "volume_mm3": 340.72535768
+      }
+    ],
+    "nut_seats": [
+      {
+        "body": "Plate",
+        "at": [
+          -22,
+          0
+        ],
+        "floor_z": 4,
+        "bolt_radius": 3.3
+      },
+      {
+        "body": "Plate",
+        "at": [
+          22,
+          0
+        ],
+        "floor_z": 6.8,
+        "bolt_radius": 3.3
+      }
+    ],
+    "overlaps": {
+      "pairs": 0,
+      "volume_mm3": [
+        0,
+        0
+      ]
+    }
+  }
+}

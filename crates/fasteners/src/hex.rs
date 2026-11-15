@@ -1,11 +1,10 @@
 //! A six-sided profile extruded along the sketch normal.
 //!
-//! `sketch.polygon.circumscribed` is the circle through the flats, so the radius is half
-//! the width across the flats. The screw's hex head and the ISO 4032 nut both extrude that
-//! profile. The centre stays on the sketch origin, and one side is horizontal so the flats
-//! sit square.
+//! Screw heads and loose nuts use a circumscribed polygon centered on the sketch
+//! origin. Linked pockets locate each corner with a directed construction radius
+//! so large edits cannot fold the hex. Both use one across-flats width dimension.
 
-use serde_json::json;
+use serde_json::{json, Value};
 
 use plugin_kit::host::{body_name_of, sketch_id};
 use plugin_kit::Runner;
@@ -69,11 +68,13 @@ pub fn draw_profile<R: Runner>(
     across_flats: f64,
     center: Option<&str>,
 ) -> Result<(), String> {
-    let mut polygon = json!({"center": [0.0, 0.0], "radius": across_flats / 2.0, "sides": 6});
-    if center.is_some() {
-        polygon["connect"] = json!(false);
+    if let Some(center) = center {
+        return draw_linked_profile(r, across_flats, center);
     }
-    r.run("sketch.polygon.circumscribed", polygon)?;
+    r.run(
+        "sketch.polygon.circumscribed",
+        json!({"center": [0.0, 0.0], "radius": across_flats / 2.0, "sides": 6}),
+    )?;
     // The circle through the flats fixes the size without fixing the center.
     r.run(
         "sketch.dimension",
@@ -83,13 +84,91 @@ pub fn draw_profile<R: Runner>(
         "sketch.constraint.horizontal_vertical",
         json!({"line": "l1", "mode": "horizontal"}),
     )?;
-    if let Some(center) = center {
+    Ok(())
+}
+
+/// Locate each corner by a directed construction radius. Equal sides on circles
+/// admit folded polygons; a large center edit can lead the solver into one of
+/// those solutions. Six independent rays keep the corners ordered, even when
+/// the center crosses the origin. Every radius reads the same width dimension.
+fn draw_linked_profile<R: Runner>(
+    r: &mut R,
+    across_flats: f64,
+    center: &str,
+) -> Result<(), String> {
+    let inspected = r.run("sketch.inspect", json!({}))?;
+    let at = inspected["points"]
+        .as_array()
+        .and_then(|points| points.iter().find(|p| p["id"] == center))
+        .and_then(|p| p.get("at"))
+        .ok_or("sketch.inspect did not return the projected hex center")?;
+    let at: [f64; 2] = serde_json::from_value(at.clone())
+        .map_err(|_| "sketch.inspect returned an invalid projected hex center")?;
+    let made = r.run(
+        "sketch.circle.center",
+        json!({
+            "center": at, "radius": across_flats / 2.0, "construction": true, "connect": false,
+        }),
+    )?;
+    let circle = curves(&made, 1, "sketch.circle.center")?.remove(0);
+    let circle_center = format!("{circle}.center");
+    r.run(
+        "sketch.constraint.coincident",
+        json!({"a": circle_center, "b": center}),
+    )?;
+    let dimension = r.run(
+        "sketch.dimension",
+        json!({
+            "entities": [circle], "type": "diameter", "value": across_flats,
+        }),
+    )?;
+    let width = dimension["param"]
+        .as_str()
+        .filter(|p| !p.is_empty())
+        .ok_or("sketch.dimension did not return the hex width parameter")?;
+    let radius = across_flats / 3.0_f64.sqrt();
+    let angles = [60.0_f64, 120.0, 180.0, 240.0, 300.0, 0.0];
+    let vertices: Vec<[f64; 2]> = angles
+        .iter()
+        .map(|angle| {
+            let (sin, cos) = angle.to_radians().sin_cos();
+            [at[0] + radius * cos, at[1] + radius * sin]
+        })
+        .collect();
+    let drawn = r.run(
+        "sketch.line",
+        json!({"points": vertices, "closed": true, "connect": false}),
+    )?;
+    let sides = curves(&drawn, 6, "sketch.line")?;
+    for (side, angle) in sides.iter().zip(angles) {
+        let drawn = r.run("sketch.line", json!({
+            "points": [circle_center, format!("{side}.start")], "construction": true, "connect": false,
+        }))?;
+        let spoke = curves(&drawn, 1, "sketch.line")?.remove(0);
         r.run(
-            "sketch.constraint.coincident",
-            json!({"a": "c1.center", "b": center}),
+            "sketch.dimension",
+            json!({"entities": [spoke], "type": "length", "value": format!("{width} / sqrt(3)")}),
+        )?;
+        r.run(
+            "sketch.dimension",
+            json!({
+                "entities": [spoke], "type": "angle", "value": format!("{angle} deg"),
+            }),
         )?;
     }
     Ok(())
+}
+
+fn curves(reply: &Value, count: usize, command: &str) -> Result<Vec<String>, String> {
+    let ids = reply["curves"]
+        .as_array()
+        .filter(|ids| ids.len() == count)
+        .and_then(|ids| {
+            ids.iter()
+                .map(|id| id.as_str().filter(|id| !id.is_empty()).map(str::to_string))
+                .collect()
+        });
+    ids.ok_or_else(|| format!("{command} did not return {count} hex curve ids"))
 }
 
 #[cfg(test)]

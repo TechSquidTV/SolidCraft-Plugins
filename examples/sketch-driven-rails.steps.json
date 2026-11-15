@@ -1,0 +1,408 @@
+{
+  "description": "Four independent sketch-driven rails. Edit Rail_X, Rail_Z, Rail_Rise and Rail_Tilt to translate, resize and tilt their shared source sketch. The two 2020 rails have modeled M5 end taps; the two 4040 rails use cosmetic taps. Both have cross-holes measured from the path end.",
+  "steps": [
+    {
+      "command": "parameters.add",
+      "params": {
+        "name": "Rail_X",
+        "expression": "60 mm"
+      }
+    },
+    {
+      "command": "parameters.add",
+      "params": {
+        "name": "Rail_Z",
+        "expression": "20 mm"
+      }
+    },
+    {
+      "command": "parameters.add",
+      "params": {
+        "name": "Rail_Rise",
+        "expression": "150 mm"
+      }
+    },
+    {
+      "command": "parameters.add",
+      "params": {
+        "name": "Rail_Tilt",
+        "expression": "-35 mm"
+      }
+    },
+    {
+      "command": "sketch.create",
+      "params": {
+        "name": "Rail paths",
+        "plane": {
+          "x_dir": [
+            1,
+            0,
+            0
+          ],
+          "y_dir": [
+            0,
+            0,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "command": "sketch.line",
+      "params": {
+        "points": [
+          [
+            60,
+            20
+          ],
+          [
+            25,
+            170
+          ]
+        ]
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l1.start"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 0 mm"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l1.start"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l1.end"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 0 mm + Rail_Tilt"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l1.end"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z + Rail_Rise + 0 mm"
+      }
+    },
+    {
+      "command": "sketch.line",
+      "params": {
+        "points": [
+          [
+            140,
+            20
+          ],
+          [
+            105,
+            190
+          ]
+        ]
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l2.start"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 80 mm"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l2.start"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l2.end"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 80 mm + Rail_Tilt"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l2.end"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z + Rail_Rise + 20 mm"
+      }
+    },
+    {
+      "command": "sketch.line",
+      "params": {
+        "points": [
+          [
+            220,
+            20
+          ],
+          [
+            185,
+            210
+          ]
+        ]
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l3.start"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 160 mm"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l3.start"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l3.end"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 160 mm + Rail_Tilt"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l3.end"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z + Rail_Rise + 40 mm"
+      }
+    },
+    {
+      "command": "sketch.line",
+      "params": {
+        "points": [
+          [
+            300,
+            20
+          ],
+          [
+            265,
+            230
+          ]
+        ]
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l4.start"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 240 mm"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l4.start"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l4.end"
+        ],
+        "type": "horizontal",
+        "value": "Rail_X + 240 mm + Rail_Tilt"
+      }
+    },
+    {
+      "command": "sketch.dimension",
+      "params": {
+        "entities": [
+          "origin",
+          "l4.end"
+        ],
+        "type": "vertical",
+        "value": "Rail_Z + Rail_Rise + 60 mm"
+      }
+    },
+    {
+      "command": "sketch.finish",
+      "params": {}
+    },
+    {
+      "caption": "Build two 2020 sketch-driven rails with path-driven machining",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-extrusions",
+        "approval": "@approval",
+        "entry": "make-extrusion",
+        "params": {
+          "mode": "Sketch driven",
+          "slot": "T-slot",
+          "size": "2020",
+          "sketch": "Rail paths",
+          "path_lines": "l1,l2",
+          "end_taps": "Both",
+          "thread_modeled": true,
+          "holes": "+X 25 -Y 55",
+          "holes_from": "End"
+        }
+      }
+    },
+    {
+      "caption": "Build two 4040 sketch-driven rails with path-driven machining",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-extrusions",
+        "approval": "@approval",
+        "entry": "make-extrusion",
+        "params": {
+          "mode": "Sketch driven",
+          "slot": "T-slot",
+          "size": "4040",
+          "sketch": "Rail paths",
+          "path_lines": "l3,l4",
+          "end_taps": "Both",
+          "thread_modeled": false,
+          "holes": "+X 25 -Y 55",
+          "holes_from": "End"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "bodies": 4,
+    "bbox": {
+      "min": [
+        15.261587902582068,
+        -20,
+        16.37675141046131
+      ],
+      "max": [
+        319.7278784766429,
+        20,
+        233.28797974610714
+      ]
+    },
+    "parts": [
+      {
+        "body": "T-slot 2020 path l1",
+        "bbox": {
+          "min": [
+            15.261587902582068,
+            -10,
+            17.727703843935817
+          ],
+          "max": [
+            69.73841209741794,
+            10,
+            172.2722961560642
+          ]
+        }
+      },
+      {
+        "body": "T-slot 2020 path l2",
+        "bbox": {
+          "min": [
+            95.20542956743348,
+            -10,
+            17.98347079329513
+          ],
+          "max": [
+            149.7945704325665,
+            10,
+            192.01652920670486
+          ]
+        }
+      },
+      {
+        "body": "T-slot 4040 path l3",
+        "bbox": {
+          "min": [
+            165.33093622821855,
+            -20,
+            16.37675141046131
+          ],
+          "max": [
+            239.66906377178145,
+            20,
+            213.6232485895387
+          ]
+        }
+      },
+      {
+        "body": "T-slot 4040 path l4",
+        "bbox": {
+          "min": [
+            245.27212152335713,
+            -20,
+            16.712020253892852
+          ],
+          "max": [
+            319.7278784766429,
+            20,
+            233.28797974610714
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 
 A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-insert`. For every sketch point or circle you select, it drills the hole for the insert into the part under that point and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../README.md#components)).
 
-Sizes are [CNC Kitchen](https://cnckitchen.store/)'s. The outside is the knurl. The top face is a 16-point star, those points twist down one way, a smooth gap follows, and the points twist back the other way. A short lead-in at the tip is smooth, with a small chamfer. D1 is the diameter across the points.
+Sizes are [CNC Kitchen](https://cnckitchen.store/)'s. The outside follows CNC Kitchen's section drawing: three rings on a shaft. The top ring is a 12-point star across D1 that twists one way. A smooth groove follows. The middle ring is a slightly narrower star that twists the other way and ends in a large 45° chamfer. After a short neck, the bottom ring is a smooth pilot, about as wide as the plastic hole and with a small chamfer at the tip, so the insert drops into its hole before you press it in. D1 is the diameter across the points of the top ring.
 
 ## Install
 
@@ -37,7 +37,7 @@ All sizes are millimetres. Size lists the rows of the tables below and sets the 
 
 Select a sketch point, or a circle, before you open the dialog. The face end sits on that point and the tip runs into the part. On a face sketch the normal already points out of the material, so the insert hangs into the plastic and the face end is flush with the face. With nothing selected, the insert sits on the origin: the face end is on the XY plane and the tip runs along −Z. The reply says which of these happened in `placed`. Name Sketch and Sketch point together to place the insert without a selection.
 
-The valley sits at 0.76 of the crest, and a tooth runs at 50° from the axis. The lead-in is 0.18 of the length and the gap is 0.09. On a long insert the twist stops at 40° so the teeth do not fold through each other. Those proportions come from the short M3 inserts. A crest set close to the thread keeps a root outside the bore.
+Radii are fractions of the top ring's points: the valley 0.85, the middle ring's points 0.97, the groove 0.83, the neck 0.79 and the pilot 0.875, but never wider than the plastic hole D2. Along the insert, the top ring is 0.29 of the length, the groove 0.11, the neck 0.10 and the pilot 0.135, and the middle ring and its chamfer take the rest. Both knurls run at 50° from the axis. On a long insert the twist stops at 40° so the teeth do not fold through each other. Those proportions are measured off CNC Kitchen's section drawing, and the tooth count and the hand of each knurl off their photographs. On a large insert, or a diameter set close to the thread, the valley, the groove and the neck are lifted so they stay outside the bore.
 
 `solid.hole` bores that body and threads it. The bore targets the new body only, so it does not continue into the part underneath. Metric threads can be cosmetic or modeled. Unified and pipe sizes stay cosmetic, even with Modeled thread on. `#2-56` is a plain bore of about 1.731 mm, because SolidCraft's tap catalogue starts at `#4-40`.
 
@@ -57,7 +57,7 @@ The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall 
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas: `c1, c2` |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.cylinder`, `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.chamfer`, `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.revolve` (the smooth core and the middle chamfer), `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 `short` and `Voron` mark a second row of the same thread. D1 is the insert diameter, D2 is the plastic hole, and W is the minimum wall beside that hole.
 
@@ -118,7 +118,7 @@ The body, the hole and every feature say what the part is and its size, so a des
 |---|---|
 | Insert body | `Insert M3 x 5.7`, from the thread and length actually built |
 | Insert hole | `Heat-set hole M3 x 5.7`, or `Glue-in hole` and `Glue-in pilot` for a stepped hole |
-| Features and sketches of an insert | the insert's name, then the feature: `Insert M3 x 5.7: Upper knurl`, `Insert M3 x 5.7: Bore` |
+| Features and sketches of an insert | the insert's name, then the feature: `Insert M3 x 5.7: Upper knurl`, `Insert M3 x 5.7: Middle chamfer`, `Insert M3 x 5.7: Bore` |
 
 A hole keeps its kind and size in its own name because it stays in the part, and with Hole only there is no insert body at all.
 

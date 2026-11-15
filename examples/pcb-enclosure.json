@@ -835,57 +835,215 @@
     },
     {
       "id": 16,
+      "name": "Insert M3 x 5.7: Core section",
+      "suppressed": false,
+      "component": 14,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.9089999999999998,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              1.9089999999999998,
+              4.2685
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              1.817,
+              4.3605
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              1.817,
+              4.9305
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              2.0,
+              4.9305
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              2.0,
+              5.529
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              1.829,
+              5.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              0.0,
+              5.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          }
+        ],
+        "counters": {
+          "k": 1,
+          "l": 9
+        }
+      }
+    },
+    {
+      "id": 17,
       "name": "Insert M3 x 5.7: Core",
       "suppressed": false,
       "body_names": [
         "Insert M3 x 5.7"
       ],
       "param_names": [
-        "d23",
-        "d24"
+        "d23"
       ],
       "component": 14,
-      "type": "cylinder",
-      "base": [
-        0.0,
-        0.0,
-        -5.7
-      ],
-      "axis": [
-        0.0,
-        0.0,
-        1.0
-      ],
-      "radius": "(3.1868799999999995 mm) / 2",
-      "height": "5.7",
-      "operation": "new_body"
-    },
-    {
-      "id": 17,
-      "name": "Insert M3 x 5.7: Lead-in",
-      "suppressed": false,
-      "param_names": [
-        "d25",
-        "d26"
-      ],
-      "component": 14,
-      "participants": [
-        "Insert M3 x 5.7"
-      ],
-      "type": "cylinder",
-      "base": [
-        0.0,
-        0.0,
-        -5.7
-      ],
-      "axis": [
-        0.0,
-        0.0,
-        1.0
-      ],
-      "radius": "(3.4959999999999996 mm) / 2",
-      "height": "1.026",
-      "operation": "join"
+      "type": "revolve",
+      "sketch": 16,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360 deg",
+      "operation": "new_body",
+      "convention": "sketch_normal"
     },
     {
       "id": 18,
@@ -934,61 +1092,45 @@
           {
             "id": "l1.end",
             "pos": [
-              1.7144126701448466,
-              0.34101788288419216
+              1.8883849903951284,
+              0.505991233175428
             ],
             "fixed": false
           },
           {
             "id": "l2.end",
             "pos": [
-              2.124922924775959,
-              0.8801718944397064
+              1.991858428704209,
+              1.1499999999999997
             ],
             "fixed": false
           },
           {
             "id": "l3.end",
             "pos": [
-              1.453408882304849,
-              0.9711367673182645
+              1.3823937572197005,
+              1.3823937572197003
             ],
             "fixed": false
           },
           {
             "id": "l4.end",
             "pos": [
-              1.6263455967290592,
-              1.626345596729059
+              1.1500000000000001,
+              1.9918584287042087
             ],
             "fixed": false
           },
           {
             "id": "l5.end",
             "pos": [
-              0.9711367673182647,
-              1.453408882304849
+              0.505991233175428,
+              1.8883849903951284
             ],
             "fixed": false
           },
           {
             "id": "l6.end",
-            "pos": [
-              0.8801718944397066,
-              2.124922924775959
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l7.end",
-            "pos": [
-              0.34101788288419227,
-              1.7144126701448466
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l8.end",
             "pos": [
               1.408343819019456e-16,
               2.3
@@ -996,63 +1138,47 @@
             "fixed": false
           },
           {
+            "id": "l7.end",
+            "pos": [
+              -0.5059912331754278,
+              1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              -1.1499999999999995,
+              1.991858428704209
+            ],
+            "fixed": false
+          },
+          {
             "id": "l9.end",
             "pos": [
-              -0.34101788288419205,
-              1.7144126701448466
+              -1.3823937572197003,
+              1.3823937572197005
             ],
             "fixed": false
           },
           {
             "id": "l10.end",
             "pos": [
-              -0.8801718944397063,
-              2.124922924775959
+              -1.991858428704209,
+              1.1499999999999997
             ],
             "fixed": false
           },
           {
             "id": "l11.end",
             "pos": [
-              -0.9711367673182641,
-              1.453408882304849
+              -1.8883849903951282,
+              0.5059912331754286
             ],
             "fixed": false
           },
           {
             "id": "l12.end",
-            "pos": [
-              -1.626345596729059,
-              1.6263455967290592
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l13.end",
-            "pos": [
-              -1.453408882304849,
-              0.9711367673182645
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l14.end",
-            "pos": [
-              -2.124922924775959,
-              0.8801718944397067
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l15.end",
-            "pos": [
-              -1.7144126701448466,
-              0.34101788288419277
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l16.end",
             "pos": [
               -2.3,
               2.816687638038912e-16
@@ -1060,63 +1186,47 @@
             "fixed": false
           },
           {
+            "id": "l13.end",
+            "pos": [
+              -1.8883849903951284,
+              -0.5059912331754282
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l14.end",
+            "pos": [
+              -1.9918584287042091,
+              -1.1499999999999992
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l15.end",
+            "pos": [
+              -1.3823937572197011,
+              -1.3823937572196996
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l16.end",
+            "pos": [
+              -1.150000000000001,
+              -1.9918584287042083
+            ],
+            "fixed": false
+          },
+          {
             "id": "l17.end",
             "pos": [
-              -1.7144126701448466,
-              -0.3410178828841923
+              -0.5059912331754278,
+              -1.8883849903951284
             ],
             "fixed": false
           },
           {
             "id": "l18.end",
-            "pos": [
-              -2.1249229247759596,
-              -0.8801718944397062
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l19.end",
-            "pos": [
-              -1.4534088823048492,
-              -0.9711367673182641
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l20.end",
-            "pos": [
-              -1.6263455967290597,
-              -1.626345596729059
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l21.end",
-            "pos": [
-              -0.9711367673182645,
-              -1.453408882304849
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l22.end",
-            "pos": [
-              -0.8801718944397077,
-              -2.1249229247759587
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l23.end",
-            "pos": [
-              -0.3410178828841929,
-              -1.7144126701448463
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l24.end",
             "pos": [
               -4.225031457058368e-16,
               -2.3
@@ -1124,58 +1234,42 @@
             "fixed": false
           },
           {
-            "id": "l25.end",
+            "id": "l19.end",
             "pos": [
-              0.3410178828841922,
-              -1.7144126701448466
+              0.5059912331754272,
+              -1.8883849903951286
             ],
             "fixed": false
           },
           {
-            "id": "l26.end",
+            "id": "l20.end",
             "pos": [
-              0.8801718944397069,
-              -2.124922924775959
+              1.1500000000000001,
+              -1.9918584287042087
             ],
             "fixed": false
           },
           {
-            "id": "l27.end",
+            "id": "l21.end",
             "pos": [
-              0.9711367673182639,
-              -1.4534088823048492
+              1.3823937572197,
+              -1.3823937572197007
             ],
             "fixed": false
           },
           {
-            "id": "l28.end",
+            "id": "l22.end",
             "pos": [
-              1.6263455967290588,
-              -1.6263455967290597
+              1.991858428704208,
+              -1.150000000000001
             ],
             "fixed": false
           },
           {
-            "id": "l29.end",
+            "id": "l23.end",
             "pos": [
-              1.453408882304849,
-              -0.9711367673182645
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l30.end",
-            "pos": [
-              2.1249229247759587,
-              -0.8801718944397078
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l31.end",
-            "pos": [
-              1.7144126701448463,
-              -0.34101788288419294
+              1.888384990395128,
+              -0.5059912331754296
             ],
             "fixed": false
           }
@@ -1346,69 +1440,13 @@
             "id": "l24",
             "type": "line",
             "a": 24,
-            "b": 25,
-            "construction": false
-          },
-          {
-            "id": "l25",
-            "type": "line",
-            "a": 25,
-            "b": 26,
-            "construction": false
-          },
-          {
-            "id": "l26",
-            "type": "line",
-            "a": 26,
-            "b": 27,
-            "construction": false
-          },
-          {
-            "id": "l27",
-            "type": "line",
-            "a": 27,
-            "b": 28,
-            "construction": false
-          },
-          {
-            "id": "l28",
-            "type": "line",
-            "a": 28,
-            "b": 29,
-            "construction": false
-          },
-          {
-            "id": "l29",
-            "type": "line",
-            "a": 29,
-            "b": 30,
-            "construction": false
-          },
-          {
-            "id": "l30",
-            "type": "line",
-            "a": 30,
-            "b": 31,
-            "construction": false
-          },
-          {
-            "id": "l31",
-            "type": "line",
-            "a": 31,
-            "b": 32,
-            "construction": false
-          },
-          {
-            "id": "l32",
-            "type": "line",
-            "a": 32,
             "b": 1,
             "construction": false
           }
         ],
         "constraints": [],
         "counters": {
-          "l": 32
+          "l": 24
         }
       }
     },
@@ -1460,7 +1498,7 @@
             "id": "l1.end",
             "pos": [
               0.0,
-              2.0805000000000002
+              1.653
             ],
             "fixed": false
           }
@@ -1493,7 +1531,7 @@
       "name": "Insert M3 x 5.7: Upper knurl",
       "suppressed": false,
       "param_names": [
-        "d27"
+        "d24"
       ],
       "component": 14,
       "type": "sweep",
@@ -1505,7 +1543,7 @@
       "path": [
         "l1"
       ],
-      "twist": "40",
+      "twist": "-31.780821917808225",
       "operation": "join",
       "targets": [
         "Insert M3 x 5.7"
@@ -1513,7 +1551,7 @@
     },
     {
       "id": 21,
-      "name": "Insert M3 x 5.7: Lower knurl profile",
+      "name": "Insert M3 x 5.7: Middle knurl profile",
       "suppressed": false,
       "component": 14,
       "type": "sketch",
@@ -1523,7 +1561,7 @@
           "origin": [
             0.0,
             0.0,
-            -2.5935
+            -2.2800000000000002
           ],
           "x_dir": [
             1.0,
@@ -1550,7 +1588,7 @@
           {
             "id": "l1.start",
             "pos": [
-              2.3,
+              2.231,
               0.0
             ],
             "fixed": false
@@ -1558,248 +1596,184 @@
           {
             "id": "l1.end",
             "pos": [
-              1.7144126701448466,
-              0.34101788288419216
+              1.8883849903951284,
+              0.505991233175428
             ],
             "fixed": false
           },
           {
             "id": "l2.end",
             "pos": [
-              2.124922924775959,
-              0.8801718944397064
+              1.9321026758430826,
+              1.1154999999999997
             ],
             "fixed": false
           },
           {
             "id": "l3.end",
             "pos": [
-              1.453408882304849,
-              0.9711367673182645
+              1.3823937572197005,
+              1.3823937572197003
             ],
             "fixed": false
           },
           {
             "id": "l4.end",
             "pos": [
-              1.6263455967290592,
-              1.626345596729059
+              1.1155000000000002,
+              1.9321026758430824
             ],
             "fixed": false
           },
           {
             "id": "l5.end",
             "pos": [
-              0.9711367673182647,
-              1.453408882304849
+              0.505991233175428,
+              1.8883849903951284
             ],
             "fixed": false
           },
           {
             "id": "l6.end",
             "pos": [
-              0.8801718944397066,
-              2.124922924775959
+              1.3660935044488724e-16,
+              2.231
             ],
             "fixed": false
           },
           {
             "id": "l7.end",
             "pos": [
-              0.34101788288419227,
-              1.7144126701448466
+              -0.5059912331754278,
+              1.8883849903951284
             ],
             "fixed": false
           },
           {
             "id": "l8.end",
             "pos": [
-              1.408343819019456e-16,
-              2.3
+              -1.1154999999999995,
+              1.9321026758430826
             ],
             "fixed": false
           },
           {
             "id": "l9.end",
             "pos": [
-              -0.34101788288419205,
-              1.7144126701448466
+              -1.3823937572197003,
+              1.3823937572197005
             ],
             "fixed": false
           },
           {
             "id": "l10.end",
             "pos": [
-              -0.8801718944397063,
-              2.124922924775959
+              -1.9321026758430826,
+              1.1154999999999997
             ],
             "fixed": false
           },
           {
             "id": "l11.end",
             "pos": [
-              -0.9711367673182641,
-              1.453408882304849
+              -1.8883849903951282,
+              0.5059912331754286
             ],
             "fixed": false
           },
           {
             "id": "l12.end",
             "pos": [
-              -1.626345596729059,
-              1.6263455967290592
+              -2.231,
+              2.7321870088977447e-16
             ],
             "fixed": false
           },
           {
             "id": "l13.end",
             "pos": [
-              -1.453408882304849,
-              0.9711367673182645
+              -1.8883849903951284,
+              -0.5059912331754282
             ],
             "fixed": false
           },
           {
             "id": "l14.end",
             "pos": [
-              -2.124922924775959,
-              0.8801718944397067
+              -1.9321026758430828,
+              -1.1154999999999993
             ],
             "fixed": false
           },
           {
             "id": "l15.end",
             "pos": [
-              -1.7144126701448466,
-              0.34101788288419277
+              -1.3823937572197011,
+              -1.3823937572196996
             ],
             "fixed": false
           },
           {
             "id": "l16.end",
             "pos": [
-              -2.3,
-              2.816687638038912e-16
+              -1.1155000000000008,
+              -1.9321026758430822
             ],
             "fixed": false
           },
           {
             "id": "l17.end",
             "pos": [
-              -1.7144126701448466,
-              -0.3410178828841923
+              -0.5059912331754278,
+              -1.8883849903951284
             ],
             "fixed": false
           },
           {
             "id": "l18.end",
             "pos": [
-              -2.1249229247759596,
-              -0.8801718944397062
+              -4.098280513346617e-16,
+              -2.231
             ],
             "fixed": false
           },
           {
             "id": "l19.end",
             "pos": [
-              -1.4534088823048492,
-              -0.9711367673182641
+              0.5059912331754272,
+              -1.8883849903951286
             ],
             "fixed": false
           },
           {
             "id": "l20.end",
             "pos": [
-              -1.6263455967290597,
-              -1.626345596729059
+              1.1155000000000002,
+              -1.9321026758430824
             ],
             "fixed": false
           },
           {
             "id": "l21.end",
             "pos": [
-              -0.9711367673182645,
-              -1.453408882304849
+              1.3823937572197,
+              -1.3823937572197007
             ],
             "fixed": false
           },
           {
             "id": "l22.end",
             "pos": [
-              -0.8801718944397077,
-              -2.1249229247759587
+              1.932102675843082,
+              -1.1155000000000008
             ],
             "fixed": false
           },
           {
             "id": "l23.end",
             "pos": [
-              -0.3410178828841929,
-              -1.7144126701448463
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l24.end",
-            "pos": [
-              -4.225031457058368e-16,
-              -2.3
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l25.end",
-            "pos": [
-              0.3410178828841922,
-              -1.7144126701448466
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l26.end",
-            "pos": [
-              0.8801718944397069,
-              -2.124922924775959
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l27.end",
-            "pos": [
-              0.9711367673182639,
-              -1.4534088823048492
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l28.end",
-            "pos": [
-              1.6263455967290588,
-              -1.6263455967290597
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l29.end",
-            "pos": [
-              1.453408882304849,
-              -0.9711367673182645
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l30.end",
-            "pos": [
-              2.1249229247759587,
-              -0.8801718944397078
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l31.end",
-            "pos": [
-              1.7144126701448463,
-              -0.34101788288419294
+              1.888384990395128,
+              -0.5059912331754296
             ],
             "fixed": false
           }
@@ -1970,75 +1944,19 @@
             "id": "l24",
             "type": "line",
             "a": 24,
-            "b": 25,
-            "construction": false
-          },
-          {
-            "id": "l25",
-            "type": "line",
-            "a": 25,
-            "b": 26,
-            "construction": false
-          },
-          {
-            "id": "l26",
-            "type": "line",
-            "a": 26,
-            "b": 27,
-            "construction": false
-          },
-          {
-            "id": "l27",
-            "type": "line",
-            "a": 27,
-            "b": 28,
-            "construction": false
-          },
-          {
-            "id": "l28",
-            "type": "line",
-            "a": 28,
-            "b": 29,
-            "construction": false
-          },
-          {
-            "id": "l29",
-            "type": "line",
-            "a": 29,
-            "b": 30,
-            "construction": false
-          },
-          {
-            "id": "l30",
-            "type": "line",
-            "a": 30,
-            "b": 31,
-            "construction": false
-          },
-          {
-            "id": "l31",
-            "type": "line",
-            "a": 31,
-            "b": 32,
-            "construction": false
-          },
-          {
-            "id": "l32",
-            "type": "line",
-            "a": 32,
             "b": 1,
             "construction": false
           }
         ],
         "constraints": [],
         "counters": {
-          "l": 32
+          "l": 24
         }
       }
     },
     {
       "id": 22,
-      "name": "Insert M3 x 5.7: Lower knurl path",
+      "name": "Insert M3 x 5.7: Middle knurl path",
       "suppressed": false,
       "component": 14,
       "type": "sketch",
@@ -2048,7 +1966,7 @@
           "origin": [
             0.0,
             0.0,
-            -2.5935
+            -2.2800000000000002
           ],
           "x_dir": [
             1.0,
@@ -2084,7 +2002,7 @@
             "id": "l1.end",
             "pos": [
               0.0,
-              2.0805000000000002
+              2.0805
             ],
             "fixed": false
           }
@@ -2114,10 +2032,10 @@
     },
     {
       "id": 23,
-      "name": "Insert M3 x 5.7: Lower knurl",
+      "name": "Insert M3 x 5.7: Middle knurl",
       "suppressed": false,
       "param_names": [
-        "d28"
+        "d25"
       ],
       "component": 14,
       "type": "sweep",
@@ -2129,7 +2047,7 @@
       "path": [
         "l1"
       ],
-      "twist": "-40",
+      "twist": "40",
       "operation": "join",
       "targets": [
         "Insert M3 x 5.7"
@@ -2137,53 +2055,126 @@
     },
     {
       "id": 24,
-      "name": "Insert M3 x 5.7: Tip chamfer",
+      "name": "Insert M3 x 5.7: Middle chamfer section",
       "suppressed": false,
-      "param_names": [
-        "d29"
-      ],
       "component": 14,
-      "edge_refs": [
-        {
-          "dir": [
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
             0.0,
             0.0,
             0.0
           ],
-          "min": [
-            -2.3,
-            -2.3,
-            -5.700000000000001
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
           ],
-          "max": [
-            2.3,
-            2.3,
-            1.8673642265545387e-16
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
           ]
         }
-      ],
-      "edge_names": [
-        "F16:bottom|F17:side"
-      ],
-      "type": "chamfer",
-      "edges": [
-        [
-          1.7479999999999998,
-          0.0,
-          -5.7
-        ]
-      ],
-      "distance": "0.1656",
-      "body": "Insert M3 x 5.7"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              1.817,
+              4.3605
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              2.6449999999999996,
+              4.3605
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              2.6449999999999996,
+              3.5325000000000006
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
     },
     {
       "id": 25,
+      "name": "Insert M3 x 5.7: Middle chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d26"
+      ],
+      "component": 14,
+      "type": "revolve",
+      "sketch": 24,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360 deg",
+      "operation": "cut",
+      "targets": [
+        "Insert M3 x 5.7"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 26,
       "name": "Move1",
       "suppressed": false,
       "param_names": [
-        "d30",
-        "d31",
-        "d32"
+        "d27",
+        "d28",
+        "d29"
       ],
       "component": 14,
       "type": "move",
@@ -2197,16 +2188,16 @@
       ]
     },
     {
-      "id": 26,
+      "id": 27,
       "name": "Insert M3 x 5.7: Bore",
       "suppressed": false,
       "param_names": [
-        "d33",
-        "d34"
+        "d30",
+        "d31"
       ],
       "component": 14,
       "face_names": [
-        "F16:top"
+        "F17:side:l1"
       ],
       "participants": [
         "Insert M3 x 5.7"
@@ -2231,16 +2222,16 @@
       "modeled": true
     },
     {
-      "id": 30,
+      "id": 31,
       "name": "Lid plate",
       "suppressed": false,
       "body_names": [
         "Lid"
       ],
       "param_names": [
-        "d35",
-        "d36",
-        "d37"
+        "d32",
+        "d33",
+        "d34"
       ],
       "type": "box",
       "corner": [
@@ -2255,11 +2246,11 @@
       "centred": true
     },
     {
-      "id": 31,
+      "id": 32,
       "name": "Lid corners",
       "suppressed": false,
       "param_names": [
-        "d38"
+        "d35"
       ],
       "edge_refs": [
         {
@@ -2332,10 +2323,10 @@
         }
       ],
       "edge_names": [
-        "F30:+x|F30:+y",
-        "F30:+y|F30:-x",
-        "F30:-x|F30:-y",
-        "F30:+x|F30:-y"
+        "F31:+x|F31:+y",
+        "F31:+y|F31:-x",
+        "F31:-x|F31:-y",
+        "F31:+x|F31:-y"
       ],
       "type": "fillet",
       "edges": [
@@ -2364,11 +2355,11 @@
       "body": "Lid"
     },
     {
-      "id": 32,
+      "id": 33,
       "name": "Screw points",
       "suppressed": false,
       "param_names": [
-        "d39"
+        "d36"
       ],
       "type": "sketch",
       "plane": {
@@ -2444,14 +2435,14 @@
       }
     },
     {
-      "id": 33,
+      "id": 34,
       "name": "Counterbore M3",
       "suppressed": false,
       "param_names": [
-        "d40",
-        "d41",
-        "d42",
-        "d43"
+        "d37",
+        "d38",
+        "d39",
+        "d40"
       ],
       "type": "hole",
       "position": [
@@ -2472,7 +2463,7 @@
         "cb_depth": "3"
       },
       "points": {
-        "sketch": 32,
+        "sketch": 33,
         "ids": [
           "s1",
           "s2",
@@ -2482,17 +2473,17 @@
       }
     },
     {
-      "id": 36,
+      "id": 37,
       "name": "Screw M3 x 6 socket: Shank",
       "suppressed": false,
       "body_names": [
         "Screw M3 x 6 socket"
       ],
       "param_names": [
-        "d44",
-        "d45"
+        "d41",
+        "d42"
       ],
-      "component": 34,
+      "component": 35,
       "type": "cylinder",
       "base": [
         0.0,
@@ -2509,14 +2500,14 @@
       "operation": "new_body"
     },
     {
-      "id": 37,
+      "id": 38,
       "name": "Screw M3 x 6 socket: Head",
       "suppressed": false,
       "param_names": [
-        "d46",
-        "d47"
+        "d43",
+        "d44"
       ],
-      "component": 34,
+      "component": 35,
       "participants": [
         "Screw M3 x 6 socket"
       ],
@@ -2536,10 +2527,10 @@
       "operation": "join"
     },
     {
-      "id": 38,
+      "id": 39,
       "name": "Screw M3 x 6 socket: Hex socket profile",
       "suppressed": false,
-      "component": 34,
+      "component": 35,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -2671,15 +2662,15 @@
       }
     },
     {
-      "id": 39,
+      "id": 40,
       "name": "Screw M3 x 6 socket: Hex socket",
       "suppressed": false,
       "param_names": [
-        "d48"
+        "d45"
       ],
-      "component": 34,
+      "component": 35,
       "type": "extrude",
-      "sketch": 38,
+      "sketch": 39,
       "profiles": {
         "type": "all"
       },
@@ -2694,36 +2685,36 @@
       ]
     },
     {
-      "id": 40,
+      "id": 41,
       "name": "Move2",
       "suppressed": false,
       "param_names": [
-        "d49",
-        "d50",
-        "d51"
+        "d46",
+        "d47",
+        "d48"
       ],
-      "component": 34,
+      "component": 35,
       "type": "move",
       "bodies": [
         "Screw M3 x 6 socket"
       ],
       "translate": [
-        "-785",
+        "-805",
         "-105",
         "0"
       ]
     },
     {
-      "id": 41,
+      "id": 42,
       "name": "Screw M3 x 6 socket: Thread",
       "suppressed": false,
-      "component": 34,
+      "component": 35,
       "face_names": [
-        "F36:side"
+        "F37:side"
       ],
       "type": "thread",
       "face": [
-        -783.5,
+        -803.5,
         -105.0,
         -5.0
       ],
@@ -2731,13 +2722,13 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -783.5,
+        -803.5,
         -105.0,
         -5.0
       ]
     }
   ],
-  "next_id": 45,
+  "next_id": 46,
   "components": [
     {
       "id": 12,
@@ -2757,7 +2748,7 @@
         "bom_type": "purchased",
         "description": "CNC Kitchen heat-set insert M3 × 5.7",
         "dev.threadcraft": {
-          "geometry": "484622ee1ea14be7",
+          "geometry": "cc67bb22c848787e",
           "plugin": "techsquid-inserts",
           "site": [
             -385.0,
@@ -2769,7 +2760,7 @@
       }
     },
     {
-      "id": 34,
+      "id": 35,
       "identification_color_index": 2,
       "name": "Screw M3 x 6 socket",
       "parent": 12,
@@ -2780,7 +2771,7 @@
           "geometry": "6fb5a1d4e19926cb",
           "plugin": "techsquid-screws",
           "site": [
-            -785.0,
+            -805.0,
             -105.0,
             0.0
           ]
@@ -2858,7 +2849,7 @@
       "grounded": false
     },
     {
-      "id": 27,
+      "id": 28,
       "component": 14,
       "parent": 12,
       "name": "Insert M3 x 5.7:2",
@@ -2891,7 +2882,7 @@
       "grounded": false
     },
     {
-      "id": 28,
+      "id": 29,
       "component": 14,
       "parent": 12,
       "name": "Insert M3 x 5.7:3",
@@ -2924,7 +2915,7 @@
       "grounded": false
     },
     {
-      "id": 29,
+      "id": 30,
       "component": 14,
       "parent": 12,
       "name": "Insert M3 x 5.7:4",
@@ -2957,8 +2948,8 @@
       "grounded": false
     },
     {
-      "id": 35,
-      "component": 34,
+      "id": 36,
+      "component": 35,
       "parent": 12,
       "name": "Screw M3 x 6 socket:1",
       "transform": [
@@ -2981,7 +2972,7 @@
           0.0
         ],
         [
-          819.0,
+          839.0,
           129.0,
           27.0,
           1.0
@@ -2990,8 +2981,8 @@
       "grounded": false
     },
     {
-      "id": 42,
-      "component": 34,
+      "id": 43,
+      "component": 35,
       "parent": 12,
       "name": "Screw M3 x 6 socket:2",
       "transform": [
@@ -3014,7 +3005,7 @@
           0.0
         ],
         [
-          751.0,
+          771.0,
           129.0,
           27.0,
           1.0
@@ -3023,8 +3014,8 @@
       "grounded": false
     },
     {
-      "id": 43,
-      "component": 34,
+      "id": 44,
+      "component": 35,
       "parent": 12,
       "name": "Screw M3 x 6 socket:3",
       "transform": [
@@ -3047,7 +3038,7 @@
           0.0
         ],
         [
-          751.0,
+          771.0,
           81.0,
           27.0,
           1.0
@@ -3056,8 +3047,8 @@
       "grounded": false
     },
     {
-      "id": 44,
-      "component": 34,
+      "id": 45,
+      "component": 35,
       "parent": 12,
       "name": "Screw M3 x 6 socket:4",
       "transform": [
@@ -3080,7 +3071,7 @@
           0.0
         ],
         [
-          819.0,
+          839.0,
           81.0,
           27.0,
           1.0

@@ -82,6 +82,9 @@ pub struct Params {
     /// The plastic hole and the wall beside it, when the diameter is the row's.
     pub hole: Option<f64>,
     pub wall: Option<f64>,
+    /// The plastic hole for this diameter, before any adjustment. The insert's pilot is
+    /// no wider. A typed diameter keeps the row's interference.
+    pub press_hole: f64,
     pub create: Create,
     /// The hole to drill in the part. Empty when only the insert is made.
     pub cut: Option<HoleCut>,
@@ -146,6 +149,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         plain_bore: bore.plain_bore,
         hole: listed.then_some(row.hole),
         wall: listed.then_some(row.wall),
+        press_hole: diameter - (row.diameter - row.hole),
         place,
     })
 }
@@ -410,6 +414,9 @@ mod tests {
         let p = parse(&json!({"custom_diameter": 5.0})).unwrap();
         assert_eq!(p.hole, None);
         assert_eq!(p.wall, None);
+        // The pilot still drops into a hole with the row's interference.
+        assert!((p.press_hole - 4.4).abs() < 1e-9);
+        assert!((parse(&json!({})).unwrap().press_hole - 4.0).abs() < 1e-9);
     }
 
     #[test]
@@ -482,8 +489,9 @@ mod tests {
         assert!(err.reason.contains("M3"));
         assert!(parse(&json!({"create": "Insert only", "custom_diameter": 3.0})).is_err());
         let p = parse(&json!({"create": "Insert only", "custom_diameter": 3.3})).unwrap();
-        let shape = knurl::shape(p.length, p.diameter, p.major);
-        assert!(shape.gap_diameter > p.major && shape.root * 2.0 > p.major);
+        let shape = knurl::shape(p.length, p.diameter, p.major, p.press_hole);
+        assert!(shape.groove * 2.0 > p.major && shape.root * 2.0 > p.major);
+        assert!(shape.neck * 2.0 > p.major);
     }
 
     #[test]

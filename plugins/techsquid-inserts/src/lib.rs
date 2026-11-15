@@ -3,8 +3,9 @@
 //! One entry, `make-insert`. Every selected sketch point or circle gets the hole for the
 //! insert, drilled into the part under it, and a placement of the insert component. The face end
 //! sits on the point and the tip runs into the part. With nothing selected, an insert
-//! alone sits on the origin. The outside is a 16-point star that
-//! twists into a herringbone knurl. `solid.hole` bores that body and threads it.
+//! alone sits on the origin. The outside is CNC Kitchen's: two knurled rings that twist
+//! opposite ways, a groove between them, and a smooth pilot at the tip (see `knurl`).
+//! `solid.hole` bores that body and threads it.
 
 pub mod catalog;
 pub mod insert;
@@ -195,61 +196,55 @@ fn build_insert<R: Runner>(
         point: [0.0, 0.0, 0.0],
         ..*site
     };
-    let shape = knurl::shape(p.length, p.diameter, p.major);
-    let tip = place.tip(p.length);
+    let shape = knurl::shape(p.length, p.diameter, p.major, p.press_hole);
     // Every feature and sketch of this insert starts with its name.
     let named = |feature: &str| name::part(body_name, feature);
-    let made = r.run(
-        "solid.cylinder",
+    // The core, the groove, the neck and the pilot are one revolved section.
+    let made = revolve(
+        r,
+        place,
+        &shape.core_profile(),
         json!({
-            "diameter": shape.gap_diameter,
-            "height": p.length,
-            "base": tip,
-            "axis": place.normal,
             "operation": "new",
             "name": named("Core"),
             "body_name": body_name,
         }),
     )?;
     let body = body_name_of(&made).ok_or_else(|| "the insert body was not named".to_string())?;
-    r.run(
-        "solid.cylinder",
-        json!({
-            "diameter": shape.lead_diameter,
-            "height": shape.lead,
-            "base": tip,
-            "axis": place.normal,
-            "operation": "join",
-            "targets": [body],
-            "name": named("Lead-in"),
-        }),
-    )?;
     sweep_band(
         r,
         place,
         &body,
-        &shape,
-        0.0,
-        shape.twist_deg,
+        Band {
+            from_face: 0.0,
+            length: shape.upper,
+            crest: shape.crest,
+            root: shape.root,
+            twist_deg: shape.upper_twist,
+        },
         &named("Upper knurl"),
     )?;
     sweep_band(
         r,
         place,
         &body,
-        &shape,
-        shape.band + shape.gap,
-        -shape.twist_deg,
-        &named("Lower knurl"),
+        Band {
+            from_face: shape.middle_start,
+            length: shape.middle,
+            crest: shape.middle_crest,
+            root: shape.root,
+            twist_deg: shape.middle_twist,
+        },
+        &named("Middle knurl"),
     )?;
-    let edge = place.on_shank(p.length, 0.0, shape.root);
-    r.run(
-        "solid.chamfer",
+    revolve(
+        r,
+        place,
+        &shape.chamfer_cut(),
         json!({
-            "edges": [edge],
-            "distance": shape.chamfer,
-            "body": body,
-            "name": named("Tip chamfer"),
+            "operation": "cut",
+            "targets": [body],
+            "name": named("Middle chamfer"),
         }),
     )?;
     if site.point != place.point {
@@ -278,17 +273,57 @@ fn build_insert<R: Runner>(
     Ok(())
 }
 
-/// One helical band. `from_face` is where it starts, toward the tip.
+/// Revolves `section` about the insert's axis. The section is in a sketch through the
+/// axis: x is the radius along `x_dir` and y the depth from the face toward the tip.
+/// `feature` holds the operation, the name and any target; the sketch takes the name.
+fn revolve<R: Runner>(
+    r: &mut R,
+    place: &Placement,
+    section: &[[f64; 2]],
+    mut feature: Value,
+) -> Result<Value, String> {
+    let name = feature["name"].as_str().unwrap_or("Insert").to_string();
+    let sketch = r.run(
+        "sketch.create",
+        json!({
+            "name": format!("{name} section"),
+            "plane": {
+                "origin": place.point,
+                "x_dir": place.x_dir,
+                "y_dir": opposite(place.normal),
+            },
+        }),
+    )?;
+    let sketch_id = sketch_id(&sketch)?;
+    r.run(
+        "sketch.line",
+        json!({"sketch": sketch_id, "closed": true, "points": section}),
+    )?;
+    r.run("sketch.finish", json!({}))?;
+    feature["sketch"] = json!(sketch_id);
+    // The sketch's y axis is the insert's axis.
+    feature["axis"] = json!("y");
+    r.run("solid.revolve", feature)
+}
+
+/// One helical band of the knurl.
+struct Band {
+    /// Where it starts, measured from the face toward the tip.
+    from_face: f64,
+    length: f64,
+    crest: f64,
+    root: f64,
+    twist_deg: f64,
+}
+
 fn sweep_band<R: Runner>(
     r: &mut R,
     place: &Placement,
     body: &str,
-    shape: &knurl::Shape,
-    from_face: f64,
-    twist_deg: f64,
+    band: Band,
     name: &str,
 ) -> Result<(), String> {
-    let origin = place.tip(from_face);
+    let origin = place.tip(band.from_face);
     let profile = r.run(
         "sketch.create",
         json!({
@@ -306,7 +341,7 @@ fn sweep_band<R: Runner>(
         json!({
             "sketch": profile_id,
             "closed": true,
-            "points": knurl::star(shape.crest, shape.root),
+            "points": knurl::star(band.crest, band.root),
         }),
     )?;
     r.run("sketch.finish", json!({}))?;
@@ -326,7 +361,7 @@ fn sweep_band<R: Runner>(
         "sketch.line",
         json!({
             "sketch": path_id,
-            "points": [[0.0, 0.0], [0.0, shape.band]],
+            "points": [[0.0, 0.0], [0.0, band.length]],
         }),
     )?;
     let curve = created_curve(&drawn)?;
@@ -337,7 +372,7 @@ fn sweep_band<R: Runner>(
             "sketch": profile_id,
             "path_sketch": path_id,
             "path": [curve],
-            "twist": twist_deg,
+            "twist": band.twist_deg,
             "operation": "join",
             "targets": [body],
             "name": name,
@@ -427,9 +462,7 @@ mod tests {
                     json!({"sketch": self.sketch})
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
-                "solid.cylinder"
-                    if args.get("operation").and_then(Value::as_str) == Some("new") =>
-                {
+                "solid.revolve" if args.get("operation").and_then(Value::as_str) == Some("new") => {
                     json!({"created_bodies": [args["body_name"]]})
                 }
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
@@ -457,43 +490,53 @@ mod tests {
         (summary, rec.calls)
     }
 
-    fn call<'a>(calls: &'a [(String, Value)], command: &str) -> &'a Value {
-        &calls.iter().find(|(name, _)| name == command).unwrap().1
-    }
-
     fn last<'a>(calls: &'a [(String, Value)], command: &str) -> &'a Value {
         &calls.iter().rfind(|(name, _)| name == command).unwrap().1
     }
 
     #[test]
-    fn an_m3_insert_is_a_herringbone_and_a_bore() {
+    fn an_m3_insert_is_a_revolved_core_two_knurls_and_a_bore() {
         let (summary, calls) = commands(json!({}));
+        let band = [
+            "sketch.create",
+            "sketch.line",
+            "sketch.finish",
+            "sketch.create",
+            "sketch.line",
+            "sketch.finish",
+            "solid.sweep",
+            "browser.visibility",
+        ];
+        let section = [
+            "sketch.create",
+            "sketch.line",
+            "sketch.finish",
+            "solid.revolve",
+        ];
+        let mut expected = vec!["selection.get"];
+        expected.extend(section);
+        expected.extend(band);
+        expected.extend(band);
+        expected.extend(section);
+        expected.push("solid.hole");
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
-            [
-                "selection.get",
-                "solid.cylinder",
-                "solid.cylinder",
-                "sketch.create",
-                "sketch.line",
-                "sketch.finish",
-                "sketch.create",
-                "sketch.line",
-                "sketch.finish",
-                "solid.sweep",
-                "browser.visibility",
-                "sketch.create",
-                "sketch.line",
-                "sketch.finish",
-                "sketch.create",
-                "sketch.line",
-                "sketch.finish",
-                "solid.sweep",
-                "browser.visibility",
-                "solid.chamfer",
-                "solid.hole",
-            ]
+            expected
         );
+        let shape = knurl::shape(5.7, 4.6, 3.0, 4.0);
+        // The core section lies in a plane through the axis, the depth along -Z.
+        let plane = &calls[1].1["plane"];
+        assert_eq!(plane["origin"], json!([0.0, 0.0, 0.0]));
+        assert_eq!(plane["y_dir"], json!([0.0, 0.0, -1.0]));
+        assert_eq!(calls[1].1["name"], "Insert M3 x 5.7: Core section");
+        assert_eq!(calls[2].1["points"], json!(shape.core_profile()));
+        assert_eq!(calls[2].1["closed"], true);
+        let core = &calls[4].1;
+        assert_eq!(core["sketch"], 1);
+        assert_eq!(core["axis"], "y");
+        assert_eq!(core["operation"], "new");
+        assert_eq!(core["body_name"], "Insert M3 x 5.7");
+        assert_eq!(core["name"], "Insert M3 x 5.7: Core");
         // Each band hides its own profile and path, so no point of either is picked
         // later to place a screw.
         let hidden: Vec<&Value> = calls
@@ -501,29 +544,32 @@ mod tests {
             .filter(|(c, _)| c == "browser.visibility")
             .map(|(_, a)| a)
             .collect();
-        assert_eq!(hidden[0], &json!({"visible": false, "items": [1, 2]}));
-        assert_eq!(hidden[1], &json!({"visible": false, "items": [3, 4]}));
-        let shape = knurl::shape(5.7, 4.6, 3.0);
-        let core = &calls[1].1;
-        assert_eq!(core["diameter"], json!(shape.gap_diameter));
-        assert_eq!(core["height"], 5.7);
-        assert_eq!(core["base"], json!([0.0, 0.0, -5.7]));
-        assert_eq!(core["axis"], json!([0.0, 0.0, 1.0]));
-        assert_eq!(core["operation"], "new");
-        assert_eq!(core["body_name"], "Insert M3 x 5.7");
-        assert_eq!(core["name"], "Insert M3 x 5.7: Core");
-        assert_eq!(calls[2].1["diameter"], json!(shape.lead_diameter));
-        assert_eq!(calls[2].1["operation"], "join");
-        let star = &calls[4].1["points"];
-        assert_eq!(calls[4].1["sketch"], 1);
-        assert_eq!(star.as_array().unwrap().len(), 32);
-        assert_eq!(star[0][0], json!(shape.crest));
-        assert_eq!(calls[7].1["sketch"], 2);
-        assert_eq!(calls[9].1["twist"], json!(shape.twist_deg));
-        assert_eq!(calls[17].1["twist"], json!(-shape.twist_deg));
-        assert_eq!(calls[9].1["targets"], json!(["Insert M3 x 5.7"]));
-        assert_eq!(calls[17].1["targets"], json!(["Insert M3 x 5.7"]));
-        let hole = &calls[20].1;
+        assert_eq!(hidden[0], &json!({"visible": false, "items": [2, 3]}));
+        assert_eq!(hidden[1], &json!({"visible": false, "items": [4, 5]}));
+        // The upper knurl starts on the face, the middle one past the groove.
+        assert_eq!(calls[5].1["plane"]["origin"], json!([0.0, 0.0, 0.0]));
+        assert_eq!(
+            calls[13].1["plane"]["origin"],
+            json!([0.0, 0.0, -shape.middle_start])
+        );
+        let upper = &calls[6].1["points"];
+        assert_eq!(upper.as_array().unwrap().len(), 24);
+        assert_eq!(upper[0][0], json!(shape.crest));
+        assert_eq!(calls[14].1["points"][0][0], json!(shape.middle_crest));
+        assert_eq!(calls[9].1["points"][1][1], json!(shape.upper));
+        assert_eq!(calls[17].1["points"][1][1], json!(shape.middle));
+        assert_eq!(calls[11].1["twist"], json!(shape.upper_twist));
+        assert_eq!(calls[19].1["twist"], json!(shape.middle_twist));
+        assert_eq!(calls[11].1["targets"], json!(["Insert M3 x 5.7"]));
+        assert_eq!(calls[19].1["targets"], json!(["Insert M3 x 5.7"]));
+        // The middle chamfer is cut out of the insert alone.
+        assert_eq!(calls[22].1["points"], json!(shape.chamfer_cut()));
+        let chamfer = &calls[24].1;
+        assert_eq!(chamfer["sketch"], 6);
+        assert_eq!(chamfer["operation"], "cut");
+        assert_eq!(chamfer["targets"], json!(["Insert M3 x 5.7"]));
+        assert_eq!(chamfer["name"], "Insert M3 x 5.7: Middle chamfer");
+        let hole = &calls[25].1;
         assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
         assert_eq!(hole["depth"], 5.7);
@@ -548,11 +594,11 @@ mod tests {
     #[test]
     fn a_longer_insert_keeps_the_catalog_crest() {
         let (summary, calls) = commands(json!({"custom_length": 8}));
-        let shape = knurl::shape(8.0, 4.6, 3.0);
-        assert_eq!(calls[1].0, "solid.cylinder");
-        assert_eq!(calls[1].1["height"], 8.0);
-        assert_eq!(calls[1].1["diameter"], json!(shape.gap_diameter));
-        assert_eq!(calls[1].1["base"], json!([0.0, 0.0, -8.0]));
+        let shape = knurl::shape(8.0, 4.6, 3.0, 4.0);
+        assert_eq!(calls[4].0, "solid.revolve");
+        assert_eq!(calls[2].1["points"], json!(shape.core_profile()));
+        assert_eq!(*shape.core_profile().last().unwrap(), [0.0, 8.0]);
+        assert_eq!(calls[6].1["points"][0][0], json!(2.3));
         assert_eq!(last(&calls, "solid.hole")["depth"], 8.0);
         assert_eq!(summary["diameter"], 4.6);
         assert_eq!(summary["length"], 8.0);
@@ -562,11 +608,10 @@ mod tests {
     #[test]
     fn a_diameter_override_moves_the_crest() {
         let (summary, calls) = commands(json!({"custom_diameter": 5}));
-        let shape = knurl::shape(5.7, 5.0, 3.0);
-        assert_eq!(
-            call(&calls, "sketch.line")["points"][0][0],
-            json!(shape.crest)
-        );
+        // A typed diameter keeps the row's 0.6 mm interference, so the pilot fits 4.4.
+        let shape = knurl::shape(5.7, 5.0, 3.0, 4.4);
+        assert_eq!(calls[2].1["points"], json!(shape.core_profile()));
+        assert_eq!(calls[6].1["points"][0][0], json!(shape.crest));
         assert_eq!(summary["diameter"], 5.0);
         assert_eq!(summary["thread"], "M3");
         assert_eq!(
@@ -578,7 +623,10 @@ mod tests {
     #[test]
     fn a_number_two_insert_is_a_plain_bore() {
         let (_, calls) = commands(json!({"size": "#2-56 × 3.2"}));
-        assert_eq!(calls[1].1["height"], 3.2);
+        assert_eq!(
+            calls[2].1["points"].as_array().unwrap().last().unwrap()[1],
+            3.2
+        );
         let hole = last(&calls, "solid.hole");
         assert_eq!(hole["diameter"], json!(0.086 * 25.4 - 25.4 / 56.0));
         assert_eq!(hole["modeled"], false);
@@ -608,7 +656,7 @@ mod tests {
                         json!({"sketch": self.sketch})
                     }
                     "sketch.line" => json!({"created": {"curves": ["l1"]}}),
-                    "solid.cylinder"
+                    "solid.revolve"
                         if args.get("operation").and_then(Value::as_str) == Some("new") =>
                     {
                         json!({"created_bodies": ["Body1"]})
@@ -627,7 +675,10 @@ mod tests {
         make_insert(&mut rec, &p).unwrap();
         assert_eq!(last(&rec.calls, "solid.hole")["targets"], json!(["Body1"]));
         assert_eq!(last(&rec.calls, "solid.sweep")["targets"], json!(["Body1"]));
-        assert_eq!(call(&rec.calls, "solid.chamfer")["body"], "Body1");
+        assert_eq!(
+            last(&rec.calls, "solid.revolve")["targets"],
+            json!(["Body1"])
+        );
     }
 
     #[test]
@@ -646,6 +697,7 @@ mod tests {
                 self.0.push(command.to_string());
                 Ok(match command {
                     "selection.get" => json!({"count": 0, "items": []}),
+                    "sketch.create" => json!({"sketch": 1}),
                     _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 })
             }
@@ -654,7 +706,16 @@ mod tests {
         let mut rec = Mute(vec![]);
         let err = make_insert(&mut rec, &p).unwrap_err();
         assert_eq!(err, "the insert body was not named");
-        assert_eq!(rec.0, ["selection.get", "solid.cylinder"]);
+        assert_eq!(
+            rec.0,
+            [
+                "selection.get",
+                "sketch.create",
+                "sketch.line",
+                "sketch.finish",
+                "solid.revolve"
+            ]
+        );
     }
 
     #[test]
@@ -682,7 +743,7 @@ mod tests {
                     }),
                     "sketch.create" => json!({"sketch": 5}),
                     "sketch.line" => json!({"created": {"curves": ["l1"]}}),
-                    "solid.cylinder"
+                    "solid.revolve"
                         if args.get("operation").and_then(Value::as_str) == Some("new") =>
                     {
                         json!({"created_bodies": ["Insert"]})
@@ -698,7 +759,7 @@ mod tests {
         let summary = make_insert(&mut rec, &p).unwrap();
         assert_eq!(rec.0[0].0, "sketch.inspect");
         // The insert is built in its own component, its face end on the origin.
-        assert_eq!(rec.0[1].1["base"], json!([0.0, 0.0, -5.7]));
+        assert_eq!(rec.0[1].1["plane"]["origin"], json!([0.0, 0.0, 0.0]));
         let hole = last(&rec.0, "solid.hole");
         assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
@@ -745,9 +806,7 @@ mod tests {
                     json!({"sketch": self.sketch})
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
-                "solid.cylinder"
-                    if args.get("operation").and_then(Value::as_str) == Some("new") =>
-                {
+                "solid.revolve" if args.get("operation").and_then(Value::as_str) == Some("new") => {
                     json!({"created_bodies": [format!("Insert{}", self.sketch)]})
                 }
                 "solid.hole" if args.get("sketch").is_some() => {
@@ -787,11 +846,11 @@ mod tests {
         assert!(hole.get("targets").is_none());
         let bodies: Vec<&Value> = calls
             .iter()
-            .filter(|(name, args)| name == "solid.cylinder" && args["operation"] == "new")
-            .map(|(_, args)| &args["base"])
+            .filter(|(name, args)| name == "solid.revolve" && args["operation"] == "new")
+            .map(|(_, args)| &args["body_name"])
             .collect();
         // One insert is built, and placed with its face end on each circle.
-        assert_eq!(bodies, [&json!([0.0, 0.0, -5.7])]);
+        assert_eq!(bodies, [&json!("Insert M3 x 5.7")]);
         let placed: Vec<&Value> = calls
             .iter()
             .filter(|(name, _)| name == "occurrence.move")
@@ -818,7 +877,7 @@ mod tests {
             .filter(|(name, args)| name == "solid.hole" && args.get("sketch").is_none())
             .map(|(_, args)| &args["targets"])
             .collect();
-        assert_eq!(bores, [&json!(["Insert0"])]);
+        assert_eq!(bores, [&json!(["Insert1"])]);
         assert_eq!(summary["component"]["component"], "Insert M3 x 5.7");
         assert_eq!(summary["count"], 2);
         assert_eq!(summary["drilled"], json!(["Plate"]));
@@ -947,10 +1006,9 @@ mod tests {
                 "sketch.create",
                 "sketch.line",
                 "sketch.finish",
-                "solid.cylinder",
+                "solid.revolve",
                 "solid.sweep",
                 "browser.visibility",
-                "solid.chamfer",
                 "solid.hole",
                 "solid.move",
                 "component.list",

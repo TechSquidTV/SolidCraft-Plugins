@@ -2,7 +2,7 @@
   "id": "techsquid-nuts",
   "name": "Hex nuts",
   "version": "0.1.0",
-  "description": "ISO 4032 hexagon nuts (the successor of DIN 934), with their pockets. Select sketch points or circles first: each gets a nut with its bearing face there. With nothing selected one nut lands on the origin.",
+  "description": "Based on ISO 4032. Select sketch points or circles: each gets a nut, and its pocket if you want one. With nothing selected, one nut sits on the origin.",
   "capabilities": [
     "commands@0.1"
   ],

@@ -2,7 +2,7 @@
   "id": "techsquid-screws",
   "name": "Screws",
   "version": "0.1.0",
-  "description": "Metric machine screws to ISO standards, with their holes. Select sketch points or circles first: each gets a screw with the underside of its head there. With nothing selected one screw lands on the origin.",
+  "description": "Based on the ISO metric screw standards. Select sketch points or circles: each gets a screw, and its hole if you want one. With nothing selected, one screw sits on the origin.",
   "capabilities": [
     "commands@0.1"
   ],

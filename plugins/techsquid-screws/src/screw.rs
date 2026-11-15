@@ -14,6 +14,8 @@ use fasteners::metric;
 use fasteners::phillips::{self, Tool};
 use fasteners::slot::{self, Slot};
 use fasteners::torx::{self, Recess};
+pub use plugin_kit::create::Create;
+use plugin_kit::create::Words;
 use plugin_kit::input::{self, FieldError};
 use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
@@ -124,30 +126,17 @@ pub struct Resolved {
 
 /// What a run makes. A hole needs a part under the point, so the default is the screw
 /// alone, which also stands on the origin with nothing selected.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Create {
-    ScrewOnly,
-    Both,
-    HoleOnly,
-}
-
-impl Create {
-    pub fn label(self) -> &'static str {
-        match self {
-            Create::ScrewOnly => "Screw only",
-            Create::Both => "Screw and hole",
-            Create::HoleOnly => "Hole only",
-        }
-    }
-
-    pub fn hole(self) -> bool {
-        self != Create::ScrewOnly
-    }
-
-    pub fn screw(self) -> bool {
-        self != Create::HoleOnly
-    }
-}
+pub const CREATE: Words = Words {
+    part_only: "Screw only",
+    both: "Screw and hole",
+    cut_only: "Hole only",
+    default: Create::Part,
+    part: "screw",
+    cut: "hole",
+    cuts: "holes",
+    make: "drill",
+    made: "drilled",
+};
 
 pub const CLEARANCE: &str = "Clearance";
 pub const RECESSED: &str = "Clearance, head recessed";
@@ -239,7 +228,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let thread_length = input::optional_length(v, "thread_length")?;
     let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
-    let create = create(v)?;
+    let create = CREATE.parse(v)?;
     // The drive comes first: a head is sized from the standard of its drive.
     let major = metric::parse_metric(&designation)
         .map_err(at_size)?
@@ -249,7 +238,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         Ok(resolved) => resolved,
         // A hole alone needs the head only to recess it. Without one it is as deep as
         // the length.
-        Err(_) if !create.screw() && hole_type(v)? != RECESSED => Resolved {
+        Err(_) if !create.part() && hole_type(v)? != RECESSED => Resolved {
             major,
             pitch: metric::parse_metric(&designation)
                 .map_err(at_size)?
@@ -270,7 +259,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
                     "length",
                     format!(
                         "a countersunk screw's length includes its {} mm head, so it has to be longer than that",
-                        trim_number(height)
+                        metric::number(height)
                     ),
                 ));
             }
@@ -283,7 +272,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let thread_length = thread_length
         .or_else(|| standard_thread_length(head, drive, &resolved, length, nominal_length));
     // A hole alone has no drive, so a drive that would not fit the screw is no matter.
-    let (recess, slot, phillips, hex) = if create.screw() {
+    let (recess, slot, phillips, hex) = if create.part() {
         // Drive size is one box for whichever drive is chosen. It fills that drive's
         // own field, and an error from that field is reported against the box.
         let (sized, routed) = route_drive_size(v, drive)?;
@@ -305,7 +294,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     } else {
         (None, None, None, None)
     };
-    let hole = if create.hole() {
+    let hole = if create.cut() {
         Some(plan_hole(v, &designation, &resolved, length)?)
     } else {
         None
@@ -360,7 +349,7 @@ pub fn validate(p: &Params) -> Result<(), FieldError> {
     designation::check_designation(&p.designation)
         .map_err(|err| err.moved("size", p.size_field))?;
     input::check_length("length", p.nominal_length)?;
-    if !p.create.screw() {
+    if !p.create.part() {
         return Ok(());
     }
     if let Some(pitch) = p.resolved.pitch {
@@ -377,12 +366,12 @@ pub fn validate(p: &Params) -> Result<(), FieldError> {
         }
         let ends = p.point_chamfer().unwrap_or(0.0) + p.socket_end_chamfer().unwrap_or(0.0);
         if ends > 0.0 && p.length - ends < pitch {
-            let least = trim_number(ends + pitch);
+            let least = metric::number(ends + pitch);
             return Err(FieldError::new(
                 "length",
                 format!(
                     "the chamfers on the ends of this set screw take {} mm, so it has to be at least {least} mm",
-                    trim_number(ends)
+                    metric::number(ends)
                 ),
             ));
         }
@@ -624,12 +613,9 @@ const SLOT_WALL: f64 = 0.2;
 const SLOT_FLOOR: f64 = 0.3;
 
 fn torx_socket(v: &Value) -> Result<Option<u16>, FieldError> {
-    match v.get("torx") {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::String(text)) if text.trim().is_empty() => Ok(None),
-        Some(Value::String(text)) => Ok(Some(torx::parse_socket(text)?)),
-        Some(_) => Err(FieldError::new("torx", "must be a socket such as T10")),
-    }
+    input::optional_text(v, "torx", "must be a socket such as T10")?
+        .map(torx::parse_socket)
+        .transpose()
 }
 
 /// The recess for a Torx drive. A Torx size on another drive is refused.
@@ -712,15 +698,13 @@ fn plan_recess(
 }
 
 fn slot_size(v: &Value) -> Result<Option<Slot>, FieldError> {
-    match v.get("slot") {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::String(text)) if text.trim().is_empty() => Ok(None),
-        Some(Value::String(text)) => Ok(Some(slot::parse_size(text)?)),
-        Some(_) => Err(FieldError::new(
-            "slot",
-            "must be a width and a depth in millimetres, such as 0.8x0.7",
-        )),
-    }
+    input::optional_text(
+        v,
+        "slot",
+        "must be a width and a depth in millimetres, such as 0.8x0.7",
+    )?
+    .map(slot::parse_size)
+    .transpose()
 }
 
 /// The slot for a slotted drive. A slot size on another drive is refused.
@@ -799,15 +783,13 @@ const PHILLIPS_WALL: f64 = 0.2;
 const PHILLIPS_FLOOR: f64 = 0.1;
 
 fn phillips_size(v: &Value) -> Result<Option<phillips::Request>, FieldError> {
-    match v.get("phillips") {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::String(text)) if text.trim().is_empty() => Ok(None),
-        Some(Value::String(text)) => Ok(Some(phillips::parse_size(text)?)),
-        Some(_) => Err(FieldError::new(
-            "phillips",
-            "must be a Type H size, such as PH2 or PH2x2.1",
-        )),
-    }
+    input::optional_text(
+        v,
+        "phillips",
+        "must be a Type H size, such as PH2 or PH2x2.1",
+    )?
+    .map(phillips::parse_size)
+    .transpose()
 }
 
 fn missing_phillips(head: Head) -> FieldError {
@@ -1013,23 +995,6 @@ impl Params {
     }
 }
 
-fn create(v: &Value) -> Result<Create, FieldError> {
-    let name = match v.get("create") {
-        None | Some(Value::Null) => "Screw only",
-        Some(Value::String(s)) => s.as_str(),
-        Some(_) => return Err(FieldError::new("create", "must be a choice from the list")),
-    };
-    match name {
-        "Screw only" => Ok(Create::ScrewOnly),
-        "Screw and hole" => Ok(Create::Both),
-        "Hole only" => Ok(Create::HoleOnly),
-        other => Err(FieldError::new(
-            "create",
-            format!("must be Screw only, Screw and hole or Hole only, not {other}"),
-        )),
-    }
-}
-
 /// The standard that sizes this screw. A set screw is named by its drive.
 fn standard_of(head: Head, drive: Drive, tip: Tip, custom_head: bool) -> Option<&'static str> {
     if custom_head {
@@ -1066,7 +1031,7 @@ fn plan_hole(
                 designation::size_field(v),
                 format!(
                     "ISO 273 lists no clearance hole for M{}; use a size from M1 to M64, or the Tapped hole",
-                    trim_number(major)
+                    metric::number(major)
                 ),
             )
         })
@@ -1139,20 +1104,7 @@ fn plan_hole(
 
 /// The Hole type field, Clearance when it is empty.
 fn hole_type(v: &Value) -> Result<&str, FieldError> {
-    match v.get("hole_type") {
-        None | Some(Value::Null) => Ok(CLEARANCE),
-        Some(Value::String(s)) => Ok(s.as_str()),
-        Some(_) => Err(FieldError::new(
-            "hole_type",
-            "must be a choice from the list",
-        )),
-    }
-}
-
-/// `3`, `3.5`, `10`: a size without trailing zeros.
-fn trim_number(n: f64) -> String {
-    let text = format!("{n:.4}");
-    text.trim_end_matches('0').trim_end_matches('.').to_string()
+    input::choice(v, "hole_type", CLEARANCE)
 }
 
 /// The standard thread length `b`, when the standard gives a screw this long a plain
@@ -1262,15 +1214,13 @@ const HEX_WALL: f64 = 0.2;
 const HEX_FLOOR: f64 = 0.3;
 
 fn hex_size(v: &Value) -> Result<Option<hexsocket::Request>, FieldError> {
-    match v.get("hex") {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::String(text)) if text.trim().is_empty() => Ok(None),
-        Some(Value::String(text)) => Ok(Some(hexsocket::parse_size(text)?)),
-        Some(_) => Err(FieldError::new(
-            "hex",
-            "must be a key size in millimetres, such as 2.5 or 2.5x1.3",
-        )),
-    }
+    input::optional_text(
+        v,
+        "hex",
+        "must be a key size in millimetres, such as 2.5 or 2.5x1.3",
+    )?
+    .map(hexsocket::parse_size)
+    .transpose()
 }
 
 /// The socket from the product standard for this head. A pan head and a hex head have none.
@@ -1413,11 +1363,7 @@ fn span_at(resolved: &Resolved, depth: f64) -> Option<f64> {
 }
 
 fn head(v: &Value) -> Result<Head, FieldError> {
-    let name = match v.get("head") {
-        None => "Socket head",
-        Some(Value::String(s)) => s.as_str(),
-        Some(_) => return Err(FieldError::new("head", "must be a string")),
-    };
+    let name = input::choice(v, "head", "Socket head")?;
     match name {
         "Socket head" => Ok(Head::Socket),
         "Button head" => Ok(Head::Button),
@@ -1436,11 +1382,7 @@ fn head(v: &Value) -> Result<Head, FieldError> {
 
 /// The drive that was asked for. `None` is Standard: the usual drive for the head.
 fn drive(v: &Value) -> Result<Option<Drive>, FieldError> {
-    let name = match v.get("drive") {
-        None => "Standard",
-        Some(Value::String(s)) => s.as_str(),
-        Some(_) => return Err(FieldError::new("drive", "must be a string")),
-    };
+    let name = input::choice(v, "drive", "Standard")?;
     match name {
         "Standard" => Ok(None),
         "Hex socket" => Ok(Some(Drive::HexSocket)),
@@ -1456,11 +1398,7 @@ fn drive(v: &Value) -> Result<Option<Drive>, FieldError> {
 }
 
 fn tip(v: &Value) -> Result<Tip, FieldError> {
-    let name = match v.get("tip") {
-        None => "Flat",
-        Some(Value::String(s)) => s.as_str(),
-        Some(_) => return Err(FieldError::new("tip", "must be a string")),
-    };
+    let name = input::choice(v, "tip", "Flat")?;
     match name {
         "Flat" => Ok(Tip::Flat),
         "Point" => Ok(Tip::Point),
@@ -2599,7 +2537,7 @@ mod tests {
     #[test]
     fn a_hole_is_planned_only_when_create_asks_for_one() {
         let p = parse(&json!({})).unwrap();
-        assert_eq!(p.create, Create::ScrewOnly);
+        assert_eq!(p.create, Create::Part);
         assert_eq!(p.hole, None);
         let p = parse(&json!({"create": "Screw and hole"})).unwrap();
         assert_eq!(

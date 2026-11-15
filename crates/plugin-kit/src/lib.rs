@@ -5,6 +5,7 @@
 //! and the names given to bodies and features.
 
 pub mod component;
+pub mod create;
 pub mod host;
 pub mod input;
 pub mod name;

@@ -96,6 +96,12 @@ pub fn coarse_pitch(nominal: f64) -> Option<f64> {
         .map(|(_, pitch)| *pitch)
 }
 
+/// A size as it is written: `3`, `3.5`, `0.35`, at most four decimals and no trailing zeros.
+pub fn number(n: f64) -> String {
+    let text = format!("{n:.4}");
+    text.trim_end_matches('0').trim_end_matches('.').to_string()
+}
+
 pub fn same_mm(a: f64, b: f64) -> bool {
     (a - b).abs() < 1e-6
 }

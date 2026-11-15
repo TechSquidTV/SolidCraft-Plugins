@@ -20,7 +20,7 @@ use fasteners::phillips;
 use fasteners::torx;
 use fasteners::FOLDER;
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{body_name_of, changed_bodies, sketch_id};
+use plugin_kit::host::{add_new, body_name_of, changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::Runner;
@@ -51,14 +51,9 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     let mut drilled: Vec<String> = Vec::new();
     // Screw and hole with nothing selected still makes the screw. Only a run that
     // would make nothing but a hole is refused.
-    let skipped = spots.is_empty() && p.create.hole();
+    let mut skipped = false;
     let places: Vec<Placement> = if spots.is_empty() {
-        if !p.create.screw() {
-            return Err(place::nothing_selected(
-                "holes",
-                "Screw only for a loose screw on the origin",
-            ));
-        }
+        skipped = screw::CREATE.nothing_selected(p.create)?;
         vec![Placement::on_origin()]
     } else {
         // The holes go first: the screw would otherwise be a body under the point too.
@@ -70,13 +65,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                         Some(bodies) if bodies.is_empty() => {
                             return Err("sketch_point: there is no part under the point to drill; put the sketch on the part, or set Create to Screw only".into());
                         }
-                        Some(bodies) => {
-                            for body in bodies {
-                                if !drilled.contains(&body) {
-                                    drilled.push(body);
-                                }
-                            }
-                        }
+                        Some(bodies) => add_new(&mut drilled, bodies),
                         None => {}
                     }
                 }
@@ -93,7 +82,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             })
             .collect()
     };
-    let placed = if p.create.screw() {
+    let placed = if p.create.part() {
         let base = body_base(p);
         let def = Definition {
             plugin: PLUGIN,
@@ -185,11 +174,7 @@ pub const PLUGIN: &str = "techsquid-screws";
 /// other screw of its size is on its axis: see [`plugin_kit::component`]. One whose
 /// thread is only listed is built on the origin.
 pub fn built_at(p: &Params) -> Site {
-    if p.modeled {
-        Site::Compact
-    } else {
-        Site::Origin
-    }
+    Site::for_thread(p.modeled)
 }
 
 /// One screw named `body_name` with the top of its shank on `site`, whose axes are the
@@ -870,7 +855,6 @@ fn summary(
     skipped: bool,
     placed: Option<&Placed>,
 ) -> Value {
-    let place = &places[0];
     let hole = p.hole.as_ref().filter(|_| !skipped).map(|hole| {
         let kind = match &hole.kind {
             HoleKind::Clearance { size } => {
@@ -906,7 +890,7 @@ fn summary(
             height,
         } => (Some(across_flats), Some(height)),
     };
-    json!({
+    let reply = json!({
         "designation": p.designation,
         "length": p.nominal_length,
         "shank_length": p.length,
@@ -930,21 +914,13 @@ fn summary(
         "thread_length": p.thread_length,
         "modeled": p.modeled,
         "standard": p.standard,
-        "create": p.create.label(),
+        "create": screw::CREATE.label(p.create),
         "hole": hole,
         "drilled": drilled,
-        "count": places.len(),
-        "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
-        "at": place.point,
-        "normal": place.normal,
-        "placed": place.source.words(),
-        "component": placed.map(Placed::json),
-        "note": skipped.then_some(NO_HOLE),
-    })
+        "note": skipped.then(|| screw::CREATE.skipped()),
+    });
+    fasten::with_placements(reply, places, placed)
 }
-
-/// Why a Screw and hole run made no hole.
-const NO_HOLE: &str = "no hole was drilled because nothing was selected; select the sketch points or circles where the holes go to drill them";
 
 #[cfg(test)]
 mod tests {
@@ -1933,7 +1909,7 @@ mod tests {
             .any(|(c, args)| c == "solid.hole" && args.get("sketch").is_some()));
         assert_eq!(summary["hole"], Value::Null);
         assert_eq!(summary["drilled"], json!([]));
-        assert_eq!(summary["note"], NO_HOLE);
+        assert_eq!(summary["note"], screw::CREATE.skipped());
         assert_eq!(
             summary["placed"],
             "on the origin, because nothing was selected"

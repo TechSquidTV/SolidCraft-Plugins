@@ -43,7 +43,7 @@ Name Sketch and Sketch point together to place the rail without a selection. Ske
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 
-The reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `thread_modeled` and `holes`, each with its `face` and its distance `at`.
+The reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `thread_modeled` and `holes`, each with its `face` and its distance `at`. It also says where the rails went: `count`, `points`, the first one's `at` and `normal`, `placed` (how the point was found) and `component`.
 
 ### Tapped ends and screw holes
 
@@ -80,7 +80,7 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas |
 
-The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`.
+The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`, and where the nuts went, as a rail's reply does.
 
 The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a screw hole, and a nut's ball recess), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 

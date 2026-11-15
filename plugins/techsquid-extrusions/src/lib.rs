@@ -285,7 +285,7 @@ fn flush<R: Runner>(r: &mut R, run: &mut Vec<[f64; 2]>) -> Result<(), String> {
 }
 
 fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed) -> Value {
-    json!({
+    let reply = json!({
         "slot": p.slot.name,
         "size": p.size,
         "length": p.length,
@@ -295,11 +295,8 @@ fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed)
         "end_taps": p.taps.label(),
         "holes": p.holes.iter().map(|(face, at)| json!({"face": face.name(), "at": at})).collect::<Vec<_>>(),
         "thread_modeled": p.modeled,
-        "count": places.len(),
-        "placed": places[0].source.words(),
-        "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
-        "component": placed.json(),
-    })
+    });
+    component::with_placements(reply, places, Some(placed))
 }
 
 plugin_kit::guest! {

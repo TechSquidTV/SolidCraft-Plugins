@@ -94,6 +94,15 @@ pub fn body_name_of(reply: &Value) -> Option<String> {
         .map(str::to_string)
 }
 
+/// Adds each of `bodies` to `into` once, keeping the order they came in.
+pub fn add_new(into: &mut Vec<String>, bodies: impl IntoIterator<Item = String>) {
+    for body in bodies {
+        if !into.contains(&body) {
+            into.push(body);
+        }
+    }
+}
+
 /// The bodies a feature changed, when the host says. An empty list means a cut found
 /// no part to cut.
 pub fn changed_bodies(reply: &Value) -> Option<Vec<String>> {

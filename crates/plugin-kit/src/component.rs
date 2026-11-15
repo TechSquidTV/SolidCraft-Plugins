@@ -93,6 +93,22 @@ pub struct Placed {
     pub occurrences: Vec<u64>,
 }
 
+/// Adds what every run's reply says about where it placed its part to `reply`, an
+/// object: `count`, `points`, `at` and `normal` (of the first placement), `placed` (how
+/// it was found) and `component`.
+pub fn with_placements(mut reply: Value, places: &[Placement], placed: Option<&Placed>) -> Value {
+    if let (Some(fields), Some(first)) = (reply.as_object_mut(), places.first()) {
+        let points: Vec<[f64; 3]> = places.iter().map(|place| place.point).collect();
+        fields.insert("count".into(), json!(places.len()));
+        fields.insert("points".into(), json!(points));
+        fields.insert("at".into(), json!(first.point));
+        fields.insert("normal".into(), json!(first.normal));
+        fields.insert("placed".into(), json!(first.source.words()));
+        fields.insert("component".into(), json!(placed.map(Placed::json)));
+    }
+    reply
+}
+
 impl Placed {
     pub fn json(&self) -> Value {
         json!({
@@ -120,6 +136,16 @@ pub enum Site {
 const SITE_ROW: u64 = 64;
 
 impl Site {
+    /// Where a small part is built: on a site of its own when its thread is cut
+    /// (`modeled`), on the origin when the thread is only listed.
+    pub fn for_thread(modeled: bool) -> Site {
+        if modeled {
+            Site::Compact
+        } else {
+            Site::Origin
+        }
+    }
+
     /// The site of the component `component`, as (x, y). Every component of a design
     /// has its own id, so no two definitions share a site. A rail's bores are on
     /// multiples of 10 mm from its middle, and no site is on such a point of a rail

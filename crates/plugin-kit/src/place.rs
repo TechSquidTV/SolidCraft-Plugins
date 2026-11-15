@@ -199,18 +199,7 @@ fn selected_sketch_points<R: Runner>(r: &mut R) -> Result<Vec<(String, String)>,
 }
 
 fn optional_text(v: &Value, key: &str) -> Result<Option<String>, FieldError> {
-    match v.get(key) {
-        None => Ok(None),
-        Some(Value::String(text)) => {
-            let text = text.trim();
-            if text.is_empty() {
-                Ok(None)
-            } else {
-                Ok(Some(text.to_string()))
-            }
-        }
-        Some(_) => Err(FieldError::new(key, "must be a string")),
-    }
+    Ok(crate::input::optional_text(v, key, "must be a string")?.map(str::to_string))
 }
 
 fn sketch_item(item: &Value) -> Option<(String, String)> {

@@ -14,14 +14,11 @@ pub mod knurl;
 use fasteners::FOLDER;
 use insert::{HoleCut, HoleShape, Params};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{body_name_of, sketch_id};
+use plugin_kit::host::{add_new, body_name_of, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement, Spot};
 use plugin_kit::Runner;
 use serde_json::{json, Value};
-
-/// A hole needs a part, and the origin has none to find.
-const NOTHING_SELECTED: &str = "sketch_point: select the sketch points or circles where the holes go, then run this again; or set Create to Insert only for a loose insert on the origin";
 
 /// Drill the holes, then build the inserts. Returns a summary of what was made.
 pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
@@ -29,12 +26,10 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     if spots.is_empty() {
         // Hole and insert, the default, still makes the insert in an empty design. Only
         // a run that would make nothing but a hole is refused.
-        if !p.create.insert() {
-            return Err(NOTHING_SELECTED.into());
-        }
+        let skipped = insert::CREATE.nothing_selected(p.create)?;
         let places = [Placement::on_origin()];
         let placed = place_inserts(r, p, &places)?;
-        return Ok(summary(p, &places, None, Some(&placed)));
+        return Ok(summary(p, &places, &[], skipped, Some(&placed)));
     }
     // The holes go first: the insert would otherwise be a body under the point too.
     let mut drilled: Vec<String> = Vec::new();
@@ -46,20 +41,16 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             }
         }
         for sketch in sketches {
-            for body in cut_holes(r, p, cut, sketch, &spots)? {
-                if !drilled.contains(&body) {
-                    drilled.push(body);
-                }
-            }
+            add_new(&mut drilled, cut_holes(r, p, cut, sketch, &spots)?);
         }
     }
     let places: Vec<Placement> = spots.iter().map(|spot| spot.place).collect();
-    let placed = if p.create.insert() {
+    let placed = if p.create.part() {
         Some(place_inserts(r, p, &places)?)
     } else {
         None
     };
-    Ok(summary(p, &places, Some(&drilled), placed.as_ref()))
+    Ok(summary(p, &places, &drilled, false, placed.as_ref()))
 }
 
 /// The plugin id, which an insert component's metadata names.
@@ -75,11 +66,8 @@ fn place_inserts<R: Runner>(r: &mut R, p: &Params, places: &[Placement]) -> Resu
         description: &description,
         folder: FOLDER,
         bom_type: "purchased",
-        site: if p.modeled && p.plain_bore.is_none() {
-            Site::Compact
-        } else {
-            Site::Origin
-        },
+        // `#2-56` has no tap name here, so its bore is plain and has no thread to cut.
+        site: Site::for_thread(p.modeled && p.plain_bore.is_none()),
     };
     fasten::place_all(r, &def, places, |mut r, name, site| {
         build_insert(&mut r, p, site, name)
@@ -148,11 +136,7 @@ fn cut_holes<R: Runner>(
     let through = cut.depth.is_none();
     let mut bodies = drilled(&r.run("solid.hole", hole)?, through && pilot.is_none())?;
     if let Some(pilot) = pilot {
-        for body in drilled(&r.run("solid.hole", pilot)?, through)? {
-            if !bodies.contains(&body) {
-                bodies.push(body);
-            }
-        }
+        add_new(&mut bodies, drilled(&r.run("solid.hole", pilot)?, through)?);
     }
     Ok(bodies)
 }
@@ -403,17 +387,15 @@ fn created_curve(reply: &Value) -> Result<String, String> {
         .ok_or_else(|| "sketch.line did not return a curve id".to_string())
 }
 
-/// `drilled` is the bodies the holes went into, or `None` when no hole was drilled
-/// because nothing was selected.
+/// `skipped` is true when a hole was asked for and nothing was selected to drill.
 fn summary(
     p: &Params,
     places: &[Placement],
-    drilled: Option<&[String]>,
+    drilled: &[String],
+    skipped: bool,
     placed: Option<&Placed>,
 ) -> Value {
-    let place = &places[0];
-    let cut = drilled.and(p.cut);
-    let hole = cut.map(|cut| match cut.shape {
+    let hole = p.cut.filter(|_| !skipped).map(|cut| match cut.shape {
         HoleShape::Straight { diameter } => json!({
             "type": insert::STRAIGHT,
             "diameter": diameter,
@@ -425,31 +407,22 @@ fn summary(
             "depth": cut.depth,
         }),
     });
-    json!({
-        "create": p.create.label(),
-        "count": places.len(),
-        "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
+    let reply = json!({
+        "create": insert::CREATE.label(p.create),
         "hole": hole,
-        "drilled": drilled.unwrap_or_default(),
+        "drilled": drilled,
         "size": p.size,
         "thread": p.thread,
         "length": p.length,
         "diameter": p.diameter,
         "modeled": p.modeled,
-        "at": place.point,
-        "normal": place.normal,
-        "placed": place.source.words(),
         "blind_depth": p.length + 1.0,
         "plastic_hole": p.hole,
         "min_wall": p.wall,
-        "component": placed.map(Placed::json),
-        "note": (p.cut.is_some() && cut.is_none())
-            .then_some(NO_HOLE),
-    })
+        "note": skipped.then(|| insert::CREATE.skipped()),
+    });
+    fasten::with_placements(reply, places, placed)
 }
-
-/// Why a Hole and insert run made no hole.
-const NO_HOLE: &str = "no hole was drilled because nothing was selected; select the sketch points or circles where the holes go to drill them";
 
 #[cfg(test)]
 mod tests {
@@ -964,7 +937,7 @@ mod tests {
         );
         assert_eq!(summary["hole"], Value::Null);
         assert_eq!(summary["drilled"], json!([]));
-        assert_eq!(summary["note"], NO_HOLE);
+        assert_eq!(summary["note"], insert::CREATE.skipped());
         assert_eq!(
             summary["placed"],
             "on the origin, because nothing was selected"
@@ -1183,7 +1156,7 @@ plugin_kit::guest! {
     parse: crate::insert::parse,
     make: crate::make_insert,
     describe: |p: &crate::insert::Params| {
-        format!("{}: {} insert, {} mm", p.create.label(), p.thread, p.length)
+        format!("{}: {} insert, {} mm", insert::CREATE.label(p.create), p.thread, p.length)
     },
     aliases: &[],
 }

@@ -13,7 +13,7 @@ use plugin_kit::place::{self, opposite, PlaceInput, Placement};
 use plugin_kit::Runner;
 use serde_json::{json, Value};
 
-use crate::rail::{text, DEFAULT_SLOT};
+use crate::rail::DEFAULT_SLOT;
 use crate::{draw_loop, FOLDER, PLUGIN};
 
 pub const DEFAULT_TYPE: &str = "Pre-assembly";
@@ -23,11 +23,7 @@ pub const DEFAULT_ALONG: &str = "Sketch X";
 /// Where a nut is built: on a site of its own when its thread is cut, on the origin
 /// when the thread is only listed. See [`plugin_kit::component`].
 pub fn built_at(p: &Params) -> Site {
-    if p.modeled {
-        Site::Compact
-    } else {
-        Site::Origin
-    }
+    Site::for_thread(p.modeled)
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -45,7 +41,7 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
-    let nut = match text(v, "type", DEFAULT_TYPE)? {
+    let nut = match input::choice(v, "type", DEFAULT_TYPE)? {
         "Pre-assembly" => NUTS[0],
         "Post-assembly" => NUTS[1],
         other => {
@@ -55,14 +51,14 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ))
         }
     };
-    let thread = text(v, "size", DEFAULT_SIZE)?;
+    let thread = input::choice(v, "size", DEFAULT_SIZE)?;
     if !THREADS.contains(&thread) {
         return Err(FieldError::new(
             "size",
             format!("must be one of {}, not {thread}", THREADS.join(", ")),
         ));
     }
-    let slot = match text(v, "slot", DEFAULT_SLOT)? {
+    let slot = match input::choice(v, "slot", DEFAULT_SLOT)? {
         "T-slot" => T5,
         "V-slot" => V5,
         other => {
@@ -72,7 +68,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ))
         }
     };
-    let along_y = match text(v, "along", DEFAULT_ALONG)? {
+    let along_y = match input::choice(v, "along", DEFAULT_ALONG)? {
         "Sketch X" => false,
         "Sketch Y" => true,
         other => {
@@ -241,7 +237,7 @@ pub fn build_nut<R: Runner>(
 }
 
 fn summary(p: &Params, faces: &[Placement], placed: &Placed) -> Value {
-    json!({
+    let reply = json!({
         "type": p.nut.name,
         "part": part(p),
         "thread": p.thread,
@@ -252,11 +248,8 @@ fn summary(p: &Params, faces: &[Placement], placed: &Placed) -> Value {
         "width": (p.nut.width() * 1000.0).round() / 1000.0,
         "height": (p.nut.height() * 1000.0).round() / 1000.0,
         "under_face": p.slot.lip,
-        "count": faces.len(),
-        "placed": faces[0].source.words(),
-        "points": faces.iter().map(|face| face.point).collect::<Vec<_>>(),
-        "component": placed.json(),
-    })
+    });
+    component::with_placements(reply, faces, Some(placed))
 }
 
 #[cfg(test)]

@@ -78,7 +78,7 @@ impl Hole {
     pub fn for_major(major: f64) -> Option<Hole> {
         let diameter = medium(major)?;
         if HOST_SIZES.iter().any(|&d| same(d, major)) {
-            Some(Hole::Size(format!("M{}", trim(major))))
+            Some(Hole::Size(format!("M{}", crate::metric::number(major))))
         } else {
             Some(Hole::Diameter(diameter))
         }
@@ -99,11 +99,6 @@ impl Hole {
             Hole::Diameter(d) => json!(d),
         }
     }
-}
-
-fn trim(n: f64) -> String {
-    let text = format!("{n:.4}");
-    text.trim_end_matches('0').trim_end_matches('.').to_string()
 }
 
 #[cfg(test)]

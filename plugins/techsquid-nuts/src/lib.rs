@@ -12,7 +12,7 @@ use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{changed_bodies, sketch_id};
+use plugin_kit::host::{add_new, changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::timeline;
@@ -30,14 +30,9 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     let mut drilled: Vec<String> = Vec::new();
     // Nut and pocket with nothing selected still makes the nut. Only a run that would
     // make nothing but a pocket is refused.
-    let skipped = spots.is_empty() && p.create.pocket();
+    let mut skipped = false;
     let places: Vec<Placement> = if spots.is_empty() {
-        if !p.create.nut() {
-            return Err(place::nothing_selected(
-                "pockets",
-                "Nut only for a loose nut on the origin",
-            ));
-        }
+        skipped = nut::CREATE.nothing_selected(p.create)?;
         vec![Placement::on_origin()]
     } else {
         // The pockets go first: a nut would otherwise be cut by the next one's pocket.
@@ -48,11 +43,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                 drilled = timeline::folded(r, &pockets_name(p), |mut r| {
                     let mut drilled: Vec<String> = Vec::new();
                     for spot in &spots {
-                        for body in cut_pocket(&mut r, p, pocket, &spot.place)? {
-                            if !drilled.contains(&body) {
-                                drilled.push(body);
-                            }
-                        }
+                        add_new(&mut drilled, cut_pocket(&mut r, p, pocket, &spot.place)?);
                     }
                     for (sketch, points) in place::by_sketch(&spots) {
                         let mut hole = json!({
@@ -83,7 +74,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             .collect()
     };
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
-    let placed = if p.create.nut() {
+    let placed = if p.create.part() {
         let base = body_base(p);
         let def = Definition {
             plugin: PLUGIN,
@@ -91,11 +82,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             description: "ISO 4032",
             folder: FOLDER,
             bom_type: "purchased",
-            site: if p.modeled {
-                Site::Compact
-            } else {
-                Site::Origin
-            },
+            site: Site::for_thread(p.modeled),
         };
         Some(fasten::place_all(r, &def, &places, |mut r, name, site| {
             build_nut(&mut r, p, site, name).map(|_| ())
@@ -338,7 +325,6 @@ fn summary(
     skipped: bool,
     placed: Option<&Placed>,
 ) -> Value {
-    let place = &places[0];
     let pocket = p.pocket.as_ref().filter(|_| !skipped).map(|pocket| {
         json!({
             "across_flats": pocket.across_flats,
@@ -346,7 +332,7 @@ fn summary(
             "bolt_hole": pocket.clearance.describe(),
         })
     });
-    json!({
+    let reply = json!({
         "standard": "ISO 4032",
         "designation": p.designation,
         "thread": p.thread,
@@ -357,21 +343,13 @@ fn summary(
         "chamfer_axial": end.axial,
         "countersink": p.countersink,
         "modeled": p.modeled,
-        "create": p.create.label(),
+        "create": nut::CREATE.label(p.create),
         "pocket": pocket,
         "drilled": drilled,
-        "count": places.len(),
-        "points": places.iter().map(|place| place.point).collect::<Vec<_>>(),
-        "at": place.point,
-        "normal": place.normal,
-        "placed": place.source.words(),
-        "component": placed.map(Placed::json),
-        "note": skipped.then_some(NO_POCKET),
-    })
+        "note": skipped.then(|| nut::CREATE.skipped()),
+    });
+    fasten::with_placements(reply, places, placed)
 }
-
-/// Why a Nut and pocket run made no pocket.
-const NO_POCKET: &str = "no pocket was cut because nothing was selected; select the sketch points or circles where the pockets go to cut them";
 
 #[cfg(test)]
 mod tests {
@@ -1048,7 +1026,7 @@ mod tests {
             .any(|(c, args)| c == "solid.hole" && args.get("sketch").is_some()));
         assert_eq!(summary["pocket"], Value::Null);
         assert_eq!(summary["drilled"], json!([]));
-        assert_eq!(summary["note"], NO_POCKET);
+        assert_eq!(summary["note"], nut::CREATE.skipped());
         assert_eq!(
             summary["placed"],
             "on the origin, because nothing was selected"

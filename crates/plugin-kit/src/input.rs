@@ -31,6 +31,27 @@ impl FieldError {
     }
 }
 
+/// A dropdown's choice: the trimmed text of `key`, or `default` when the field is absent,
+/// null or blank. The caller checks the text is one of its choices.
+pub fn choice<'a>(v: &'a Value, key: &str, default: &'a str) -> Result<&'a str, FieldError> {
+    Ok(optional_text(v, key, "must be a choice from the list")?.unwrap_or(default))
+}
+
+/// A text field that may be left empty: its trimmed text, or `None` when it is absent,
+/// null or blank. `wrong` is the error for a value that is not text.
+pub fn optional_text<'a>(
+    v: &'a Value,
+    key: &str,
+    wrong: &str,
+) -> Result<Option<&'a str>, FieldError> {
+    match v.get(key) {
+        None | Some(Value::Null) => Ok(None),
+        Some(Value::String(text)) if text.trim().is_empty() => Ok(None),
+        Some(Value::String(text)) => Ok(Some(text.trim())),
+        Some(_) => Err(FieldError::new(key, wrong)),
+    }
+}
+
 /// The value of `key`, or of `old`, the name the field had before the plugins shared
 /// one set of names. A script written for the old names keeps working.
 pub fn field<'a>(v: &'a Value, key: &str, old: &str) -> Option<&'a Value> {
@@ -118,6 +139,28 @@ mod tests {
         assert_eq!(check_length("length", 0.0).unwrap_err().field, "length");
         assert!(check_length("length", 1000.0).is_ok());
         assert!(check_length("length", 1000.1).is_err());
+    }
+
+    #[test]
+    fn a_choice_is_trimmed_and_a_blank_one_is_the_default() {
+        assert_eq!(
+            choice(&json!({"k": " Blind "}), "k", "Through"),
+            Ok("Blind")
+        );
+        for v in [json!({}), json!({"k": null}), json!({"k": "  "})] {
+            assert_eq!(choice(&v, "k", "Through"), Ok("Through"));
+        }
+        let err = choice(&json!({"k": 3}), "k", "Through").unwrap_err();
+        assert_eq!(err, FieldError::new("k", "must be a choice from the list"));
+        assert_eq!(
+            optional_text(&json!({"k": " T10 "}), "k", "x"),
+            Ok(Some("T10"))
+        );
+        assert_eq!(optional_text(&json!({"k": ""}), "k", "x"), Ok(None));
+        assert_eq!(
+            optional_text(&json!({"k": []}), "k", "must be a socket"),
+            Err(FieldError::new("k", "must be a socket"))
+        );
     }
 
     #[test]

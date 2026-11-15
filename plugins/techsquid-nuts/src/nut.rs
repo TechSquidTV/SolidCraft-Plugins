@@ -8,6 +8,8 @@ use fasteners::clearance::Hole;
 use fasteners::designation;
 use fasteners::metric::{self, MetricSize};
 use fasteners::nut::{self, NutSize};
+pub use plugin_kit::create::Create;
+use plugin_kit::create::Words;
 use plugin_kit::input::{self, FieldError};
 use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
@@ -16,30 +18,17 @@ pub const DEFAULT_DESIGNATION: &str = "M3";
 
 /// What a run makes. A pocket needs a part under the point, so the default is the nut
 /// alone, which also stands on the origin with nothing selected.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Create {
-    NutOnly,
-    Both,
-    PocketOnly,
-}
-
-impl Create {
-    pub fn label(self) -> &'static str {
-        match self {
-            Create::NutOnly => "Nut only",
-            Create::Both => "Nut and pocket",
-            Create::PocketOnly => "Pocket only",
-        }
-    }
-
-    pub fn pocket(self) -> bool {
-        self != Create::NutOnly
-    }
-
-    pub fn nut(self) -> bool {
-        self != Create::PocketOnly
-    }
-}
+pub const CREATE: Words = Words {
+    part_only: "Nut only",
+    both: "Nut and pocket",
+    cut_only: "Pocket only",
+    default: Create::Part,
+    part: "nut",
+    cut: "pocket",
+    cuts: "pockets",
+    make: "cut",
+    made: "cut",
+};
 
 /// Gap between each flat of the nut and its pocket, when the field is left alone. A
 /// printed pocket comes out small, and a nut has to drop in.
@@ -98,8 +87,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         resolve_size(&designation).map_err(|e| e.moved("size", size_field))?;
     let (across_flats, height, countersink, chamfer_max) =
         resolve_body(listed, across_flats, height)?;
-    let create = create(v)?;
-    let pocket = if create.pocket() {
+    let create = CREATE.parse(v)?;
+    let pocket = if create.cut() {
         let adjust = match input::optional_length_or_zero(v, "pocket_adjust")? {
             None => DEFAULT_POCKET_ADJUST,
             Some(adjust) if (0.0..=MAX_POCKET_ADJUST).contains(&adjust) => adjust,
@@ -115,7 +104,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
                 size_field,
                 format!(
                     "ISO 273 has no clearance hole for M{}, so the pocket has no bolt hole; pick a listed size or use Nut only",
-                    trim_number(size.major)
+                    metric::number(size.major)
                 ),
             )
         })?;
@@ -143,23 +132,6 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     };
     validate(&p)?;
     Ok(p)
-}
-
-fn create(v: &Value) -> Result<Create, FieldError> {
-    let name = match v.get("create") {
-        None | Some(Value::Null) => "Nut only",
-        Some(Value::String(s)) => s.as_str(),
-        Some(_) => return Err(FieldError::new("create", "must be a choice from the list")),
-    };
-    match name {
-        "Nut only" => Ok(Create::NutOnly),
-        "Nut and pocket" => Ok(Create::Both),
-        "Pocket only" => Ok(Create::PocketOnly),
-        other => Err(FieldError::new(
-            "create",
-            format!("must be Nut only, Nut and pocket or Pocket only, not {other}"),
-        )),
-    }
 }
 
 fn validate(p: &Params) -> Result<(), FieldError> {
@@ -238,12 +210,7 @@ fn listed_major(designation: &str) -> Option<NutSize> {
 }
 
 fn format_metric(major: f64, pitch: f64) -> String {
-    format!("M{}x{}", trim_number(major), trim_number(pitch))
-}
-
-fn trim_number(n: f64) -> String {
-    let text = format!("{n:.4}");
-    text.trim_end_matches('0').trim_end_matches('.').to_string()
+    format!("M{}x{}", metric::number(major), metric::number(pitch))
 }
 
 fn resolve_body(
@@ -372,7 +339,7 @@ mod tests {
     #[test]
     fn every_standard_size_parses() {
         for nut in fasteners::nut::sizes() {
-            let designation = format!("M{}", trim_number(nut.nominal));
+            let designation = format!("M{}", metric::number(nut.nominal));
             let p = parse(&json!({"designation": designation})).unwrap();
             assert_eq!(p.across_flats, nut.across_flats, "{designation}");
             assert_eq!(p.height, nut.height, "{designation}");
@@ -407,7 +374,7 @@ mod tests {
     #[test]
     fn a_pocket_is_the_nut_plus_a_gap_on_each_flat() {
         let p = parse(&json!({})).unwrap();
-        assert_eq!(p.create, Create::NutOnly);
+        assert_eq!(p.create, Create::Part);
         assert_eq!(p.pocket, None);
         let p = parse(&json!({"size": "M6", "create": "Nut and pocket"})).unwrap();
         let pocket = p.pocket.unwrap();

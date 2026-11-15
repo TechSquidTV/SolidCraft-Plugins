@@ -3,7 +3,7 @@
 use extrusions::machining::{self, Face, FACES};
 use extrusions::profile::{Grid, SIZES};
 use extrusions::slot::{Slot, T5, V5};
-use plugin_kit::input::FieldError;
+use plugin_kit::input::{self, FieldError};
 use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
 
@@ -73,7 +73,7 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
-    let slot = match text(v, "slot", DEFAULT_SLOT)? {
+    let slot = match input::choice(v, "slot", DEFAULT_SLOT)? {
         "T-slot" => T5,
         "V-slot" => V5,
         other => {
@@ -83,7 +83,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ))
         }
     };
-    let size = text(v, "size", DEFAULT_SIZE)?;
+    let size = input::choice(v, "size", DEFAULT_SIZE)?;
     let grid = Grid::of(size).ok_or_else(|| {
         let listed: Vec<&str> = SIZES.iter().map(|s| s.0).collect();
         FieldError::new(
@@ -111,7 +111,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             format!("must be more than 0 and at most {MAX_LENGTH_MM} mm"),
         ));
     }
-    let taps = match text(v, "end_taps", DEFAULT_TAPS)? {
+    let taps = match input::choice(v, "end_taps", DEFAULT_TAPS)? {
         "None" => Taps::None,
         "Start" => Taps::Start,
         "End" => Taps::End,
@@ -134,7 +134,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ),
         ));
     }
-    let modeled = plugin_kit::input::flag(v, "thread_modeled", true)?;
+    let modeled = input::flag(v, "thread_modeled", true)?;
     let bores = grid.nx * grid.ny * (usize::from(taps.start()) + usize::from(taps.end()));
     if modeled && bores > MAX_MODELED_TAPS {
         return Err(FieldError::new(
@@ -144,7 +144,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ),
         ));
     }
-    let hole_face = text(v, "hole_face", DEFAULT_HOLE_FACE)?;
+    let hole_face = input::choice(v, "hole_face", DEFAULT_HOLE_FACE)?;
     let hole_face = Face::of(hole_face).ok_or_else(|| {
         let listed: Vec<&str> = FACES.iter().map(Face::name).collect();
         FieldError::new(
@@ -237,16 +237,6 @@ fn holes(v: &Value, length: f64, face: Face) -> Result<Vec<(Face, f64)>, FieldEr
         }
     }
     Ok(out)
-}
-
-/// A choice from a list, or `default` when the field is absent.
-pub(crate) fn text<'a>(v: &'a Value, key: &str, default: &'a str) -> Result<&'a str, FieldError> {
-    match v.get(key) {
-        None | Some(Value::Null) => Ok(default),
-        Some(Value::String(s)) if s.trim().is_empty() => Ok(default),
-        Some(Value::String(s)) => Ok(s.trim()),
-        Some(_) => Err(FieldError::new(key, "must be one of the listed choices")),
-    }
 }
 
 #[cfg(test)]

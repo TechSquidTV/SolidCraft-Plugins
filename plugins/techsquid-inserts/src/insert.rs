@@ -6,6 +6,8 @@
 //! face on the origin.
 
 use fasteners::metric;
+pub use plugin_kit::create::Create;
+use plugin_kit::create::Words;
 use plugin_kit::input::{self, FieldError};
 use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
@@ -13,31 +15,18 @@ use serde_json::Value;
 use crate::catalog::{self, Row};
 use crate::knurl;
 
-/// What a run makes. The hole is the part most people want, so it is in the default.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Create {
-    Both,
-    HoleOnly,
-    InsertOnly,
-}
-
-impl Create {
-    pub fn label(self) -> &'static str {
-        match self {
-            Create::Both => "Hole and insert",
-            Create::HoleOnly => "Hole only",
-            Create::InsertOnly => "Insert only",
-        }
-    }
-
-    pub fn hole(self) -> bool {
-        self != Create::InsertOnly
-    }
-
-    pub fn insert(self) -> bool {
-        self != Create::HoleOnly
-    }
-}
+/// What a run makes. The hole is what most people want, so it is in the default.
+pub const CREATE: Words = Words {
+    part_only: "Insert only",
+    both: "Hole and insert",
+    cut_only: "Hole only",
+    default: Create::Both,
+    part: "insert",
+    cut: "hole",
+    cuts: "holes",
+    make: "drill",
+    made: "drilled",
+};
 
 pub const STRAIGHT: &str = "Heat-set (straight)";
 pub const STEPPED: &str = "Glue-in (stepped)";
@@ -124,8 +113,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ),
         ));
     }
-    let create = create(v)?;
-    let cut = if create.hole() {
+    let create = CREATE.parse(v)?;
+    let cut = if create.cut() {
         Some(hole_cut(
             v,
             row,
@@ -154,26 +143,6 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     })
 }
 
-fn choice<'a>(v: &'a Value, key: &str, default: &'a str) -> Result<&'a str, FieldError> {
-    match v.get(key) {
-        None | Some(Value::Null) => Ok(default),
-        Some(Value::String(text)) => Ok(text.as_str()),
-        Some(_) => Err(FieldError::new(key, "must be a choice from the list")),
-    }
-}
-
-fn create(v: &Value) -> Result<Create, FieldError> {
-    match choice(v, "create", "Hole and insert")? {
-        "Hole and insert" => Ok(Create::Both),
-        "Hole only" => Ok(Create::HoleOnly),
-        "Insert only" => Ok(Create::InsertOnly),
-        other => Err(FieldError::new(
-            "create",
-            format!("must be Hole and insert, Hole only or Insert only, not {other}"),
-        )),
-    }
-}
-
 /// The hole for this insert. `custom` is true when the diameter or length was typed.
 fn hole_cut(
     v: &Value,
@@ -192,7 +161,7 @@ fn hole_cut(
             ))
         }
     };
-    let depth = match choice(v, "hole_depth", "Blind")? {
+    let depth = match input::choice(v, "hole_depth", "Blind")? {
         // CNC Kitchen: a blind hole is about 1 mm deeper than the insert.
         "Blind" => Some(length + 1.0),
         "Through" => None,
@@ -203,7 +172,7 @@ fn hole_cut(
             ))
         }
     };
-    let shape = match choice(v, "hole_type", STRAIGHT)? {
+    let shape = match input::choice(v, "hole_type", STRAIGHT)? {
         STRAIGHT => {
             // A typed diameter keeps the row's interference with the plastic.
             let hole = diameter - (row.diameter - row.hole) + adjust;
@@ -265,11 +234,7 @@ fn hole_cut(
 }
 
 fn size(v: &Value) -> Result<&'static Row, FieldError> {
-    let text = match v.get("size") {
-        None | Some(Value::Null) => catalog::DEFAULT_SIZE,
-        Some(Value::String(text)) => text.as_str(),
-        Some(_) => return Err(FieldError::new("size", "must be a size from the list")),
-    };
+    let text = input::choice(v, "size", catalog::DEFAULT_SIZE)?;
     catalog::find_size(text).ok_or_else(|| {
         FieldError::new(
             "size",
@@ -300,14 +265,10 @@ const BAD_THREAD: &str = "use a size such as M3 or M8x1";
 
 /// The row's thread, or `custom_thread` when it is filled.
 fn bore(v: &Value, row: &Row) -> Result<Bore, FieldError> {
-    let text = match v.get("custom_thread") {
-        None | Some(Value::Null) => return Ok(Bore::of(row)),
-        Some(Value::String(text)) => text.trim().to_string(),
-        Some(_) => return Err(FieldError::new("custom_thread", BAD_THREAD)),
-    };
-    if text.is_empty() {
+    let Some(text) = input::optional_text(v, "custom_thread", BAD_THREAD)? else {
         return Ok(Bore::of(row));
-    }
+    };
+    let text = text.to_string();
     if let Some(found) = catalog::find_thread(&text) {
         return Ok(Bore::of(found));
     }

@@ -19,6 +19,8 @@ Place parts on one or more sketch points, choose your dimensions, and run the pl
 
 Try the [sketch-driven rail example](examples/sketch-driven-rails.json), or read the [extrusion guide](plugins/techsquid-extrusions/README.md#sketch-driven-rails) for profile choices, machining and batch limits.
 
+Try the [screw attachment test plate](examples/screw-attachment-test.md) to move counterbored and tapped holes, change the recess depth, and check that the screws stay seated after save/reopen. See the [0.2.0 release notes](release-notes/v0.2.0.md) for improvements and migration notes.
+
 ## License
 
 [MIT](LICENSE)

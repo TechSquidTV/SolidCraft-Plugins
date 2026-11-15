@@ -1,7 +1,7 @@
 {
   "id": "techsquid-extrusions",
   "name": "Extrusions",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MISUMI 5 series T-slot and OpenBuilds V-slot rails, with slot nuts. Place fixed-length components on points, or build independent rails along straight sketch lines.",
   "capabilities": [
     "commands@0.1"

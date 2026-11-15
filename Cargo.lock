@@ -22,11 +22,11 @@ checksum = "00d174d5400e5e8fd687ad1049e2f578285fa914201b1af7e8b112a4546bd826"
 
 [[package]]
 name = "extrusions"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "fasteners"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "plugin-kit",
  "serde",
@@ -204,7 +204,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "plugin-kit"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde_json",
 ]
@@ -316,7 +316,7 @@ dependencies = [
 
 [[package]]
 name = "techsquid-extrusions"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "extrusions",
  "plugin-kit",
@@ -326,7 +326,7 @@ dependencies = [
 
 [[package]]
 name = "techsquid-inserts"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "fasteners",
  "plugin-kit",
@@ -336,7 +336,7 @@ dependencies = [
 
 [[package]]
 name = "techsquid-nuts"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "fasteners",
  "plugin-kit",
@@ -347,7 +347,7 @@ dependencies = [
 
 [[package]]
 name = "techsquid-screws"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "fasteners",
  "plugin-kit",

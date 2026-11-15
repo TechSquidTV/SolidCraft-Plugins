@@ -1,7 +1,7 @@
 {
   "id": "techsquid-inserts",
   "name": "Heat-set inserts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Based on CNC Kitchen's heat-set inserts. Select sketch points or circles: each gets the hole for an insert, and the insert.",
   "capabilities": [
     "commands@0.1"

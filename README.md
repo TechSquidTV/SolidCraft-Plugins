@@ -85,6 +85,18 @@ A PCB enclosure. The base is a shelled block with a boss in each corner, fillete
 
 A 300 mm square frame, 340 mm tall, held together by screws alone, the way a Creality Ender 5 frame is. Five `make-extrusion` runs place twelve rails, already cut for their joints: cross rails with both ends tapped and four screw holes for the posts, side rails with a screw hole at each end, and four V-slot 2040 posts with both ends tapped, standing in the corners. Four `make-screw` runs place 24 M5 socket head screws on the slot floors. Sixteen M5 x 25 go through the cross rails and 11 mm into the ends of the posts. Eight M5 x 20 go through the side rails and 6 mm into the ends of the cross rails, short enough to stop before the post screws that cross those ends. Two `make-t-nut` runs put four M5 post-assembly nuts in the top slots and two M5 pre-assembly nuts in a slot of two posts. Every thread is cut. The only bodies that overlap are the screws and the tapped bores they are in, by the little that two threads cut out of step do.
 
+Five smaller examples show one plugin's parts on their own, with nothing else in the design. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+
+| Example | Plugin | What it builds | Picture |
+|---|---|---|---|
+| `screws` | `techsquid-screws` | Ten M5 x 16 screws in a row: every head, every drive, and the point and cup tips | `screws.png` |
+| `insert` | `techsquid-inserts` | One M3 × 5.7 insert on the origin | `insert.png` |
+| `nut` | `techsquid-nuts` | One M3 nut on the origin | `nut.png` |
+| `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
+| `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
+
+A new plugin gets an example like these and a picture in its README.
+
 Each example comes as two files:
 
 - `examples/pcb-enclosure.json` is the design. Open it in SolidCraft (File > Open). It is saved by SolidCraft 0.42, so an older SolidCraft may refuse it as a newer file. SolidCraft rebuilds it as it opens, which takes a few seconds for the modeled threads. The plugins have already run, so opening it needs none of them installed.
@@ -94,9 +106,9 @@ Each example comes as two files:
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of every rail, screw and slot nut, and that the only bodies that overlap are the 24 screws and the tapped bores they are in. For both it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of every rail, screw and slot nut, and that the only bodies that overlap are the 24 screws and the tapped bores they are in. On the small examples it checks the box and the volume of every part. For every example it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
 
-The pictures are rendered from the design:
+The pictures are rendered from the designs:
 
 ```
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --camera '{"target": [0, 0, 15], "yaw": -0.785, "pitch": 0.615, "distance": 150}' --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
@@ -104,6 +116,11 @@ solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-encl
 solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame.png --width 1280 --height 800 --camera '{"target": [0, 0, 170], "yaw": 0.5, "pitch": 0.4, "distance": 800}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-joint.png --width 1280 --height 800 --camera '{"target": [140, 105, 30], "yaw": 0.3, "pitch": 0.15, "distance": 190}' --no-grid --no-axes --quality fine --section x=140,flip
 solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-nuts.png --width 1280 --height 800 --camera '{"target": [62, -140, 336], "yaw": 0.5, "pitch": 0.7, "distance": 75}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/screws.json --out plugins/techsquid-screws/screws.png --width 1600 --height 700 --camera '{"target": [0, 0, -5], "yaw": 0, "pitch": 0.6, "distance": 92}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/insert.json --out plugins/techsquid-inserts/insert.png --width 1280 --height 800 --camera '{"target": [0, 0, -2.85], "yaw": 0.5, "pitch": 0.55, "distance": 14}' --no-grid --no-axes --quality ultra
+solidcraft-cli snapshot --in examples/nut.json --out plugins/techsquid-nuts/nut.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/rails.json --out plugins/techsquid-extrusions/rails.png --width 1280 --height 800 --camera '{"target": [80, 0, 20], "yaw": 0.3, "pitch": 0.8, "distance": 330}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/slot-nuts.json --out plugins/techsquid-extrusions/slot-nuts.png --width 1280 --height 800 --camera '{"target": [0, 0, 14], "yaw": 0.45, "pitch": 0.6, "distance": 95}' --no-grid --no-axes --quality fine --body "T-slot 2020 x 80:opacity=0.3"
 ```
 
 `tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length. A tapped or drilled rail is checked against the plain one, a screw hole by the metal it takes out, and a drilled rail, a tapped post and two screws are put together to check that each screw passes the first rail without touching it. A slot nut is put in the slot of a rail: it must be the size MISUMI draws, sit under the lips, touch nothing, and leave the rail and any nut built before it as they were.

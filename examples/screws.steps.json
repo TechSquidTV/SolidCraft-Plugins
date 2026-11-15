@@ -1,0 +1,43 @@
+{
+ "description": "Ten M5 x 16 screws in a row on the XY plane, so that every head, drive and tip the screw plugin builds shows at least once: a socket head with a hex socket and one with a Torx recess, a button head with a Torx recess, a countersunk head with a Phillips recess, a hex head, a self-tapping pan head with a Phillips recess and a gimlet point, a pan head and a cheese head with a slot, a set screw with a hex socket and a cup point, and a threaded rod. Every thread is modeled. The picture in the screw plugin's README is rendered from this design. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: the box and volume of every body, as the build measured them.",
+ "steps": [
+  {"caption": "Sketch on the XY plane: one point for each screw, 15 mm apart", "command": "sketch.create", "params": {"plane": "XY", "name": "Screw points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-67.5, 0], "id": "p1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-52.5, 0], "id": "p2"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-37.5, 0], "id": "p3"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-22.5, 0], "id": "p4"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-7.5, 0], "id": "p5"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [7.5, 0], "id": "p6"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [22.5, 0], "id": "p7"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [37.5, 0], "id": "p8"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [52.5, 0], "id": "p9"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [67.5, 0], "id": "p10"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "An M5 x 16 socket head with a hex socket", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Socket head", "drive": "Hex socket", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p1"}}},
+  {"caption": "The same socket head with a Torx recess", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Socket head", "drive": "Torx", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p2"}}},
+  {"caption": "An M5 x 16 button head with a Torx recess", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Button head", "drive": "Torx", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p3"}}},
+  {"caption": "An M5 x 16 countersunk head with a Phillips recess", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Countersunk", "drive": "Phillips", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p4"}}},
+  {"caption": "An M5 x 16 hex head", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Hex head", "drive": "None", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p5"}}},
+  {"caption": "A self-tapping M5 x 16 pan head: a Phillips recess and a gimlet point", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Pan head", "drive": "Phillips", "tip": "Point", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p6"}}},
+  {"caption": "An M5 x 16 pan head with a slot", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Pan head", "drive": "Slotted", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p7"}}},
+  {"caption": "An M5 x 16 cheese head with a slot", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Cheese head", "drive": "Slotted", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p8"}}},
+  {"caption": "An M5 x 16 set screw with a hex socket and a cup point", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Set screw", "drive": "Hex socket", "tip": "Cup", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p9"}}},
+  {"caption": "An M5 threaded rod, 16 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M5", "length": 16, "head": "Threaded rod", "drive": "None", "tip": "Flat", "create": "Screw only", "sketch": "Screw points", "sketch_point": "p10"}}}
+ ],
+ "expect": {
+  "bodies": 10,
+  "bbox": {"min": [-71.75, -4.75, -16.0], "max": [70.0, 4.75, 5.0]},
+  "placed": [
+   {"label": "Screw M5 x 16 socket", "bbox": {"min": [-71.75, -4.25, -16.0], "max": [-63.25, 4.25, 5.0]}, "volume_mm3": 506.35},
+   {"label": "Screw M5 x 16 socket (2)", "bbox": {"min": [-56.75, -4.25, -16.0], "max": [-48.25, 4.25, 5.0]}, "volume_mm3": 521.81},
+   {"label": "Screw M5 x 16 button", "bbox": {"min": [-42.25, -4.75, -16.0], "max": [-32.75, 4.75, 2.75]}, "volume_mm3": 371.66},
+   {"label": "Screw M5 x 16 countersunk", "bbox": {"min": [-27.15, -4.65, -13.3], "max": [-17.85, 4.65, 2.7]}, "volume_mm3": 314.63},
+   {"label": "Screw M5 x 16 hex", "bbox": {"min": [-12.1188, -4.0, -16.0], "max": [-2.8812, 4.0, 3.5]}, "volume_mm3": 450.7},
+   {"label": "Screw M5 x 16 pan", "bbox": {"min": [2.75, -4.75, -16.0], "max": [12.25, 4.75, 3.6322]}, "volume_mm3": 398.09},
+   {"label": "Screw M5 x 16 pan (2)", "bbox": {"min": [17.75, -4.75, -16.0], "max": [27.25, 4.75, 3.0]}, "volume_mm3": 444.03},
+   {"label": "Screw M5 x 16 cheese", "bbox": {"min": [33.25, -4.25, -16.0], "max": [41.75, 4.25, 3.3]}, "volume_mm3": 431.31},
+   {"label": "Set screw M5 x 16", "bbox": {"min": [50.0, -2.5, -16.0], "max": [55.0, 2.5, 0.0]}, "volume_mm3": 232.83},
+   {"label": "Threaded rod M5 x 16", "bbox": {"min": [65.0, -2.5, -16.0], "max": [70.0, 2.5, 0.0]}, "volume_mm3": 257.26}
+  ]
+ }
+}

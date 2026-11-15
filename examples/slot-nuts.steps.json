@@ -1,0 +1,24 @@
+{
+ "description": "A T-slot 2020 rail, 80 mm long, lying along X, with an M5 pre-assembly nut and an M5 post-assembly nut under the lips of its top slot, their threads modeled. The picture of the slot nuts in the extrusion plugin's README is rendered from this design. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: the box and volume of every body, as the build measured them.",
+ "steps": [
+  {"caption": "Sketch across the rail's start: one point on its axis", "command": "sketch.create", "params": {"plane": "YZ", "name": "Rail point", "offset": -40}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [0, 10], "id": "r1"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "A T-slot 2020, 80 mm long, lying along X", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 80, "sketch": "Rail point", "sketch_point": "r1"}}},
+  {"caption": "Sketch on the top face of the rail: one point in the slot for each nut", "command": "sketch.create", "params": {"plane": "XY", "name": "Nut points", "offset": 20}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [-20, 0], "id": "n1"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [20, 0], "id": "n2"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "An M5 pre-assembly nut, slid in from the end of the rail", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Pre-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "sketch": "Nut points", "sketch_point": "n1"}}},
+  {"caption": "An M5 post-assembly nut, dropped in through the slot", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Post-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "sketch": "Nut points", "sketch_point": "n2"}}}
+ ],
+ "expect": {
+  "bodies": 3,
+  "bbox": {"min": [-40.0, -10.0, 0.0], "max": [40.0, 10.0, 20.0]},
+  "placed": [
+   {"label": "T-slot 2020 x 80", "bbox": {"min": [-40.0, -10.0, 0.0], "max": [40.0, 10.0, 20.0]}, "volume_mm3": 14501.03},
+   {"label": "T-nut M5 pre-assembly", "bbox": {"min": [-25.0, -5.0, 14.7], "max": [-15.0, 5.0, 18.8]}, "volume_mm3": 233.88},
+   {"label": "T-nut M5 post-assembly", "bbox": {"min": [14.0, -4.15, 14.0], "max": [31.0, 4.15, 18.7]}, "volume_mm3": 340.44}
+  ]
+ }
+}

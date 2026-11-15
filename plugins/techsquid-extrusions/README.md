@@ -2,6 +2,10 @@
 
 20 mm series T-slot and V-slot aluminium extrusions for [SolidCraft](https://github.com/tangency-labs/solidcraft), cut to any length, and the slot nuts that go in them. Two entries: `make-extrusion` builds a rail, and `make-t-nut` puts a nut in a rail's slot. Each builds its part as a component of its own, once, and places it on every point (see [Components](../../README.md#components)).
 
+![Every rail it builds, 40 mm long, standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020, 2040, 2060 and 2080 in front](rails.png)
+
+Every rail it builds, 40 mm long and standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020 to 2080 in front.
+
 A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot for M5 hardware. A V-slot is the OpenBuilds rail: the same 20 mm cell and Ø4.2 bore, with the slot faces chamfered at 45° so a wheel can run on them. The two slots are close, and they are not the same. A V-slot is 6.25 mm at the throat, 11 mm wide under a 1.8 mm lip. A T-slot is 6 mm, 12 mm and 2 mm.
 
 ## Install
@@ -59,6 +63,10 @@ A tapped or drilled rail is a part of its own. Its name says what is cut into it
 ### Slot nuts
 
 Plugins > Slot nut puts a nut under the lips of a slot. Sketch on the rail's face, put a point in the middle of the slot where each screw goes, select the points, and run it. The nut hangs under the lips with its tapped hole on the point: its shoulders are 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot, which is the lip of each. The form opens on an M5 pre-assembly nut in a T-slot.
+
+![A T-slot 2020 rail, drawn see-through, with a pre-assembly nut and a post-assembly nut under the lips of its top slot](slot-nuts.png)
+
+A pre-assembly nut and a post-assembly nut in the top slot of a T-slot 2020, the rail drawn see-through.
 
 The nut does not look for the slot. It goes on the point you give it, and Rail runs along says which sketch axis the slot follows, so the nut lies along it. With nothing selected the nut hangs under the origin, its hole on the Z axis and its length along X.
 

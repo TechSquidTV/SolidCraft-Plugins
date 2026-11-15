@@ -1,0 +1,1504 @@
+{
+  "format": "solidcraft/56",
+  "format_pending": [
+    "cell-grid-feature",
+    "frame-member-locate",
+    "frame-standard-sizes",
+    "occurrence-move-expressions",
+    "pattern-names-by-source"
+  ],
+  "name": "insert",
+  "units": "mm",
+  "params": [],
+  "features": [
+    {
+      "id": 5,
+      "name": "Insert M3 x 5.7: Core section",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.9089999999999998,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              1.9089999999999998,
+              4.2685
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              1.817,
+              4.3605
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              1.817,
+              4.9305
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              2.0,
+              4.9305
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              2.0,
+              5.529
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              1.829,
+              5.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              0.0,
+              5.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          }
+        ],
+        "counters": {
+          "k": 1,
+          "l": 9
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Insert M3 x 5.7: Core",
+      "suppressed": false,
+      "body_names": [
+        "Insert M3 x 5.7"
+      ],
+      "param_names": [
+        "d1"
+      ],
+      "component": 3,
+      "type": "revolve",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360 deg",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 7,
+      "name": "Insert M3 x 5.7: Upper knurl profile",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              2.3,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.8883849903951284,
+              0.505991233175428
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              1.991858428704209,
+              1.1499999999999997
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              1.3823937572197005,
+              1.3823937572197003
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              1.1500000000000001,
+              1.9918584287042087
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              0.505991233175428,
+              1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              1.408343819019456e-16,
+              2.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              -0.5059912331754278,
+              1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              -1.1499999999999995,
+              1.991858428704209
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.end",
+            "pos": [
+              -1.3823937572197003,
+              1.3823937572197005
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.end",
+            "pos": [
+              -1.991858428704209,
+              1.1499999999999997
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l11.end",
+            "pos": [
+              -1.8883849903951282,
+              0.5059912331754286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l12.end",
+            "pos": [
+              -2.3,
+              2.816687638038912e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l13.end",
+            "pos": [
+              -1.8883849903951284,
+              -0.5059912331754282
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l14.end",
+            "pos": [
+              -1.9918584287042091,
+              -1.1499999999999992
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l15.end",
+            "pos": [
+              -1.3823937572197011,
+              -1.3823937572196996
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l16.end",
+            "pos": [
+              -1.150000000000001,
+              -1.9918584287042083
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l17.end",
+            "pos": [
+              -0.5059912331754278,
+              -1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l18.end",
+            "pos": [
+              -4.225031457058368e-16,
+              -2.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l19.end",
+            "pos": [
+              0.5059912331754272,
+              -1.8883849903951286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l20.end",
+            "pos": [
+              1.1500000000000001,
+              -1.9918584287042087
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l21.end",
+            "pos": [
+              1.3823937572197,
+              -1.3823937572197007
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l22.end",
+            "pos": [
+              1.991858428704208,
+              -1.150000000000001
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l23.end",
+            "pos": [
+              1.888384990395128,
+              -0.5059912331754296
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 20,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 21,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 24,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 24
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Insert M3 x 5.7: Upper knurl path",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              0.0,
+              1.653
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          }
+        ],
+        "counters": {
+          "k": 1,
+          "l": 1
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Insert M3 x 5.7: Upper knurl",
+      "suppressed": false,
+      "param_names": [
+        "d2"
+      ],
+      "component": 3,
+      "type": "sweep",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "path_sketch": 8,
+      "path": [
+        "l1"
+      ],
+      "twist": "-31.780821917808225",
+      "operation": "join",
+      "targets": [
+        "Insert M3 x 5.7"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Insert M3 x 5.7: Middle knurl profile",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            -2.2800000000000002
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              2.231,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.8883849903951284,
+              0.505991233175428
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              1.9321026758430826,
+              1.1154999999999997
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              1.3823937572197005,
+              1.3823937572197003
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              1.1155000000000002,
+              1.9321026758430824
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              0.505991233175428,
+              1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              1.3660935044488724e-16,
+              2.231
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l7.end",
+            "pos": [
+              -0.5059912331754278,
+              1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l8.end",
+            "pos": [
+              -1.1154999999999995,
+              1.9321026758430826
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l9.end",
+            "pos": [
+              -1.3823937572197003,
+              1.3823937572197005
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l10.end",
+            "pos": [
+              -1.9321026758430826,
+              1.1154999999999997
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l11.end",
+            "pos": [
+              -1.8883849903951282,
+              0.5059912331754286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l12.end",
+            "pos": [
+              -2.231,
+              2.7321870088977447e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l13.end",
+            "pos": [
+              -1.8883849903951284,
+              -0.5059912331754282
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l14.end",
+            "pos": [
+              -1.9321026758430828,
+              -1.1154999999999993
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l15.end",
+            "pos": [
+              -1.3823937572197011,
+              -1.3823937572196996
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l16.end",
+            "pos": [
+              -1.1155000000000008,
+              -1.9321026758430822
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l17.end",
+            "pos": [
+              -0.5059912331754278,
+              -1.8883849903951284
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l18.end",
+            "pos": [
+              -4.098280513346617e-16,
+              -2.231
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l19.end",
+            "pos": [
+              0.5059912331754272,
+              -1.8883849903951286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l20.end",
+            "pos": [
+              1.1155000000000002,
+              -1.9321026758430824
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l21.end",
+            "pos": [
+              1.3823937572197,
+              -1.3823937572197007
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l22.end",
+            "pos": [
+              1.932102675843082,
+              -1.1155000000000008
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l23.end",
+            "pos": [
+              1.888384990395128,
+              -0.5059912331754296
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 20,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 21,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 24,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 24
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Insert M3 x 5.7: Middle knurl path",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            -2.2800000000000002
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              0.0,
+              2.0805
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          }
+        ],
+        "counters": {
+          "k": 1,
+          "l": 1
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Insert M3 x 5.7: Middle knurl",
+      "suppressed": false,
+      "param_names": [
+        "d3"
+      ],
+      "component": 3,
+      "type": "sweep",
+      "sketch": 10,
+      "profiles": {
+        "type": "all"
+      },
+      "path_sketch": 11,
+      "path": [
+        "l1"
+      ],
+      "twist": "40",
+      "operation": "join",
+      "targets": [
+        "Insert M3 x 5.7"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Insert M3 x 5.7: Middle chamfer section",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              1.817,
+              4.3605
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              2.6449999999999996,
+              4.3605
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              2.6449999999999996,
+              3.5325000000000006
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "Insert M3 x 5.7: Middle chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "component": 3,
+      "type": "revolve",
+      "sketch": 13,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360 deg",
+      "operation": "cut",
+      "targets": [
+        "Insert M3 x 5.7"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 15,
+      "name": "Move1",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6",
+        "d7"
+      ],
+      "component": 3,
+      "type": "move",
+      "bodies": [
+        "Insert M3 x 5.7"
+      ],
+      "translate": [
+        "-165",
+        "-105",
+        "0"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Insert M3 x 5.7: Bore",
+      "suppressed": false,
+      "param_names": [
+        "d8",
+        "d9"
+      ],
+      "component": 3,
+      "face_names": [
+        "F6:side:l1"
+      ],
+      "participants": [
+        "Insert M3 x 5.7"
+      ],
+      "type": "hole",
+      "position": [
+        -165.0,
+        -105.0,
+        0.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "2.5 mm",
+      "depth": "5.7",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M3",
+      "modeled": true
+    }
+  ],
+  "next_id": 17,
+  "components": [
+    {
+      "id": 1,
+      "identification_color_index": 0,
+      "name": "Fasteners",
+      "parent": 0,
+      "metadata": {
+        "bom_type": "phantom"
+      }
+    },
+    {
+      "id": 3,
+      "identification_color_index": 1,
+      "name": "Insert M3 x 5.7",
+      "parent": 1,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "CNC Kitchen heat-set insert M3 × 5.7",
+        "dev.threadcraft": {
+          "geometry": "cc67bb22c848787e",
+          "plugin": "techsquid-inserts",
+          "site": [
+            -165.0,
+            -105.0,
+            0.0
+          ]
+        },
+        "part_number": "Insert M3 x 5.7"
+      }
+    }
+  ],
+  "next_component_color_index": 2,
+  "occurrences": [
+    {
+      "id": 2,
+      "component": 1,
+      "parent": 0,
+      "name": "Fasteners:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 4,
+      "component": 3,
+      "parent": 1,
+      "name": "Insert M3 x 5.7:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          165.0,
+          105.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    }
+  ]
+}

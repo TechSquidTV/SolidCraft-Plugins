@@ -1,0 +1,775 @@
+{
+  "format": "solidcraft/56",
+  "format_pending": [
+    "cell-grid-feature",
+    "frame-member-locate",
+    "frame-standard-sizes",
+    "occurrence-move-expressions",
+    "pattern-names-by-source"
+  ],
+  "name": "nut",
+  "units": "mm",
+  "params": [
+    {
+      "name": "d1",
+      "expr": "5.5",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 5,
+      "name": "Nut M3: Hex profile",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              1.5877132402666883,
+              2.749999999995745
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -1.5877132402665768,
+              2.7499999999957723
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -3.1754264805343926,
+              3.6405352683558004e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -1.5877132402695748,
+              -2.749999999991205
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              1.587713240266226,
+              -2.7499999999931273
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              3.1754264805343673,
+              1.0511497774686312e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 2.75,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 3.175426480534621,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 5.5,
+            "param": "d1"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Nut M3: Hex",
+      "suppressed": false,
+      "body_names": [
+        "Nut M3"
+      ],
+      "param_names": [
+        "d2"
+      ],
+      "component": 3,
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2.4",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 7,
+      "name": "Nut M3: Bearing chamfer profile",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              2.75,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              3.2254264805429416,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              3.2254264805429416,
+              0.27448760652134363
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Nut M3: Bearing chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d3"
+      ],
+      "component": 3,
+      "type": "revolve",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "line",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "angle": "360",
+      "operation": "cut",
+      "targets": [
+        "Nut M3"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 9,
+      "name": "Nut M3: Outer chamfer profile",
+      "suppressed": false,
+      "component": 3,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            2.4
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              2.75,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              3.2254264805429416,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              3.2254264805429416,
+              0.27448760652134363
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Nut M3: Outer chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "component": 3,
+      "type": "revolve",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "line",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "angle": "360",
+      "operation": "cut",
+      "targets": [
+        "Nut M3"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 11,
+      "name": "Move1",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6",
+        "d7"
+      ],
+      "component": 3,
+      "type": "move",
+      "bodies": [
+        "Nut M3"
+      ],
+      "translate": [
+        "-165",
+        "-105",
+        "0"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Nut M3: Thread",
+      "suppressed": false,
+      "param_names": [
+        "d8",
+        "d9"
+      ],
+      "component": 3,
+      "face_names": [
+        "F6:start"
+      ],
+      "participants": [
+        "Nut M3"
+      ],
+      "type": "hole",
+      "position": [
+        -165.0,
+        -105.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "2.5 mm",
+      "depth": "2.4",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M3",
+      "modeled": true
+    },
+    {
+      "id": 13,
+      "name": "Nut M3: Bearing countersink",
+      "suppressed": false,
+      "param_names": [
+        "d10",
+        "d11",
+        "d12"
+      ],
+      "component": 3,
+      "participants": [
+        "Nut M3"
+      ],
+      "type": "cone",
+      "base": [
+        -165.0,
+        -105.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(3.45 mm) / 2",
+      "top_radius": "(3 mm) / 2",
+      "height": "0.1299038105676658",
+      "operation": "cut"
+    },
+    {
+      "id": 14,
+      "name": "Nut M3: Outer countersink",
+      "suppressed": false,
+      "param_names": [
+        "d13",
+        "d14",
+        "d15"
+      ],
+      "component": 3,
+      "participants": [
+        "Nut M3"
+      ],
+      "type": "cone",
+      "base": [
+        -165.0,
+        -105.0,
+        2.4
+      ],
+      "axis": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "radius": "(3.45 mm) / 2",
+      "top_radius": "(3 mm) / 2",
+      "height": "0.1299038105676658",
+      "operation": "cut"
+    }
+  ],
+  "next_id": 15,
+  "components": [
+    {
+      "id": 1,
+      "identification_color_index": 0,
+      "name": "Fasteners",
+      "parent": 0,
+      "metadata": {
+        "bom_type": "phantom"
+      }
+    },
+    {
+      "id": 3,
+      "identification_color_index": 1,
+      "name": "Nut M3",
+      "parent": 1,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4032",
+        "dev.threadcraft": {
+          "geometry": "af35c41d5619fee9",
+          "plugin": "techsquid-nuts",
+          "site": [
+            -165.0,
+            -105.0,
+            0.0
+          ]
+        },
+        "part_number": "Nut M3"
+      }
+    }
+  ],
+  "next_component_color_index": 2,
+  "occurrences": [
+    {
+      "id": 2,
+      "component": 1,
+      "parent": 0,
+      "name": "Fasteners:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 4,
+      "component": 3,
+      "parent": 1,
+      "name": "Nut M3:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          165.0,
+          105.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    }
+  ]
+}

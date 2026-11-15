@@ -2,6 +2,10 @@
 
 An ISO 4032 hexagon nut for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-nut`. It builds the nut as a component of its own, once, and places it on every point (see [Components](../../README.md#components)). The bore is a tapped hole.
 
+![An ISO 4032 M3 hexagon nut, chamfered on both ends, with its bore countersunk and tapped](nut.png)
+
+An M3 nut, the size the form opens on.
+
 The sizes below are the ISO 4032 table, preferred and second-choice. ISO 4032 replaced DIN 934, and most sizes match, but not all: a DIN 934 nut is wider across the flats at M10 (17 mm, not 16), M12 (19, not 18), M14 (22, not 21) and narrower at M22 (32, not 34), and it is a little lower at most sizes (M6 5.0 mm, M8 6.5 mm). For a DIN 934 nut at those sizes, type its width and height in Custom width and Custom thickness, so the pocket fits it. The width across the flats is the nominal. The height is the standard maximum. Both ends are chamfered.
 
 ## Install

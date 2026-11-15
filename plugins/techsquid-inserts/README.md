@@ -2,6 +2,10 @@
 
 A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-insert`. For every sketch point or circle you select, it drills the hole for the insert into the part under that point and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../README.md#components)).
 
+![An M3 x 5.7 heat-set insert: two star-shaped knurls twisting opposite ways with a groove between them, the chamfer under the lower knurl, the smooth pilot at the tip, and the threaded bore](insert.png)
+
+An M3 × 5.7 insert, the size the form opens on.
+
 Sizes are [CNC Kitchen](https://cnckitchen.store/)'s. The outside follows CNC Kitchen's section drawing: three rings on a shaft. The top ring is a 12-point star across D1 that twists one way. A smooth groove follows. The middle ring is a slightly narrower star that twists the other way and ends in a large 45° chamfer. After a short neck, the bottom ring is a smooth pilot, about as wide as the plastic hole and with a small chamfer at the tip, so the insert drops into its hole before you press it in. D1 is the diameter across the points of the top ring.
 
 ## Install

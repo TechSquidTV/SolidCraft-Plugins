@@ -1,0 +1,40 @@
+{
+ "description": "Every rail the extrusion plugin builds, 40 mm long and standing on the XY plane: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020, 2040, 2060 and 2080 in front. The picture in the extrusion plugin's README is rendered from this design. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: the box and volume of every body, as the build measured them.",
+ "steps": [
+  {"caption": "Sketch on the XY plane: a point for each rail, T-slots behind and V-slots in front", "command": "sketch.create", "params": {"plane": "XY", "name": "Rail points"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [0, 55], "id": "t2020"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [35, 55], "id": "t2040"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [70, 55], "id": "t2060"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [105, 55], "id": "t2080"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [150, 55], "id": "t4040"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [0, -55], "id": "v2020"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [35, -55], "id": "v2040"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [70, -55], "id": "v2060"}},
+  {"caption": "", "command": "sketch.point", "params": {"point": [105, -55], "id": "v2080"}},
+  {"caption": "", "command": "sketch.finish", "params": {}},
+  {"caption": "A T-slot 2020, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 40, "sketch": "Rail points", "sketch_point": "t2020"}}},
+  {"caption": "A T-slot 2040, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2040", "length": 40, "sketch": "Rail points", "sketch_point": "t2040"}}},
+  {"caption": "A T-slot 2060, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2060", "length": 40, "sketch": "Rail points", "sketch_point": "t2060"}}},
+  {"caption": "A T-slot 2080, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2080", "length": 40, "sketch": "Rail points", "sketch_point": "t2080"}}},
+  {"caption": "A T-slot 4040, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "4040", "length": 40, "sketch": "Rail points", "sketch_point": "t4040"}}},
+  {"caption": "A V-slot 2020, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2020", "length": 40, "sketch": "Rail points", "sketch_point": "v2020"}}},
+  {"caption": "A V-slot 2040, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2040", "length": 40, "sketch": "Rail points", "sketch_point": "v2040"}}},
+  {"caption": "A V-slot 2060, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2060", "length": 40, "sketch": "Rail points", "sketch_point": "v2060"}}},
+  {"caption": "A V-slot 2080, 40 mm long", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "V-slot", "size": "2080", "length": 40, "sketch": "Rail points", "sketch_point": "v2080"}}}
+ ],
+ "expect": {
+  "bodies": 9,
+  "bbox": {"min": [-10.0, -95.0, 0.0], "max": [170.0, 95.0, 40.0]},
+  "placed": [
+   {"label": "T-slot 2020 x 40", "bbox": {"min": [-10.0, 45.0, 0.0], "max": [10.0, 65.0, 40.0]}, "volume_mm3": 7250.51},
+   {"label": "T-slot 2040 x 40", "bbox": {"min": [25.0, 35.0, 0.0], "max": [45.0, 75.0, 40.0]}, "volume_mm3": 12894.67},
+   {"label": "T-slot 2060 x 40", "bbox": {"min": [60.0, 25.0, 0.0], "max": [80.0, 85.0, 40.0]}, "volume_mm3": 18538.83},
+   {"label": "T-slot 2080 x 40", "bbox": {"min": [95.0, 15.0, 0.0], "max": [115.0, 95.0, 40.0]}, "volume_mm3": 24182.99},
+   {"label": "T-slot 4040 x 40", "bbox": {"min": [130.0, 35.0, 0.0], "max": [170.0, 75.0, 40.0]}, "volume_mm3": 19165.14},
+   {"label": "V-slot 2020 x 40", "bbox": {"min": [-10.0, -65.0, 0.0], "max": [10.0, -45.0, 40.0]}, "volume_mm3": 6856.12},
+   {"label": "V-slot 2040 x 40", "bbox": {"min": [25.0, -75.0, 0.0], "max": [45.0, -35.0, 40.0]}, "volume_mm3": 11999.58},
+   {"label": "V-slot 2060 x 40", "bbox": {"min": [60.0, -85.0, 0.0], "max": [80.0, -25.0, 40.0]}, "volume_mm3": 17143.04},
+   {"label": "V-slot 2080 x 40", "bbox": {"min": [95.0, -95.0, 0.0], "max": [115.0, -15.0, 40.0]}, "volume_mm3": 22286.5}
+  ]
+ }
+}

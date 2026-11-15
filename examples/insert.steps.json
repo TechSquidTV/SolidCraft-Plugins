@@ -1,0 +1,13 @@
+{
+ "description": "One M3 x 5.7 heat-set insert, Insert only, on the origin, with its thread modeled. The picture in the insert plugin's README is rendered from this design. Each step is one command; `caption` is the text a recording shows for it. A plugin step is a `plugin.run` whose `path` is relative to the repository and whose `approval` is the placeholder `@approval`: tests/examples_test.py fills both in, because the approval changes with every build of the plugin. `expect` is what that test measures: the box and volume of every body, as the build measured them.",
+ "steps": [
+  {"caption": "An M3 x 5.7 heat-set insert, on its own", "command": "plugin.run", "params": {"path": "dist/techsquid-inserts", "approval": "@approval", "entry": "make-insert", "params": {"size": "M3 × 5.7", "create": "Insert only"}}}
+ ],
+ "expect": {
+  "bodies": 1,
+  "bbox": {"min": [-2.3, -2.3, -5.7], "max": [2.3, 2.3, 0.0]},
+  "placed": [
+   {"label": "Insert M3 x 5.7", "bbox": {"min": [-2.3, -2.3, -5.7], "max": [2.3, 2.3, 0.0]}, "volume_mm3": 40.42}
+  ]
+ }
+}

@@ -2,6 +2,10 @@
 
 A screw generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-screw`. It builds a head and a shank with ordinary SolidCraft commands, then calls `solid.thread` on the shank. The result is a normal timeline.
 
+![Ten M5 x 16 screws in a row, with every head, drive and tip the plugin builds](screws.png)
+
+Ten M5 x 16 screws, left to right: a socket head with a hex socket, a socket head with a Torx recess, a button head with a Torx recess, a countersunk head with a Phillips recess, a hex head, a self-tapping pan head with a Phillips recess and a gimlet point, a pan head with a slot, a cheese head with a slot, a set screw with a hex socket and a cup point, and a threaded rod.
+
 ## Install
 
 You need a SolidCraft build that has the plugin host (the `commands@0.1` capability). SolidCraft 0.41 has it, and this package is tested on a development build of 0.41.0.

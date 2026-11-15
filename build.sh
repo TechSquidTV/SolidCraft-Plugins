@@ -18,6 +18,10 @@ build_one() {
     -o "$out/plugin.wasm"
   cp "plugins/$id/plugin.json" "$out/"
   cp "plugins/$id/README.md" LICENSE "$out/"
+  # The pictures the README shows sit beside it.
+  for png in "plugins/$id/"*.png; do
+    [ -e "$png" ] && cp "$png" "$out/"
+  done
   echo "built $out"
 }
 

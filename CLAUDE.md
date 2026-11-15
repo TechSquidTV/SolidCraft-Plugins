@@ -5,9 +5,9 @@ Rust workspace of SolidCraft plugins. Each plugin is a WebAssembly component (`c
 ## Docs
 
 - `README.md` is the repo index. It has the Plugins table (each row links to that plugin's README), plus layout, build, host tests, examples and releases. Nothing specific to one plugin goes here.
-- `plugins/<id>/README.md` is the full user guide for one plugin: Install, Use (with the parameter table), its size tables, Standards (with source and test columns), Names (body, hole and feature names) and Older field names. `build.sh` copies it into the release zip, so it must read on its own without the repo around it.
+- `plugins/<id>/README.md` is the full user guide for one plugin: a picture of what it builds under its opening paragraph, Install, Use (with the parameter table), its size tables, Standards (with source and test columns), Names (body, hole and feature names) and Older field names. `build.sh` copies it into the release zip with the `*.png` beside it, so it must read on its own without the repo around it. Each picture is rendered from a small example in `examples/` that holds only that plugin's parts; the main README lists the `solidcraft-cli snapshot` command for each.
 
-A new plugin gets its own README with those sections and a row in the main README's Plugins table.
+A new plugin gets its own README with those sections, a small example and its picture, and a row in the main README's Plugins table.
 
 ## Layout
 
@@ -30,6 +30,7 @@ The workspace members, `build.sh`, both workflows and the host tests find the pl
 - a test in `src/lib.rs` that asserts the manifest id
 - a case for it in `CASES` in `tests/cli_test.py`, which fails until it has one
 - a row in the Plugins table in README.md
+- a small example in `examples/` and a picture rendered from it, beside its README
 
 Don't put anything but plugins under `plugins/`, or anything but library crates under `crates/`. The globs would pick it up.
 
@@ -51,7 +52,7 @@ SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/geometry_test.py
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-The signed macOS SolidCraft build gets SIGKILLed when it loads a plugin. On that build the tests report SKIP rather than FAIL, so a run that is all SKIP has proved nothing. Use an unsigned, locally built `solidcraft-cli`. After a plugin change that alters geometry, run `examples_test.py --update` to rewrite `examples/*.json`.
+The signed macOS SolidCraft build gets SIGKILLed when it loads a plugin. On that build the tests report SKIP rather than FAIL, so a run that is all SKIP has proved nothing. Use an unsigned, locally built `solidcraft-cli`. After a plugin change that alters geometry, run `examples_test.py --update` to rewrite `examples/*.json`. Then render the pictures again with the snapshot commands in README.md.
 
 ## Conventions
 

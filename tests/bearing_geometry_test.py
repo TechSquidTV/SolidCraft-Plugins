@@ -40,6 +40,11 @@ for sku, bore, od, width, ri, ro, recess, closure in [
         check(sku+': sourced envelope and rounded edges', all(close(a,b) for a,b in zip(
             [rings[1]['bbox']['max'][i]-rings[1]['bbox']['min'][i] for i in range(3)], [od,od,width]))
             and all(b['face_types'].get('other') == (2 if closure else 3) for b in rings))
+        for ring, radii in zip(rings, [(bore/2, ri), (ro, od/2)]):
+            cylinders = sorted({f['cylinder']['radius'] for f in
+                                host.command('model.faces', body=ring['name'])['faces'] if 'cylinder' in f})
+            check(ring['name']+': sourced bore and shoulder radii', len(cylinders) == len(radii)
+                  and all(close(a,b) for a,b in zip(cylinders, radii)))
         if closure:
             source_volume = sources[sku+'.stp']['bodies'][0]['volume_mm3']
             # The supplier STEP fills the space between closure faces. Removing
@@ -57,6 +62,21 @@ for sku, bore, od, width, ri, ro, recess, closure in [
                       and close(body['bbox']['min'][2],z) and close(body['bbox']['max'][2],z)
                       and appearance[name]['color'] == ('#404040' if closure == 'Seal' else '#a0a0a0'))
         else:
+            # Compare actual native edges with the independently measured STEP
+            # section, including where each race meets its shoulder. No builder
+            # sketch names, feature IDs or production dimensions are the oracle.
+            section = set()
+            for ring, bottom_radius in zip(rings, [4.3, 8.2]):
+                edges = host.command('model.edges', body=ring['name'])['edges']
+                section.update((round(p[2],6), round(math.hypot(p[0],p[1]),6))
+                               for edge in edges for p in (edge['start'],edge['end']) if p is not None)
+                # The race seam crosses its deepest point at the centre plane:
+                # source pitch radius 6.25 +/- groove radius 1.95 mm.
+                check(ring['name']+': sourced race depth', any(
+                    close(edge['mid'][2],0) and close(math.hypot(*edge['mid'][:2]),bottom_radius)
+                    for edge in edges))
+            check(sku+': native ring section matches source vertices', section ==
+                  {tuple(p) for p in sources[sku+'.stp']['centered_axial_radial_vertices_mm']})
             balls = [bodies['Bearing '+sku+' Ball '+str(i+1)] for i in range(8)]
             for i, ball in enumerate(balls):
                 angle = math.tau*i/8

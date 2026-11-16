@@ -78,16 +78,18 @@ compare("suppression", [cmd("timeline.suppress", feature=bore, suppressed=True)]
 
 sketch_path = os.path.join(TMP, "sketch-part.sc")
 code, text, made = run([
+    cmd("parameters.add", name="sketch_base_radius", expression=2),
+    cmd("parameters.add", name="sketch_radius", expression="2 * sketch_base_radius"),
     cmd("component.create", name="Sketch part", activate=True, grounded=False),
     cmd("sketch.create", name="Profile", plane="XY"),
-    cmd("sketch.circle.center", center=[2, 3], radius=4, id="c"),
+    cmd("sketch.circle.center", center=[2, 3], radius="sketch_radius", id="c"),
     cmd("sketch.finish"),
     cmd("solid.extrude", distance=3, body_name="Sketch body"),
 ], save=sketch_path)
 check("sketch fixture builds", code == 0, text[-1000:] if code else "")
 if not code:
-    sketch_component, sketch_occurrence = made[0]["component"], made[0]["occurrence"]
-    sketch_id = made[1]["sketch"]
+    sketch_component, sketch_occurrence = made[2]["component"], made[2]["occurrence"]
+    sketch_id = made[3]["sketch"]
     sk, error = snapshot(sketch_path, sketch_component)
     check("full sketch contents are inspectable", sk is not None, error[-1000:])
     if sk:
@@ -98,6 +100,17 @@ if not code:
                 source=sketch_path, target=sketch_component, reference=sk)
         if edited:
             check("sketch edit actually changed local geometry", next(p for p in edited[-1]["points"] if p["id"] == "c.center")["at"] == [1, 2])
+        # These parameters drive only a sketch constraint, never a solid's
+        # expression. Equal-value edits also require dependency inspection to
+        # change the snapshot: evaluated geometry alone cannot catch them.
+        for label, name, expression in [
+            ("sketch-only direct parameter", "sketch_radius", "3 * sketch_base_radius"),
+            ("sketch-only transitive parameter", "sketch_base_radius", 3),
+            ("sketch-only equal-value direct expression", "sketch_radius", "sketch_base_radius + sketch_base_radius"),
+            ("sketch-only equal-value transitive expression", "sketch_base_radius", "1 + 1"),
+        ]:
+            compare(label, [cmd("parameters.change", name=name, expression=expression)],
+                    source=sketch_path, target=sketch_component, reference=sk)
 
 # Parameters must come from actual native dependencies, including indirect feature
 # inputs and placement expressions. Administrative parameter edits are not geometry.
@@ -108,10 +121,6 @@ code, text, made = run([
     cmd("parameters.add", name="shift", expression=1),
     cmd("component.create", name="Parametric part", activate=True, grounded=False),
     cmd("solid.cylinder", radius="outside", height=5, base=["shift", 0, 0], body_name="Parametric body"),
-    cmd("sketch.create", name="Parametric profile", plane="XY"),
-    cmd("sketch.circle.center", center=[20, 0], radius="outside", id="c"),
-    cmd("sketch.finish"),
-    cmd("solid.extrude", distance=3, body_name="Parametric sketch body"),
 ], save=parametric)
 check("parameter fixture builds", code == 0, text[-1000:] if code else "")
 if not code:

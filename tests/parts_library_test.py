@@ -127,4 +127,49 @@ with Headless() as host:
     check('existing assembly allows the full 32-placement batch',placed['count'] == 32 and placed['component']['reused']
           and placed['library']['host_calls'] < 160,str(placed['library']['host_calls']))
 
+    # A folder is itself a shared definition. Adding a child to a copied folder
+    # would add it to every copy, even if an explicit parent path removed ambiguity.
+    folder = definition(host.command('component.list'), 'Bearings')
+    for label, parent in [('root copy', 0), ('nested copy', carrier)]:
+        host.command('occurrence.copy', component=folder['id'], parent=parent, translate=[100,0,0])
+        host.command('component.activate', component=carrier)
+        before_components = host.command('component.list')
+        copied_folder = definition(before_components, folder['name'])
+        before_bom = {r['part_number']:r['count'] for r in host.command('assembly.bom')['rows']}
+        result = host.command('plugin.run', allow_error=True, path=package(BEARINGS),
+                              approval=approvals[BEARINGS], entry='make-bearing', params={})
+        check(label+': insertion into copied-folder design succeeds', 'error' not in result, str(result.get('error','')))
+        if 'error' in result:
+            continue
+        result = result.get('result', result)
+        after_components = host.command('component.list')
+        placed_bearing = definition(after_components, result['component']['component'])
+        occurrence = next(o for o in placed_bearing['occurrences'] if o['id'] == result['component']['occurrences'][0])
+        folder = next(c for c in after_components['components'] if c['id'] == occurrence['parent'])
+        check(label+': existing bearing definition is reused', result['component']['reused'])
+        check(label+': copied folder and all of its children remain unchanged',
+              definition(after_components, copied_folder['name']) == copied_folder)
+        check(label+': new folder has one root placement and is phantom', folder['id'] != copied_folder['id']
+              and [o['parent'] for o in folder['occurrences']] == [0]
+              and host.command('component.metadata', component=folder['id'])['bom_type'] == 'phantom')
+        before_bom['OpenBuilds 30'] += 1
+        check(label+': exactly one purchase is added',
+              {r['part_number']:r['count'] for r in host.command('assembly.bom')['rows']} == before_bom)
+        check(label+': active component is restored', after_components['active'] == carrier)
+        host.command('edit.undo')
+        check(label+': one undo removes the whole insertion', host.command('component.list') == before_components)
+        host.command('edit.redo')
+        check(label+': redo restores the complete insertion', host.command('component.list') == after_components)
+        host.command('file.save_as', path=saved)
+        host.command('doc.open', path=saved)
+        again = insert(BEARINGS)
+        listed = host.command('component.list')
+        placed_bearing = definition(listed, again['component']['component'])
+        occurrence = next(o for o in placed_bearing['occurrences'] if o['id'] == again['component']['occurrences'][0])
+        check(label+': later insertions reuse the numbered folder after reopening', occurrence['parent'] == folder['id']
+              and len(listed['components']) == len(after_components['components']))
+        before_bom['OpenBuilds 30'] += 1
+        check(label+': repeated insertion still adds only one purchase',
+              {r['part_number']:r['count'] for r in host.command('assembly.bom')['rows']} == before_bom)
+
 finish()

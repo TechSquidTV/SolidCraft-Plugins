@@ -56,11 +56,13 @@ same native section/arc factory; no duplicated plugin geometry is needed.
 ## Validation boundary
 
 `bearing_geometry_test.py` builds each product through the packaged plugin and
-checks closure area, axial recess, appearance, ring bounds, curved faces, ball
-count/radii/centres, native
+checks closure area, axial recess, appearance, ring bounds, bore/shoulder radii,
+curved faces, ball count/radii/centres, native
 reuse and purchasing BOM rows. For the three closed variants, subtracting the
 known annular fill between the source closure faces yields the source ring volume;
-the native ring volumes agree within numerical tolerance. Open B626
+the native ring volumes agree within numerical tolerance. Open B626's native ring
+edge vertices are compared with the measured source section; race seam midpoints
+also verify the groove depths at the centre plane. Open B626
 uses separate sphere bodies rather than the source’s joined rolling-element surface
 topology, so summed body volumes are not compared with its single imported solid.
 The nominal overlap and absent cage make these models unsuitable for mass prediction.

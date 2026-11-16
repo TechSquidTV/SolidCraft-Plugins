@@ -63,7 +63,10 @@ Each invocation reads an index and caches inspection results; mutations invalida
 that view. `ensure` resolves or creates one definition. `geometry` groups its own
 features. `place` consumes the new definition's first occurrence once, then copies
 it; a wheel's two bearings therefore share one definition. `place_all` places the
-root part in a phantom folder. `finish` writes the directory and restores the
+root part in a phantom folder with exactly one placement at the design root. If
+that folder has been copied, insertion uses a separate numbered folder and reuses
+it on later runs. The copied folder's children stay unchanged, so insertion adds
+only the requested parts or assemblies. `finish` writes the directory and restores the
 original active component. Unplaced new definitions are an error.
 
 An assembly recipe is limited to eight levels and 32 distinct definitions. A run
@@ -111,11 +114,11 @@ loading Wasm; skipped runs provide no runtime evidence.
 |---|---|
 | `catalog_discovery_test.py` | Every packaged catalog item, pagination, source/route data, state-preserving reads, stale/altered inputs, non-XY insertion |
 | `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, rename, modified appearance, custom identity, equivalent size spellings, unrelated parameters and mounting invariance |
-| `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, undo/redo, save/reopen, modified children, late rollback and batch limits |
+| `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, copied-folder isolation and replacement reuse, undo/redo, save/reopen, modified children, late rollback and batch limits |
 | `parts_directory_test.py` | Missing IDs, obsolete revisions/snapshots, incorrect digest candidates, malformed/unsupported directories and unchanged failed transactions |
-| `parts_content_test.py` | Same-volume edits, sketches, external cuts, materials/appearances, direct/transitive/placement parameters, parameter annotations, nested structure and unsupported states |
+| `parts_content_test.py` | Same-volume edits, sketches, external cuts, materials/appearances, direct/transitive/placement parameters, isolated sketch-only dependencies (including equal-value expression edits), parameter annotations, nested structure and unsupported states |
 | `parts_inspection_test.py` | Native host inspection assumptions and shared nested definitions after reopen |
-| `bearing_geometry_test.py` | MISUMI sourced curved rings and closure measurements, sourced visible balls in the open model, purchase identities and native reuse |
+| `bearing_geometry_test.py` | MISUMI sourced curved rings, bore/shoulder radii and closure measurements, open race depths and section vertices, sourced visible balls, purchase identities and native reuse |
 | `wheel_geometry_test.py` | Source volumes, ring/closure bounds and areas, width correction, shims and V-slot contact |
 | `examples_test.py` | Reproducible examples, all-six-package showcase, saved geometry, catalog identities and BOM numbers |
 | Existing geometry and reference suites | Fastener cuts, isolated modeled threads, rail machining and seated screw/nut edits |

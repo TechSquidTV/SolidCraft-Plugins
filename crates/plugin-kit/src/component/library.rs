@@ -2,7 +2,7 @@
 //! only a lookup accelerator: every candidate's identity and current native contents
 //! are checked. Names, creator plugin and stored hashes alone never qualify.
 
-use super::{components, folder_id, id_of, make_folder, put, Definition, Placed};
+use super::{components, id_of, make_folder, put, Definition, Placed};
 use crate::{
     content::{Index, Snapshot, METADATA_KEY},
     host::free_body_name,
@@ -355,19 +355,25 @@ impl<'a, R: Runner> Library<'a, R> {
         }
         let listed = self.host.run("component.list", json!({"compact": true}))?;
         let listed = components(&listed);
-        let existing = folder_id(&listed, folder);
-        let folder = match existing {
-            Some(id)
-                if self
-                    .host
-                    .run("component.metadata", json!({"component": id}))?["bom_type"]
-                    == "phantom" =>
-            {
-                id
-            }
-            _ => {
-                let mut names = listed.iter().map(|c| c.name.clone()).collect();
-                make_folder(&mut self.host, &free_body_name(&mut names, folder))?
+        // A child belongs to the folder definition, so inserting into a copied
+        // folder would multiply purchases. Only a single root placement is safe.
+        // Walk the shared naming sequence so a numbered replacement is reused.
+        let mut unavailable = Vec::new();
+        let folder = loop {
+            let name = free_body_name(&mut unavailable, folder);
+            match listed.iter().find(|c| c.name == name) {
+                Some(c)
+                    if c.id != 0
+                        && c.parents == [0]
+                        && self
+                            .host
+                            .run("component.metadata", json!({"component": c.id}))?["bom_type"]
+                            == "phantom" =>
+                {
+                    break c.id;
+                }
+                Some(_) => continue,
+                None => break make_folder(&mut self.host, &name)?,
             }
         };
         let mut occurrences = Vec::new();

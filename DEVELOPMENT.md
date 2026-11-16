@@ -311,7 +311,8 @@ built Extrusions plugin, and checks saved geometry through the current-content
 inspector. Run `./build.sh` first for the rail check. A zero-thickness closure is an intentional exterior
 representation, not a seal cross-section or a mass model. The assembly and cross-plugin reuse checks live in `tests/parts_library_test.py`.
 The bearing suite separately verifies MISUMI ring volumes against the STEP ledgers,
-closure recesses and colours, the open bearing's eight spheres, and purchase/reuse
+bore/shoulder radii, closure recesses and colours, the open bearing's race depths,
+section vertices and eight spheres, and purchase/reuse
 behavior through the installed workflow.
 
 ## Components

@@ -300,14 +300,6 @@ fn components(list: &Value) -> Vec<Listed> {
         .collect()
 }
 
-/// The folder component placed in the design itself, if there is one.
-fn folder_id(components: &[Listed], folder: &str) -> Option<u64> {
-    components
-        .iter()
-        .find(|c| c.id != 0 && c.name == folder && c.parents.contains(&0))
-        .map(|c| c.id)
-}
-
 fn make_folder<R: Runner>(r: &mut R, name: &str) -> Result<u64, String> {
     let made = r.run(
         "component.create",

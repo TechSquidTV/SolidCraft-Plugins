@@ -2,7 +2,7 @@
 
 Build the hardware and frames your designs need without modeling every part from scratch. These plugins bring configurable fasteners, heat-set inserts, aluminium extrusions, bearings and V-slot wheels into [SolidCraft](https://github.com/tangency-labs/solidcraft), with matching holes and pockets where you need them.
 
-![T-slot and V-slot rails with screws, a heat-set insert, a hex nut and slot nuts](examples/plugin-showcase.png)
+![T-slot and V-slot rails with screws, inserts, nuts, bearings and wheel assemblies](examples/plugin-showcase.png)
 
 [Open the showcase example](examples/plugin-showcase.json)
 
@@ -14,7 +14,7 @@ Build the hardware and frames your designs need without modeling every part from
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | CNC Kitchen metric and UN inserts and their mounting holes |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | ISO 4032 nuts, with optional pockets and bolt holes |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | Fixed-length or sketch-driven T-slot and V-slot rails, tapped ends, screw holes and slot nuts |
-| [Bearings](plugins/techsquid-bearings/README.md) | Fixed 625 2RS and 105ZZ products with separate rings and visible seals or shields |
+| [Bearings](plugins/techsquid-bearings/README.md) | Six OpenBuilds and MISUMI products with separate rings and sourced seals, shields or open raceways |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | Five OpenBuilds wheel products, bare or assembled with two bearings and an internal shim |
 
 Place parts on one or more sketch points, choose your dimensions, and run the plugin. Fixed-length hardware is organized into reusable components, and cuts remain with the part they modify. For sketch-driven extrusions, select straight sketch lines to create independent rails that follow later path edits. Choose modeled threads for detail or cosmetic threads for faster rebuilds.

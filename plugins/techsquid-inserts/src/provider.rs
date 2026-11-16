@@ -127,7 +127,7 @@ pub fn validate_selection(value: &Value, p: &insert::Params) -> Result<(), Catal
 pub fn part_number(p: &insert::Params) -> Result<String, String> {
     let product = representation(p).product;
     if product.kind == ProductKind::Custom {
-        plugin_kit::component::model_number(&crate::body_base(p), &product)
+        plugin_kit::component::model_number(&product)
     } else {
         Ok(format!("CNC Kitchen insert {}", p.size))
     }

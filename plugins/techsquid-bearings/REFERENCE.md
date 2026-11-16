@@ -21,25 +21,38 @@ smaller batch to stay within the host command limit.
 
 <!-- catalog-table:start -->
 
-| Designation | OpenBuilds SKU | Bore × OD × width (mm) | Closure |
-|---|---|---|---|
-| 625 2RS | 30 | 5 × 16 × 5 | Rubber seals, both sides |
-| 105ZZ | 800 | 5 × 10 × 4 | Metal shields, both sides |
+| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure |
+|---|---|---|---|---|
+| 625 2RS | OpenBuilds | 30 | 5 × 16 × 5 | Rubber seals, both sides |
+| 105ZZ | OpenBuilds | 800 | 5 × 10 × 4 | Metal shields, both sides |
+| B626 | MISUMI | B626 | 6 × 19 × 6 | Open, visible balls |
+| B626ZZ | MISUMI | B626ZZ | 6 × 19 × 6 | Metal shields, both sides |
+| B626DDU | MISUMI | B626DDU | 6 × 19 × 6 | Rubber seals, both sides |
+| B608ZZ | MISUMI | B608ZZ | 8 × 22 × 7 | Metal shields, both sides |
 
 <!-- catalog-table:end -->
 
-OpenBuilds is the supplier. The underlying bearing manufacturer is not identified.
+OpenBuilds and MISUMI are the identified suppliers. An underlying bearing
+manufacturer is not inferred from the supplier name.
 The designation and dimensions do not establish a tolerance class, load rating,
 seal compound or current stock availability. These are exterior CAD representations.
 
+The [coverage checklist](../../docs/bearing-coverage.md) compares these products with
+the main app's thirteen nominal sizes and records the exact references still needed.
+
 ## Geometry and sources
 
-Each bearing contains solid inner/outer ring envelopes and two annular surface
-bodies at a 0.3 mm recess. The 625 has dark rubber seal faces; the 105ZZ has metal
-shield faces. Closures have zero thickness because the source does not establish
-an internal cross-section. Balls, cages, internal raceways and unsupported edge
-chamfers are omitted. Volumes and masses therefore do not represent a complete
-physical bearing; surfaces are intentionally not watertight solids.
+Each bearing contains separate inner/outer rings. Closed variants have two annular
+surface bodies at the source's measured recess; rubber seals are dark and metal
+shields are gray. Closures have zero thickness because the source does not establish
+an internal cross-section. MISUMI profiles retain their 0.3 mm rounded edges; open
+B626 includes the exposed raceway grooves and eight sourced balls, with no closures.
+Closed bearings omit hidden balls and internals. Cages are not modeled. Volumes and masses therefore do not represent a
+complete physical bearing; closure surfaces are intentionally not watertight solids.
+
+The [MISUMI source ledger](../../docs/sources/misumi.md) records the supplied B626,
+B626ZZ, B626DDU and B608ZZ profiles. The 626 variants share their standard envelope
+but have different ring boundaries and closure recesses; they are distinct products.
 
 The old OpenBuilds mini bearing STEP is 4.2 mm wide. An OpenBuilds staff correction
 specifies 4 mm; the catalog uses 4 mm while retaining the measured radial section
@@ -50,16 +63,17 @@ required or distributed in the plugin.
 | Data | Source | Validation |
 |---|---|---|
 | Exterior ring sections and recesses | OpenBuilds GrabCAD bearing STEP references in the source ledger | `bearings::tests::exterior_dimensions_match_source_and_mini_correction`; native `wheel_geometry_test.py` |
+| MISUMI rounded profiles, closures and exposed B626 races | Exact supplied STEP revisions in the MISUMI source ledger | `bearings::tests::misumi_sections_match_supplied_source_revisions`; native `bearing_geometry_test.py` |
 | 105ZZ width correction | OpenBuilds staff, 27 February 2016, linked in the source ledger | Nominal width and closure bounds in `wheel_geometry_test.py` |
 | Supplier SKUs 30 and 800 | OpenBuilds Sphinx build BOM, linked in the source ledger | `bearings::tests::supplier_variants_do_not_conflate_closure_or_identity` |
 
 ## Names and bill of materials
 
-A component is named `Bearing 625 2RS` or `Bearing 105ZZ`. Its bodies end in
-`Inner ring`, `Outer ring`, `Seal front/back`, or `Shield front/back`.
+A component is named `Bearing <designation>`, for example `Bearing B626ZZ`. Its bodies end in
+`Inner ring`, `Outer ring`, `Seal front/back`, `Shield front/back`, or `Ball 1`–`Ball 8`.
 Standalone placements go in the phantom `Bearings` folder. The BOM counts one
-purchase per bearing occurrence, using `OpenBuilds 30` or `OpenBuilds 800`, regardless
-of its four bodies. Wheel assemblies and direct insertion share the same bearing
+purchase per bearing occurrence, using the supplier and exact part number (such as
+`OpenBuilds 30` or `MISUMI B626ZZ`), regardless of body count. Wheel assemblies and direct insertion share the same bearing
 definitions; the Bearings plugin need not be installed to build a wheel assembly.
 
 Renaming a component preserves reuse. Geometry, appearance, material, purchasing

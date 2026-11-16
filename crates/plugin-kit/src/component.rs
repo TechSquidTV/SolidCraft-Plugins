@@ -47,15 +47,13 @@ pub use library::{Budget, Handle, Library};
 /// A generated model number for custom geometry, never a supplier SKU. The full
 /// product record remains authoritative for reuse; this stable number keeps
 /// different custom configurations separate in the host's part-number-based BOM.
-pub fn model_number<C: serde::Serialize>(
-    label: &str,
-    product: &parts::Product<C>,
-) -> Result<String, String> {
+/// No display label or raw workflow input may contribute to this number.
+pub fn model_number<C: serde::Serialize>(product: &parts::Product<C>) -> Result<String, String> {
     use sha2::{Digest, Sha256};
     let identity = product.identity().map_err(|e| e.to_string())?;
-    let label: String = label.chars().take(80).collect();
     Ok(format!(
-        "Custom {label} [{:x}]",
+        "Custom {} [{:x}]",
+        product.part,
         Sha256::digest(identity.as_str().as_bytes())
     ))
 }
@@ -203,6 +201,7 @@ pub fn stand_in(command: &str) -> Option<Value> {
         "material.list" => json!({"materials":[]}),
         "appearance.list" => json!({"components":[],"body":{}}),
         "joint.list" => json!({"joints":[]}),
+        "parameters.list" => json!({"parameters":[]}),
         "component.properties" => {
             json!({"bodies":[{"name":"Fixture body","material":"Default","density_g_cm3":null}]})
         }

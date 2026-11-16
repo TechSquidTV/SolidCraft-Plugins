@@ -60,7 +60,7 @@ pub fn representation(p: &nut::Params) -> Representation<Specification> {
 
 pub fn part_number(p: &nut::Params) -> Result<String, String> {
     if p.custom {
-        plugin_kit::component::model_number(&crate::body_base(p), &representation(p).product)
+        plugin_kit::component::model_number(&representation(p).product)
     } else {
         Ok(format!("ISO 4032 M{}", p.major))
     }

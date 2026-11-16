@@ -53,6 +53,16 @@ with Headless() as host:
     check('obsolete candidate metadata remains intact',
           host.command('component.metadata', component=current)['metadata'][RECORD] == record)
 
+    current = component(revised)
+    record = copy.deepcopy(host.command('component.metadata', component=current)['metadata'][RECORD])
+    record['snapshot']['version'] = 1
+    host.command('component.metadata.set', component=current, values={RECORD:record})
+    migrated = insert()
+    check('old snapshot version cannot authorize reuse', not migrated['component']['reused']
+          and component(migrated) != current)
+    check('old snapshot definition is preserved unchanged',
+          host.command('component.metadata', component=current)['metadata'][RECORD] == record)
+
     shield = insert('105ZZ')
     shield_id = component(shield)
     shield_before = host.command('component.metadata', component=shield_id)

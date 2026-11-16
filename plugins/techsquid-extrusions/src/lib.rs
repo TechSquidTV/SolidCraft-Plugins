@@ -121,7 +121,7 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
         site: built_at(p),
     };
     let representation = provider::rail_representation(p);
-    let number = component::model_number(&base, &representation.product)?;
+    let number = component::model_number(&representation.product)?;
     let mut library = component::Library::new(
         r,
         component::Budget {
@@ -842,7 +842,7 @@ mod tests {
         assert!(rail["part_number"]
             .as_str()
             .unwrap()
-            .starts_with("Custom T-slot 2040 x 300 ["));
+            .starts_with("Custom nfs5-2040 ["));
         assert_eq!(rail["bom_type"], "normal");
         assert_eq!(
             rail["description"],

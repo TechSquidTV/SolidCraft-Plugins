@@ -26030,12 +26030,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "92e8937c316b5da4fdaaca30877c4df68d6746d289919e5997ebb96c5defc721",
-            "version": 1
+            "sha256": "1d3637f61bd0053a84b515b00d0d8b038084f7711bf865dbf79bb30c24e5abb7",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom T-slot 2020 x 40 [e4a4e1c5a481c5588d1f09030ff775e2e32dce4745b2ca30b948b46e9ce23395]"
+        "part_number": "Custom nfs5-2020 [e4a4e1c5a481c5588d1f09030ff775e2e32dce4745b2ca30b948b46e9ce23395]"
       }
     },
     {
@@ -26065,12 +26065,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "582fb999d47b04d52bd0eb03771486fcb0dd508e16c30f19e9a4c544ed97c4d9",
-            "version": 1
+            "sha256": "9e245c7d30085c654086419f7ecd39208ec797e78f7ec7f40ee3162f02032d83",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom T-slot 2040 x 40 [ab029ee94a83bf506d3f98e238d6b5b2275c4d3b894af3421cb19043c941ec70]"
+        "part_number": "Custom nfs5-2040 [ab029ee94a83bf506d3f98e238d6b5b2275c4d3b894af3421cb19043c941ec70]"
       }
     },
     {
@@ -26091,12 +26091,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "9655deb2fee27b8f18ccbc0ba1e5081532bce4d87b995f2396349479627b9b59",
-            "version": 1
+            "sha256": "e27f5e0627ebf7d97552147be08abf2d6b61e0e8580457e28900a93e9a32335a",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom T-slot 2060 x 40 [65b234af694a78fde9fa9713ecd9220b9985728f691e8147ac69b5691a6c1c1a]"
+        "part_number": "Custom nfs5-2060 [65b234af694a78fde9fa9713ecd9220b9985728f691e8147ac69b5691a6c1c1a]"
       }
     },
     {
@@ -26117,12 +26117,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "1a07e567d578dbcac1c83f3f357847191e7206a92c3b55c06598fc8228b6f821",
-            "version": 1
+            "sha256": "0d311301b36a04746950e7e14abc914f966270a1536e335913bf5f380c00df95",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom T-slot 2080 x 40 [87e9438a72eb8fec902849675ef3e03caf77d8f42b049a8af02178f657cb730f]"
+        "part_number": "Custom nfs5-2080 [87e9438a72eb8fec902849675ef3e03caf77d8f42b049a8af02178f657cb730f]"
       }
     },
     {
@@ -26143,12 +26143,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "afbcaf407c28c44c7a87f088cd8bf92ebc5d119079aacd2c71ffcaa1397073cb",
-            "version": 1
+            "sha256": "7b68874f41675560d0397dce8becbe03e994d81b13cd1163c8eb640eb4a20fb2",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom T-slot 4040 x 40 [a0eeb005478abfbb7516a142b9b50befca7f330b855f4e324f0bbd08d5783746]"
+        "part_number": "Custom nfs5-4040 [a0eeb005478abfbb7516a142b9b50befca7f330b855f4e324f0bbd08d5783746]"
       }
     },
     {
@@ -26169,12 +26169,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "cb4704a5ce62dff1819588250e075121262e2bc74ea9bac468895ed2e0700762",
-            "version": 1
+            "sha256": "92b71a60c307ae302db1c925efaa710c0a6ff4ea56b937b2f7e3ac08b771df16",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom V-slot 2020 x 40 [89318e58f5c22e28083b1ebee7f0f7b22c7b008c8bea5e64535c07d170a34232]"
+        "part_number": "Custom v-slot-2020 [89318e58f5c22e28083b1ebee7f0f7b22c7b008c8bea5e64535c07d170a34232]"
       }
     },
     {
@@ -26195,12 +26195,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "32086d2dc3b239b3ff6f5b97a14b3b7c247a8ac78d8d9fb7d220472efb21a33f",
-            "version": 1
+            "sha256": "87aaecea0376645b41fa431dec398a34192b2ea966e9fb17f14ea5b13d57a59e",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom V-slot 2040 x 40 [20f307616e9f278613d3de60b1d3e2d22c2f825243fe6fad547f00355775ab14]"
+        "part_number": "Custom v-slot-2040 [20f307616e9f278613d3de60b1d3e2d22c2f825243fe6fad547f00355775ab14]"
       }
     },
     {
@@ -26221,12 +26221,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "a824cecc082c0359285cf0b11f4845b43a75b302314a287f163ff03a7aabf36f",
-            "version": 1
+            "sha256": "2bb88a7737c3d167bdbed74cfe5fd3eeab94c11eea44233b86ffbe7ec69bc0ec",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom V-slot 2060 x 40 [522bb9f1e9a9c9b5b9dd65aad4199044e274aedd620be1e4db3a581be66f07f4]"
+        "part_number": "Custom v-slot-2060 [522bb9f1e9a9c9b5b9dd65aad4199044e274aedd620be1e4db3a581be66f07f4]"
       }
     },
     {
@@ -26247,12 +26247,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "b58efea70939497a9a7297a13c52673696399db3654f14a844b00b7d65c1e4f2",
-            "version": 1
+            "sha256": "589a12816ff749c89cf9409b2ee9806eddacee00b197a3dee636b03cdb2fac39",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom V-slot 2080 x 40 [6a42f147638b852fa4d2bee6075cd955a76720ac0b0615f69396cd94e1cd3456]"
+        "part_number": "Custom v-slot-2080 [6a42f147638b852fa4d2bee6075cd955a76720ac0b0615f69396cd94e1cd3456]"
       }
     }
   ],

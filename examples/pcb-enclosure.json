@@ -2760,7 +2760,7 @@
           ],
           "snapshot": {
             "sha256": "a151e65777db86b7b8ec9bc49ec6040f75124bbba98d53926c0f7984658e76e2",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },
@@ -2795,7 +2795,7 @@
           ],
           "snapshot": {
             "sha256": "693fbbfd9924a10814ebecebb021249e11aa9dd9ffa817f916827b51b06eb3d9",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },

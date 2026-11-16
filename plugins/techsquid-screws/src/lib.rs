@@ -401,7 +401,7 @@ fn revolve_head<R: Runner>(
     place: &Placement,
     body: &str,
     part: &str,
-    profile: &[head::Segment],
+    profile: &[plugin_kit::revolve::Segment],
 ) -> Result<(), String> {
     let created = r.run(
         "sketch.create",
@@ -415,23 +415,7 @@ fn revolve_head<R: Runner>(
         }),
     )?;
     let sketch = sketch_id(&created)?;
-    for segment in profile {
-        match segment {
-            head::Segment::Line(points) => {
-                r.run("sketch.line", json!({"sketch": sketch, "points": points}))?;
-            }
-            head::Segment::Arc {
-                start,
-                through,
-                end,
-            } => {
-                r.run(
-                    "sketch.arc.three_point",
-                    json!({"sketch": sketch, "start": start, "through": through, "end": end}),
-                )?;
-            }
-        }
-    }
+    plugin_kit::revolve::draw(r, &sketch, profile)?;
     r.run("sketch.finish", json!({}))?;
     r.run(
         "solid.revolve",

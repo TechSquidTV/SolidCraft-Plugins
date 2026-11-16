@@ -71,10 +71,7 @@ pub fn representation(p: &Params) -> Representation<Specification> {
 
 pub fn part_number(p: &Params) -> Result<String, String> {
     if p.custom {
-        return plugin_kit::component::model_number(
-            &crate::body_base(p),
-            &representation(p).product,
-        );
+        return plugin_kit::component::model_number(&representation(p).product);
     }
     Ok(format!(
         "{} M{}x{} x {}",

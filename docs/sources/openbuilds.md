@@ -17,7 +17,7 @@ no redistribution permission is asserted and no STEP files are committed.
 body bounds, volumes and standalone section vertex inventories. Reproduce with:
 
 ```sh
-SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tools/measure_openbuilds.py /path/to/extracted/files
+SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tools/measure_parts.py docs/sources/openbuilds-files.json /path/to/extracted/files
 ```
 
 The script checks each source hash before importing with SolidCraft. It retains no

@@ -24,12 +24,16 @@
       "occurrence.copy",
       "occurrence.move",
       "occurrence.reparent",
+      "parameters.list",
+      "parameters.users",
       "selection.get",
+      "sketch.arc.three_point",
       "sketch.create",
       "sketch.finish",
       "sketch.inspect",
       "sketch.line",
       "solid.revolve",
+      "solid.sphere",
       "surface.revolve",
       "timeline.group",
       "timeline.inspect"
@@ -44,7 +48,11 @@
               "default": "625 2RS",
               "enum": [
                 "625 2RS",
-                "105ZZ"
+                "105ZZ",
+                "B626",
+                "B626ZZ",
+                "B626DDU",
+                "B608ZZ"
               ],
               "title": "Part",
               "type": "string"

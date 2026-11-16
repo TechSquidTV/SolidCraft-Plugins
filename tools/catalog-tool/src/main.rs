@@ -97,17 +97,19 @@ fn run() -> Result<(), String> {
         )?;
     }
     let mut bearings_table = String::from(
-        "| Designation | OpenBuilds SKU | Bore × OD × width (mm) | Closure |\n|---|---|---|---|\n",
+        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure |\n|---|---|---|---|---|\n",
     );
     for bearing in bearings::ALL {
         let d = bearing.dimensions();
         let closure = match bearing.closure() {
+            bearings::Closure::Open => "Open, visible balls",
             bearings::Closure::RubberSeals => "Rubber seals, both sides",
             bearings::Closure::MetalShields => "Metal shields, both sides",
         };
         bearings_table.push_str(&format!(
-            "| {} | {} | {} × {} × {} | {closure} |\n",
+            "| {} | {} | {} | {} × {} × {} | {closure} |\n",
             bearing.designation(),
+            bearing.supplier().name,
             bearing.sku(),
             d.bore,
             d.diameter,

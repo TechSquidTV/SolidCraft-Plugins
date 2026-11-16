@@ -27,6 +27,8 @@
       "occurrence.copy",
       "occurrence.move",
       "occurrence.reparent",
+      "parameters.list",
+      "parameters.users",
       "selection.get",
       "sketch.circle.center",
       "sketch.constraint.coincident",

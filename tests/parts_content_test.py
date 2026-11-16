@@ -63,6 +63,8 @@ compare("duplicate name in root", [cmd("component.activate", component=0),
 compare("move placement", [cmd("occurrence.move", occurrence=occurrence, translate=[20, 7, 9])], same=True)
 compare("self metadata", [cmd("component.metadata.set", component=component,
         values={"org.techsquid.parts": {"identity": "example", "snapshot": "ignored"}})], same=True)
+compare("unrelated parameter", [cmd("parameters.add", name="radius", expression=17)], same=True)
+compare("body-name parameter", [cmd("parameters.add", name="Probe", expression=17)], same=True)
 compare("BOM metadata", [cmd("component.metadata.set", component=component, part_number="Custom")])
 compare("relocate same-volume bore", [cmd("timeline.edit", feature=bore, set={"base": [1, 0, 0]})])
 compare("material", [cmd("material.assign", bodies=["Probe body"], material="Steel")])
@@ -96,6 +98,38 @@ if not code:
                 source=sketch_path, target=sketch_component, reference=sk)
         if edited:
             check("sketch edit actually changed local geometry", next(p for p in edited[-1]["points"] if p["id"] == "c.center")["at"] == [1, 2])
+
+# Parameters must come from actual native dependencies, including indirect feature
+# inputs and placement expressions. Administrative parameter edits are not geometry.
+parametric = os.path.join(TMP, "parametric-part.sc")
+code, text, made = run([
+    cmd("parameters.add", name="base_radius", expression=3),
+    cmd("parameters.add", name="outside", expression="2 * base_radius"),
+    cmd("parameters.add", name="shift", expression=1),
+    cmd("component.create", name="Parametric part", activate=True, grounded=False),
+    cmd("solid.cylinder", radius="outside", height=5, base=["shift", 0, 0], body_name="Parametric body"),
+    cmd("sketch.create", name="Parametric profile", plane="XY"),
+    cmd("sketch.circle.center", center=[20, 0], radius="outside", id="c"),
+    cmd("sketch.finish"),
+    cmd("solid.extrude", distance=3, body_name="Parametric sketch body"),
+], save=parametric)
+check("parameter fixture builds", code == 0, text[-1000:] if code else "")
+if not code:
+    param_component = made[3]["component"]
+    param_snapshot, error = snapshot(parametric, param_component)
+    check("parameter dependencies are inspectable", param_snapshot is not None, error[-1000:])
+    if param_snapshot:
+        cases = [
+            ("direct parameter", [cmd("parameters.change", name="outside", expression="3 * base_radius")], False),
+            ("transitive parameter", [cmd("parameters.change", name="base_radius", expression=4)], False),
+            ("placement parameter", [cmd("parameters.change", name="shift", expression=2)], False),
+            ("parameter comment", [cmd("parameters.comment", name="outside", comment="A new note")], True),
+            ("parameter favourite", [cmd("parameters.favorite", name="outside", favorite=True)], True),
+            ("unrelated dependent", [cmd("parameters.add", name="elsewhere", expression="outside + 1")], True),
+        ]
+        for label, steps, same in cases:
+            compare(label, steps, same=same, source=parametric, target=param_component, reference=param_snapshot)
+
 
 assembly = os.path.join(TMP, "assembly.sc")
 code, text, made = run([cmd("component.create", name="Assembly", activate=True, grounded=False)], inp=base, save=assembly)

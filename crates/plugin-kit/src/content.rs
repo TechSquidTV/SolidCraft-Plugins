@@ -16,14 +16,14 @@ use crate::Runner;
 
 /// Only this self-referential record is excluded from a component's metadata.
 pub const METADATA_KEY: &str = "org.techsquid.parts";
-const SNAPSHOT_VERSION: u16 = 1;
+const SNAPSHOT_VERSION: u16 = 2;
 const MAX_DEPTH: usize = 8;
 const MAX_COMPONENTS: usize = 32;
 /// Leave room within the host's 256 calls for creation and placement. The caller
 /// must include these reads in the complete operation's preflight budget.
 const MAX_READS: usize = 128;
 
-pub const COMMANDS: [&str; 10] = [
+pub const COMMANDS: [&str; 12] = [
     "appearance.list",
     "component.list",
     "component.metadata",
@@ -32,6 +32,8 @@ pub const COMMANDS: [&str; 10] = [
     "joint.list",
     "material.list",
     "model.body_features",
+    "parameters.list",
+    "parameters.users",
     "sketch.inspect",
     "timeline.inspect",
 ];
@@ -76,7 +78,29 @@ struct ComponentList {
 struct Document {
     metadata: Value,
     timeline: Vec<TimelineRow>,
-    params: Vec<Value>,
+}
+
+/// Only semantic parameter state belongs in a snapshot. Comments, favourites,
+/// display order and unrelated dependents do not change a part.
+#[derive(Clone, Deserialize, Serialize)]
+struct Parameter {
+    name: String,
+    expression: String,
+    unit: String,
+    value: Option<f64>,
+    text: Option<String>,
+    error: Option<String>,
+    uses: Vec<String>,
+}
+
+#[derive(Deserialize)]
+struct Parameters {
+    parameters: Vec<Parameter>,
+}
+
+#[derive(Deserialize)]
+struct ParameterUsers {
+    drives: Vec<FeatureId>,
 }
 
 #[derive(Deserialize)]
@@ -178,7 +202,7 @@ struct Contents {
     bodies: Vec<BodyContent>,
     children: Vec<ChildContent>,
     metadata: Value,
-    parameters: Vec<Value>,
+    parameters: Vec<Parameter>,
     appearance: Value,
 }
 
@@ -188,7 +212,8 @@ pub struct Index {
     pub active: u64,
     pub components: Vec<Component>,
     timeline: Vec<TimelineRow>,
-    params: Vec<Value>,
+    params: BTreeMap<String, Parameter>,
+    parameter_drives: BTreeMap<String, BTreeSet<u64>>,
     histories: BTreeMap<String, Vec<u64>>,
     materials: Vec<Value>,
     appearances: Value,
@@ -220,12 +245,18 @@ impl Index {
         let materials: Materials = decode(r.run("material.list", json!({}))?, "materials")?;
         let appearances = r.run("appearance.list", json!({}))?;
         let joints: Joints = decode(r.run("joint.list", json!({}))?, "joints")?;
+        let params: Parameters = decode(r.run("parameters.list", json!({}))?, "parameters")?;
         Ok(Self {
             document_metadata: doc.metadata,
             active: listed.active,
             components: listed.components,
             timeline: doc.timeline,
-            params: doc.params,
+            params: params
+                .parameters
+                .into_iter()
+                .map(|p| (p.name.clone(), p))
+                .collect(),
+            parameter_drives: BTreeMap::new(),
             histories: histories
                 .bodies
                 .into_iter()
@@ -239,7 +270,7 @@ impl Index {
             metadata: BTreeMap::new(),
             snapshots: BTreeMap::new(),
             visiting: BTreeSet::new(),
-            reads: 6,
+            reads: 7,
         })
     }
 
@@ -470,7 +501,7 @@ impl Index {
             .filter(|a| a["component"].as_u64() == Some(node.id))
             .cloned()
             .collect::<Vec<_>>();
-        let parameters = referenced_parameters(&features, &self.params)?;
+        let parameters = self.referenced_parameters(r, &features)?;
         Ok(Contents {
             features,
             bodies,
@@ -479,6 +510,61 @@ impl Index {
             parameters,
             appearance: json!(appearance),
         })
+    }
+    /// Candidate tokens only reduce host queries; they never establish a dependency.
+    /// The native dependency walker verifies feature IDs, including placement and
+    /// sketch expressions, without duplicating the host's expression grammar here.
+    fn referenced_parameters(
+        &mut self,
+        r: &mut impl Runner,
+        features: &[FeatureContent],
+    ) -> Result<Vec<Parameter>, String> {
+        let mut candidates = BTreeSet::new();
+        for feature in features {
+            identifier_candidates(&feature.definition, &mut candidates);
+            for input in &feature.inputs {
+                identifier_candidates(&input["expression"], &mut candidates);
+            }
+            if let Some(sketch) = &feature.sketch {
+                identifier_candidates(sketch, &mut candidates);
+            }
+        }
+        let owned: BTreeSet<_> = features.iter().map(|f| f.id).collect();
+        let mut pending = Vec::new();
+        for name in candidates {
+            if !self.params.contains_key(&name) {
+                continue;
+            }
+            if !self.parameter_drives.contains_key(&name) {
+                let users: ParameterUsers = decode(
+                    self.run(r, "parameters.users", json!({"name": name}))?,
+                    "parameter dependencies",
+                )?;
+                self.parameter_drives.insert(
+                    name.clone(),
+                    users.drives.into_iter().map(|f| f.id).collect(),
+                );
+            }
+            if !self.parameter_drives[&name].is_disjoint(&owned) {
+                pending.push(name);
+            }
+        }
+        let mut used = BTreeMap::new();
+        while let Some(name) = pending.pop() {
+            if used.contains_key(&name) {
+                continue;
+            }
+            let param = self
+                .params
+                .get(&name)
+                .ok_or_else(|| format!("parameter {name} is missing"))?;
+            if param.error.is_some() {
+                return Err(format!("parameter {name} has an error"));
+            }
+            pending.extend(param.uses.iter().cloned());
+            used.insert(name, param.clone());
+        }
+        Ok(used.into_values().collect())
     }
 }
 
@@ -528,49 +614,15 @@ fn sketch_contents(mut value: Value) -> Result<Value, String> {
     Ok(value)
 }
 
-fn referenced_parameters(
-    features: &[FeatureContent],
-    params: &[Value],
-) -> Result<Vec<Value>, String> {
-    fn identifiers(value: &Value, found: &mut BTreeSet<String>) {
-        match value {
-            Value::String(s) => found.extend(
-                s.split(|c: char| !c.is_alphanumeric() && c != '_')
-                    .filter(|s| !s.is_empty())
-                    .map(str::to_string),
-            ),
-            Value::Array(a) => a.iter().for_each(|v| identifiers(v, found)),
-            Value::Object(o) => o.values().for_each(|v| identifiers(v, found)),
-            _ => {}
-        }
+fn identifier_candidates(value: &Value, found: &mut BTreeSet<String>) {
+    match value {
+        Value::String(s) => found.extend(
+            s.split(|c: char| !c.is_alphanumeric() && c != '_')
+                .filter(|s| !s.is_empty())
+                .map(str::to_string),
+        ),
+        Value::Array(a) => a.iter().for_each(|v| identifier_candidates(v, found)),
+        Value::Object(o) => o.values().for_each(|v| identifier_candidates(v, found)),
+        _ => {}
     }
-    let mut names = BTreeSet::new();
-    for feature in features {
-        identifiers(&feature.definition, &mut names);
-        identifiers(&json!(feature.inputs), &mut names);
-        if let Some(sketch) = &feature.sketch {
-            identifiers(sketch, &mut names);
-        }
-    }
-    let mut used = BTreeMap::new();
-    loop {
-        let before = used.len();
-        for param in params {
-            let name = param
-                .get("name")
-                .and_then(Value::as_str)
-                .ok_or("parameter name is missing")?;
-            if names.contains(name) {
-                if !param["error"].is_null() {
-                    return Err(format!("parameter {name} has an error"));
-                }
-                used.insert(name.to_string(), param.clone());
-                identifiers(&param["expression"], &mut names);
-            }
-        }
-        if before == used.len() {
-            break;
-        }
-    }
-    Ok(used.into_values().collect())
 }

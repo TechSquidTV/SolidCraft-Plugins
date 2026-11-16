@@ -3192,12 +3192,12 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "92d10a1cedf95335e7e7b181b0aa5db2c15ebe00ac1b3bc36c297f2bcc9eb72c",
-            "version": 1
+            "sha256": "63bbc26180cb4dba818e1b528a4078bc562af48599875d5b6476c7144d437c01",
+            "version": 2
           },
           "version": 1
         },
-        "part_number": "Custom T-slot 2020 x 80 [dd80ce72c70067132167c216477c5be389318286a1aba952f7757d79fb6c1496]"
+        "part_number": "Custom nfs5-2020 [dd80ce72c70067132167c216477c5be389318286a1aba952f7757d79fb6c1496]"
       }
     },
     {
@@ -3228,7 +3228,7 @@
           ],
           "snapshot": {
             "sha256": "335b825452d884f667c0e885d253b073dfc3cc19e91af5c64a7866dfa65eebc1",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },
@@ -3254,7 +3254,7 @@
           ],
           "snapshot": {
             "sha256": "5d4b41592362f7e76f5912d9c90f3eb26216c533c676f290bfc287f2ade525c0",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },

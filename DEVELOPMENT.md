@@ -10,7 +10,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
-| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings | Fixed 625 2RS and 105ZZ products with visible rings and closures |
+| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings | Six sourced OpenBuilds and MISUMI products with visible ring and closure detail |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | `techsquid-v-wheels` | Wheels | Five OpenBuilds products, bare or composed with bearings and an internal shim |
 
 Each plugin's README links to its detailed reference for dialog fields, standards and naming. Each release has one zip per plugin.
@@ -37,32 +37,50 @@ A slot nut is one section too, extruded along the slot and tapped. `make-t-nut`,
 
 ## Layout
 
-```
-Cargo.toml                 workspace
-crates/plugin-kit/         what every plugin shares: the host runner and wasm guest, dialog fields, placement, components, and names
-crates/parts/              typed catalog protocol and canonical product/representation identities
-crates/bearings/           fixed supplier bearing products and exterior representations
-crates/wheels/             OpenBuilds wheel sections, compatible bearings and precision shims
-crates/fasteners/          designations, metric sizes, standard heads, ISO 4032 nuts, ISO 273 clearance holes, drives, and the hex profile
-crates/extrusions/         the 20 mm T-slot and V-slot shapes, the section of a rail built from them, its taps and screw holes, and the slot nuts
-wit/plugin.wit             copy of SolidCraft's craft:plugin@0.1.0
-plugins/techsquid-screws   screw entry and its parameters
-plugins/techsquid-inserts  heat-set insert entry, catalog, and parameters
-plugins/techsquid-nuts     ISO 4032 hexagon nut entry and its parameters
-plugins/techsquid-extrusions  T-slot and V-slot rail entry, slot nut entry, and their parameters
-build.sh                   the packages land in dist/<id>/, one per plugin
-examples/                  designs built with the plugins: <name>.json opens in SolidCraft, <name>.steps.json builds it
-tests/cli_test.py          runs the built package through solidcraft-cli
-tests/geometry_test.py     checks by volume what each plugin cuts and builds
-tests/rail_references_test.py checks rail hole edits, placed copies and save/reopen
-tests/sketch_rails_test.py  checks all profiles, multiple paths, machining edits and batch limits
-tests/sketch_selection_test.py checks selection identity when sketch names are duplicated
-tests/nut_references_test.py checks linked pockets, seated nuts, depth and save/reopen
-tests/screw_references_test.py checks screw seats through sketch, recess and save/reopen edits
-tests/examples_test.py     builds every example through solidcraft-cli and measures it
+```text
+.
+├── crates/
+│   ├── parts/          # pure catalog contract and canonical identities
+│   ├── plugin-kit/     # host transport, inspection, reuse, placement and generic geometry helpers
+│   ├── bearings/       # fixed supplier products and exterior geometry
+│   ├── wheels/         # fixed wheel products and shared assembly recipes
+│   ├── fasteners/      # standards, designations, heads, drives, nuts and clearance geometry
+│   └── extrusions/     # rail sections, machining rules and slot nuts
+├── plugins/
+│   └── techsquid-*/    # six independent packages: workflows, providers, manifests and user guides
+├── docs/
+│   ├── catalog-contract.md
+│   ├── parts-library.md
+│   ├── bearing-coverage.md
+│   └── sources/        # source evidence and independently measured references
+├── examples/           # saved designs, matching build recipes and native previews
+├── tests/              # native-host integration suites; shared harness and headless transport
+├── tools/
+│   ├── catalog-tool/   # catalog-owned manifest fields and reference tables
+│   └── measure_parts.py
+├── release-notes/
+├── wit/plugin.wit      # host interface copied from SolidCraft
+├── Cargo.toml          # workspace membership and shared dependencies
+└── build.sh            # packages into ignored dist/<plugin>/ directories
 ```
 
-A plugin id is the folder name under `plugins/` and the folder you install. Preferences matches those. Each plugin owns its entry and the fields a person sets. Every plugin id starts with `techsquid-`, because SolidCraft plugin ids share one namespace. Code any plugin can use lives in `crates/plugin-kit`; fastener geometry lives in `crates/fasteners` and rail sections in `crates/extrusions`, and a new family of plugins gets its own crate beside them. The insert catalog stays in the insert plugin.
+A plugin id is its folder, Cargo package and installed package name. Plugins own
+workflow fields and their catalog adapters. Shared identity and protocol stay in
+`parts`; host state and reusable definitions stay in `plugin-kit`. Domain crates
+own compiled dimensions and geometry. The insert catalog stays in its only consumer.
+Wheel and bearing packages share factories through Rust dependencies, not runtime
+plugin calls.
+
+This layout keeps one owner for each concern. Short package READMEs link to their
+full reference guides and shared architecture docs. Generated catalog tables are
+checked against domain data; independent source measurements remain separate test
+evidence. Test transports belong in `harness.py`/`headless.py`, not individual suites.
+Every saved example has a build recipe and is checked for geometry, catalog identity
+and BOM metadata. Rust build output, packages and Python caches are ignored.
+
+The current plugins have no dependency on the adjacent SolidCraft source checkout.
+The [bearing coverage checklist](docs/bearing-coverage.md) records the app parity
+baseline and source evidence still needed before adding purchasable variants.
 
 ## Build
 
@@ -148,6 +166,12 @@ Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/screw_references_test.
 
 ## Examples
 
+The [main showcase](examples/plugin-showcase.json) combines all six packages in a
+small rail rack and hardware display. `plugin-showcase.steps.json` rebuilds it with
+the current workflows, including standalone bearings and wheel cores sharing their
+bearing definitions. The example test checks each package's definition count and
+compares saved purchasing/representation records as well as geometry.
+
 ![A PCB enclosure with a heat-set insert and a screw in each corner, the lid shown transparent](examples/pcb-enclosure.png)
 
 ![The same enclosure closed: each screw head sits in a recess, flush with the top of the lid](examples/pcb-enclosure-closed.png)
@@ -201,7 +225,7 @@ Eight standalone examples show the plugins’ parts and editing modes. Each plug
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
-| `bearings` | `techsquid-bearings` | Sealed 625 2RS and shielded 105ZZ products | `bearings.png` |
+| `bearings` | `techsquid-bearings` | Six sourced bearings: open, sealed and shielded variants | `bearings.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line
@@ -227,7 +251,11 @@ It builds every `*.steps.json` and checks the body count (each placement of a fa
 The pictures are rendered from the designs:
 
 ```sh
-solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1280 --height 640 --camera '{"target":[-1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":40}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin-showcase.png --width 1600 --height 1000 --camera '{"target":[0,-12,5],"yaw":0.12,"pitch":0.6,"distance":280}' --no-grid --no-axes --quality fine --body 'Insert M5 x 9.5:color=#c9943a'
+```
+
+```sh
+solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 550 --camera '{"target":[1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":110}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
 
@@ -261,11 +289,12 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 ## Wheel and bearing source geometry
 
 The `bearings` and `wheels` crates own fixed supplier products and their exterior
-geometry. See [the source ledger](docs/sources/openbuilds.md) for original file
-hashes, measured profiles, assembly references, and the documented 105ZZ width
-correction. No source STEP files or Downloads paths are runtime dependencies.
-Closed radial profiles and closure surfaces use `plugin-kit::revolve`; inserts
-and screw chamfer cuts use that same construction helper.
+geometry. The [OpenBuilds ledger](docs/sources/openbuilds.md) records wheel profiles,
+assembly references and the 105ZZ width correction. The [MISUMI ledger](docs/sources/misumi.md)
+records rounded ring profiles, closures and the open B626's visible balls. Both
+retain source hashes and independent measurements. No source STEP files or
+Downloads paths are runtime dependencies. Radial profiles and closure surfaces use
+`plugin-kit::revolve`; screws and bearings share its arc/line section drawing code.
 
 Build and check the native reference geometry with:
 
@@ -273,6 +302,7 @@ Build and check the native reference geometry with:
 cargo build -p wheels --example reference_geometry
 cargo build -p plugin-kit --example inspect_content
 SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/wheel_geometry_test.py
+SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/bearing_geometry_test.py
 ```
 
 The test compares wheels to independently imported STEP measurements, verifies
@@ -280,6 +310,9 @@ bearing rings and recessed closure surfaces, checks wheel/rail contact against t
 built Extrusions plugin, and checks saved geometry through the current-content
 inspector. Run `./build.sh` first for the rail check. A zero-thickness closure is an intentional exterior
 representation, not a seal cross-section or a mass model. The assembly and cross-plugin reuse checks live in `tests/parts_library_test.py`.
+The bearing suite separately verifies MISUMI ring volumes against the STEP ledgers,
+closure recesses and colours, the open bearing's eight spheres, and purchase/reuse
+behavior through the installed workflow.
 
 ## Components
 

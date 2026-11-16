@@ -8,7 +8,7 @@ CATALOGS = {
     'techsquid-nuts': (29, 'm3'),
     'techsquid-inserts': (29, 'm3-5.7'),
     'techsquid-extrusions': (11, 'v-slot-2020'),
-    'techsquid-bearings': (2, '30'),
+    'techsquid-bearings': (6, '30'),
     'techsquid-v-wheels': (5, 'solid-v-wheel'),
 }
 

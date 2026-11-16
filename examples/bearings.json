@@ -15,6 +15,18 @@
         ],
         "85ca13be43afb7e0d1f1fd1be24287e83fdd7c79eb5ad22aa5712f744bdf51fc": [
           15
+        ],
+        "b8e4792e9e6511736ec8bc247d53a421629e5f1f5fa3befa605eaf9d59e19b14": [
+          63
+        ],
+        "c34a28d06a0cca2f1484ab12c32c53f3755f458c268b8ecd210dd2c5f9bae9c7": [
+          26
+        ],
+        "ec2485c596b8d841eba99658551d11204d72a1554376575cbc917d709b3da4fd": [
+          52
+        ],
+        "f9156529d121ed0df028cbb809417310c1e2cd7e95188fa9e72310209694867b": [
+          41
         ]
       },
       "version": 1
@@ -44,7 +56,7 @@
           {
             "id": "p0",
             "pos": [
-              -13.0,
+              -65.0,
               0.0
             ],
             "fixed": false
@@ -52,7 +64,39 @@
           {
             "id": "p1",
             "pos": [
+              -39.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -13.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
               13.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              39.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              65.0,
               0.0
             ],
             "fixed": false
@@ -930,9 +974,2840 @@
         "axis": "y"
       },
       "angle": "360"
+    },
+    {
+      "id": 28,
+      "name": "Bearing B626 Inner ring section",
+      "suppressed": false,
+      "component": 26,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              3.3,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              5.06,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              5.06,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              5.06,
+              -1.544797721386201
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              6.25,
+              -0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              5.06,
+              1.544797721386201
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              5.06,
+              -1.544797721386201
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.start",
+            "pos": [
+              5.06,
+              1.544797721386201
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              5.06,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              3.3,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              3.300000000000006,
+              2.700000000000003
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              3.3,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              3.000000000000009,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.start",
+            "pos": [
+              3.0,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              3.0,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              3.300000000000003,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              3.0,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              3.3,
+              -3.000000000000003
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 5,
+            "a": 6,
+            "b": 7,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 16,
+            "a": 17,
+            "b": 18,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 4,
+            "q": 7
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 6,
+            "q": 8
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 13,
+            "q": 14
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 15,
+            "q": 17
+          },
+          {
+            "id": "k7",
+            "type": "coincident",
+            "p": 1,
+            "q": 18
+          }
+        ],
+        "counters": {
+          "a": 3,
+          "k": 7,
+          "l": 5
+        }
+      }
+    },
+    {
+      "id": 29,
+      "name": "Bearing B626 Inner ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Inner ring"
+      ],
+      "param_names": [
+        "d9"
+      ],
+      "component": 26,
+      "type": "revolve",
+      "sketch": 28,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 30,
+      "name": "Bearing B626 Outer ring section",
+      "suppressed": false,
+      "component": 26,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              9.2,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              7.55,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              7.55,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              7.55,
+              -1.4534441853748634
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              6.250000000000007,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              7.55,
+              -1.4534441853748634
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              7.55,
+              1.4534441853748634
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.start",
+            "pos": [
+              7.55,
+              1.4534441853748634
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              7.55,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              9.2,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              9.200000000000053,
+              2.7000000000000046
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              9.5,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              9.2,
+              2.999999999999952
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.start",
+            "pos": [
+              9.5,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              9.5,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              9.200000000000076,
+              -2.7000000000000286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              9.2,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              9.500000000000046,
+              -2.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 5,
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 16,
+            "a": 17,
+            "b": 18,
+            "construction": false,
+            "reversed": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 4,
+            "q": 6
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 7,
+            "q": 8
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 13
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 12,
+            "q": 14
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 1,
+            "q": 17
+          },
+          {
+            "id": "k7",
+            "type": "coincident",
+            "p": 15,
+            "q": 18
+          }
+        ],
+        "counters": {
+          "a": 3,
+          "k": 7,
+          "l": 5
+        }
+      }
+    },
+    {
+      "id": 31,
+      "name": "Bearing B626 Outer ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Outer ring"
+      ],
+      "param_names": [
+        "d10"
+      ],
+      "component": 26,
+      "type": "revolve",
+      "sketch": 30,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 32,
+      "name": "Bearing B626 Ball 1",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 1"
+      ],
+      "param_names": [
+        "d11"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        6.25,
+        0.0,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 33,
+      "name": "Bearing B626 Ball 2",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 2"
+      ],
+      "param_names": [
+        "d12"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        4.419417382415922,
+        4.419417382415921,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 34,
+      "name": "Bearing B626 Ball 3",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 3"
+      ],
+      "param_names": [
+        "d13"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        3.827021247335479e-16,
+        6.25,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 35,
+      "name": "Bearing B626 Ball 4",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 4"
+      ],
+      "param_names": [
+        "d14"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        -4.419417382415921,
+        4.419417382415922,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 36,
+      "name": "Bearing B626 Ball 5",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 5"
+      ],
+      "param_names": [
+        "d15"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        -6.25,
+        7.654042494670958e-16,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 37,
+      "name": "Bearing B626 Ball 6",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 6"
+      ],
+      "param_names": [
+        "d16"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        -4.419417382415923,
+        -4.419417382415921,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 38,
+      "name": "Bearing B626 Ball 7",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 7"
+      ],
+      "param_names": [
+        "d17"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        -1.1481063742006436e-15,
+        -6.25,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 39,
+      "name": "Bearing B626 Ball 8",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626 Ball 8"
+      ],
+      "param_names": [
+        "d18"
+      ],
+      "component": 26,
+      "type": "sphere",
+      "center": [
+        4.419417382415921,
+        -4.419417382415923,
+        0.0
+      ],
+      "radius": "1.975",
+      "operation": "new_body"
+    },
+    {
+      "id": 43,
+      "name": "Bearing B626ZZ Inner ring section",
+      "suppressed": false,
+      "component": 41,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              3.3,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              4.75,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              4.75,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              4.75,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              3.3,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              3.300000000000006,
+              2.700000000000003
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              3.3,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              3.000000000000009,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              3.0,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              3.0,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              3.300000000000003,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              3.0,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              3.3,
+              -3.000000000000003
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 7
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 8,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 1,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 44,
+      "name": "Bearing B626ZZ Inner ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626ZZ Inner ring"
+      ],
+      "param_names": [
+        "d19"
+      ],
+      "component": 41,
+      "type": "revolve",
+      "sketch": 43,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 45,
+      "name": "Bearing B626ZZ Outer ring section",
+      "suppressed": false,
+      "component": 41,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              9.2,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              8.15,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              8.15,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              8.15,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              9.2,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              9.200000000000053,
+              2.7000000000000046
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              9.5,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              9.2,
+              2.999999999999952
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              9.5,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              9.5,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              9.200000000000076,
+              -2.7000000000000286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              9.2,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              9.500000000000046,
+              -2.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false,
+            "reversed": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 8
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 7,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 1,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 10,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 46,
+      "name": "Bearing B626ZZ Outer ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626ZZ Outer ring"
+      ],
+      "param_names": [
+        "d20"
+      ],
+      "component": 41,
+      "type": "revolve",
+      "sketch": 45,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 47,
+      "name": "Bearing B626ZZ Shield front section",
+      "suppressed": false,
+      "component": 41,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              4.75,
+              2.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              8.15,
+              2.5
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 48,
+      "name": "Bearing B626ZZ Shield front",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626ZZ Shield front"
+      ],
+      "param_names": [
+        "d21"
+      ],
+      "component": 41,
+      "type": "surface_revolve",
+      "sketch": 47,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 49,
+      "name": "Bearing B626ZZ Shield back section",
+      "suppressed": false,
+      "component": 41,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              4.75,
+              -2.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              8.15,
+              -2.5
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 50,
+      "name": "Bearing B626ZZ Shield back",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626ZZ Shield back"
+      ],
+      "param_names": [
+        "d22"
+      ],
+      "component": 41,
+      "type": "surface_revolve",
+      "sketch": 49,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 54,
+      "name": "Bearing B626DDU Inner ring section",
+      "suppressed": false,
+      "component": 52,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              3.3,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              4.215,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              4.215,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              4.215,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              3.3,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              3.300000000000006,
+              2.700000000000003
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              3.3,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              3.000000000000009,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              3.0,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              3.0,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              3.300000000000003,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              3.0,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              3.3,
+              -3.000000000000003
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 7
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 8,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 1,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 55,
+      "name": "Bearing B626DDU Inner ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626DDU Inner ring"
+      ],
+      "param_names": [
+        "d23"
+      ],
+      "component": 52,
+      "type": "revolve",
+      "sketch": 54,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 56,
+      "name": "Bearing B626DDU Outer ring section",
+      "suppressed": false,
+      "component": 52,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              9.2,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              8.1775,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              8.1775,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              8.1775,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              9.2,
+              3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              9.200000000000053,
+              2.7000000000000046
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              9.5,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              9.2,
+              2.999999999999952
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              9.5,
+              2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              9.5,
+              -2.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              9.200000000000076,
+              -2.7000000000000286
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              9.2,
+              -3.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              9.500000000000046,
+              -2.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false,
+            "reversed": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 8
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 7,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 1,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 10,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 57,
+      "name": "Bearing B626DDU Outer ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626DDU Outer ring"
+      ],
+      "param_names": [
+        "d24"
+      ],
+      "component": 52,
+      "type": "revolve",
+      "sketch": 56,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 58,
+      "name": "Bearing B626DDU Seal front section",
+      "suppressed": false,
+      "component": 52,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              4.215,
+              2.89
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              8.1775,
+              2.89
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 59,
+      "name": "Bearing B626DDU Seal front",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626DDU Seal front"
+      ],
+      "param_names": [
+        "d25"
+      ],
+      "component": 52,
+      "type": "surface_revolve",
+      "sketch": 58,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 60,
+      "name": "Bearing B626DDU Seal back section",
+      "suppressed": false,
+      "component": 52,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              4.215,
+              -2.89
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              8.1775,
+              -2.89
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 61,
+      "name": "Bearing B626DDU Seal back",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B626DDU Seal back"
+      ],
+      "param_names": [
+        "d26"
+      ],
+      "component": 52,
+      "type": "surface_revolve",
+      "sketch": 60,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 65,
+      "name": "Bearing B608ZZ Inner ring section",
+      "suppressed": false,
+      "component": 63,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              4.3,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              6.1,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              6.1,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              6.1,
+              3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              4.3,
+              3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              4.300000000000022,
+              3.1999999999999855
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              4.3,
+              3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              4.000000000000007,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              4.0,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              4.0,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              4.300000000000022,
+              -3.1999999999999797
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              4.0,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              4.3,
+              -3.5000000000000018
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 7
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 8,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 1,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 66,
+      "name": "Bearing B608ZZ Inner ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B608ZZ Inner ring"
+      ],
+      "param_names": [
+        "d27"
+      ],
+      "component": 63,
+      "type": "revolve",
+      "sketch": 65,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 67,
+      "name": "Bearing B608ZZ Outer ring section",
+      "suppressed": false,
+      "component": 63,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              10.7,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              9.65,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              9.65,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              9.65,
+              3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              10.7,
+              3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              10.700000000000028,
+              3.199999999999981
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              11.0,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              10.7,
+              3.4999999999999534
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              11.0,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              11.0,
+              -3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              10.700000000000005,
+              -3.199999999999957
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              10.7,
+              -3.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              11.000000000000048,
+              -3.2
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false,
+            "reversed": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 8
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 7,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 1,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 10,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 68,
+      "name": "Bearing B608ZZ Outer ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B608ZZ Outer ring"
+      ],
+      "param_names": [
+        "d28"
+      ],
+      "component": 63,
+      "type": "revolve",
+      "sketch": 67,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 69,
+      "name": "Bearing B608ZZ Shield front section",
+      "suppressed": false,
+      "component": 63,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              6.1,
+              2.9
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              9.65,
+              2.9
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 70,
+      "name": "Bearing B608ZZ Shield front",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B608ZZ Shield front"
+      ],
+      "param_names": [
+        "d29"
+      ],
+      "component": 63,
+      "type": "surface_revolve",
+      "sketch": 69,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 71,
+      "name": "Bearing B608ZZ Shield back section",
+      "suppressed": false,
+      "component": 63,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              6.1,
+              -2.9
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              9.65,
+              -2.9
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 72,
+      "name": "Bearing B608ZZ Shield back",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B608ZZ Shield back"
+      ],
+      "param_names": [
+        "d30"
+      ],
+      "component": 63,
+      "type": "surface_revolve",
+      "sketch": 71,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
     }
   ],
-  "next_id": 26,
+  "next_id": 74,
   "components": [
     {
       "id": 2,
@@ -953,7 +3828,7 @@
           ],
           "snapshot": {
             "sha256": "bf85bf93d35f7df058978e0ec47de4e5d02a08f7676083535c6d0d4e8518ffe8",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },
@@ -988,15 +3863,119 @@
           ],
           "snapshot": {
             "sha256": "8066312c42bceb71a339eba38085c41afdc66946d85260418a3cd95a88f3317a",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },
         "part_number": "OpenBuilds 800"
       }
+    },
+    {
+      "id": 26,
+      "identification_color_index": 3,
+      "name": "Bearing B626",
+      "parent": 13,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "B626",
+        "org.techsquid.parts": {
+          "creator": "techsquid-bearings",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":\"misumi-b626\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B626\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"exterior\",\"product\":{\"catalog\":\"misumi\",\"configuration\":\"misumi-b626\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B626\"},\"revision\":\"2\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "162760fb597f9299e94a38480597aad7f28fcb3da0f1db4382cfba3b18669a22",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "MISUMI B626"
+      }
+    },
+    {
+      "id": 41,
+      "identification_color_index": 4,
+      "name": "Bearing B626ZZ",
+      "parent": 13,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "B626ZZ",
+        "org.techsquid.parts": {
+          "creator": "techsquid-bearings",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":\"misumi-b626zz\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B626ZZ\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"exterior\",\"product\":{\"catalog\":\"misumi\",\"configuration\":\"misumi-b626zz\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B626ZZ\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "bbcc69d32dda149450b6b106870dca8b4df4ea5b14dd715ea96cc7efbdedd6c0",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "MISUMI B626ZZ"
+      }
+    },
+    {
+      "id": 52,
+      "identification_color_index": 5,
+      "name": "Bearing B626DDU",
+      "parent": 13,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "B626DDU",
+        "org.techsquid.parts": {
+          "creator": "techsquid-bearings",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":\"misumi-b626ddu\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B626DDU\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"exterior\",\"product\":{\"catalog\":\"misumi\",\"configuration\":\"misumi-b626ddu\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B626DDU\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "4570fe6a20b6511244ee72e6aceff79df7a596995c575b36d717486f44a31039",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "MISUMI B626DDU"
+      }
+    },
+    {
+      "id": 63,
+      "identification_color_index": 6,
+      "name": "Bearing B608ZZ",
+      "parent": 13,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "B608ZZ",
+        "org.techsquid.parts": {
+          "creator": "techsquid-bearings",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":\"misumi-b608zz\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B608ZZ\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"exterior\",\"product\":{\"catalog\":\"misumi\",\"configuration\":\"misumi-b608zz\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B608ZZ\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "264681f420c5442bb3f603757e16349910e0d60cf85a6b6755df7bc10a828357",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "MISUMI B608ZZ"
+      }
     }
   ],
-  "next_component_color_index": 3,
+  "next_component_color_index": 7,
   "occurrences": [
     {
       "id": 3,
@@ -1023,7 +4002,7 @@
           0.0
         ],
         [
-          -13.0,
+          -65.0,
           0.0,
           0.0,
           1.0
@@ -1089,7 +4068,139 @@
           0.0
         ],
         [
+          -39.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 27,
+      "component": 26,
+      "parent": 13,
+      "name": "Bearing B626:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -13.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 42,
+      "component": 41,
+      "parent": 13,
+      "name": "Bearing B626ZZ:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
           13.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 53,
+      "component": 52,
+      "parent": 13,
+      "name": "Bearing B626DDU:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          39.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 64,
+      "component": 63,
+      "parent": 13,
+      "name": "Bearing B608ZZ:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          65.0,
           0.0,
           0.0,
           1.0
@@ -1171,6 +4282,204 @@
           64
         ],
         "opacity": 1.0
+      },
+      "Bearing B608ZZ Inner ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B608ZZ Outer ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B608ZZ Shield back": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B608ZZ Shield front": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 1": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 2": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 3": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 4": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 5": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 6": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 7": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Ball 8": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Inner ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626 Outer ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626DDU Inner ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626DDU Outer ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626DDU Seal back": {
+        "name": "Custom",
+        "color": [
+          64,
+          64,
+          64
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626DDU Seal front": {
+        "name": "Custom",
+        "color": [
+          64,
+          64,
+          64
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626ZZ Inner ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626ZZ Outer ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626ZZ Shield back": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B626ZZ Shield front": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
       }
     }
   },
@@ -1204,6 +4513,101 @@
         23,
         24
       ]
+    },
+    {
+      "id": 40,
+      "name": "Bearing B626",
+      "parent": null,
+      "features": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ]
+    },
+    {
+      "id": 51,
+      "name": "Bearing B626ZZ",
+      "parent": null,
+      "features": [
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50
+      ]
+    },
+    {
+      "id": 62,
+      "name": "Bearing B626DDU",
+      "parent": null,
+      "features": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ]
+    },
+    {
+      "id": 73,
+      "name": "Bearing B608ZZ",
+      "parent": null,
+      "features": [
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72
+      ]
     }
-  ]
+  ],
+  "visibility": {
+    "hidden_bodies": [],
+    "hidden_occurrences": [],
+    "hidden_origin": [],
+    "hidden_sketches": [
+      1,
+      4,
+      6,
+      8,
+      10,
+      17,
+      19,
+      21,
+      23,
+      28,
+      30,
+      43,
+      45,
+      47,
+      49,
+      54,
+      56,
+      58,
+      60,
+      65,
+      67,
+      69,
+      71
+    ],
+    "shown_sketches": []
+  }
 }

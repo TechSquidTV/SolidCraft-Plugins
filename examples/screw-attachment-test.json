@@ -928,7 +928,7 @@
           ],
           "snapshot": {
             "sha256": "73578e69cb364ff6032a3fdd7813a453eb52a146f9dd2f9f0d863e4e1602e816",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },
@@ -963,7 +963,7 @@
           ],
           "snapshot": {
             "sha256": "ad5e9a5549f1542f8351d98938b10c41a03d6ad1ccfe42974077e58037058102",
-            "version": 1
+            "version": 2
           },
           "version": 1
         },

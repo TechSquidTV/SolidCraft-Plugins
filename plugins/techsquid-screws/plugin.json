@@ -26,6 +26,8 @@
       "occurrence.copy",
       "occurrence.move",
       "occurrence.reparent",
+      "parameters.list",
+      "parameters.users",
       "selection.get",
       "sketch.arc.three_point",
       "sketch.constraint.horizontal_vertical",

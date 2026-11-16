@@ -4,10 +4,45 @@ use serde_json::{json, Value};
 
 use crate::{host::sketch_id, Placement, Runner};
 
+/// A piece of a radial section: x is radius and y is axial distance.
+#[derive(Clone, Debug, PartialEq)]
+pub enum Segment {
+    Line(Vec<[f64; 2]>),
+    Arc {
+        start: [f64; 2],
+        through: [f64; 2],
+        end: [f64; 2],
+    },
+}
+
+/// Draw a connected section in an existing sketch. Shared by screw crowns and
+/// sourced bearing rings; geometry ownership remains in the domain crates.
+pub fn draw(r: &mut impl Runner, sketch: &Value, segments: &[Segment]) -> Result<(), String> {
+    for segment in segments {
+        match segment {
+            Segment::Line(points) => {
+                r.run("sketch.line", json!({"sketch": sketch, "points": points}))?;
+            }
+            Segment::Arc {
+                start,
+                through,
+                end,
+            } => {
+                r.run(
+                    "sketch.arc.three_point",
+                    json!({"sketch": sketch, "start": start, "through": through, "end": end}),
+                )?;
+            }
+        }
+    }
+    Ok(())
+}
+
 /// A closed polygon makes a solid; a line makes an annular surface without an
 /// invented thickness. The caller supplies the feature name and solid operation.
 pub enum Section<'a> {
     Solid(&'a [[f64; 2]]),
+    CurvedSolid(&'a [Segment]),
     Surface(&'a [[f64; 2]; 2]),
 }
 
@@ -31,6 +66,10 @@ pub fn build(
                 "sketch.line",
                 json!({"sketch": sketch, "closed": true, "points": points}),
             )?;
+            "solid.revolve"
+        }
+        Section::CurvedSolid(segments) => {
+            draw(r, &sketch, segments)?;
             "solid.revolve"
         }
         Section::Surface(points) => {

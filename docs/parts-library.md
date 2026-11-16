@@ -28,12 +28,17 @@ canonical product and representation, creator provenance, build frame and a snap
 of its native contents. The document's `org.techsquid.parts.index` directory maps a
 representation digest to candidate component IDs. That directory is advisory:
 missing IDs are ignored; full identity and current content must still match.
-Unknown or malformed directory versions are refused. Legacy `dev.threadcraft`
-command hashes are not adopted.
+Unknown or malformed directory versions are refused. Snapshot version 2 supersedes
+the earlier parameter-token check; version 1 snapshots are not adopted. Legacy
+`dev.threadcraft` command hashes are not adopted.
 
 Inspection reads owned feature definitions and inputs, full sketch geometry and
 constraints, body history, materials, resolved body/face appearances, purchasing
 metadata, parameter dependencies, and child identities/transforms recursively.
+Parameter candidates are confirmed against the host’s dependency walker by feature
+ID, then followed through the host’s parameter dependency list. Labels and unrelated
+parameters do not qualify. Parameter comments, favourites and reverse-use lists are
+not geometry. Results are cached within the same inspection budget.
 An external cut can alter a body without entering its component's owned timeline;
 body-history checks catch that case. Geometry with equal volume or bounds is not
 assumed equal. Failed/suppressed/rolled-back features, unsupported heavy payloads,
@@ -85,9 +90,11 @@ custom even if they reproduce table dimensions. Cut/machined rails retain stock
 profile provenance but identify a custom finished configuration.
 
 Supplier and standard numbers are stable across cosmetic/modeled thread detail.
-Custom models use a clearly labeled generated model number, including a digest of
-the full canonical product, to keep distinct configurations apart in the host's
-part-number-based BOM. The full product identity, not that digest, authorizes reuse.
+Custom models use `Custom <canonical part ID> [<product digest>]`. The entire number
+comes from the canonical product; raw size spellings and display labels never enter
+it. Equivalent spellings and different thread detail therefore share a BOM row,
+while distinct custom configurations stay separate. The full product identity,
+not that digest, authorizes reuse.
 Unknown wheel SKUs are left unknown; their display labels are not claimed as SKUs.
 
 A wheel core is a phantom parent of one purchased wheel, two purchased bearing
@@ -103,12 +110,14 @@ loading Wasm; skipped runs provide no runtime evidence.
 | Check | Evidence |
 |---|---|
 | `catalog_discovery_test.py` | Every packaged catalog item, pagination, source/route data, state-preserving reads, stale/altered inputs, non-XY insertion |
-| `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, rename, modified appearance, custom identity and mounting invariance |
+| `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, rename, modified appearance, custom identity, equivalent size spellings, unrelated parameters and mounting invariance |
 | `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, undo/redo, save/reopen, modified children, late rollback and batch limits |
-| `parts_directory_test.py` | Missing IDs, obsolete revisions, incorrect digest candidates, malformed/unsupported directories and unchanged failed transactions |
-| `parts_content_test.py` | Same-volume edits, sketches, external cuts, materials/appearances, parameters, nested structure and unsupported states |
+| `parts_directory_test.py` | Missing IDs, obsolete revisions/snapshots, incorrect digest candidates, malformed/unsupported directories and unchanged failed transactions |
+| `parts_content_test.py` | Same-volume edits, sketches, external cuts, materials/appearances, direct/transitive/placement parameters, parameter annotations, nested structure and unsupported states |
 | `parts_inspection_test.py` | Native host inspection assumptions and shared nested definitions after reopen |
+| `bearing_geometry_test.py` | MISUMI sourced curved rings and closure measurements, sourced visible balls in the open model, purchase identities and native reuse |
 | `wheel_geometry_test.py` | Source volumes, ring/closure bounds and areas, width correction, shims and V-slot contact |
+| `examples_test.py` | Reproducible examples, all-six-package showcase, saved geometry, catalog identities and BOM numbers |
 | Existing geometry and reference suites | Fastener cuts, isolated modeled threads, rail machining and seated screw/nut edits |
 
 The native inspection fixture used by Rust geometry-command recorders is deliberately

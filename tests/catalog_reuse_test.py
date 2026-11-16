@@ -41,6 +41,17 @@ for plugin, entry, params, custom in CASES:
         rows = host.command('assembly.bom')['rows']
         check(f'{label}: BOM combines detail modes without double counting',
               len(rows) == 1 and rows[0]['count'] == 4 and len(rows[0]['components']) == 2)
+        # Field labels and body names are not parameter dependencies.
+        host.command('parameters.add', name='radius', expression=17)
+        check(f'{label}: unrelated parameter has no native users',
+              host.command('parameters.users', name='radius')['drives'] == [])
+        for value in (17, 21):
+            host.command('parameters.change', name='radius', expression=value)
+            unrelated = insert(thread_modeled=False)
+            check(f'{label}: unrelated radius={value} preserves reuse',
+                  unrelated['component']['reused']
+                  and unrelated['component']['component'] == a['name']
+                  and not unrelated['library']['preserved_modified_definitions'])
         host.command('component.rename', component=a['id'], name='Renamed catalog part')
         renamed = insert(thread_modeled=False)
         check(f'{label}: display rename retains reuse', renamed['component']['reused'] and renamed['component']['component'] == 'Renamed catalog part')
@@ -58,6 +69,18 @@ for plugin, entry, params, custom in CASES:
             check(f'{label}: changed product has a distinct BOM number',
                   mc['org.techsquid.parts']['product'] != ra['product']
                   and mc['part_number'] != ma['part_number'] and mc['bom_type'] == 'normal')
+        alias = {'techsquid-screws': 'M3x0.5', 'techsquid-nuts': 'M6x1'}.get(plugin)
+        if alias:
+            aliased = insert(size=alias, thread_modeled=True, **custom)
+            alias_component = definition(aliased['component']['component'])
+            alias_metadata = metadata(alias_component['id'])
+            check(f'{label}: custom size spelling and detail preserve product and BOM number',
+                  alias_metadata['org.techsquid.parts']['product'] == mc['org.techsquid.parts']['product']
+                  and alias_metadata['part_number'] == mc['part_number'])
+            rows = host.command('assembly.bom')['rows']
+            purchase = next(row for row in rows if row['part_number'] == mc['part_number'])
+            check(f'{label}: custom aliases share one purchase row across representations',
+                  purchase['count'] == 2 and len(purchase['components']) == 2)
         if entry == 'make-t-nut':
             mounted = insert(thread_modeled=False, slot='V-slot', along='Sketch Y')
             check(f'{label}: mounting orientation does not change the purchased nut', mounted['component']['reused'])

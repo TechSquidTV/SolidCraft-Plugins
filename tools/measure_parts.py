@@ -2,8 +2,8 @@
 """Measure the supplied source revisions without copying their CAD data into git.
 
 Usage: SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3
-       tools/measure_openbuilds.py /path/to/extracted/files > measurements.json
-Requires the eleven files and exact hashes in docs/sources/openbuilds-files.json.
+       tools/measure_parts.py docs/sources/<supplier>-files.json /path/to/extracted/files > measurements.json
+Requires the files and exact hashes in the supplied source ledger.
 No CAD application or third-party CAD library is used; SolidCraft imports STEP.
 """
 import hashlib
@@ -16,35 +16,58 @@ import subprocess
 import sys
 import tempfile
 
-ROOT = Path(__file__).resolve().parents[1]
+
+def point(entities, ref):
+    match = re.fullmatch(r"CARTESIAN_POINT\s*\(\s*'[^']*',\s*\((.*?)\)\s*\)", entities[ref].strip(), re.S)
+    if not match:
+        raise ValueError("Unexpected source point representation")
+    return tuple(float(n) for n in match[1].split(','))
 
 
-def vertices(text):
+def vertices(entities):
     """Vertex inventory for the known standalone files, axis X and units mm.
 
     This is deliberately not a general STEP parser: placements, assembly instances
     and units are evaluated by SolidCraft below. No header data is retained.
     """
-    entities = dict(re.findall(r"#(\d+)\s*=\s*(.*?);", text, re.S))
     points = []
     for entity in entities.values():
-        match = re.fullmatch(r"VERTEX_POINT\('[^']*',#(\d+)\)", entity.strip())
+        match = re.fullmatch(r"VERTEX_POINT\s*\(\s*'[^']*',\s*#(\d+)\s*\)", entity.strip())
         if not match:
             continue
-        point = re.fullmatch(r"CARTESIAN_POINT\('[^']*',\((.*?)\)\)", entities[match[1]].strip(), re.S)
-        if not point:
-            raise ValueError("Unexpected source vertex representation")
-        points.append(tuple(float(n) for n in point[1].split(',')))
+        points.append(point(entities, match[1]))
     center = (min(p[0] for p in points) + max(p[0] for p in points)) / 2
     return sorted(set((round(p[0]-center, 6), round(math.hypot(p[1],p[2]), 6)) for p in points))
 
 
-def main():
-    directory = Path(sys.argv[1]).resolve()
-    cli = os.environ.get('SOLIDCRAFT_CLI', 'solidcraft-cli')
-    sources = json.loads((ROOT/'docs/sources/openbuilds-files.json').read_text())
+def analytic_surfaces(text):
+    """Record source radii without retaining header paths or author metadata."""
+    surfaces = set()
+    for kind, radii in re.findall(
+            r"(CYLINDRICAL|TOROIDAL|SPHERICAL)_SURFACE\s*\(\s*'[^']*',\s*#\d+,\s*([^;]*?)\)", text):
+        surfaces.add((kind.lower(), tuple(round(float(n), 6) for n in radii.split(','))))
+    return [{'kind':kind, 'radii_mm':radii} for kind,radii in sorted(surfaces)]
+
+
+def spheres(entities):
     records = []
-    with tempfile.TemporaryDirectory(prefix='openbuilds-measure-') as scratch:
+    for entity in entities.values():
+        match = re.fullmatch(r"SPHERICAL_SURFACE\s*\(\s*'[^']*',\s*#(\d+),\s*([\d.E+-]+)\s*\)", entity.strip())
+        if match:
+            placement = entities[match[1]]
+            origin = re.findall(r'#(\d+)', placement)[0]
+            records.append({'center_mm':[round(n,6) for n in point(entities, origin)],
+                            'radius_mm':round(float(match[2]),6)})
+    return sorted(records, key=lambda r:r['center_mm'])
+
+
+def main():
+    ledger = Path(sys.argv[1]).resolve()
+    directory = Path(sys.argv[2]).resolve()
+    cli = os.environ.get('SOLIDCRAFT_CLI', 'solidcraft-cli')
+    sources = json.loads(ledger.read_text())
+    records = []
+    with tempfile.TemporaryDirectory(prefix='parts-measure-') as scratch:
         script, output = Path(scratch)/'script.json', Path(scratch)/'result.json'
         for source in sources:
             path = directory/source['file']
@@ -64,7 +87,12 @@ def main():
                 for body in measure['bodies']
             ]}
             if len(record['bodies']) == 1:
-                record['centered_axial_radial_vertices_mm'] = vertices(data.decode('utf-8'))
+                text = data.decode('utf-8')
+                entities = dict(re.findall(r"#(\d+)\s*=\s*(.*?);", text, re.S))
+                record['centered_axial_radial_vertices_mm'] = vertices(entities)
+                record['analytic_surfaces'] = analytic_surfaces(text)
+                if measured := spheres(entities):
+                    record['spheres'] = measured
             records.append(record)
     print(json.dumps(records,indent=2))
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compiled plugin integration: identity, composition, edits, undo and rollback."""
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -14,6 +15,92 @@ WHEELS = 'techsquid-v-wheels'
 
 def definition(listed, name):
     return next(c for c in listed['components'] if c['name'] == name)
+
+
+def without_directory_write(plugin):
+    """A real package that fails late, without changing its production manifest."""
+    denied = Path(TMP)/'denied'/plugin
+    if not denied.exists():
+        shutil.copytree(package(plugin), denied)
+        manifest = json.loads((denied/'plugin.json').read_text())
+        manifest['runtime']['commands'].remove('document.metadata.set')
+        (denied/'plugin.json').write_text(json.dumps(manifest))
+    return str(denied)
+
+
+def same_point(actual, expected):
+    return len(actual) == len(expected) and all(
+        math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-7) for a, b in zip(actual, expected))
+
+
+def activation_case(plugin, nested):
+    """Keep authoring through the same exact copy across whole insertions."""
+    label = plugin+(': nested occurrence' if nested else ': copied occurrence')
+    with Headless() as host:
+        parent = host.command('component.create', name='Assembly', activate=True, grounded=False) if nested else None
+        made = host.command('component.create', name='Carrier', parent=parent['component'] if parent else 0,
+                            activate=True, grounded=False)
+        carrier = made['component']
+        sketch = host.command('sketch.create', name='Mount', plane='XY')['sketch']
+        host.command('sketch.circle.center', center=[10,20], radius=1, id='mount')
+        host.command('sketch.finish')
+        if nested:
+            host.command('occurrence.move', occurrence=made['occurrence'], translate=[5,0,0])
+            copied = host.command('occurrence.copy', component=parent['component'], parent=0)['occurrence']
+            # Rotate the copied parent 90 degrees around Y, then translate it.
+            # The carrier occurrence ID is shared by the two complete paths.
+            host.command('occurrence.move', occurrence=copied,
+                         to_matrix=[[0,0,1,100],[0,1,0,50],[-1,0,0,30]])
+            path = [copied, made['occurrence']]
+            point, normal = [100,70,15], [1,0,0]
+            axes = [[0,0,-1,0],[0,1,0,0],[1,0,0,0]]
+        else:
+            copied = host.command('occurrence.copy', component=carrier, parent=0, translate=[100,0,0])['occurrence']
+            path = [copied]
+            point, normal = [110,20,0], [0,0,1]
+            axes = [[1,0,0,0],[0,1,0,0],[0,0,1,0]]
+        host.command('component.activate', component=carrier, occurrence=path[-1], path=path)
+
+        def mount_world():
+            return next(p['world'] for p in host.command('sketch.inspect', sketch=sketch)['points']
+                        if p['id'] == 'mount.center')
+
+        entry = 'make-bearing' if plugin == BEARINGS else 'make-v-wheel'
+        params = {'sketch':'Mount', 'sketch_point':'mount.center'}
+        if plugin == BEARINGS:
+            params['size'] = 'B626'
+        check(label+': fixture selects the intended world point', same_point(mount_world(), point))
+        # Failure after creation must restore the selected path, not only its
+        # component ID. This uses the same late-failure fixture as the main suite.
+        denied = without_directory_write(plugin)
+        denied_approval = host.command('plugin.inspect', path=denied)['approval']
+        before_doc = host.command('document.inspect', measure=False)
+        before_components = host.command('component.list')
+        failed = host.command('plugin.run', allow_error=True, path=denied, approval=denied_approval,
+                              entry=entry, params=params)
+        check(label+': late failure reaches the directory write', 'document.metadata.set' in str(failed.get('error')))
+        check(label+': failed insertion preserves design and activation context',
+              host.command('document.inspect', measure=False) == before_doc
+              and host.command('component.list') == before_components and same_point(mount_world(), point))
+
+        approval = host.command('plugin.inspect', path=package(plugin))['approval']
+        for reused in (False, True):
+            stage = label+(': reused definition' if reused else ': fresh definition')
+            result = host.command('plugin.run', path=package(plugin), approval=approval, entry=entry, params=params)
+            result = result.get('result', result)
+            listed = host.command('component.list')
+            part = definition(listed, result['component']['component'])
+            placed = next(o for o in part['occurrences'] if o['id'] == result['component']['occurrences'][0])
+            folder = next(c for c in listed['components'] if c['id'] == placed['parent'])
+            check(stage+': expected creation or reuse', result['component']['reused'] == reused)
+            check(stage+': insertion resolves the selected copy', same_point(result['at'], point)
+                  and same_point(result['normal'], normal))
+            check(stage+': native occurrence has the expected world frame',
+                  len(folder['occurrences']) == 1 and folder['occurrences'][0]['parent'] == 0
+                  and folder['occurrences'][0]['transform'] == [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+                  and all(same_point(a,b) for a,b in zip(placed['transform'], axes+[point+[1]])))
+            check(stage+': original authoring context is preserved', listed['active'] == carrier
+                  and listed['active_path'] == path and same_point(mount_world(), point))
 
 
 with Headless() as host:
@@ -87,15 +174,11 @@ with Headless() as host:
 
     # Fail at the directory write, after an entire new 105ZZ has been created.
     # Removing one permitted command is a test fixture, not a production fallback.
-    denied = Path(TMP)/'denied'/BEARINGS
-    shutil.copytree(package(BEARINGS),denied)
-    manifest = json.loads((denied/'plugin.json').read_text())
-    manifest['runtime']['commands'].remove('document.metadata.set')
-    (denied/'plugin.json').write_text(json.dumps(manifest))
-    approval = host.command('plugin.inspect',path=str(denied))['approval']
+    denied = without_directory_write(BEARINGS)
+    approval = host.command('plugin.inspect',path=denied)['approval']
     before_doc = host.command('document.inspect',measure=False)
     before_components = host.command('component.list')
-    failed = host.command('plugin.run',allow_error=True,path=str(denied),approval=approval,
+    failed = host.command('plugin.run',allow_error=True,path=denied,approval=approval,
                           entry='make-bearing',params={'size':'105ZZ'})
     check('fixture fails at the final directory write','document.metadata.set' in str(failed.get('error')))
     check('failed insertion rolls back geometry, metadata, undo and active context',host.command('document.inspect',measure=False) == before_doc
@@ -171,5 +254,9 @@ with Headless() as host:
         before_bom['OpenBuilds 30'] += 1
         check(label+': repeated insertion still adds only one purchase',
               {r['part_number']:r['count'] for r in host.command('assembly.bom')['rows']} == before_bom)
+
+for plugin in (BEARINGS, WHEELS):
+    for nested in (False, True):
+        activation_case(plugin, nested)
 
 finish()

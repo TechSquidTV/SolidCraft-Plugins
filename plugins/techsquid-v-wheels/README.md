@@ -6,7 +6,7 @@ Add OpenBuilds V-slot wheels to [SolidCraft](https://github.com/tangency-labs/so
 
 ## Install
 
-Download `techsquid-v-wheels-0.3.0.zip` from the repository's releases. In SolidCraft, choose **Plugins > Install plugin…** and select the zip. Use SolidCraft 0.42 or newer. The Bearings and Extrusions plugins are optional; this package contains the shared bearing builder.
+Download `techsquid-v-wheels-0.3.0.zip` from the repository's releases. In SolidCraft, choose **Plugins > Install plugin…** and select the zip. Check the [host requirements](../../docs/parts-library.md#host-requirements) before installing version 0.3. The Bearings and Extrusions plugins are optional; this package contains the shared bearing builder.
 
 ## Use
 

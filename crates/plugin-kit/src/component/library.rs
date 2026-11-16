@@ -2,7 +2,7 @@
 //! only a lookup accelerator: every candidate's identity and current native contents
 //! are checked. Names, creator plugin and stored hashes alone never qualify.
 
-use super::{components, id_of, make_folder, put, Definition, Placed};
+use super::{components, id_of, make_folder, put, Activation, Definition, Placed};
 use crate::{
     content::{Index, Snapshot, METADATA_KEY},
     host::free_body_name,
@@ -85,8 +85,8 @@ pub struct Library<'a, R: Runner> {
     directory: Directory,
     resolved: BTreeMap<String, Resolved>,
     visiting: BTreeSet<String>,
-    original_active: u64,
-    active: u64,
+    original_active: Activation,
+    active: Activation,
     dirty: bool,
     rejected: Vec<Value>,
     budget: Budget,
@@ -111,14 +111,14 @@ impl<'a, R: Runner> Library<'a, R> {
         if directory.version != VERSION {
             return Err("unsupported parts directory version".into());
         }
-        let active = index.active;
+        let active = index.activation.clone();
         Ok(Self {
             host,
             index,
             directory,
             resolved: BTreeMap::new(),
             visiting: BTreeSet::new(),
-            original_active: active,
+            original_active: active.clone(),
             active,
             dirty: false,
             rejected: Vec::new(),
@@ -131,14 +131,13 @@ impl<'a, R: Runner> Library<'a, R> {
     }
 
     pub fn active_component(&self) -> u64 {
-        self.active
+        self.active.component
     }
 
-    fn activate(&mut self, component: u64) -> Result<(), String> {
-        if self.active != component {
-            self.host
-                .run("component.activate", json!({"component": component}))?;
-            self.active = component;
+    fn activate(&mut self, activation: Activation) -> Result<(), String> {
+        if self.active != activation {
+            activation.restore(&mut self.host)?;
+            self.active = activation;
         }
         Ok(())
     }
@@ -233,7 +232,7 @@ impl<'a, R: Runner> Library<'a, R> {
             self.rejected
                 .push(json!({"component": id, "name": node.name, "reason": reason}));
         }
-        let previous = self.active;
+        let previous = self.active.clone();
         if self.visiting.is_empty()
             && self.host.calls + self.budget.creation_calls + self.budget.placements * 3 + 8
                 > MAX_CALLS
@@ -268,7 +267,7 @@ impl<'a, R: Runner> Library<'a, R> {
         )?;
         let component = id_of(&made, "component")?;
         let occurrence = id_of(&made, "occurrence")?;
-        self.active = component;
+        self.active = Activation::created(component, occurrence);
         let frame = self.host.site(def.site.of(component));
         self.visiting.insert(representation.clone());
         let result = build(self, &name, &frame);
@@ -337,8 +336,8 @@ impl<'a, R: Runner> Library<'a, R> {
                 "occurrence",
             )?,
         };
-        let active = self.active;
-        self.activate(0)?;
+        let active = self.active.clone();
+        self.activate(Activation::root())?;
         put(&mut self.host, occurrence, frame, handle.site, parent)?;
         self.activate(active)?;
         Ok(occurrence)
@@ -378,8 +377,8 @@ impl<'a, R: Runner> Library<'a, R> {
         };
         let mut occurrences = Vec::new();
         // Place a whole batch in world coordinates with one context switch.
-        let active = self.active;
-        self.activate(0)?;
+        let active = self.active.clone();
+        self.activate(Activation::root())?;
         for place in places {
             occurrences.push(self.place(handle, place, folder)?);
         }
@@ -406,7 +405,7 @@ impl<'a, R: Runner> Library<'a, R> {
                 json!({"key": DIRECTORY_KEY, "value": value}),
             )?;
         }
-        self.activate(self.original_active)?;
+        self.activate(self.original_active.clone())?;
         Ok(json!({"host_calls": self.host.calls, "preserved_modified_definitions": self.rejected}))
     }
 }

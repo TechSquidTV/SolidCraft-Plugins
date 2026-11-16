@@ -4,6 +4,16 @@ All six packages use one catalog contract and one native component library. The
 packages remain independently installable. V-wheels calls the same bearing factory
 as Bearings through shared Rust code; it never invokes another plugin at runtime.
 
+## Host requirements
+
+Version 0.3 requires a SolidCraft build exposing `component.list.active_path` and
+`sketch.inspect.world_plane`. Unmodified 0.42 and 0.43 builds do not expose these
+fields. Use the host change tracked in [the plugin PR](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/4)
+until it ships in a release.
+Missing fields are refused; the library never guesses a selected occurrence or
+uses component-local axes as world axes. Catalog discovery and saved native
+designs do not depend on these new inspection fields.
+
 ## Responsibilities
 
 - `parts` owns typed discovery, product and representation identities. It has no
@@ -35,6 +45,8 @@ the earlier parameter-token check; version 1 snapshots are not adopted. Legacy
 Inspection reads owned feature definitions and inputs, full sketch geometry and
 constraints, body history, materials, resolved body/face appearances, purchasing
 metadata, parameter dependencies, and child identities/transforms recursively.
+Sketch planes and point coordinates are compared in the definition's local frame;
+the host's `world_plane` and world point coordinates are placement data and excluded.
 Parameter candidates are confirmed against the host’s dependency walker by feature
 ID, then followed through the host’s parameter dependency list. Labels and unrelated
 parameters do not qualify. Parameter comments, favourites and reverse-use lists are
@@ -67,7 +79,12 @@ root part in a phantom folder with exactly one placement at the design root. If
 that folder has been copied, insertion uses a separate numbered folder and reuses
 it on later runs. The copied folder's children stay unchanged, so insertion adds
 only the requested parts or assemblies. `finish` writes the directory and restores the
-original active component. Unplaced new definitions are an error.
+original active component and its complete root-to-leaf occurrence path. The same
+context is restored after temporary switches during nested assembly creation and
+placement. Consecutive insertions therefore keep using the selected copy, even
+when the same leaf occurrence appears under multiple parent paths. Placement uses
+the host's world sketch plane, matching its world point coordinates. Unplaced new
+definitions are an error.
 
 An assembly recipe is limited to eight levels and 32 distinct definitions. A run
 accepts 1–32 root placements. Before new construction, the library combines the
@@ -107,14 +124,15 @@ as well, so neither folders nor closure faces add purchase rows.
 
 ## Validation
 
-Run an unsigned local SolidCraft 0.42 CLI. A signed macOS build may be killed when
+Run an unsigned local CLI meeting the [host requirements](#host-requirements).
+A signed macOS build may be killed when
 loading Wasm; skipped runs provide no runtime evidence.
 
 | Check | Evidence |
 |---|---|
 | `catalog_discovery_test.py` | Every packaged catalog item, pagination, source/route data, state-preserving reads, stale/altered inputs, non-XY insertion |
 | `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, rename, modified appearance, custom identity, equivalent size spellings, unrelated parameters and mounting invariance |
-| `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, copied-folder isolation and replacement reuse, undo/redo, save/reopen, modified children, late rollback and batch limits |
+| `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, copied-folder isolation and replacement reuse, consecutive fresh/reused insertions through copied and rotated nested occurrences, exact authoring context, undo/redo, save/reopen, modified children, late rollback and batch limits |
 | `parts_directory_test.py` | Missing IDs, obsolete revisions/snapshots, incorrect digest candidates, malformed/unsupported directories and unchanged failed transactions |
 | `parts_content_test.py` | Same-volume edits, sketches, external cuts, materials/appearances, direct/transitive/placement parameters, isolated sketch-only dependencies (including equal-value expression edits), parameter annotations, nested structure and unsupported states |
 | `parts_inspection_test.py` | Native host inspection assumptions and shared nested definitions after reopen |

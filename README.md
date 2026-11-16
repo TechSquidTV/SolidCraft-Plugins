@@ -6,6 +6,9 @@ Build the hardware and frames your designs need without modeling every part from
 
 [Open the showcase example](examples/plugin-showcase.json)
 
+Version 0.3 insertion requires the [updated host inspection API](docs/parts-library.md#host-requirements).
+Saved example designs open without the plugins.
+
 ## Plugin List
 
 | Plugin | Make |

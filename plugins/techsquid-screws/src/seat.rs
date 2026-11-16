@@ -1,7 +1,7 @@
 //! Seat screws on named hole ends, so the joints follow the cuts on rebuild.
 
 use fasteners::seat::{dot, near, same, unique, Faces, Seat};
-use plugin_kit::place::Spot;
+use plugin_kit::{component::Activation, place::Spot};
 use plugin_kit::{Placement, Runner};
 use serde_json::{json, Value};
 
@@ -33,12 +33,9 @@ pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<
         .get("marker")
         .and_then(Value::as_u64)
         .ok_or("document.inspect did not return the history marker")?;
-    let components = r.run("component.list", json!({}))?;
-    let active = components
-        .get("active")
-        .and_then(Value::as_u64)
-        .ok_or("component.list did not return the active component")?;
-    let mut component = active;
+    let active = Activation::read(r)?;
+    let mut component = active.component;
+    let mut changed_activation = false;
     let mut added = 0;
     let mut source: Option<(&str, Value)> = None;
     let axes: Result<Vec<String>, String> = spots
@@ -56,6 +53,7 @@ pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<
                 if component != owner {
                     r.run("component.activate", json!({"component": owner}))?;
                     component = owner;
+                    changed_activation = true;
                 }
                 r.run("timeline.roll_to", json!({"feature": spot.sketch}))?;
                 // Face-backed sketch planes store a snapshot as well as their
@@ -88,9 +86,8 @@ pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<
         })
         .collect();
     let restored = r.run("timeline.roll_to", json!({"position": marker + added}));
-    let activated = if component != active {
-        r.run("component.activate", json!({"component": active}))
-            .map(|_| ())
+    let activated = if changed_activation {
+        active.restore(r)
     } else {
         Ok(())
     };
@@ -201,24 +198,26 @@ mod tests {
     use serde_json::json;
 
     #[test]
-    fn axis_failure_restores_history_and_active_component() {
+    fn axis_creation_restores_history_and_exact_active_occurrence() {
         #[derive(Default)]
         struct Host {
             calls: Vec<(String, Value)>,
             axes: usize,
+            fail_second: bool,
         }
         impl Runner for Host {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 self.calls.push((command.into(), args.clone()));
                 match command {
                     "document.inspect" => Ok(json!({"marker": 40})),
-                    "component.list" => Ok(json!({"active": 7})),
+                    "component.list" => Ok(json!({"active": 7, "active_path": [9, 12]})),
                     "timeline.inspect" => Ok(json!({"definition": {
+                        "component": if args["feature"] == "Original" { 7 } else { 0 },
                         "plane": {"type": "origin", "name": "XY"}
                     }})),
                     "construct.axis.normal_to_face" => {
                         self.axes += 1;
-                        if self.axes == 2 {
+                        if self.fail_second && self.axes == 2 {
                             Err("missing seating surface".into())
                         } else {
                             Ok(json!({"name": args["name"]}))
@@ -228,23 +227,46 @@ mod tests {
                 }
             }
         }
-        let spots = ["p", "c.center"].map(|point| Spot {
-            sketch: "Layout".into(),
-            point: point.into(),
-            place: Placement::on_origin(),
-        });
-        let mut host = Host::default();
-        assert_eq!(
-            tap_axes(&mut host, &spots, "Screw M3").unwrap_err(),
-            "missing seating surface"
-        );
-        assert_eq!(
-            &host.calls[host.calls.len() - 2..],
-            &[
-                ("timeline.roll_to".into(), json!({"position": 41})),
-                ("component.activate".into(), json!({"component": 7})),
-            ]
-        );
+        for return_to_original in [false, true] {
+            for fail_second in [false, true] {
+                let second_sketch = if return_to_original {
+                    "Original"
+                } else {
+                    "Layout"
+                };
+                let spots =
+                    [("Layout", "p"), (second_sketch, "c.center")].map(|(sketch, point)| Spot {
+                        sketch: sketch.into(),
+                        point: point.into(),
+                        place: Placement::on_origin(),
+                    });
+                let mut host = Host {
+                    fail_second,
+                    ..Host::default()
+                };
+                let result = tap_axes(&mut host, &spots, "Screw M3");
+                if fail_second {
+                    assert_eq!(result.unwrap_err(), "missing seating surface");
+                } else {
+                    assert_eq!(result.unwrap().len(), 2);
+                }
+                // Returning to component 7 by ID still loses its selected copy.
+                // Both success and failure must restore the complete original path.
+                assert_eq!(
+                    &host.calls[host.calls.len() - 2..],
+                    &[
+                        (
+                            "timeline.roll_to".into(),
+                            json!({"position": if fail_second { 41 } else { 42 }})
+                        ),
+                        (
+                            "component.activate".into(),
+                            json!({"component": 7, "occurrence": 12, "path": [9, 12]})
+                        ),
+                    ]
+                );
+            }
+        }
     }
 
     #[test]

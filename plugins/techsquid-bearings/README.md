@@ -6,7 +6,7 @@ Place fixed OpenBuilds and MISUMI bearing products in [SolidCraft](https://githu
 
 ## Install
 
-Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In SolidCraft, choose **Plugins > Install plugin…** and select the zip. Use SolidCraft 0.42 or newer.
+Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In SolidCraft, choose **Plugins > Install plugin…** and select the zip. Check the [host requirements](../../docs/parts-library.md#host-requirements) before installing version 0.3.
 
 ## Use
 

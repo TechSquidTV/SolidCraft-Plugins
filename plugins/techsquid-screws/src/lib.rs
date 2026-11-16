@@ -1550,7 +1550,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
-                        "plane": {
+                        "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
                             "y_dir": [0.0, 1.0, 0.0]
@@ -1795,7 +1795,7 @@ mod tests {
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
                 ]}),
                 "sketch.inspect" => json!({
-                    "plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
                         {"id": "c2.center", "world": [30.0, 10.0, 10.0]}
@@ -2076,7 +2076,7 @@ mod tests {
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
                 "sketch.inspect" => json!({
-                    "plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "a", "world": [10.0, 0.0, 5.0]},
                         {"id": "b", "world": [20.0, 0.0, 5.0]},

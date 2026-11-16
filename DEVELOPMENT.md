@@ -78,7 +78,8 @@ evidence. Test transports belong in `harness.py`/`headless.py`, not individual s
 Every saved example has a build recipe and is checked for geometry, catalog identity
 and BOM metadata. Rust build output, packages and Python caches are ignored.
 
-The current plugins have no dependency on the adjacent SolidCraft source checkout.
+The plugins have no build dependency on the adjacent SolidCraft source checkout;
+runtime insertion needs the [host inspection fields](docs/parts-library.md#host-requirements).
 The [bearing coverage checklist](docs/bearing-coverage.md) records the app parity
 baseline and source evidence still needed before adding purchasable variants.
 
@@ -128,7 +129,10 @@ the separate `parts_library_test.py` validates real catalog assemblies and reuse
 
 ## Test against the host
 
-`tests/cli_test.py` needs the package from `./build.sh` and a `solidcraft-cli` with the plugin host (SolidCraft 0.41 or newer). The current library and tests are validated on an unsigned development build of SolidCraft 0.42.0.
+`tests/cli_test.py` needs the package from `./build.sh` and an unsigned
+`solidcraft-cli` meeting the [host requirements](docs/parts-library.md#host-requirements).
+The occurrence-context regressions need both new inspection fields; an unmodified
+0.42 or 0.43 build is insufficient.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py

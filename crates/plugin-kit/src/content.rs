@@ -12,7 +12,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
-use crate::Runner;
+use crate::{component::Activation, Runner};
 
 /// Only this self-referential record is excluded from a component's metadata.
 pub const METADATA_KEY: &str = "org.techsquid.parts";
@@ -69,7 +69,8 @@ struct Child {
 
 #[derive(Deserialize)]
 struct ComponentList {
-    active: u64,
+    #[serde(flatten)]
+    activation: Activation,
     components: Vec<Component>,
     pending_moves: BTreeSet<u64>,
 }
@@ -209,7 +210,7 @@ struct Contents {
 /// A read-only view. Instantiate a new one after any design change.
 pub struct Index {
     pub document_metadata: Value,
-    pub active: u64,
+    pub(crate) activation: Activation,
     pub components: Vec<Component>,
     timeline: Vec<TimelineRow>,
     params: BTreeMap<String, Parameter>,
@@ -248,7 +249,7 @@ impl Index {
         let params: Parameters = decode(r.run("parameters.list", json!({}))?, "parameters")?;
         Ok(Self {
             document_metadata: doc.metadata,
-            active: listed.active,
+            activation: listed.activation,
             components: listed.components,
             timeline: doc.timeline,
             params: params
@@ -596,6 +597,8 @@ fn sketch_contents(mut value: Value) -> Result<Value, String> {
         "status",
         "fully_constrained",
         "param_warnings",
+        // Placement follows the active occurrence, not the part definition.
+        "world_plane",
     ] {
         fields.remove(key);
     }

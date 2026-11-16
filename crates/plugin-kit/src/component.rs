@@ -41,7 +41,9 @@ use serde_json::{json, Value};
 use crate::timeline;
 use crate::{Placement, Runner};
 
+mod activation;
 mod library;
+pub use activation::Activation;
 pub use library::{Budget, Handle, Library};
 
 /// A generated model number for custom geometry, never a supplier SKU. The full
@@ -188,7 +190,7 @@ pub fn site_at(at: [f64; 2]) -> Placement {
 /// Native integration tests are the authority for actual contents and reuse.
 pub fn stand_in(command: &str) -> Option<Value> {
     Some(match command {
-        "component.list" => json!({"active":0,"pending_moves":[],"components":[{
+        "component.list" => json!({"active":0,"active_path":[],"pending_moves":[],"components":[{
             "id":2,"name":"Geometry test fixture","bodies":["Fixture body"],"features":["Fixture cylinder"],
             "sketches":[],"construction":[],"children":[],"occurrences":[]
         }]}),

@@ -105,9 +105,20 @@ The body, the hole and every feature say what the part is and its size, so a des
 
 A hole keeps its kind and size in its own name because it stays in the part, and with Hole only there is no screw body at all.
 
+## Catalog and reuse
+
+The read-only `catalog` entry supports list, describe and resolve using the
+[shared contract](../../docs/catalog-contract.md). Discovery lists eight configurable head families. Standard dimensions identify a standards-based configuration, not guaranteed stock. Fine pitches and explicit geometry/drive overrides use custom identity and generated model numbers.
+
+Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
+representations reuse verified native definitions across runs. Renamed components
+remain reusable; edited components are preserved and new insertions create clean
+replacements. See [the library architecture](../../docs/parts-library.md) for BOM
+rules, inspection limits and migration from legacy metadata.
+
 ## Older field names
 
-The plugins share one set of field names. Scripts written for the earlier names still work: `designation` for `size` and `custom_designation` for `custom_size`.
+Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, `head_diameter` / `head_height` instead of `custom_head_diameter` / `custom_head_height`, and `drive_size` instead of the separate `hex`, `torx`, `slot` or `phillips` input fields. Reply fields retain their documented names.
 
 ## License
 

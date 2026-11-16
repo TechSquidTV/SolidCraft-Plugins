@@ -20,3 +20,5 @@ For the size catalog, hole dimensions, custom options and placement details, see
 ## License
 
 [MIT](../../LICENSE)
+
+The read-only catalog exposes insert rows and source status to scripts. Custom overrides and the three unsourced rows are custom models. See [catalog and reuse rules](../../docs/parts-library.md).

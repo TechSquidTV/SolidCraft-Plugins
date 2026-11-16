@@ -106,9 +106,20 @@ The body, the hole and every feature say what the part is and its size, so a des
 
 A pocket keeps its kind and size in its own name because it stays in the part, and with Pocket only there is no nut body at all.
 
+## Catalog and reuse
+
+The read-only `catalog` entry supports list, describe and resolve using the
+[shared contract](../../docs/catalog-contract.md). Discovery lists 29 ISO 4032 sizes. Standard coarse-pitch dimensions identify standards-based configurations; fine pitches and explicit width/thickness overrides are custom, even if an override matches a table value.
+
+Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
+representations reuse verified native definitions across runs. Renamed components
+remain reusable; edited components are preserved and new insertions create clean
+replacements. See [the library architecture](../../docs/parts-library.md) for BOM
+rules, inspection limits and migration from legacy metadata.
+
 ## Older field names
 
-The plugins share one set of field names. Scripts written for the earlier names still work: `designation` for `size`, `custom_designation` for `custom_size`, and `custom_height` for `custom_thickness`.
+Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, and `custom_thickness` instead of `custom_height`.
 
 ## License
 

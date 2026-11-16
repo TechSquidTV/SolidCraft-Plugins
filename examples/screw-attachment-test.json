@@ -7,6 +7,19 @@
   ],
   "name": "screw-attachment-test",
   "units": "mm",
+  "metadata": {
+    "org.techsquid.parts.index": {
+      "definitions": {
+        "2875677454ee6b635f2adce6470609ae71f5dcfa3722e0382c695cb8470d5c8a": [
+          7
+        ],
+        "bc91ca87489d019e50e8cea630b70dc087d99a02ae51eb5ed02904ee2d073d2b": [
+          23
+        ]
+      },
+      "version": 1
+    }
+  },
   "params": [
     {
       "name": "plate_length",
@@ -393,7 +406,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 9,
       "name": "Screw M4 x 6 socket: Shank",
       "suppressed": false,
       "body_names": [
@@ -403,7 +416,7 @@
         "d10",
         "d11"
       ],
-      "component": 9,
+      "component": 7,
       "type": "cylinder",
       "base": [
         0.0,
@@ -420,14 +433,14 @@
       "operation": "new_body"
     },
     {
-      "id": 12,
+      "id": 10,
       "name": "Screw M4 x 6 socket: Head",
       "suppressed": false,
       "param_names": [
         "d12",
         "d13"
       ],
-      "component": 9,
+      "component": 7,
       "participants": [
         "Screw M4 x 6 socket"
       ],
@@ -447,10 +460,10 @@
       "operation": "join"
     },
     {
-      "id": 13,
+      "id": 11,
       "name": "Screw M4 x 6 socket: Hex socket profile",
       "suppressed": false,
-      "component": 9,
+      "component": 7,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -582,15 +595,15 @@
       }
     },
     {
-      "id": 14,
+      "id": 12,
       "name": "Screw M4 x 6 socket: Hex socket",
       "suppressed": false,
       "param_names": [
         "d14"
       ],
-      "component": 9,
+      "component": 7,
       "type": "extrude",
-      "sketch": 13,
+      "sketch": 11,
       "profiles": {
         "type": "all"
       },
@@ -605,12 +618,12 @@
       ]
     },
     {
-      "id": 15,
+      "id": 13,
       "name": "Screw M4 x 6 socket: Thread",
       "suppressed": false,
-      "component": 9,
+      "component": 7,
       "face_names": [
-        "F11:side"
+        "F9:side"
       ],
       "type": "thread",
       "face": [
@@ -899,6 +912,32 @@
     {
       "id": 7,
       "identification_color_index": 0,
+      "name": "Screw M4 x 6 socket",
+      "parent": 15,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4762",
+        "org.techsquid.parts": {
+          "creator": "techsquid-screws",
+          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":6.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":6.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":6.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":6.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "73578e69cb364ff6032a3fdd7813a453eb52a146f9dd2f9f0d863e4e1602e816",
+            "version": 1
+          },
+          "version": 1
+        },
+        "part_number": "ISO 4762 M4x0.7 x 6"
+      }
+    },
+    {
+      "id": 15,
+      "identification_color_index": 1,
       "name": "Fasteners",
       "parent": 0,
       "metadata": {
@@ -906,43 +945,29 @@
       }
     },
     {
-      "id": 9,
-      "identification_color_index": 1,
-      "name": "Screw M4 x 6 socket",
-      "parent": 7,
-      "metadata": {
-        "bom_type": "purchased",
-        "description": "ISO 4762",
-        "dev.threadcraft": {
-          "geometry": "72d608e8ca722ae2",
-          "plugin": "techsquid-screws",
-          "site": [
-            0.0,
-            0.0,
-            0.0
-          ]
-        },
-        "part_number": "Screw M4 x 6 socket"
-      }
-    },
-    {
       "id": 23,
       "identification_color_index": 2,
       "name": "Screw M4 x 8 socket",
-      "parent": 7,
+      "parent": 15,
       "metadata": {
         "bom_type": "purchased",
         "description": "ISO 4762",
-        "dev.threadcraft": {
-          "geometry": "e3b9cde8174ea7ea",
-          "plugin": "techsquid-screws",
+        "org.techsquid.parts": {
+          "creator": "techsquid-screws",
+          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":8.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":8.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":8.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":8.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "ad5e9a5549f1542f8351d98938b10c41a03d6ad1ccfe42974077e58037058102",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "Screw M4 x 8 socket"
+        "part_number": "ISO 4762 M4x0.7 x 8"
       }
     }
   ],
@@ -951,6 +976,39 @@
     {
       "id": 8,
       "component": 7,
+      "parent": 15,
+      "name": "Screw M4 x 6 socket:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -25.0,
+          15.0,
+          8.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 16,
+      "component": 15,
       "parent": 0,
       "name": "Fasteners:1",
       "transform": [
@@ -982,42 +1040,9 @@
       "grounded": false
     },
     {
-      "id": 10,
-      "component": 9,
-      "parent": 7,
-      "name": "Screw M4 x 6 socket:1",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          -25.0,
-          15.0,
-          8.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
       "id": 17,
-      "component": 9,
-      "parent": 7,
+      "component": 7,
+      "parent": 15,
       "name": "Screw M4 x 6 socket:2",
       "transform": [
         [
@@ -1050,7 +1075,7 @@
     {
       "id": 24,
       "component": 23,
-      "parent": 7,
+      "parent": 15,
       "name": "Screw M4 x 8 socket:1",
       "transform": [
         [
@@ -1083,7 +1108,7 @@
     {
       "id": 31,
       "component": 23,
-      "parent": 7,
+      "parent": 15,
       "name": "Screw M4 x 8 socket:2",
       "transform": [
         [
@@ -1118,7 +1143,7 @@
     "joints": [
       {
         "id": 18,
-        "name": "Screw M4 x 6 socket: Seat 10",
+        "name": "Screw M4 x 6 socket: Seat 8",
         "kind": "rigid",
         "a": {
           "occurrence": 0,
@@ -1139,7 +1164,7 @@
           }
         },
         "b": {
-          "occurrence": 10,
+          "occurrence": 8,
           "snap": {
             "type": "point",
             "point": [
@@ -1341,15 +1366,15 @@
   },
   "timeline_groups": [
     {
-      "id": 16,
+      "id": 14,
       "name": "Screw M4 x 6 socket",
       "parent": null,
       "features": [
+        9,
+        10,
         11,
         12,
-        13,
-        14,
-        15
+        13
       ]
     },
     {

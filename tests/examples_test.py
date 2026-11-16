@@ -11,7 +11,8 @@ because the approval changes with every build.
 
 `expect` says what the finished design must measure:
 
-    bodies     how many bodies, all of them closed
+    bodies     total bodies; all closed unless surface_bodies is specified
+    surface_bodies  intentional zero-volume surface body count (bearing closures)
     bbox       {min, max} of the whole design
     corners    [[x, y], ...] where the fasteners stand
     parts      [{body, bbox}] the named bodies and their boxes
@@ -61,8 +62,9 @@ def same_bodies(a, b):
     kept = {body["name"]: body for body in a}
     fresh = {body["name"]: body for body in b}
     return sorted(kept) == sorted(fresh) and all(
-        kept[n].get("closed") and fresh[n].get("closed")
-        and abs(kept[n]["volume_mm3"] - fresh[n]["volume_mm3"]) <= 1e-6 * max(1.0, abs(fresh[n]["volume_mm3"]))
+        kept[n].get("closed") == fresh[n].get("closed")
+        and all(abs(kept[n][key] - fresh[n][key]) <= 1e-6 * max(1.0, abs(fresh[n][key]))
+                for key in (["volume_mm3", "area_mm2"] if fresh[n].get("closed") else ["area_mm2"]))
         and box_is(kept[n]["bbox"], fresh[n]["bbox"]) for n in fresh)
 
 
@@ -159,7 +161,10 @@ def example(path):
                     for side in ("a", "b")) for j in joints) == 1)
 
     check(f"{name}: {expect['bodies']} bodies", len(bodies) == expect["bodies"], f"got {len(bodies)}")
-    check(f"{name}: every body is closed", all(b.get("closed") for b in bodies))
+    surfaces = expect.get("surface_bodies", 0)
+    check(f"{name}: {surfaces} intentional surface bodies, remaining bodies closed",
+          sum(not b.get("closed") for b in bodies) == surfaces
+          and all(b.get("volume_mm3") is None for b in bodies if not b.get("closed")))
     check(f"{name}: overall box", box_is(whole(bodies), expect["bbox"]), json.dumps(whole(bodies)))
     for part in expect.get("parts", []):
         body = by_name.get(part["body"])
@@ -168,6 +173,11 @@ def example(path):
             body is not None and box_is(body["bbox"], part["bbox"]),
             json.dumps(body["bbox"]) if body else "no such body",
         )
+        for key in ("volume_mm3", "area_mm2"):
+            if key in part:
+                check(f"{name}: {part['body']} {key}", body is not None
+                      and body.get(key) is not None
+                      and abs(body[key] - part[key]) <= 1e-4 * max(1.0, part[key]))
 
     corners = expect.get("corners", [])
     for hole in expect.get("holes", []):

@@ -7,6 +7,40 @@
   ],
   "name": "rail-frame",
   "units": "mm",
+  "metadata": {
+    "org.techsquid.parts.index": {
+      "definitions": {
+        "0702fd22c414d098267f3b257e61d047d0022598d73cf43f8548139bdb8c2ebd": [
+          46
+        ],
+        "0d07484d19cc199f9ebd558458f5a2b1620b12c9d174d5a29019b1006b0330d0": [
+          59
+        ],
+        "2a6979973bbf5831f88a28228166c18aae83c03c489067b2e390483e59c12b6b": [
+          2
+        ],
+        "60c4cd99279328c3a20cbd1eb53aa9fac63ab95493d5afef7eb37bf3d8f90727": [
+          15
+        ],
+        "63c782b90ce0802bee11764d2afcc4c69ad07654775aaee0b131e1fcdd490a7c": [
+          118
+        ],
+        "b80b4f646836ecfb81be8573decea9dc01704c96a34b3114e5dbce6c327d9348": [
+          36
+        ],
+        "e76425c1d5130ef73d68a2638f8f3e343e23be0f6e4efd5a9212c9c99a0ecc68": [
+          105
+        ],
+        "e8d87407337b8f95f31401801c0e428a663ab90365ea443a66970044f2a4cd6d": [
+          27
+        ],
+        "ef7092fa2f90a8e0d3e10bc8baca8d64573f1c95577aa96b28291143eafa1ccc": [
+          87
+        ]
+      },
+      "version": 1
+    }
+  },
   "params": [],
   "features": [
     {
@@ -74,16 +108,16 @@
       }
     },
     {
-      "id": 6,
+      "id": 4,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Section",
       "suppressed": false,
-      "component": 4,
+      "component": 2,
       "type": "sketch",
       "plane": {
         "type": "custom",
         "plane": {
           "origin": [
-            1405.0,
+            1205.0,
             1005.0,
             0.0
           ],
@@ -1728,7 +1762,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 5,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Rail",
       "suppressed": false,
       "body_names": [
@@ -1737,9 +1771,9 @@
       "param_names": [
         "d2"
       ],
-      "component": 4,
+      "component": 2,
       "type": "extrude",
-      "sketch": 6,
+      "sketch": 4,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -1831,16 +1865,16 @@
       "operation": "new_body"
     },
     {
-      "id": 8,
+      "id": 6,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Hole references +Y",
       "suppressed": false,
-      "component": 4,
+      "component": 2,
       "type": "sketch",
       "plane": {
         "type": "custom",
         "plane": {
           "origin": [
-            1405.0,
+            1205.0,
             1015.0,
             0.0
           ],
@@ -1962,15 +1996,15 @@
       }
     },
     {
-      "id": 9,
+      "id": 7,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Screw holes +Y: Access",
       "suppressed": false,
       "param_names": [
         "d3"
       ],
-      "component": 4,
+      "component": 2,
       "type": "extrude",
-      "sketch": 8,
+      "sketch": 6,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -1999,15 +2033,15 @@
       ]
     },
     {
-      "id": 10,
+      "id": 8,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Screw holes +Y: Clearance",
       "suppressed": false,
       "param_names": [
         "d4"
       ],
-      "component": 4,
+      "component": 2,
       "type": "extrude",
-      "sketch": 8,
+      "sketch": 6,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -2036,7 +2070,7 @@
       ]
     },
     {
-      "id": 11,
+      "id": 9,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Tap start 1",
       "suppressed": false,
       "param_names": [
@@ -2044,7 +2078,7 @@
         "d6",
         "d7"
       ],
-      "component": 4,
+      "component": 2,
       "face_names": [
         ""
       ],
@@ -2053,7 +2087,7 @@
       ],
       "type": "hole",
       "position": [
-        1405.0,
+        1205.0,
         1005.0,
         0.0
       ],
@@ -2072,7 +2106,7 @@
       "modeled": true
     },
     {
-      "id": 12,
+      "id": 10,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250: Tap end 1",
       "suppressed": false,
       "param_names": [
@@ -2080,7 +2114,7 @@
         "d9",
         "d10"
       ],
-      "component": 4,
+      "component": 2,
       "face_names": [
         ""
       ],
@@ -2089,7 +2123,7 @@
       ],
       "type": "hole",
       "position": [
-        1405.0,
+        1205.0,
         1005.0,
         260.0
       ],
@@ -10341,7 +10375,7 @@
       }
     },
     {
-      "id": 63,
+      "id": 61,
       "name": "Screw M5 x 25 socket: Shank",
       "suppressed": false,
       "body_names": [
@@ -10351,7 +10385,7 @@
         "d41",
         "d42"
       ],
-      "component": 61,
+      "component": 59,
       "type": "cylinder",
       "base": [
         0.0,
@@ -10368,14 +10402,14 @@
       "operation": "new_body"
     },
     {
-      "id": 64,
+      "id": 62,
       "name": "Screw M5 x 25 socket: Head",
       "suppressed": false,
       "param_names": [
         "d43",
         "d44"
       ],
-      "component": 61,
+      "component": 59,
       "participants": [
         "Screw M5 x 25 socket"
       ],
@@ -10395,10 +10429,10 @@
       "operation": "join"
     },
     {
-      "id": 65,
+      "id": 63,
       "name": "Screw M5 x 25 socket: Hex socket profile",
       "suppressed": false,
-      "component": 61,
+      "component": 59,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -10530,15 +10564,15 @@
       }
     },
     {
-      "id": 66,
+      "id": 64,
       "name": "Screw M5 x 25 socket: Hex socket",
       "suppressed": false,
       "param_names": [
         "d45"
       ],
-      "component": 61,
+      "component": 59,
       "type": "extrude",
-      "sketch": 65,
+      "sketch": 63,
       "profiles": {
         "type": "all"
       },
@@ -10553,7 +10587,7 @@
       ]
     },
     {
-      "id": 67,
+      "id": 65,
       "name": "Screw M5 x 25 socket: Move to site",
       "suppressed": false,
       "param_names": [
@@ -10561,28 +10595,28 @@
         "d47",
         "d48"
       ],
-      "component": 61,
+      "component": 59,
       "type": "move",
       "bodies": [
         "Screw M5 x 25 socket"
       ],
       "translate": [
-        "-1325",
+        "-1285",
         "-105",
         "0"
       ]
     },
     {
-      "id": 68,
+      "id": 66,
       "name": "Screw M5 x 25 socket: Thread",
       "suppressed": false,
-      "component": 61,
+      "component": 59,
       "face_names": [
-        "F63:side"
+        "F61:side"
       ],
       "type": "thread",
       "face": [
-        -1322.5,
+        -1282.5,
         -105.0,
         -20.833333333333332
       ],
@@ -10590,7 +10624,7 @@
       "modeled": true,
       "continuous_flanks": true,
       "from": [
-        -1322.5,
+        -1282.5,
         -105.0,
         -20.833333333333332
       ]
@@ -12511,6 +12545,32 @@
     {
       "id": 2,
       "identification_color_index": 0,
+      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250",
+      "parent": 12,
+      "metadata": {
+        "bom_type": "normal",
+        "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from +Y at 10, 30, 230, 250 mm",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"Both\",\"holes\":[[\"YPlus\",10.0],[\"YPlus\",30.0],[\"YPlus\",230.0],[\"YPlus\",250.0]],\"kind\":\"rail\",\"length_mm\":260.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"Both\",\"holes\":[[\"YPlus\",10.0],[\"YPlus\",30.0],[\"YPlus\",230.0],[\"YPlus\",250.0]],\"kind\":\"rail\",\"length_mm\":260.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"},\"revision\":\"1\"}",
+          "site": [
+            1205.0,
+            1005.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "f3293a3e8ad2aad0f0ce43dd55a20502431b45d43823a0a70340f3599ddefed6",
+            "version": 1
+          },
+          "version": 1
+        },
+        "part_number": "Custom T-slot 2020 x 260 taps both holes +Y 10 30 230 250 [831053d4deacad502428f64dd414251d36bdd17edf0fcc7a1d1265f4aad985e7]"
+      }
+    },
+    {
+      "id": 12,
+      "identification_color_index": 1,
       "name": "Extrusions",
       "parent": 0,
       "metadata": {
@@ -12518,108 +12578,138 @@
       }
     },
     {
-      "id": 4,
-      "identification_color_index": 1,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250",
-      "parent": 2,
-      "metadata": {
-        "bom_type": "purchased",
-        "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from +Y at 10, 30, 230, 250 mm",
-        "dev.threadcraft": {
-          "geometry": "d4035ac64ae8e9af",
-          "plugin": "techsquid-extrusions",
-          "site": [
-            1405.0,
-            1005.0,
-            0.0
-          ]
-        },
-        "part_number": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250"
-      }
-    },
-    {
       "id": 15,
       "identification_color_index": 2,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250",
-      "parent": 2,
+      "parent": 12,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 20 mm T-slot aluminium extrusion, 260 mm long, both ends tapped M5, M5 screw holes from -Y at 10, 30, 230, 250 mm",
-        "dev.threadcraft": {
-          "geometry": "134bf206d876f779",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"Both\",\"holes\":[[\"YMinus\",10.0],[\"YMinus\",30.0],[\"YMinus\",230.0],[\"YMinus\",250.0]],\"kind\":\"rail\",\"length_mm\":260.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"Both\",\"holes\":[[\"YMinus\",10.0],[\"YMinus\",30.0],[\"YMinus\",230.0],[\"YMinus\",250.0]],\"kind\":\"rail\",\"length_mm\":260.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"},\"revision\":\"1\"}",
           "site": [
             2505.0,
             1005.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "8bd7d55f3db68635d080f6ff5c589f97993f2cc02edaabb3e5c912da6ef5bf82",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250"
+        "part_number": "Custom T-slot 2020 x 260 taps both holes -Y 10 30 230 250 [d42b05db5c92892418aa7e0c69ee15f5eb411781c123709fa066f4c1dea9fb1f]"
       }
     },
     {
       "id": 27,
       "identification_color_index": 3,
       "name": "T-slot 2020 x 300 holes +X 10 290",
-      "parent": 2,
+      "parent": 12,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from +X at 10, 290 mm",
-        "dev.threadcraft": {
-          "geometry": "950d1aaa7f8cba4d",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[[\"XPlus\",10.0],[\"XPlus\",290.0]],\"kind\":\"rail\",\"length_mm\":300.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[[\"XPlus\",10.0],[\"XPlus\",290.0]],\"kind\":\"rail\",\"length_mm\":300.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "e7ba14e696a4d8069d8cdb8cbd5b3379b521180f5ea6f2beabac43a22d814404",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "T-slot 2020 x 300 holes +X 10 290"
+        "part_number": "Custom T-slot 2020 x 300 holes +X 10 290 [ea83c8b103c7c33ce231e611caaf14204defb23b88fc5c74c6742c9b003355b3]"
       }
     },
     {
       "id": 36,
       "identification_color_index": 4,
       "name": "T-slot 2020 x 300 holes -X 10 290",
-      "parent": 2,
+      "parent": 12,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 20 mm T-slot aluminium extrusion, 300 mm long, M5 screw holes from -X at 10, 290 mm",
-        "dev.threadcraft": {
-          "geometry": "dad39137738885cd",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[[\"XMinus\",10.0],[\"XMinus\",290.0]],\"kind\":\"rail\",\"length_mm\":300.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[[\"XMinus\",10.0],[\"XMinus\",290.0]],\"kind\":\"rail\",\"length_mm\":300.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "687d795357c6dea1bf46e58e451a7ca0e0f56c5c3c51463440a58d4c68bc0cb2",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "T-slot 2020 x 300 holes -X 10 290"
+        "part_number": "Custom T-slot 2020 x 300 holes -X 10 290 [e9b77f8af0e0de6aea9c1eba8b9406a4a81648d8c229ff2ebd3d68e57638a936]"
       }
     },
     {
       "id": 46,
       "identification_color_index": 5,
       "name": "V-slot 2040 x 300 taps both",
-      "parent": 2,
+      "parent": 12,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 40 mm V-slot aluminium extrusion, 300 mm long, both ends tapped M5",
-        "dev.threadcraft": {
-          "geometry": "39318f0152eab94c",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"Both\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":300.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2040\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"Both\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":300.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2040\"},\"revision\":\"1\"}",
           "site": [
             5605.0,
             1005.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "e292516b0baf74c1da007bd6cef59a69c78ee6e041a7a27e65992b77d9a5c4de",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "V-slot 2040 x 300 taps both"
+        "part_number": "Custom V-slot 2040 x 300 taps both [67bd583d01efc495d917f47f00747206bc69e956374325ba1be644da3fa624da]"
       }
     },
     {
       "id": 59,
       "identification_color_index": 6,
+      "name": "Screw M5 x 25 socket",
+      "parent": 68,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4762",
+        "org.techsquid.parts": {
+          "creator": "techsquid-screws",
+          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":4.0,\"depth\":2.5},\"nominal_length_mm\":25.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":25.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":4.0,\"depth\":2.5},\"nominal_length_mm\":25.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":25.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
+          "site": [
+            -1285.0,
+            -105.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "c0ad2d1770f8cb6f29af3c8f494a8cdc934aa24f6ffc121e792c00fcd5c67382",
+            "version": 1
+          },
+          "version": 1
+        },
+        "part_number": "ISO 4762 M5x0.8 x 25"
+      }
+    },
+    {
+      "id": 68,
+      "identification_color_index": 7,
       "name": "Fasteners",
       "parent": 0,
       "metadata": {
@@ -12627,83 +12717,81 @@
       }
     },
     {
-      "id": 61,
-      "identification_color_index": 7,
-      "name": "Screw M5 x 25 socket",
-      "parent": 59,
-      "metadata": {
-        "bom_type": "purchased",
-        "description": "ISO 4762",
-        "dev.threadcraft": {
-          "geometry": "8621727bf5003b53",
-          "plugin": "techsquid-screws",
-          "site": [
-            -1325.0,
-            -105.0,
-            0.0
-          ]
-        },
-        "part_number": "Screw M5 x 25 socket"
-      }
-    },
-    {
       "id": 87,
       "identification_color_index": 8,
       "name": "Screw M5 x 20 socket",
-      "parent": 59,
+      "parent": 68,
       "metadata": {
         "bom_type": "purchased",
         "description": "ISO 4762",
-        "dev.threadcraft": {
-          "geometry": "1a156d2eb025e125",
-          "plugin": "techsquid-screws",
+        "org.techsquid.parts": {
+          "creator": "techsquid-screws",
+          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":4.0,\"depth\":2.5},\"nominal_length_mm\":20.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":20.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":4.0,\"depth\":2.5},\"nominal_length_mm\":20.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":20.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
           "site": [
             -565.0,
             -125.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "4d5030ad4b2f87d2a7c459e5ca8044f8def212035448db06f0768974f2ed4495",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "Screw M5 x 20 socket"
+        "part_number": "ISO 4762 M5x0.8 x 20"
       }
     },
     {
       "id": 105,
       "identification_color_index": 9,
       "name": "T-nut M5 post-assembly",
-      "parent": 2,
+      "parent": 12,
       "metadata": {
         "bom_type": "purchased",
         "description": "MISUMI HNTP5-5 post-assembly insertion nut for a 6 mm slot",
-        "dev.threadcraft": {
-          "geometry": "c408132f9513dea5",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":{\"kind\":\"slot_nut\",\"thread\":\"M5\"},\"kind\":\"supplier_product\",\"members\":[],\"part\":\"HNTP5-5\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"misumi\",\"configuration\":{\"kind\":\"slot_nut\",\"thread\":\"M5\"},\"kind\":\"supplier_product\",\"members\":[],\"part\":\"HNTP5-5\"},\"revision\":\"1\"}",
           "site": [
             -925.0,
             -125.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "0ad0dbc972f87e8eea4a49df4121e164b0334797d3713333bb0a724c7cf9697a",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "T-nut M5 post-assembly"
+        "part_number": "MISUMI HNTP5-5"
       }
     },
     {
       "id": 118,
       "identification_color_index": 10,
       "name": "T-nut M5 pre-assembly",
-      "parent": 2,
+      "parent": 12,
       "metadata": {
         "bom_type": "purchased",
         "description": "MISUMI HNTT5-5 pre-assembly insertion nut for a 6 mm slot",
-        "dev.threadcraft": {
-          "geometry": "2fa207adbd6f638b",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":{\"kind\":\"slot_nut\",\"thread\":\"M5\"},\"kind\":\"supplier_product\",\"members\":[],\"part\":\"HNTT5-5\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"misumi\",\"configuration\":{\"kind\":\"slot_nut\",\"thread\":\"M5\"},\"kind\":\"supplier_product\",\"members\":[],\"part\":\"HNTT5-5\"},\"revision\":\"1\"}",
           "site": [
             -1185.0,
             -125.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "01478d6e352b309b9a37b00fdb2dda2ec4d835a396b32999742c078c0311cd4d",
+            "version": 1
+          },
+          "version": 1
         },
-        "part_number": "T-nut M5 pre-assembly"
+        "part_number": "MISUMI HNTT5-5"
       }
     }
   ],
@@ -12712,6 +12800,39 @@
     {
       "id": 3,
       "component": 2,
+      "parent": 12,
+      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1065.0,
+          -130.0,
+          1015.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 13,
+      "component": 12,
       "parent": 0,
       "name": "Extrusions:1",
       "transform": [
@@ -12743,42 +12864,9 @@
       "grounded": false
     },
     {
-      "id": 5,
-      "component": 4,
-      "parent": 2,
-      "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250:1",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          -1.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          -1265.0,
-          -130.0,
-          1015.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
       "id": 14,
-      "component": 4,
-      "parent": 2,
+      "component": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250:2",
       "transform": [
         [
@@ -12800,7 +12888,7 @@
           0.0
         ],
         [
-          -1545.0,
+          -1345.0,
           -130.0,
           1015.0,
           1.0
@@ -12811,7 +12899,7 @@
     {
       "id": 16,
       "component": 15,
-      "parent": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250:1",
       "transform": [
         [
@@ -12844,7 +12932,7 @@
     {
       "id": 25,
       "component": 15,
-      "parent": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 260 taps both holes -Y 10 30 230 250:2",
       "transform": [
         [
@@ -12877,7 +12965,7 @@
     {
       "id": 28,
       "component": 27,
-      "parent": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 300 holes +X 10 290:1",
       "transform": [
         [
@@ -12910,7 +12998,7 @@
     {
       "id": 35,
       "component": 27,
-      "parent": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 300 holes +X 10 290:2",
       "transform": [
         [
@@ -12943,7 +13031,7 @@
     {
       "id": 37,
       "component": 36,
-      "parent": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 300 holes -X 10 290:1",
       "transform": [
         [
@@ -12976,7 +13064,7 @@
     {
       "id": 44,
       "component": 36,
-      "parent": 2,
+      "parent": 12,
       "name": "T-slot 2020 x 300 holes -X 10 290:2",
       "transform": [
         [
@@ -13009,7 +13097,7 @@
     {
       "id": 47,
       "component": 46,
-      "parent": 2,
+      "parent": 12,
       "name": "V-slot 2040 x 300 taps both:1",
       "transform": [
         [
@@ -13042,7 +13130,7 @@
     {
       "id": 55,
       "component": 46,
-      "parent": 2,
+      "parent": 12,
       "name": "V-slot 2040 x 300 taps both:2",
       "transform": [
         [
@@ -13075,7 +13163,7 @@
     {
       "id": 56,
       "component": 46,
-      "parent": 2,
+      "parent": 12,
       "name": "V-slot 2040 x 300 taps both:3",
       "transform": [
         [
@@ -13108,7 +13196,7 @@
     {
       "id": 57,
       "component": 46,
-      "parent": 2,
+      "parent": 12,
       "name": "V-slot 2040 x 300 taps both:4",
       "transform": [
         [
@@ -13141,6 +13229,39 @@
     {
       "id": 60,
       "component": 59,
+      "parent": 68,
+      "name": "Screw M5 x 25 socket:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          1425.0,
+          15.0,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 69,
+      "component": 68,
       "parent": 0,
       "name": "Fasteners:1",
       "transform": [
@@ -13172,42 +13293,9 @@
       "grounded": false
     },
     {
-      "id": 62,
-      "component": 61,
-      "parent": 59,
-      "name": "Screw M5 x 25 socket:1",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          -1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          -1.0,
-          0.0
-        ],
-        [
-          1465.0,
-          15.0,
-          6.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
       "id": 70,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:2",
       "transform": [
         [
@@ -13229,7 +13317,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           -5.0,
           6.0,
           1.0
@@ -13239,8 +13327,8 @@
     },
     {
       "id": 71,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:3",
       "transform": [
         [
@@ -13262,7 +13350,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           -205.0,
           6.0,
           1.0
@@ -13272,8 +13360,8 @@
     },
     {
       "id": 72,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:4",
       "transform": [
         [
@@ -13295,7 +13383,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           -225.0,
           6.0,
           1.0
@@ -13305,8 +13393,8 @@
     },
     {
       "id": 73,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:5",
       "transform": [
         [
@@ -13328,7 +13416,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           15.0,
           6.0,
           1.0
@@ -13338,8 +13426,8 @@
     },
     {
       "id": 74,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:6",
       "transform": [
         [
@@ -13361,7 +13449,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           -5.0,
           6.0,
           1.0
@@ -13371,8 +13459,8 @@
     },
     {
       "id": 75,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:7",
       "transform": [
         [
@@ -13394,7 +13482,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           -205.0,
           6.0,
           1.0
@@ -13404,8 +13492,8 @@
     },
     {
       "id": 76,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:8",
       "transform": [
         [
@@ -13427,7 +13515,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           -225.0,
           6.0,
           1.0
@@ -13437,8 +13525,8 @@
     },
     {
       "id": 78,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:9",
       "transform": [
         [
@@ -13460,7 +13548,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           225.0,
           334.0,
           1.0
@@ -13470,8 +13558,8 @@
     },
     {
       "id": 79,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:10",
       "transform": [
         [
@@ -13493,7 +13581,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           205.0,
           334.0,
           1.0
@@ -13503,8 +13591,8 @@
     },
     {
       "id": 80,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:11",
       "transform": [
         [
@@ -13526,7 +13614,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           5.0,
           334.0,
           1.0
@@ -13536,8 +13624,8 @@
     },
     {
       "id": 81,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:12",
       "transform": [
         [
@@ -13559,7 +13647,7 @@
           0.0
         ],
         [
-          1465.0,
+          1425.0,
           -15.0,
           334.0,
           1.0
@@ -13569,8 +13657,8 @@
     },
     {
       "id": 82,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:13",
       "transform": [
         [
@@ -13592,7 +13680,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           225.0,
           334.0,
           1.0
@@ -13602,8 +13690,8 @@
     },
     {
       "id": 83,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:14",
       "transform": [
         [
@@ -13625,7 +13713,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           205.0,
           334.0,
           1.0
@@ -13635,8 +13723,8 @@
     },
     {
       "id": 84,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:15",
       "transform": [
         [
@@ -13658,7 +13746,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           5.0,
           334.0,
           1.0
@@ -13668,8 +13756,8 @@
     },
     {
       "id": 85,
-      "component": 61,
-      "parent": 59,
+      "component": 59,
+      "parent": 68,
       "name": "Screw M5 x 25 socket:16",
       "transform": [
         [
@@ -13691,7 +13779,7 @@
           0.0
         ],
         [
-          1185.0,
+          1145.0,
           -15.0,
           334.0,
           1.0
@@ -13702,7 +13790,7 @@
     {
       "id": 88,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:1",
       "transform": [
         [
@@ -13735,7 +13823,7 @@
     {
       "id": 96,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:2",
       "transform": [
         [
@@ -13768,7 +13856,7 @@
     {
       "id": 97,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:3",
       "transform": [
         [
@@ -13801,7 +13889,7 @@
     {
       "id": 98,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:4",
       "transform": [
         [
@@ -13834,7 +13922,7 @@
     {
       "id": 100,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:5",
       "transform": [
         [
@@ -13867,7 +13955,7 @@
     {
       "id": 101,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:6",
       "transform": [
         [
@@ -13900,7 +13988,7 @@
     {
       "id": 102,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:7",
       "transform": [
         [
@@ -13933,7 +14021,7 @@
     {
       "id": 103,
       "component": 87,
-      "parent": 59,
+      "parent": 68,
       "name": "Screw M5 x 20 socket:8",
       "transform": [
         [
@@ -13966,7 +14054,7 @@
     {
       "id": 106,
       "component": 105,
-      "parent": 2,
+      "parent": 12,
       "name": "T-nut M5 post-assembly:1",
       "transform": [
         [
@@ -13999,7 +14087,7 @@
     {
       "id": 114,
       "component": 105,
-      "parent": 2,
+      "parent": 12,
       "name": "T-nut M5 post-assembly:2",
       "transform": [
         [
@@ -14032,7 +14120,7 @@
     {
       "id": 115,
       "component": 105,
-      "parent": 2,
+      "parent": 12,
       "name": "T-nut M5 post-assembly:3",
       "transform": [
         [
@@ -14065,7 +14153,7 @@
     {
       "id": 116,
       "component": 105,
-      "parent": 2,
+      "parent": 12,
       "name": "T-nut M5 post-assembly:4",
       "transform": [
         [
@@ -14098,7 +14186,7 @@
     {
       "id": 119,
       "component": 118,
-      "parent": 2,
+      "parent": 12,
       "name": "T-nut M5 pre-assembly:1",
       "transform": [
         [
@@ -14131,7 +14219,7 @@
     {
       "id": 125,
       "component": 118,
-      "parent": 2,
+      "parent": 12,
       "name": "T-nut M5 pre-assembly:2",
       "transform": [
         [
@@ -14164,17 +14252,17 @@
   ],
   "timeline_groups": [
     {
-      "id": 13,
+      "id": 11,
       "name": "T-slot 2020 x 260 taps both holes +Y 10 30 230 250",
       "parent": null,
       "features": [
+        4,
+        5,
         6,
         7,
         8,
         9,
-        10,
-        11,
-        12
+        10
       ]
     },
     {
@@ -14229,16 +14317,16 @@
       ]
     },
     {
-      "id": 69,
+      "id": 67,
       "name": "Screw M5 x 25 socket",
       "parent": null,
       "features": [
+        61,
+        62,
         63,
         64,
         65,
-        66,
-        67,
-        68
+        66
       ]
     },
     {

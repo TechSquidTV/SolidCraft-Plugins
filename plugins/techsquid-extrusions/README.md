@@ -70,3 +70,5 @@ For joint dimensions, tapping limits, slot nut placement and all options, see th
 ## License
 
 [MIT](../../LICENSE)
+
+The read-only catalog exposes this tool’s parts to scripts. [Shared catalog and reuse rules](../../docs/parts-library.md) explain product identity, modified-part preservation and BOM grouping.

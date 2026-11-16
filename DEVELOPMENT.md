@@ -10,6 +10,8 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
+| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings | Fixed 625 2RS and 105ZZ products with visible rings and closures |
+| [V-wheels](plugins/techsquid-v-wheels/README.md) | `techsquid-v-wheels` | Wheels | Five OpenBuilds products, bare or composed with bearings and an internal shim |
 
 Each plugin's README links to its detailed reference for dialog fields, standards and naming. Each release has one zip per plugin.
 
@@ -38,6 +40,9 @@ A slot nut is one section too, extruded along the slot and tapped. `make-t-nut`,
 ```
 Cargo.toml                 workspace
 crates/plugin-kit/         what every plugin shares: the host runner and wasm guest, dialog fields, placement, components, and names
+crates/parts/              typed catalog protocol and canonical product/representation identities
+crates/bearings/           fixed supplier bearing products and exterior representations
+crates/wheels/             OpenBuilds wheel sections, compatible bearings and precision shims
 crates/fasteners/          designations, metric sizes, standard heads, ISO 4032 nuts, ISO 273 clearance holes, drives, and the hex profile
 crates/extrusions/         the 20 mm T-slot and V-slot shapes, the section of a rail built from them, its taps and screw holes, and the slot nuts
 wit/plugin.wit             copy of SolidCraft's craft:plugin@0.1.0
@@ -61,18 +66,51 @@ A plugin id is the folder name under `plugins/` and the folder you install. Pref
 
 ## Build
 
-You need Rust with the `wasm32-unknown-unknown` target and [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools).
+You need Rust with the `wasm32-unknown-unknown` target, [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools), and Python 3 for packaging the guides.
 
 ```
 cargo test
 ./build.sh
 ```
 
+### Catalog discovery
+
+`crates/parts` owns the versioned, host-independent product and representation
+identities and the bounded `list`, `describe`, and `resolve` protocol. Domain
+providers own their typed configurations and dimensional data. A read entry has
+no runner argument; discovery cannot inspect selection or change a design.
+All six packages implement this contract. See [the protocol](docs/catalog-contract.md)
+and [the shared library](docs/parts-library.md) for the final architecture, identity
+semantics, inspection limits and native acceptance tests.
+
+`tools/catalog-tool` generates catalog-owned manifest fields from those same
+descriptors, including the new bearing/wheel reference tables. Run `cargo run -p catalog-tool -- --write` after changing them;
+`./build.sh` runs `--check` and refuses stale fields. Workflow controls remain in
+the plugin's manifest. The package and guest both use that manifest.
+
+A resolved result includes the existing insertion entry and its validated inputs.
+It also includes `catalog_selection`, an API-only precondition carrying the
+protocol version, catalog revision, and representation. The workflow parses the
+inputs again and compares that precondition before any host calls. A normal dialog
+run resolves current inputs without this precondition. The precondition passes
+through the existing workflow schema's allowed additional properties; it is not a
+dialog control. Declaring a nested object as a form field would disable the current
+SolidCraft plugin dialog. Do not set `additionalProperties: false` on an insertion
+entry without explicitly accommodating this protocol field.
+
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/catalog_test.py` after
+building. It checks actual read-only behavior, pagination, dimensions, resolved
+insertion, and stale or altered selections through the compiled Wasm guest.
+`tests/parts_inspection_test.py` checks the host evidence required for reuse:
+external cuts, edits with unchanged volume and bounds, complete feature history,
+and shared nested definitions after reopening. It uses a generic test cylinder;
+the separate `parts_library_test.py` validates real catalog assemblies and reuse.
+
 `cargo test` checks the parameter rules and the commands each run sends. `./build.sh` wraps each core module as a component and leaves one `dist/<id>/` for every folder under `plugins/`.
 
 ## Test against the host
 
-`tests/cli_test.py` needs the package from `./build.sh` and a `solidcraft-cli` with the plugin host (SolidCraft 0.41 or newer). The tests are run on a development build of SolidCraft 0.41.0.
+`tests/cli_test.py` needs the package from `./build.sh` and a `solidcraft-cli` with the plugin host (SolidCraft 0.41 or newer). The current library and tests are validated on an unsigned development build of SolidCraft 0.42.0.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py
@@ -153,7 +191,7 @@ The checks compare actual pocket floors, bolt-hole axes, nut bounding boxes, sea
 solidcraft-cli snapshot --in examples/nut-pockets.json --out examples/nut-pockets.png --width 1280 --height 600 --camera '{"target":[0,0,6],"yaw":0.18,"pitch":0.45,"distance":70}' --section y=0,flip --no-grid --no-axes --quality fine --body 'Plate:color=#708da5' --body 'Nut M6:color=#d7af57'
 ```
 
-Six standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+Eight standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
 
 | Example | Plugin | What it builds | Picture |
 |---|---|---|---|
@@ -163,6 +201,8 @@ Six standalone examples show the plugins’ parts and editing modes. Each plugin
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
+| `bearings` | `techsquid-bearings` | Sealed 625 2RS and shielded 105ZZ products | `bearings.png` |
+| `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line
 sketch. The paired rails have different lengths; the 2020 pair has modeled M5 taps,
@@ -182,9 +222,19 @@ Each example comes as two files:
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
 ```
 
-It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of every rail, screw and slot nut, and that the only bodies that overlap are the 24 screws and the tapped bores they are in. On the small examples it checks the box and the volume of every part. For every example it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
+It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. Bearing examples explicitly count their intentional closure surfaces and compare their areas; other bodies must be closed. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of every rail, screw and slot nut, and that the only bodies that overlap are the 24 screws and the tapped bores they are in. On the small examples it checks the box and the volume of every part. For every example it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
 
 The pictures are rendered from the designs:
+
+```sh
+solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1280 --height 640 --camera '{"target":[-1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":40}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
+```
+
+The bearing and wheel previews are native CAD captures. Their appearances show
+seals, shields and illustrative clear/black wheel variants; no image synthesis is
+used. Bearing closure surfaces are intentionally open, as the references explain.
+
 
 ```
 solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --camera '{"target": [0, 0, 15], "yaw": -0.785, "pitch": 0.615, "distance": 150}' --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
@@ -208,18 +258,41 @@ SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/geometry_test.py
 
 It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build it reports SKIP.
 
+## Wheel and bearing source geometry
+
+The `bearings` and `wheels` crates own fixed supplier products and their exterior
+geometry. See [the source ledger](docs/sources/openbuilds.md) for original file
+hashes, measured profiles, assembly references, and the documented 105ZZ width
+correction. No source STEP files or Downloads paths are runtime dependencies.
+Closed radial profiles and closure surfaces use `plugin-kit::revolve`; inserts
+and screw chamfer cuts use that same construction helper.
+
+Build and check the native reference geometry with:
+
+```bash
+cargo build -p wheels --example reference_geometry
+cargo build -p plugin-kit --example inspect_content
+SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/wheel_geometry_test.py
+```
+
+The test compares wheels to independently imported STEP measurements, verifies
+bearing rings and recessed closure surfaces, checks wheel/rail contact against the
+built Extrusions plugin, and checks saved geometry through the current-content
+inspector. Run `./build.sh` first for the rail check. A zero-thickness closure is an intentional exterior
+representation, not a seal cross-section or a mass model. The assembly and cross-plugin reuse checks live in `tests/parts_library_test.py`.
+
 ## Components
 
-Each fastener and each fixed-length rail is a component of its own. Sketch-driven rails are independent bodies in the active component, grouped by rail in the timeline. This section describes fasteners; a fixed-length rail is placed the same way, in an `Extrusions` folder instead of `Fasteners`. The holes, pockets and other cuts stay in the part they cut, as features of the component that was active, so the part keeps them when the hardware is hidden or deleted.
+All fixed parts use [one shared library](docs/parts-library.md) for canonical identity,
+current-content inspection, reuse and placement. Component names are presentation;
+purchasing identity and geometry representation are separate. Modified definitions
+are preserved, and later insertions create clean replacements. The former creator
+and command-hash implementation has been removed.
 
-- **One definition, many placements.** A run builds the fastener once, in a component of its own, and places it on every point. Four M3 x 12 socket screws are one component, `Screw M3 x 12 socket`, placed four times, so the thread is modeled once. Inside its component the fastener stands with its outer side up +Z; each placement turns that onto the sketch. A part with no cut thread stands on the component's origin. A part with one (a screw, a nut, an insert, a slot nut, a rail with a tapped end) stands on a point of its own away from it, which no other part shares. SolidCraft 0.41 puts a modeled thread on any bore or shank of the same size on the same axis, such as the bore of a rail standing on the origin, a second length of the same screw, or a thicker nut of the same thread.
-- **Reused across runs.** A later run places the existing definition again when it would build exactly the same body. The plugin keeps a hash of the commands that build it under `dev.threadcraft` in the component's metadata, with the plugin's id. A different build, such as a cosmetic thread where the first one is modeled, gets a definition of its own.
-- **A Fasteners folder.** Every placement goes in one `Fasteners` component in the design, made the first time it is needed. It is a phantom, so the bill of materials counts what it holds and has no row of its own.
-- **A bill of materials.** Each definition is `purchased`, its part number is its name and its description the standard it follows (`ISO 4762`, `ISO 4032`) or the insert it is (`CNC Kitchen heat-set insert M3 × 5.7`). `assembly.bom` on the example lists 4 inserts and 4 screws.
-- **The active component stays.** Fasteners are placed in the design whichever component is active, and the component that was active before the run is active again afterwards.
-- **Moving them.** A placement is not grounded. Screws created with holes and nuts created with pockets have rigid seat joints that follow the cut geometry. Loose hardware can be moved or given joints separately. New joints do not retrofit previously generated placements.
-
-The reply's `component` says which definition was placed (`component`), whether it was `reused`, and the `occurrences` made.
+The reply's `component` identifies the placed definition, `reused` and occurrence
+IDs. Its `library` report includes host-call count and modified candidates preserved.
+Screws with holes and nuts with pockets retain their native seat joints. Loose
+parts remain free to move. The original active component is restored after a run.
 
 ## Releases
 

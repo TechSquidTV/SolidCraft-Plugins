@@ -1,32 +1,110 @@
 {
-  "id": "techsquid-inserts",
-  "name": "Heat-set inserts",
-  "version": "0.2.0",
-  "description": "Based on CNC Kitchen's heat-set inserts. Select sketch points or circles: each gets the hole for an insert, and the insert.",
   "capabilities": [
     "commands@0.1"
   ],
+  "description": "Based on CNC Kitchen's heat-set inserts. Select sketch points or circles: each gets the hole for an insert, and the insert.",
+  "id": "techsquid-inserts",
+  "name": "Heat-set inserts",
   "runtime": {
-    "module": "plugin.wasm",
+    "commands": [
+      "appearance.list",
+      "browser.visibility",
+      "component.activate",
+      "component.create",
+      "component.list",
+      "component.metadata",
+      "component.metadata.set",
+      "component.properties",
+      "document.inspect",
+      "document.metadata.set",
+      "inspect.measure",
+      "joint.list",
+      "material.list",
+      "model.body_features",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent",
+      "selection.get",
+      "sketch.create",
+      "sketch.finish",
+      "sketch.inspect",
+      "sketch.line",
+      "solid.hole",
+      "solid.move",
+      "solid.revolve",
+      "solid.sweep",
+      "timeline.group",
+      "timeline.inspect"
+    ],
     "entries": [
       {
-        "name": "make-insert",
         "effect": "edit",
         "input_schema": {
-          "type": "object",
-          "required": [
-            "size",
-            "create",
-            "hole_type",
-            "hole_depth",
-            "hole_adjust"
-          ],
           "properties": {
+            "create": {
+              "default": "Hole and insert",
+              "description": "Hole and insert drills the part under each selected point and adds the insert as a component of its own, placed on every point. Hole only drills without an insert. Both need a selected point or circle. Insert only works with or without one: with nothing selected the insert sits on the origin.",
+              "enum": [
+                "Hole and insert",
+                "Hole only",
+                "Insert only"
+              ],
+              "title": "Create",
+              "type": "string"
+            },
+            "custom_diameter": {
+              "description": "Optional. Outside diameter across the knurl points. Leave empty for the diameter of the chosen Size.",
+              "maximum": 1000,
+              "minimum": 0.1,
+              "title": "Custom diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "custom_length": {
+              "description": "Optional. Overall length of the insert. Leave empty for the length of the chosen Size.",
+              "maximum": 1000,
+              "minimum": 0.1,
+              "title": "Custom length",
+              "type": "number",
+              "unit": "mm"
+            },
+            "custom_thread": {
+              "description": "Optional. A screw size for the bore that replaces the thread of the chosen Size, such as M8x1. The insert has to be larger than this thread.",
+              "title": "Custom thread",
+              "type": "string"
+            },
+            "hole_adjust": {
+              "default": 0,
+              "description": "Added to the hole diameter. Printed holes come out small: raise this in 0.1 mm steps until the insert fits your printer.",
+              "maximum": 1,
+              "minimum": -1,
+              "title": "Hole adjustment",
+              "type": "number",
+              "unit": "mm"
+            },
+            "hole_depth": {
+              "default": "Blind",
+              "description": "Blind is the insert length plus 1 mm. Through drills through the part; put the sketch on a face of the part for it.",
+              "enum": [
+                "Blind",
+                "Through"
+              ],
+              "title": "Hole depth",
+              "type": "string"
+            },
+            "hole_type": {
+              "default": "Heat-set (straight)",
+              "description": "Heat-set is the straight hole for melting the insert into a printed part. Glue-in is the stepped hole for resin prints, listed for 8 sizes from M2.5 to 1/4-20.",
+              "enum": [
+                "Heat-set (straight)",
+                "Glue-in (stepped)"
+              ],
+              "title": "Hole type",
+              "type": "string"
+            },
             "size": {
-              "type": "string",
-              "title": "Size",
-              "description": "A CNC Kitchen insert: the screw thread and the insert length. It sets the diameter, the length and the thread together.",
               "default": "M3 × 5.7",
+              "description": "A CNC Kitchen insert: the screw thread and the insert length. It sets the diameter, the length and the thread together.",
               "enum": [
                 "M1.6 × 2.5",
                 "M2 × 3",
@@ -57,121 +135,145 @@
                 "5/16-18 × 12.7",
                 "3/8-16 × 12.7",
                 "G1/8 × 12.7"
-              ]
-            },
-            "create": {
-              "type": "string",
-              "title": "Create",
-              "description": "Hole and insert drills the part under each selected point and adds the insert as a component of its own, placed on every point. Hole only drills without an insert. Both need a selected point or circle. Insert only works with or without one: with nothing selected the insert sits on the origin.",
-              "default": "Hole and insert",
-              "enum": [
-                "Hole and insert",
-                "Hole only",
-                "Insert only"
-              ]
-            },
-            "hole_type": {
-              "type": "string",
-              "title": "Hole type",
-              "description": "Heat-set is the straight hole for melting the insert into a printed part. Glue-in is the stepped hole for resin prints, listed for 8 sizes from M2.5 to 1/4-20.",
-              "default": "Heat-set (straight)",
-              "enum": [
-                "Heat-set (straight)",
-                "Glue-in (stepped)"
-              ]
-            },
-            "hole_depth": {
-              "type": "string",
-              "title": "Hole depth",
-              "description": "Blind is the insert length plus 1 mm. Through drills through the part; put the sketch on a face of the part for it.",
-              "default": "Blind",
-              "enum": [
-                "Blind",
-                "Through"
-              ]
-            },
-            "hole_adjust": {
-              "type": "number",
-              "title": "Hole adjustment",
-              "description": "Added to the hole diameter. Printed holes come out small: raise this in 0.1 mm steps until the insert fits your printer.",
-              "default": 0,
-              "minimum": -1,
-              "maximum": 1,
-              "unit": "mm"
-            },
-            "custom_diameter": {
-              "type": "number",
-              "title": "Custom diameter",
-              "description": "Optional. Outside diameter across the knurl points. Leave empty for the diameter of the chosen Size.",
-              "minimum": 0.1,
-              "maximum": 1000,
-              "unit": "mm"
-            },
-            "custom_length": {
-              "type": "number",
-              "title": "Custom length",
-              "description": "Optional. Overall length of the insert. Leave empty for the length of the chosen Size.",
-              "minimum": 0.1,
-              "maximum": 1000,
-              "unit": "mm"
-            },
-            "custom_thread": {
-              "type": "string",
-              "title": "Custom thread",
-              "description": "Optional. A screw size for the bore that replaces the thread of the chosen Size, such as M8x1. The insert has to be larger than this thread."
-            },
-            "thread_modeled": {
-              "type": "boolean",
-              "title": "Modeled thread",
-              "description": "Cut the internal thread. Off leaves a cosmetic thread, which rebuilds faster. Unified and pipe sizes stay cosmetic.",
-              "default": true
+              ],
+              "title": "Size",
+              "type": "string"
             },
             "sketch": {
-              "type": "string",
+              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point.",
               "title": "Sketch",
-              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point."
+              "type": "string"
             },
             "sketch_point": {
-              "type": "string",
+              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection.",
               "title": "Sketch point",
-              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection."
+              "type": "string"
+            },
+            "thread_modeled": {
+              "default": true,
+              "description": "Cut the internal thread. Off leaves a cosmetic thread, which rebuilds faster. Unified and pipe sizes require this to be off.",
+              "title": "Modeled thread",
+              "type": "boolean"
             }
-          }
+          },
+          "required": [
+            "size",
+            "create",
+            "hole_type",
+            "hole_depth",
+            "hole_adjust"
+          ],
+          "type": "object"
         },
+        "name": "make-insert",
         "slots": [
           {
             "kind": "menu",
             "name": "Heat-set insert"
           }
         ]
+      },
+      {
+        "effect": "read",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "request": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "limit": {
+                      "default": 32,
+                      "maximum": 64,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "maximum": 1000000,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "operation": {
+                      "const": "list"
+                    },
+                    "query": {
+                      "maxLength": 256,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ]
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "describe"
+                    },
+                    "part": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "part"
+                  ]
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "configuration": {
+                      "default": {},
+                      "type": "object"
+                    },
+                    "operation": {
+                      "const": "resolve"
+                    },
+                    "part": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "part"
+                  ]
+                }
+              ],
+              "type": "object"
+            },
+            "revision": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "version": {
+              "enum": [
+                1
+              ],
+              "type": "integer"
+            }
+          },
+          "required": [
+            "version",
+            "request"
+          ],
+          "type": "object"
+        },
+        "name": "catalog"
       }
     ],
-    "commands": [
-      "selection.get",
-      "inspect.measure",
-      "sketch.inspect",
-      "sketch.create",
-      "sketch.line",
-      "sketch.finish",
-      "solid.revolve",
-      "solid.sweep",
-      "browser.visibility",
-      "solid.hole",
-      "solid.move",
-      "component.list",
-      "component.create",
-      "component.metadata",
-      "component.metadata.set",
-      "component.activate",
-      "occurrence.copy",
-      "occurrence.move",
-      "occurrence.reparent",
-      "timeline.group"
-    ],
     "limits": {
+      "deadline_ms": 30000,
       "fuel": 200000000,
-      "memory_mib": 64,
-      "deadline_ms": 30000
-    }
-  }
+      "memory_mib": 64
+    },
+    "module": "plugin.wasm"
+  },
+  "version": "0.3.0"
 }

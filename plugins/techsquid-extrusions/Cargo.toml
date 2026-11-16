@@ -11,6 +11,8 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde_json.workspace = true
+serde.workspace = true
+parts.workspace = true
 extrusions.workspace = true
 plugin-kit.workspace = true
 

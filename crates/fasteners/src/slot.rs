@@ -18,7 +18,8 @@ use plugin_kit::input::millimetres;
 use plugin_kit::FieldError;
 
 /// A slot ready to cut. Dimensions are millimetres.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Slot {
     /// Nominal width `n`. This is the ISO 2380-1 tip thickness `a`.
     pub width: f64,

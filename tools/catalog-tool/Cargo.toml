@@ -1,0 +1,18 @@
+[package]
+name = "catalog-tool"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Check and generate catalog-owned plugin manifest fields"
+
+[dependencies]
+parts.workspace = true
+plugin-kit.workspace = true
+serde_json.workspace = true
+techsquid-inserts = { path = "../../plugins/techsquid-inserts" }
+techsquid-nuts = { path = "../../plugins/techsquid-nuts" }
+techsquid-screws = { path = "../../plugins/techsquid-screws" }
+bearings.workspace = true
+wheels.workspace = true
+extrusions.workspace = true

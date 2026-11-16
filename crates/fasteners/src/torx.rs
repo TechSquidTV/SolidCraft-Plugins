@@ -201,7 +201,8 @@ pub fn parse_socket(text: &str) -> Result<u16, FieldError> {
 }
 
 /// A recess ready to cut. `depth` is how far it reaches into the screw.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Recess {
     pub number: u16,
     pub depth: f64,

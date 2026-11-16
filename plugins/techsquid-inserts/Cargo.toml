@@ -10,6 +10,8 @@ description = "Heat-set insert generator, a SolidCraft plugin"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+parts.workspace = true
+serde.workspace = true
 serde_json.workspace = true
 fasteners.workspace = true
 plugin-kit.workspace = true

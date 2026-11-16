@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+"""Compiled plugin integration: identity, composition, edits, undo and rollback."""
+import json
+import os
+from pathlib import Path
+import shutil
+
+from harness import TMP, check, finish, package
+from headless import Headless
+
+BEARINGS = 'techsquid-bearings'
+WHEELS = 'techsquid-v-wheels'
+
+
+def definition(listed, name):
+    return next(c for c in listed['components'] if c['name'] == name)
+
+
+with Headless() as host:
+    approvals = {p:host.command('plugin.inspect',path=package(p))['approval'] for p in [BEARINGS,WHEELS]}
+
+    def insert(plugin, **params):
+        result = host.command('plugin.run',path=package(plugin),approval=approvals[plugin],
+                              entry='make-bearing' if plugin == BEARINGS else 'make-v-wheel',params=params)
+        return result.get('result',result)
+
+    carrier = host.command('component.create',name='Carrier',activate=True,grounded=False)['component']
+    host.command('sketch.create',name='Mounts',plane={'origin':[0,0,0],'x_dir':[0,1,0],'y_dir':[0,0,1]})
+    host.command('sketch.circle.center',center=[40,20],radius=1,id='a')
+    host.command('sketch.circle.center',center=[70,20],radius=1,id='b')
+    host.command('sketch.finish')
+    before = host.command('document.inspect',measure=False)
+    direct = insert(BEARINGS)
+    wheel = insert(WHEELS,sketch='Mounts',sketch_point='a.center')
+    repeated = insert(WHEELS,sketch='Mounts',sketch_point='b.center')
+    another = insert(BEARINGS)
+    listed = host.command('component.list')
+    after = host.command('document.inspect',measure=False)
+    bearing = definition(listed,'Bearing 625 2RS')
+    assembly = definition(listed,'Solid V Wheel assembly')
+    check('direct and assembled bearings share one definition', len([c for c in listed['components'] if c['name'].startswith('Bearing ')]) == 1
+          and len(bearing['bodies']) == 4)
+    check('subsequent direct and wheel insertions reuse geometry', another['component']['reused'] and repeated['component']['reused'])
+    check('assembly contains one wheel, two same-bearing occurrences, one shim', len(assembly['children']) == 4
+          and sum(c['component'] == bearing['id'] for c in assembly['children']) == 2)
+    check('bearing child positions match the sourced stack', sorted(c['transform'][3][2] for c in assembly['children'] if c['component'] == bearing['id']) == [-3,3])
+    check('each insertion adds exactly one undo step',after['undo'] == before['undo']+4)
+    check('active component is restored',listed['active'] == carrier)
+    check('arbitrary sketch plane controls the wheel axle',wheel['normal'] == [1,0,0] and wheel['at'] == [0,40,20]
+          and repeated['at'] == [0,70,20])
+    bom = host.command('assembly.bom')
+    check('BOM counts purchases, not closure bodies or assembly kits', {r['part_number']:r['count'] for r in bom['rows'] if r['part_number']}
+          == {'OpenBuilds 30':6,'OpenBuilds 05':2,'Solid V Wheel':2})
+    check('repeat assembly has comfortable host-call headroom',repeated['library']['host_calls'] < 64,str(repeated['library']['host_calls']))
+    # Undo/redo affects the whole insertion, not one of its internal commands.
+    host.command('edit.undo')
+    check('one undo removes the last bearing occurrence', len(definition(host.command('component.list'),'Bearing 625 2RS')['occurrences']) == len(bearing['occurrences'])-1)
+    host.command('edit.redo')
+    check('one redo restores the complete insertion',host.command('component.list') == listed)
+
+    saved = os.path.join(TMP,'library.sc')
+    host.command('file.save_as',path=saved)
+    host.command('doc.open',path=saved)
+    reopened = insert(WHEELS,sketch='Mounts',sketch_point='a.center')
+    check('shared assembly remains reusable after save/reopen',reopened['component']['reused'])
+    host.command('component.rename',component=bearing['id'],name='My bearing')
+    renamed = insert(BEARINGS)
+    check('display renaming preserves catalog reuse',renamed['component']['reused'] and renamed['component']['component'] == 'My bearing')
+
+    host.command('appearance.assign',bodies=['Bearing 625 2RS Seal front'],color=[255,0,0])
+    changed = insert(BEARINGS)
+    check('changed bearing is preserved and a clean definition is built',not changed['component']['reused']
+          and len(changed['library']['preserved_modified_definitions']) == 1)
+    check('fresh multi-body part leaves the original seal appearance untouched',
+          host.command('appearance.list')['bodies']['Bearing 625 2RS Seal front']['color'] == '#ff0000')
+    new_list = host.command('component.list')
+    fresh = definition(new_list,changed['component']['component'])
+    check('original assembly still references the edited original',all(c['component'] != fresh['id'] for c in definition(new_list,'Solid V Wheel assembly')['children']))
+    new_assembly = insert(WHEELS,sketch='Mounts',sketch_point='a.center')
+    check('edited child prevents reuse of the old assembly',not new_assembly['component']['reused']
+          and len(new_assembly['library']['preserved_modified_definitions']) == 1)
+    new_list = host.command('component.list')
+    rebuilt = definition(new_list,new_assembly['component']['component'])
+    check('fresh assembly uses two occurrences of the fresh bearing',sum(c['component'] == fresh['id'] for c in rebuilt['children']) == 2)
+    check('fresh assembly reuses unchanged wheel and shim definitions',len([c for c in new_list['components'] if c['name'] == 'Solid V Wheel']) == 1
+          and len([c for c in new_list['components'] if c['name'].startswith('Precision shim')]) == 1)
+
+    # Fail at the directory write, after an entire new 105ZZ has been created.
+    # Removing one permitted command is a test fixture, not a production fallback.
+    denied = Path(TMP)/'denied'/BEARINGS
+    shutil.copytree(package(BEARINGS),denied)
+    manifest = json.loads((denied/'plugin.json').read_text())
+    manifest['runtime']['commands'].remove('document.metadata.set')
+    (denied/'plugin.json').write_text(json.dumps(manifest))
+    approval = host.command('plugin.inspect',path=str(denied))['approval']
+    before_doc = host.command('document.inspect',measure=False)
+    before_components = host.command('component.list')
+    failed = host.command('plugin.run',allow_error=True,path=str(denied),approval=approval,
+                          entry='make-bearing',params={'size':'105ZZ'})
+    check('fixture fails at the final directory write','document.metadata.set' in str(failed.get('error')))
+    check('failed insertion rolls back geometry, metadata, undo and active context',host.command('document.inspect',measure=False) == before_doc
+          and host.command('component.list') == before_components)
+
+    mini = insert(WHEELS,size='Delrin Mini V Wheel')
+    mini_list = host.command('component.list')
+    mini_assembly = definition(mini_list,mini['component']['component'])
+    mini_bearing = definition(mini_list,'Bearing 105ZZ')
+    check('mini assembly uses corrected bearing stack',sorted(c['transform'][3][2] for c in mini_assembly['children'] if c['component'] == mini_bearing['id']) == [-2.5,2.5])
+    check('mini assembly uses its own precision shim',any(c['name'] == 'Precision shim 8 x 5 x 1' for c in mini_list['components']))
+    check('bearing first built by wheels is reused by Bearings',insert(BEARINGS,size='105ZZ')['component']['reused'])
+
+    host.command('sketch.create',name='Batch points',plane='XY')
+    for i in range(32):
+        host.command('sketch.circle.center',center=[30*i,100],radius=1,id=f'p{i}')
+    host.command('sketch.finish')
+    batch = {'size':'Xtreme Mini V Wheel','sketch':'Batch points','sketch_point':','.join(f'p{i}.center' for i in range(32))}
+    before_doc = host.command('document.inspect',measure=False)
+    refused = host.command('plugin.run',allow_error=True,path=package(WHEELS),approval=approvals[WHEELS],entry='make-v-wheel',params=batch)
+    check('oversized creation batch is refused by preflight','creation batch exceeds' in str(refused.get('error')))
+    check('preflight refusal preserves the complete design',host.command('document.inspect',measure=False) == before_doc)
+    batch['sketch_point'] = ','.join(f'p{i}.center' for i in range(24))
+    placed = insert(WHEELS,**batch)
+    check('large accepted batch creates one assembly definition',placed['count'] == 24 and not placed['component']['reused']
+          and placed['library']['host_calls'] < 248,str(placed['library']['host_calls']))
+    batch['sketch_point'] = ','.join(f'p{i}.center' for i in range(32))
+    placed = insert(WHEELS,**batch)
+    check('existing assembly allows the full 32-placement batch',placed['count'] == 32 and placed['component']['reused']
+          and placed['library']['host_calls'] < 160,str(placed['library']['host_calls']))
+
+finish()

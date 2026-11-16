@@ -6,6 +6,7 @@
 //! both ends of the bore are countersunk.
 
 pub mod nut;
+pub mod provider;
 mod seat;
 
 use fasteners::hex::{self, Hex};
@@ -88,34 +89,52 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         Vec::new()
     };
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
+    let mut library_report = Value::Null;
     let placed = if p.create.part() {
         let base = body_base(p);
         let def = Definition {
             plugin: PLUGIN,
             base: &base,
-            description: "ISO 4032",
-            folder: FOLDER,
-            bom_type: "purchased",
+            description: if p.custom {
+                "Custom hexagon nut"
+            } else {
+                "ISO 4032"
+            },
+            bom_type: if p.custom { "normal" } else { "purchased" },
             site: Site::for_thread(p.modeled),
         };
-        let placed = fasten::place_all(r, &def, &places, |mut r, name, site| {
-            build_nut(&mut r, p, site, name).map(|_| ())
-        })?;
+        let mut library = fasten::Library::new(
+            r,
+            fasten::Budget {
+                creation_calls: 128,
+                placements: places.len(),
+            },
+        )?;
+        let handle = library.ensure(
+            &def,
+            &provider::part_number(p)?,
+            &provider::representation(p),
+            |library, name, site| {
+                library.geometry(name, |mut r| build_nut(&mut r, p, site, name).map(|_| ()))
+            },
+        )?;
+        let placed = library.place_all(&handle, &places, FOLDER)?;
         for ((seat, place), occurrence) in seats.iter().zip(&places).zip(&placed.occurrences) {
-            seat.attach(r, *occurrence, place, &format!("Nut {}", p.designation))?;
+            seat.attach(
+                &mut library.runner(),
+                *occurrence,
+                place,
+                &format!("Nut {}", p.designation),
+            )?;
         }
+        library_report = library.finish()?;
         Some(placed)
     } else {
         None
     };
-    Ok(summary(
-        p,
-        &places,
-        &end,
-        &drilled,
-        skipped,
-        placed.as_ref(),
-    ))
+    let mut reply = summary(p, &places, &end, &drilled, skipped, placed.as_ref());
+    reply["library"] = library_report;
+    Ok(reply)
 }
 
 /// The timeline folder one run's pockets and bolt holes go in: `Nut pockets M6`.
@@ -613,9 +632,9 @@ mod tests {
     #[test]
     fn an_unlisted_size_has_no_countersink() {
         let (_, calls) = commands(json!({
-            "designation": "M7x1",
+            "size": "M7x1",
             "custom_width": 11.0,
-            "custom_height": 5.5,
+            "custom_thickness": 5.5,
             "thread_modeled": true,
         }));
         assert!(calls.iter().all(|(name, _)| name != "solid.cone"));
@@ -802,43 +821,44 @@ mod tests {
                 "thread_modeled"
             ]
         );
-        assert_eq!(
-            manifest["runtime"]["commands"],
-            json!([
-                "selection.get",
-                "inspect.measure",
-                "sketch.inspect",
-                "sketch.create",
-                "sketch.edit",
-                "sketch.project",
-                "sketch.constraint.fix",
-                "sketch.constraint.coincident",
-                "construct.plane.two_edges",
-                "browser.visibility",
-                "sketch.polygon.circumscribed",
-                "sketch.dimension",
-                "sketch.constraint.horizontal_vertical",
-                "sketch.line",
-                "sketch.finish",
-                "solid.extrude",
-                "solid.revolve",
-                "solid.hole",
-                "solid.move",
-                "solid.cone",
-                "component.list",
-                "component.create",
-                "component.metadata",
-                "component.metadata.set",
-                "component.activate",
-                "occurrence.copy",
-                "occurrence.move",
-                "occurrence.reparent",
-                "timeline.group",
-                "model.faces",
-                "joint.create",
-                "sketch.circle.center"
-            ])
-        );
+        let expected: std::collections::BTreeSet<_> = [
+            "selection.get",
+            "inspect.measure",
+            "sketch.inspect",
+            "sketch.create",
+            "sketch.edit",
+            "sketch.project",
+            "sketch.constraint.fix",
+            "sketch.constraint.coincident",
+            "construct.plane.two_edges",
+            "browser.visibility",
+            "sketch.polygon.circumscribed",
+            "sketch.dimension",
+            "sketch.constraint.horizontal_vertical",
+            "sketch.line",
+            "sketch.finish",
+            "solid.extrude",
+            "solid.revolve",
+            "solid.hole",
+            "solid.move",
+            "solid.cone",
+            "component.list",
+            "component.create",
+            "component.metadata",
+            "component.metadata.set",
+            "component.activate",
+            "occurrence.copy",
+            "occurrence.move",
+            "occurrence.reparent",
+            "timeline.group",
+            "model.faces",
+            "joint.create",
+            "sketch.circle.center",
+        ]
+        .into_iter()
+        .chain(fasten::commands())
+        .collect();
+        assert_eq!(manifest["runtime"]["commands"], json!(expected));
     }
 
     /// A design that already holds bodies. It records the body name each new body asks for.
@@ -853,8 +873,16 @@ mod tests {
         }
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
-            // Placing the fastener is checked on its own; these check the build.
-            if let Some(reply) = plugin_kit::component::stand_in(command) {
+            // Include the pre-existing bodies in the same inventory the library reads.
+            if command == "component.list" {
+                let mut reply = fasten::stand_in(command).unwrap();
+                reply["components"].as_array_mut().unwrap().push(json!({
+                    "id":0,"name":"Design","bodies":self.names,"features":[],
+                    "sketches":[],"construction":[],"children":[],"occurrences":[]
+                }));
+                return Ok(reply);
+            }
+            if let Some(reply) = fasten::stand_in(command) {
                 return Ok(reply);
             }
             Ok(match command {
@@ -885,10 +913,6 @@ mod tests {
                 }
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             })
-        }
-
-        fn body_names(&mut self) -> Vec<String> {
-            self.names.clone()
         }
     }
 
@@ -1235,11 +1259,11 @@ mod tests {
 }
 
 plugin_kit::guest! {
-    entry: "make-nut",
-    noun: "nut",
     manifest: include_str!("../plugin.json"),
-    parse: crate::nut::parse,
-    make: crate::make_nut,
-    describe: |p: &crate::nut::Params| format!("making a {} nut", p.designation),
-    aliases: &[],
+    catalog: crate::provider::Nuts,
+    entries: [{
+        entry: "make-nut", noun: "nut",
+        parse: crate::nut::parse, make: crate::make_nut,
+        describe: |p: &crate::nut::Params| format!("making a {} nut", p.designation),
+    }],
 }

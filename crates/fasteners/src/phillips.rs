@@ -83,7 +83,8 @@ const SPREAD: &[(u8, f64)] = &[(0, 0.86), (1, 1.34), (2, 2.257), (3, 3.56), (4, 
 const BAD_SIZE: &str = "must be a Type H size, such as PH2 or PH2x2.1";
 
 /// A type H recess ready to cut. Dimensions are millimetres.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Tool {
     pub number: u8,
     /// Nominal wing thickness `b`.

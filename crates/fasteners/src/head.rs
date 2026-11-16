@@ -240,7 +240,8 @@ pub fn standard_head(kind: HeadKind, nominal: f64) -> Option<StandardHead> {
 }
 
 /// The top of a round head. Dimensions are millimetres.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum Crown {
     /// A plain cylinder.
     Flat,

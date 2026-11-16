@@ -60,6 +60,8 @@ pub const MAX_ADJUST: f64 = 1.0;
 pub struct Params {
     /// The catalog row the dialog chose.
     pub size: &'static str,
+    /// A physical dimension or thread was explicitly overridden.
+    pub custom: bool,
     pub thread: String,
     pub length: f64,
     pub diameter: f64,
@@ -81,6 +83,7 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
+    input::workflow_fields(v, include_str!("../plugin.json"), "make-insert")?;
     let row = size(v)?;
     let custom_length = input::optional_length(v, "custom_length")?;
     let custom_diameter = input::optional_length(v, "custom_diameter")?;
@@ -88,21 +91,16 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let diameter = custom_diameter.unwrap_or(row.diameter);
     input::check_length("custom_length", length)?;
     input::check_length("custom_diameter", diameter)?;
-    let bore = bore(v, row)?;
-    let modeled = input::flag(
-        v,
-        if v.get("thread_modeled").is_some() {
-            "thread_modeled"
-        } else {
-            "modeled"
-        },
-        true,
-    )
-    .map_err(|err| FieldError::new("thread_modeled", err.reason))?;
+    let custom_thread = input::optional_text(v, "custom_thread", BAD_THREAD)?;
+    let bore = bore(custom_thread, row)?;
+    let modeled = input::flag(v, "thread_modeled", bore.metric)?;
     let place = place::parse_input(v)?;
-    // SolidCraft models metric threads only. A Unified or pipe thread stays cosmetic,
-    // as the dialog says, rather than refusing the run.
-    let modeled = modeled && bore.metric;
+    if modeled && !bore.metric {
+        return Err(FieldError::new(
+            "thread_modeled",
+            "this host models metric threads only; choose cosmetic for this product",
+        ));
+    }
     let smallest = knurl::min_crest_diameter(bore.major);
     if diameter < smallest {
         return Err(FieldError::new(
@@ -126,10 +124,11 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         None
     };
     let listed = custom_diameter.is_none();
-    Ok(Params {
+    let params = Params {
         create,
         cut,
         size: row.size,
+        custom: custom_length.is_some() || custom_diameter.is_some() || custom_thread.is_some(),
         thread: bore.thread,
         length,
         diameter,
@@ -140,7 +139,10 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         wall: listed.then_some(row.wall),
         press_hole: diameter - (row.diameter - row.hole),
         place,
-    })
+    };
+    crate::provider::validate_selection(v, &params)
+        .map_err(|e| FieldError::new(e.field, e.reason))?;
+    Ok(params)
 }
 
 /// The hole for this insert. `custom` is true when the diameter or length was typed.
@@ -264,8 +266,8 @@ impl Bore {
 const BAD_THREAD: &str = "use a size such as M3 or M8x1";
 
 /// The row's thread, or `custom_thread` when it is filled.
-fn bore(v: &Value, row: &Row) -> Result<Bore, FieldError> {
-    let Some(text) = input::optional_text(v, "custom_thread", BAD_THREAD)? else {
+fn bore(text: Option<&str>, row: &Row) -> Result<Bore, FieldError> {
+    let Some(text) = text else {
         return Ok(Bore::of(row));
     };
     let text = text.to_string();
@@ -412,13 +414,21 @@ mod tests {
     }
 
     #[test]
-    fn a_modeled_unified_or_pipe_thread_stays_cosmetic() {
+    fn unsupported_modeled_threads_are_rejected_without_a_geometry_fallback() {
         for size in ["1/4-20 × 12.7", "#4-40 × 5.7", "G1/8 × 12.7"] {
-            let p = parse(&json!({"size": size, "thread_modeled": true})).unwrap();
-            assert!(!p.modeled, "{size}");
+            assert_eq!(
+                parse(&json!({"size": size, "thread_modeled": true}))
+                    .unwrap_err()
+                    .field,
+                "thread_modeled"
+            );
+            assert!(
+                !parse(&json!({"size": size, "thread_modeled": false}))
+                    .unwrap()
+                    .modeled
+            );
         }
-        let p = parse(&json!({"size": "1/4-20 × 12.7", "modeled": true})).unwrap();
-        assert!(!p.modeled);
+        assert!(parse(&json!({"size": "1/4-20 × 12.7", "modeled": true})).is_err());
         let p = parse(&json!({"size": "M3 × 5.7", "thread_modeled": true})).unwrap();
         assert!(p.modeled);
     }

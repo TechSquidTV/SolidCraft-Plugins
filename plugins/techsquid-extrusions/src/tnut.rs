@@ -41,6 +41,7 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
+    input::workflow_fields(v, include_str!("../plugin.json"), "make-t-nut")?;
     let nut = match input::choice(v, "type", DEFAULT_TYPE)? {
         "Pre-assembly" => NUTS[0],
         "Post-assembly" => NUTS[1],
@@ -78,14 +79,21 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             ))
         }
     };
-    Ok(Params {
+    let p = Params {
         nut,
         thread: thread.to_string(),
         slot,
         along_y,
         modeled: input::flag(v, "thread_modeled", true)?,
         place: place::parse_input(v)?,
-    })
+    };
+    parts::catalog::validate_selection(
+        v,
+        crate::provider::REVISION,
+        &crate::provider::nut_representation(&p),
+    )
+    .map_err(|e| FieldError::new(e.field, e.reason))?;
+    Ok(p)
 }
 
 /// The body name before any number: `T-nut M5 pre-assembly`.
@@ -139,14 +147,27 @@ pub fn make_t_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         plugin: PLUGIN,
         base: &base,
         description: &description,
-        folder: FOLDER,
         bom_type: "purchased",
         site: built_at(p),
     };
-    let placed = component::place_all(r, &def, &seats, |mut r, name, site| {
-        build_nut(&mut r, p, site, name)
-    })?;
-    Ok(summary(p, &faces, &placed))
+    let mut library = component::Library::new(
+        r,
+        component::Budget {
+            creation_calls: 128,
+            placements: seats.len(),
+        },
+    )?;
+    let handle = library.ensure(
+        &def,
+        &format!("MISUMI {}", part(p)),
+        &crate::provider::nut_representation(p),
+        |library, name, site| library.geometry(name, |mut r| build_nut(&mut r, p, site, name)),
+    )?;
+    let placed = library.place_all(&handle, &seats, FOLDER)?;
+    let report = library.finish()?;
+    let mut reply = summary(p, &faces, &placed);
+    reply["library"] = report;
+    Ok(reply)
 }
 
 /// One nut named `body_name`, standing on `site`, whose axes are the world's: the

@@ -22,7 +22,8 @@ use plugin_kit::input::millimetres;
 use plugin_kit::FieldError;
 
 /// A socket ready to cut. Dimensions are millimetres.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Socket {
     /// Nominal width across the flats `s`, which is the key size.
     pub across_flats: f64,

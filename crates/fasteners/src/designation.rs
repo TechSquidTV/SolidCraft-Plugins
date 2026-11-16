@@ -3,14 +3,13 @@
 //! A designation is the size string `solid.thread` already accepts (`M3`, `M8x1`,
 //! `1/2-10 ACME`). The plugin does not parse the thread form itself.
 
-use plugin_kit::input::field;
 use plugin_kit::FieldError;
 use serde_json::Value;
 
 /// The field the size is read from: `custom_size` when it is filled, `size` otherwise.
 /// An error in the size belongs on that field.
 pub fn size_field(v: &Value) -> &'static str {
-    match field(v, "custom_size", "custom_designation") {
+    match v.get("custom_size") {
         None | Some(Value::Null) => "size",
         Some(Value::String(s)) if s.trim().is_empty() => "size",
         Some(_) => "custom_size",
@@ -20,7 +19,7 @@ pub fn size_field(v: &Value) -> &'static str {
 /// Read the size. `custom_size` wins when it is filled, so the dialog can offer the
 /// common sizes in a list and still take any other. Then `size`, then `default`.
 pub fn designation(v: &Value, default: &str) -> Result<String, FieldError> {
-    match field(v, "custom_size", "custom_designation") {
+    match v.get("custom_size") {
         None | Some(Value::Null) => {}
         Some(Value::String(s)) if s.trim().is_empty() => {}
         Some(Value::String(s)) => {
@@ -35,7 +34,7 @@ pub fn designation(v: &Value, default: &str) -> Result<String, FieldError> {
             ));
         }
     }
-    let text = match field(v, "size", "designation") {
+    let text = match v.get("size") {
         None => default.to_string(),
         Some(Value::String(s)) => s.trim().to_string(),
         Some(_) => {
@@ -69,37 +68,22 @@ mod tests {
     fn designation_defaults_and_trims() {
         assert_eq!(designation(&json!({}), "M6").unwrap(), "M6");
         assert_eq!(
-            designation(&json!({"designation": " M8x1 "}), "M6").unwrap(),
+            designation(&json!({"size": " M8x1 "}), "M6").unwrap(),
             "M8x1"
         );
     }
 
     #[test]
     fn a_custom_size_wins_over_the_listed_one() {
-        let v = json!({"designation": "M4", "custom_designation": " M8x1 "});
+        let v = json!({"size": "M4", "custom_size": " M8x1 "});
         assert_eq!(designation(&v, "M6").unwrap(), "M8x1");
-        let blank = json!({"designation": "M4", "custom_designation": "  "});
+        let blank = json!({"size": "M4", "custom_size": "  "});
         assert_eq!(designation(&blank, "M6").unwrap(), "M4");
         assert_eq!(
-            designation(&json!({"custom_designation": 8}), "M6")
+            designation(&json!({"custom_size": 8}), "M6")
                 .unwrap_err()
                 .field,
             "custom_size"
-        );
-    }
-
-    #[test]
-    fn the_shared_names_win_and_the_old_ones_still_read() {
-        assert_eq!(designation(&json!({"size": "M5"}), "M6").unwrap(), "M5");
-        assert_eq!(
-            designation(&json!({"designation": "M4"}), "M6").unwrap(),
-            "M4"
-        );
-        let both = json!({"size": "M5", "designation": "M4"});
-        assert_eq!(designation(&both, "M6").unwrap(), "M5");
-        assert_eq!(
-            designation(&json!({"custom_size": "M8x1"}), "M6").unwrap(),
-            "M8x1"
         );
     }
 
@@ -112,24 +96,17 @@ mod tests {
             size_field(&json!({"size": "M3", "custom_size": " "})),
             "size"
         );
-        assert_eq!(
-            size_field(&json!({"custom_designation": "M7"})),
-            "custom_size"
-        );
+        assert_eq!(size_field(&json!({"custom_size": "M7"})), "custom_size");
     }
 
     #[test]
     fn designation_rejects_a_blank_or_a_number() {
         assert_eq!(
-            designation(&json!({"designation": "  "}), "M6")
-                .unwrap_err()
-                .field,
+            designation(&json!({"size": "  "}), "M6").unwrap_err().field,
             "size"
         );
         assert_eq!(
-            designation(&json!({"designation": 6}), "M6")
-                .unwrap_err()
-                .field,
+            designation(&json!({"size": 6}), "M6").unwrap_err().field,
             "size"
         );
     }

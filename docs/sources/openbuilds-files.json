@@ -1,0 +1,80 @@
+[
+  {
+    "archive": "delrin-mini-v-wheel-1.snapshot.1.zip",
+    "file": "Delrin Mini V Wheel.step",
+    "sha256": "519c61afeac96a6fc2ba1990e3451a81498293a5a07a088fd06b9bbfbe3cbc1d",
+    "bytes": 16242,
+    "source": "https://grabcad.com/library/delrin-mini-v-wheel-1"
+  },
+  {
+    "archive": "solid-v-wheel-1.snapshot.1.zip",
+    "file": "Solid V Wheel.step",
+    "sha256": "9d9e9018ad678a48a9dde040be6e4d3301c47f6e13bf1cb9526c119c6e0813ec",
+    "bytes": 16474,
+    "source": "https://grabcad.com/library/solid-v-wheel-1"
+  },
+  {
+    "archive": "metal-v-wheel-1.snapshot.1.zip",
+    "file": "Metal V Wheel.step",
+    "sha256": "7eed065fd8e1e945ea5615125049b4d0e6fb1ab5e7ca71f37c554319087da09b",
+    "bytes": 24468,
+    "source": "https://grabcad.com/library/metal-v-wheel-1",
+    "source_url_status": "Candidate URL inferred from archive name; not verified"
+  },
+  {
+    "archive": "delrin-v-wheel-1.snapshot.1.zip",
+    "file": "Delrin V Wheel.step",
+    "sha256": "ffc70f2816c53ab5ef99380335f8c9c784b2b713082eed43fe82c34b2add76d2",
+    "bytes": 24543,
+    "source": "https://grabcad.com/library/delrin-v-wheel-1"
+  },
+  {
+    "archive": "xtreme-mini-v-wheel-1.snapshot.1.zip",
+    "file": "Xtreme Mini V Wheel.step",
+    "sha256": "b8b021bb02e10340d01069ec368237488f284a67cc63302356d578be65b5452d",
+    "bytes": 16166,
+    "source": "https://grabcad.com/library/xtreme-mini-v-wheel-1"
+  },
+  {
+    "archive": "xtreme-solid-v-wheel-1.snapshot.1 (1).zip",
+    "file": "Xtreme Solid V Wheel.step",
+    "sha256": "bcf8265a17289fc1ade3cad969d67e5a5259918e6abf934b4582438df5fe7102",
+    "bytes": 16630,
+    "source": "https://grabcad.com/library/xtreme-solid-v-wheel-1"
+  },
+  {
+    "archive": "ball-bearing-5-x-10-x-4-2-1.snapshot.1.zip",
+    "file": "Ball Bearing 5 x 10 x 4.2.step",
+    "sha256": "8859a25002ca3647dd84f5fe458fa730cacc36331c0f24fb54b8792b37ea29cb",
+    "bytes": 18756,
+    "source": "https://grabcad.com/library/ball-bearing-5-x-10-x-4-2-1"
+  },
+  {
+    "archive": "ball-bearing-5-x-16-x-5-1.snapshot.1.zip",
+    "file": "Ball Bearing 5 x 16 x 5.step",
+    "sha256": "005d64d7fea297e91e20c776dfc3ddbb0f0f78ed65c0ea7d5fabe8bced20b23f",
+    "bytes": 19167,
+    "source": "https://grabcad.com/library/ball-bearing-5-x-16-x-5-1"
+  },
+  {
+    "archive": "ball-bearing-0-25-x-0-625-x-0-196-1.snapshot.1.zip",
+    "file": "Ball Bearing 0.25 x 0.625 x 0.196.step",
+    "sha256": "452ffe018e8f4d690e419c3ff50b96b4ae28ea5418f5e2f2d7b34e87d5eff90e",
+    "bytes": 19094,
+    "source": "https://grabcad.com/library/ball-bearing-0-25-x-0-625-x-0-196-1"
+  },
+  {
+    "archive": "ball-bearing-8-x-16-x-5-1.snapshot.1.zip",
+    "file": "Ball Bearing 8 x 16 x 5.step",
+    "sha256": "40eb12141c084d44c1d9289d1bc834381aa99facdbc3d7277b2d77550415aacc",
+    "bytes": 18722,
+    "source": "https://grabcad.com/library/ball-bearing-8-x-16-x-5-1"
+  },
+  {
+    "archive": "solid-v-wheel-assembly-1.snapshot.1.zip",
+    "file": "Solid V Wheel assy.stp",
+    "sha256": "598e2c21d144a65b4bb1bf03636e621ddc02521dd5f07fb5d078ab56de5a6156",
+    "bytes": 217584,
+    "source": "https://grabcad.com/library/solid-v-wheel-assembly-1"
+  }
+]

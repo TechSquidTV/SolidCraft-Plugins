@@ -1,0 +1,168 @@
+{
+  "capabilities": [
+    "commands@0.1"
+  ],
+  "description": "Insert fixed catalog parts as reusable native components.",
+  "id": "techsquid-bearings",
+  "name": "Bearings",
+  "runtime": {
+    "commands": [
+      "appearance.assign",
+      "appearance.list",
+      "component.activate",
+      "component.create",
+      "component.list",
+      "component.metadata",
+      "component.metadata.set",
+      "component.properties",
+      "document.inspect",
+      "document.metadata.set",
+      "inspect.measure",
+      "joint.list",
+      "material.list",
+      "model.body_features",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent",
+      "selection.get",
+      "sketch.create",
+      "sketch.finish",
+      "sketch.inspect",
+      "sketch.line",
+      "solid.revolve",
+      "surface.revolve",
+      "timeline.group",
+      "timeline.inspect"
+    ],
+    "entries": [
+      {
+        "effect": "edit",
+        "input_schema": {
+          "additionalProperties": true,
+          "properties": {
+            "size": {
+              "default": "625 2RS",
+              "enum": [
+                "625 2RS",
+                "105ZZ"
+              ],
+              "title": "Part",
+              "type": "string"
+            },
+            "sketch": {
+              "title": "Sketch",
+              "type": "string"
+            },
+            "sketch_point": {
+              "title": "Sketch point",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "make-bearing"
+      },
+      {
+        "effect": "read",
+        "input_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "request": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "limit": {
+                      "default": 32,
+                      "maximum": 64,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "maximum": 1000000,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "operation": {
+                      "const": "list"
+                    },
+                    "query": {
+                      "maxLength": 256,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation"
+                  ]
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "describe"
+                    },
+                    "part": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "part"
+                  ]
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "configuration": {
+                      "default": {},
+                      "type": "object"
+                    },
+                    "operation": {
+                      "const": "resolve"
+                    },
+                    "part": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "part"
+                  ]
+                }
+              ],
+              "type": "object"
+            },
+            "revision": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "version": {
+              "enum": [
+                1
+              ],
+              "type": "integer"
+            }
+          },
+          "required": [
+            "version",
+            "request"
+          ],
+          "type": "object"
+        },
+        "name": "catalog"
+      }
+    ],
+    "limits": {
+      "deadline_ms": 30000,
+      "fuel": 200000000,
+      "memory_mib": 64
+    },
+    "module": "plugin.wasm"
+  },
+  "version": "0.3.0"
+}

@@ -8,6 +8,7 @@
 //! `make-t-nut` puts a slot nut under the lips of a rail: see [`tnut`].
 
 pub mod path;
+pub mod provider;
 pub mod rail;
 pub mod tnut;
 
@@ -116,14 +117,26 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
         plugin: PLUGIN,
         base: &base,
         description: &description,
-        folder: FOLDER,
-        bom_type: "purchased",
+        bom_type: "normal",
         site: built_at(p),
     };
-    let placed = component::place_all(r, &def, &places, |mut r, name, site| {
-        build_rail(&mut r, &profile, p, site, name)
+    let representation = provider::rail_representation(p);
+    let number = component::model_number(&base, &representation.product)?;
+    let mut library = component::Library::new(
+        r,
+        component::Budget {
+            creation_calls: 160,
+            placements: places.len(),
+        },
+    )?;
+    let handle = library.ensure(&def, &number, &representation, |library, name, site| {
+        library.geometry(name, |mut r| build_rail(&mut r, &profile, p, site, name))
     })?;
-    Ok(summary(p, &profile, &places, &placed))
+    let placed = library.place_all(&handle, &places, FOLDER)?;
+    let report = library.finish()?;
+    let mut reply = summary(p, &profile, &places, &placed);
+    reply["library"] = report;
+    Ok(reply)
 }
 
 /// One rail named `body_name`, its section centred on `place` and its length along the
@@ -362,7 +375,7 @@ fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed)
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    aliases: &[],
+    catalog: crate::provider::Extrusions,
     entries: [
         {
             entry: "make-extrusion",
@@ -486,7 +499,7 @@ mod tests {
     fn the_manifest_lists_every_command_sent() {
         let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
         let listed = manifest["runtime"]["commands"].as_array().unwrap();
-        for command in component::COMMANDS {
+        for command in component::commands() {
             assert!(listed.contains(&json!(command)), "{command}");
         }
         for v in [
@@ -802,7 +815,7 @@ mod tests {
     }
 
     #[test]
-    fn the_rail_is_a_purchased_part_in_the_extrusions_folder() {
+    fn a_finished_rail_is_a_custom_part_in_the_extrusions_folder() {
         struct All(Vec<(String, Value)>);
         impl Runner for All {
             fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
@@ -822,12 +835,15 @@ mod tests {
         let mut host = All(vec![]);
         make_extrusion(&mut host, &p).unwrap();
         let created = all(&host.0, "component.create");
-        assert_eq!(created[0]["name"], FOLDER);
-        assert_eq!(created[1]["name"], "T-slot 2040 x 300");
+        assert!(created.iter().any(|c| c["name"] == FOLDER));
+        assert!(created.iter().any(|c| c["name"] == "T-slot 2040 x 300"));
         let meta = all(&host.0, "component.metadata.set");
         let rail = meta.iter().find(|m| m["part_number"].is_string()).unwrap();
-        assert_eq!(rail["part_number"], "T-slot 2040 x 300");
-        assert_eq!(rail["bom_type"], "purchased");
+        assert!(rail["part_number"]
+            .as_str()
+            .unwrap()
+            .starts_with("Custom T-slot 2040 x 300 ["));
+        assert_eq!(rail["bom_type"], "normal");
         assert_eq!(
             rail["description"],
             "20 x 40 mm T-slot aluminium extrusion, 300 mm long"

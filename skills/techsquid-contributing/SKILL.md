@@ -1,24 +1,19 @@
 ---
 name: techsquid-contributing
-description: Use when branching, committing, opening or updating a pull request, reading CI, or preparing a release of the TechSquid SolidCraft plugins.
+description: Use this skill when taking a TechSquid plugin change from a working tree to a merged pull request - choosing a branch name, writing commits and the PR title and description, running the checks CI runs, handling a stacked PR, or preparing a release and its notes. Use it whenever the user says commit, push, open a PR, ship it or release, even for a one-line change.
 ---
 
 # Contribute a change
 
-Read [CONTRIBUTING.md](../../CONTRIBUTING.md) for the full human guide. This skill is the short form.
+[CONTRIBUTING.md](../../CONTRIBUTING.md) is the full human guide; this is the short form.
 
-## Before you start
+## Workflow
 
-- Look for overlapping work: `gh pr list --state open` and `gh issue list --state open`. Comment on an existing PR instead of opening a second one.
-- Branch from the latest `origin/main`. Name the branch `<type>/<area>/<topic>`, such as `fix/nuts/pocket-depth` or `feat/v-wheels/add-plugin`.
-- One topic per PR. A big change goes as stacked PRs: say in the description which PR it sits on and the order to merge them.
-
-## Commits and titles
-
-- Conventional commits, scoped by plugin or crate: `fix(screws): …`, `feat(bearings)!: …`, `refactor: …`, `docs(extrusions): …`, `chore(release): …`. `!` marks a breaking change, such as a retired field key or changed generated history.
-- The PR title becomes the squash commit on `main`, so it follows the same form. Write it and the first sentence for a reader who hasn't seen your chat or the issue: which plugin changes and what a user now sees or can do.
-
-## Checks before every push
+- [ ] `gh pr list --state open`: comment on overlapping work instead of starting a second copy.
+- [ ] Branch from the latest `origin/main` as `<type>/<area>/<topic>`, such as `fix/nuts/pocket-depth`. One topic per branch.
+- [ ] Run the checks below until they pass.
+- [ ] Commit with a conventional, scoped title: `fix(screws): …`, `feat(bearings)!: …`, `docs(extrusions): …`, `chore(release): …`. `!` marks a break: a retired field, a changed part number, changed generated history.
+- [ ] Open the PR with the template below. The title becomes the squash commit on `main`.
 
 ```bash
 cargo fmt --all -- --check
@@ -29,15 +24,37 @@ cargo test --workspace --locked
 python3 tests/skills_test.py
 ```
 
-CI (`.github/workflows/ci.yml`) runs the cargo checks and `./build.sh`. Run the host tests yourself when you change what a plugin builds, and list the results in the PR: see `skills/techsquid-tests/SKILL.md`.
+CI runs the cargo checks and `./build.sh`. It doesn't run the host tests, so a change to what a plugin builds also needs the suites in `skills/techsquid-tests/SKILL.md`.
 
-## The PR description
+## PR template
 
-- Start with what the change does, in plain words, for someone new to the repository.
-- `## Changes`: one bullet per change. `## Behaviour changes`: anything a user or a saved design sees differently, including refused inputs. `## Not in this PR`: known gaps left on purpose. `## Checks`: each command you ran and, for host tests, each file with its pass count and no SKIPs.
-- For geometry, give measured numbers and the expected ones. For a visible change, show a native capture from `solidcraft-cli snapshot`; regenerated pictures beside a README count.
-- Breaking changes say how to migrate, and the plugin's REFERENCE.md lists retired fields under Older field names.
+```markdown
+<One or two plain sentences: which plugin changes and what a user now sees or can do.>
+
+## Changes
+- **<Plugin or crate>:** <what changed and why>
+
+## Behaviour changes
+- <refused inputs, changed part numbers, regenerated examples; omit if none>
+
+## Not in this PR
+- <known gaps left on purpose; omit if none>
+
+## Checks
+- `cargo fmt`, native and wasm clippy, `cargo test --workspace` (<N> passed), `./build.sh`.
+- Host tests on an unsigned <version> CLI: `<suite>` <N> passed, 0 failed, 0 skipped; …
+```
+
+For geometry, add a before/after table of measured values and the hand-worked expected value. For a visible change, show a native `solidcraft-cli snapshot` capture.
 
 ## Releases
 
-All plugins share `workspace.package.version`. To release, set the version in `Cargo.toml`, `Cargo.lock` and every `plugins/*/plugin.json`, add `release-notes/v<version>.md` with breaking changes and migration steps, and merge. A pushed `v*` tag runs `.github/workflows/release.yml`, which refuses a tag that doesn't match, builds `<id>-<version>.zip` with a `.sha256` for every plugin, and drafts the GitHub release. A maintainer publishes the draft.
+1. Set the version in `Cargo.toml`, `Cargo.lock` and every `plugins/*/plugin.json`.
+2. Write `release-notes/v<version>.md`: changes, breaking changes and migration steps.
+3. Merge, then push the `v*` tag. `.github/workflows/release.yml` refuses a tag that doesn't match, builds `<id>-<version>.zip` and `.sha256` for each plugin, and drafts the release for a maintainer to publish.
+
+## Gotchas
+
+- **An agent's push token usually lacks the `workflow` scope**, so a push that touches `.github/workflows/` is rejected. Keep workflow edits out of the branch, and put the change in the PR description for a maintainer to apply.
+- **A stacked PR's base is the branch below it.** Say so in the description, and retarget it to `main` once the lower PR merges.
+- **Don't regenerate examples in a PR that doesn't change geometry.** An unexplained diff in `examples/*.json` hides real changes.

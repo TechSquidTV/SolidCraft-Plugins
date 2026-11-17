@@ -1,6 +1,6 @@
 ---
 name: techsquid-docs
-description: Use when writing or changing a TechSquid plugin's README.md or REFERENCE.md, DEVELOPMENT.md, a shared doc, a source ledger under docs/sources, or release notes.
+description: Use this skill when writing or updating any prose in the TechSquid SolidCraft plugins - a plugin's README.md or REFERENCE.md, DEVELOPMENT.md, docs/, a source ledger under docs/sources, release notes, AGENTS.md or a skill - and after any change to fields, defaults, limits, standards tables or examples that users read about. Use it to decide which file a fact belongs in. Not for code comments.
 ---
 
 # Documentation
@@ -32,3 +32,9 @@ Write in plain, direct sentences like the existing docs: one idea per sentence, 
 - A standards table changes: the Standards table in REFERENCE.md, with its source.
 - A new plugin: both guides, an example with a picture, a row in the root Plugin List and the DEVELOPMENT.md table.
 - A new rule or workflow for contributors: the matching skill and, if it is a hard rule, AGENTS.md and CONTRIBUTING.md. Run `python3 tests/skills_test.py`.
+
+## Gotchas
+
+- **Packaged guides are rewritten.** `build.sh` turns `../../docs/` into `docs/` and `../../DEVELOPMENT.md#components` into `docs/parts-library.md`. A plugin guide that links elsewhere in the repository breaks once installed; link to GitHub for those.
+- **Generated tables aren't hand-edited.** The Bearings tables come from `catalog-tool`; `./build.sh` fails when they drift.
+- **Counts go stale.** Preset counts, size ranges and test counts in prose were wrong after changes more than once. Prefer a link to the table over a number, and grep for the old number when one changes.

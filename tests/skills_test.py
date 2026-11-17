@@ -6,7 +6,9 @@
 Needs no SolidCraft. It fails when:
 - CLAUDE.md doesn't import AGENTS.md,
 - the skill tables in AGENTS.md and skills/README.md don't list exactly the folders in skills/,
-- a SKILL.md lacks a `name` equal to its folder or a `description`,
+- a SKILL.md breaks the Agent Skills specification (https://agentskills.io/specification):
+  `name` equal to its folder, 1 to 64 lowercase letters, digits and single inner hyphens;
+  `description` 1 to 1024 characters; `compatibility` at most 500; the file under 500 lines,
 - a relative link, or a backticked repository path, in any of these files names nothing.
 """
 import re
@@ -44,17 +46,34 @@ indexed = sorted(set(re.findall(r"\]\(([a-z0-9-]+)/SKILL\.md\)", (SKILLS / "READ
 if indexed != folders:
     fail("skills/README.md", f"index lists {indexed}, skills/ has {folders}")
 
+NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 for name in folders:
     skill = SKILLS / name / "SKILL.md"
     if not skill.exists():
         fail(rel(skill.parent), "has no SKILL.md")
         continue
-    head = skill.read_text().split("---")
-    meta = head[1] if len(head) > 2 else ""
-    if not re.search(rf"^name: {re.escape(name)}$", meta, re.M):
+    text = skill.read_text()
+    parts = text.split("---\n")
+    if not text.startswith("---\n") or len(parts) < 3:
+        fail(rel(skill), "needs YAML front matter between --- lines")
+        continue
+    meta = dict(
+        line.split(": ", 1) for line in parts[1].splitlines() if ": " in line and not line.startswith(" ")
+    )
+    for key, value in meta.items():
+        if ": " in value and value[0] not in "'\">|":
+            fail(rel(skill), f"{key} holds ': ', which is invalid YAML unless the value is quoted")
+    if meta.get("name") != name:
         fail(rel(skill), f"front matter needs name: {name}")
-    if not re.search(r"^description: \S", meta, re.M):
-        fail(rel(skill), "front matter needs a description")
+    if not NAME.match(name) or len(name) > 64:
+        fail(rel(skill), "name must be 1 to 64 lowercase letters, digits and single inner hyphens")
+    description = meta.get("description", "")
+    if not 1 <= len(description) <= 1024:
+        fail(rel(skill), f"description must be 1 to 1024 characters, has {len(description)}")
+    if "compatibility" in meta and not 1 <= len(meta["compatibility"]) <= 500:
+        fail(rel(skill), "compatibility must be 1 to 500 characters")
+    if len(text.splitlines()) >= 500:
+        fail(rel(skill), "keep SKILL.md under 500 lines; move detail to a referenced file")
 
 docs = [ROOT / "AGENTS.md", ROOT / "CONTRIBUTING.md", *sorted(SKILLS.rglob("*.md"))]
 for doc in docs:

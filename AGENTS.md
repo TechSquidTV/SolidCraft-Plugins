@@ -12,7 +12,7 @@ A Rust workspace of [SolidCraft](https://github.com/tangency-labs/solidcraft) pl
 ## Hard rules (what enforces each)
 
 - A plugin changes the model only through host commands, and every command it runs is listed in its `plugin.json`: the host refuses the rest. `skills/techsquid-fields/SKILL.md`.
-- The plugin id, folder, Cargo package and `dist/<id>/` are the same `techsquid-<name>`, and a shipped id never changes: `manifest_identifies_the_plugin`, `tests/cli_test.py`. `skills/techsquid-plugins/SKILL.md`.
+- The plugin id, folder, Cargo package and `dist/<id>/` are the same `techsquid-<name>`, and a shipped id never changes: each plugin's manifest-id unit test, `tests/cli_test.py`. `skills/techsquid-plugins/SKILL.md`.
 - Only plugins under `plugins/`, only library crates under `crates/`: the workspace, `build.sh`, CI and the tests glob both folders.
 - Shared behaviour goes in a shared crate. A generic helper goes in `plugin-kit`; a new family gets its own crate and doesn't depend on `fasteners` for one helper. `skills/techsquid-plugins/SKILL.md`.
 - Every standards table names its source in a comment, and a unit test repeats it from that source. `skills/techsquid-parts/SKILL.md`.

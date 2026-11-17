@@ -1,0 +1,178 @@
+[
+  {
+    "file": "CSK8.stp",
+    "sha256": "a4549d2ba2bfbe8d2ac4b4500503fd577f39bbfd648ee3ef214854421aa864a8",
+    "zip_sha256": "9a48350e6fe7f65b71927b25b03df56186b0f092264aaa82da44baffb24be963",
+    "designation": "CSK8",
+    "bore": 8,
+    "diameter": 22,
+    "width": 9,
+    "section": {
+      "inner_ring_radius": 5.72,
+      "outer_ring_radius": 9,
+      "inner_chamfer": {
+        "radial": 0.181985,
+        "axial": 0.5
+      },
+      "outer_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK12_2RS.stp",
+    "sha256": "f9fdf8e146aa825f2d17d747f916159c1f48fa1fb88c71c7fea35db782f060df",
+    "zip_sha256": "c8bfe8773a31ea1964dc430bef5bd4c6bd56f58d7317d68fe0fd6c91b520c08f",
+    "designation": "CSK12-2RS",
+    "bore": 12,
+    "diameter": 32,
+    "width": 14,
+    "section": {
+      "inner_ring_radius": 9.105,
+      "outer_ring_radius": 13.295,
+      "inner_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "outer_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK15_P.stp",
+    "sha256": "f9bd9384ee9107e45cca180a7ee3d26415cc5ef28fb79ec1fd009b0a32fa925c",
+    "zip_sha256": "c5ebbfeb2d2d198a5aebffffffc328d5686d148726537e8ea341149983f269ac",
+    "designation": "CSK15P",
+    "bore": 15,
+    "diameter": 35,
+    "width": 11,
+    "section": {
+      "inner_ring_radius": 11.055,
+      "outer_ring_radius": 15.245,
+      "inner_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "outer_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK15_PP.stp",
+    "sha256": "ff598394508a1ccf766fe3bf77d876b10673d521129648314bd81f3b98dc428a",
+    "zip_sha256": "751d60be51d4549d34baf8a84c453eb4ca603b6cef2e4ac19d5b8288311aeb6c",
+    "designation": "CSK15PP",
+    "bore": 15,
+    "diameter": 35,
+    "width": 11,
+    "section": {
+      "inner_ring_radius": 11.055,
+      "outer_ring_radius": 15.245,
+      "inner_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "outer_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK15_2RS.stp",
+    "sha256": "9e8e35d00f7be8ffef54b27ca036d5677bf4a73435c293efdba00736e753258b",
+    "zip_sha256": "f49433ca56335aab63e6c9585daa56eb612ae0ec7dfc161ab106b3e269325ff7",
+    "designation": "CSK15-2RS",
+    "bore": 15,
+    "diameter": 35,
+    "width": 16,
+    "section": {
+      "inner_ring_radius": 11.055,
+      "outer_ring_radius": 15.245,
+      "inner_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "outer_chamfer": {
+        "radial": 0.36397,
+        "axial": 1
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK40_P.stp",
+    "sha256": "bf82a950368abcf3bc9ee2695750c0bced950f747a1dd94231c6a87e42dbe8b8",
+    "zip_sha256": "78908e314174bccee6896ee483398c84889992a69507568f9426a51a587c7aae",
+    "designation": "CSK40P",
+    "bore": 40,
+    "diameter": 80,
+    "width": 22,
+    "section": {
+      "inner_ring_radius": 28.515,
+      "outer_ring_radius": 33.495,
+      "inner_chamfer": {
+        "radial": 1.273896,
+        "axial": 3.5
+      },
+      "outer_chamfer": {
+        "radial": 1.273896,
+        "axial": 3.5
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK40_PP.stp",
+    "sha256": "1e3de24dfab327c6becbba8cef76da889b19590ae4fd826029f35d219eadfa18",
+    "zip_sha256": "14d63fe617e02b18b0a86c093b423e2a1093c4540cd1b88331beac8aa4f28d00",
+    "designation": "CSK40PP",
+    "bore": 40,
+    "diameter": 80,
+    "width": 22,
+    "section": {
+      "inner_ring_radius": 28.515,
+      "outer_ring_radius": 33.495,
+      "inner_chamfer": {
+        "radial": 1.273896,
+        "axial": 3.5
+      },
+      "outer_chamfer": {
+        "radial": 1.273896,
+        "axial": 3.5
+      },
+      "closure_recess": 0
+    }
+  },
+  {
+    "file": "CSK40_2RS.stp",
+    "sha256": "4cacf8e2ad3364eb4546f6e9127d0e460855f52d154d0455c1723297a038991f",
+    "zip_sha256": "cc8107fc50b998f8e63ba028bb19f306540e9b47deb48ebde5d90a62258896a3",
+    "designation": "CSK40-2RS",
+    "bore": 40,
+    "diameter": 80,
+    "width": 27,
+    "section": {
+      "inner_ring_radius": 28.515,
+      "outer_ring_radius": 33.495,
+      "inner_chamfer": {
+        "radial": 1.273896,
+        "axial": 3.5
+      },
+      "outer_chamfer": {
+        "radial": 1.273896,
+        "axial": 3.5
+      },
+      "closure_recess": 0
+    }
+  }
+]

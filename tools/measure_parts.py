@@ -61,6 +61,32 @@ def spheres(entities):
     return sorted(records, key=lambda r:r['center_mm'])
 
 
+def solid_sections(entities):
+    """Local axial/radial vertices per solid in the supplied X-axis CSK assemblies.
+
+    Assembly placement is evaluated by the native body inventory, not guessed
+    here. In particular, cover axial offsets come from the native bounding boxes.
+    """
+    sections = []
+    for ref, entity in entities.items():
+        if not entity.strip().startswith('MANIFOLD_SOLID_BREP'):
+            continue
+        visited, pending = set(), [ref]
+        while pending:
+            current = pending.pop()
+            if current in visited:
+                continue
+            visited.add(current)
+            pending.extend(re.findall(r'#(\d+)', entities[current]))
+        subset = {key: entities[key] for key in visited}
+        sections.append({
+            'solid_id': int(ref),
+            'centered_axial_radial_vertices_mm': vertices(subset),
+            'analytic_surfaces': analytic_surfaces('\n'.join(subset.values())),
+        })
+    return sections
+
+
 def main():
     ledger = Path(sys.argv[1]).resolve()
     directory = Path(sys.argv[2]).resolve()
@@ -86,13 +112,15 @@ def main():
                 {k:body[k] for k in ['name','closed','bbox','volume_mm3','face_types']}
                 for body in measure['bodies']
             ]}
+            text = data.decode('utf-8')
+            entities = dict(re.findall(r"#(\d+)\s*=\s*(.*?);", text, re.S))
             if len(record['bodies']) == 1:
-                text = data.decode('utf-8')
-                entities = dict(re.findall(r"#(\d+)\s*=\s*(.*?);", text, re.S))
                 record['centered_axial_radial_vertices_mm'] = vertices(entities)
                 record['analytic_surfaces'] = analytic_surfaces(text)
                 if measured := spheres(entities):
                     record['spheres'] = measured
+            else:
+                record['source_solid_sections'] = solid_sections(entities)
             records.append(record)
     print(json.dumps(records,indent=2))
 

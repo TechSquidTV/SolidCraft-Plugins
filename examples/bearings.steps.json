@@ -1,5 +1,5 @@
 {
-  "description": "Six fixed OpenBuilds and MISUMI products, with distinct sourced ring profiles. Open B626 shows its eight sourced balls and exposed raceways; closed bearings have zero-thickness closure faces. Independent native source checks cover dimensions and geometry.",
+  "description": "Six sourced radial bearings above four representative CSK clutches: CSK8PP, CSK15P, CSK15PP and CSK15-2RS, all at the same scale. Shows small keyed, inner-keyed, dual-keyed and sealed clutch variants.",
   "steps": [
     {
       "caption": "Lay out the axle centres",
@@ -10,69 +10,113 @@
       }
     },
     {
-      "caption": "",
+      "caption": "Radial bearing centre p0",
       "command": "sketch.point",
       "params": {
         "point": [
           -65,
-          0
+          45
         ],
         "id": "p0"
       }
     },
     {
-      "caption": "",
+      "caption": "Radial bearing centre p1",
       "command": "sketch.point",
       "params": {
         "point": [
           -39,
-          0
+          45
         ],
         "id": "p1"
       }
     },
     {
-      "caption": "",
+      "caption": "Radial bearing centre p2",
       "command": "sketch.point",
       "params": {
         "point": [
           -13,
-          0
+          45
         ],
         "id": "p2"
       }
     },
     {
-      "caption": "",
+      "caption": "Radial bearing centre p3",
       "command": "sketch.point",
       "params": {
         "point": [
           13,
-          0
+          45
         ],
         "id": "p3"
       }
     },
     {
-      "caption": "",
+      "caption": "Radial bearing centre p4",
       "command": "sketch.point",
       "params": {
         "point": [
           39,
-          0
+          45
         ],
         "id": "p4"
       }
     },
     {
-      "caption": "",
+      "caption": "Radial bearing centre p5",
       "command": "sketch.point",
       "params": {
         "point": [
           65,
-          0
+          45
         ],
         "id": "p5"
+      }
+    },
+    {
+      "caption": "CSK8PP centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -60,
+          0
+        ],
+        "id": "csk0"
+      }
+    },
+    {
+      "caption": "CSK15P centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -20,
+          0
+        ],
+        "id": "csk1"
+      }
+    },
+    {
+      "caption": "CSK15PP centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          20,
+          0
+        ],
+        "id": "csk2"
+      }
+    },
+    {
+      "caption": "CSK15-2RS centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          60,
+          0
+        ],
+        "id": "csk3"
       }
     },
     {
@@ -165,6 +209,62 @@
       }
     },
     {
+      "caption": "CSK8PP",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK8PP",
+          "sketch": "Bearing centres",
+          "sketch_point": "csk0"
+        }
+      }
+    },
+    {
+      "caption": "CSK15P",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK15P",
+          "sketch": "Bearing centres",
+          "sketch_point": "csk1"
+        }
+      }
+    },
+    {
+      "caption": "CSK15PP",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK15PP",
+          "sketch": "Bearing centres",
+          "sketch_point": "csk2"
+        }
+      }
+    },
+    {
+      "caption": "CSK15-2RS",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK15-2RS",
+          "sketch": "Bearing centres",
+          "sketch_point": "csk3"
+        }
+      }
+    },
+    {
       "caption": "Show the finished products",
       "command": "browser.visibility",
       "params": {
@@ -174,18 +274,18 @@
     }
   ],
   "expect": {
-    "bodies": 30,
-    "surface_bodies": 10,
+    "bodies": 46,
+    "surface_bodies": 18,
     "bbox": {
       "min": [
-        -73.0,
-        -11.000000000000048,
-        -3.5000000000000018
+        -73,
+        -17.5,
+        -8
       ],
       "max": [
-        76.00000000000004,
-        11.000000000000048,
-        3.5000000000000004
+        77.5,
+        56,
+        8
       ]
     },
     "parts": [
@@ -193,12 +293,12 @@
         "bbox": {
           "max": [
             -60.7,
-            4.3,
+            49.3,
             2.5000000000000004
           ],
           "min": [
             -69.30000000000001,
-            -4.3,
+            40.7,
             -2.5000000000000004
           ]
         },
@@ -210,12 +310,12 @@
         "bbox": {
           "max": [
             -57.0,
-            8.0,
+            53.0,
             2.5
           ],
           "min": [
             -73.0,
-            -8.0,
+            37.0,
             -2.5
           ]
         },
@@ -227,12 +327,12 @@
         "bbox": {
           "max": [
             -58.2,
-            6.8,
+            51.8,
             2.2
           ],
           "min": [
             -71.8,
-            -6.8,
+            38.2,
             2.2
           ]
         },
@@ -243,12 +343,12 @@
         "bbox": {
           "max": [
             -58.2,
-            6.8,
+            51.8,
             -2.2
           ],
           "min": [
             -71.8,
-            -6.8,
+            38.2,
             -2.2
           ]
         },
@@ -259,12 +359,12 @@
         "bbox": {
           "max": [
             -35.9,
-            3.1,
+            48.1,
             2.0
           ],
           "min": [
             -42.1,
-            -3.1,
+            41.9,
             -2.0
           ]
         },
@@ -276,12 +376,12 @@
         "bbox": {
           "max": [
             -34.0,
-            5.0,
+            50.0,
             2.0
           ],
           "min": [
             -44.0,
-            -5.0,
+            40.0,
             -2.0
           ]
         },
@@ -293,12 +393,12 @@
         "bbox": {
           "max": [
             -34.4,
-            4.6,
+            49.6,
             1.7
           ],
           "min": [
             -43.6,
-            -4.6,
+            40.4,
             1.7
           ]
         },
@@ -309,12 +409,12 @@
         "bbox": {
           "max": [
             -34.4,
-            4.6,
+            49.6,
             -1.7
           ],
           "min": [
             -43.6,
-            -4.6,
+            40.4,
             -1.7
           ]
         },
@@ -325,12 +425,12 @@
         "bbox": {
           "max": [
             -7.94,
-            5.06,
+            50.06,
             3.0
           ],
           "min": [
             -18.06,
-            -5.06,
+            39.94,
             -3.000000000000003
           ]
         },
@@ -342,12 +442,12 @@
         "bbox": {
           "max": [
             -3.499999999999954,
-            9.500000000000046,
+            54.50000000000004,
             3.0
           ],
           "min": [
             -22.500000000000046,
-            -9.500000000000046,
+            35.49999999999996,
             -3.0
           ]
         },
@@ -359,12 +459,12 @@
         "bbox": {
           "max": [
             -4.775,
-            1.9749999999999996,
+            46.975,
             1.975
           ],
           "min": [
             -8.724999999999998,
-            -1.9749999999999999,
+            43.025,
             -1.975
           ]
         },
@@ -376,12 +476,12 @@
         "bbox": {
           "max": [
             -6.605582617584078,
-            6.394417382415921,
+            51.394417382415924,
             1.975
           ],
           "min": [
             -10.555582617584077,
-            2.444417382415922,
+            47.44441738241592,
             -1.975
           ]
         },
@@ -393,12 +493,12 @@
         "bbox": {
           "max": [
             -11.024999999999999,
-            8.225000000000001,
+            53.225,
             1.975
           ],
           "min": [
             -14.975,
-            4.275000000000001,
+            49.275,
             -1.975
           ]
         },
@@ -410,12 +510,12 @@
         "bbox": {
           "max": [
             -15.44441738241592,
-            6.394417382415923,
+            51.394417382415924,
             1.975
           ],
           "min": [
             -19.394417382415924,
-            2.444417382415922,
+            47.44441738241592,
             -1.975
           ]
         },
@@ -427,12 +527,12 @@
         "bbox": {
           "max": [
             -17.275,
-            1.9750000000000005,
+            46.975,
             1.975
           ],
           "min": [
             -21.225,
-            -1.974999999999999,
+            43.025,
             -1.975
           ]
         },
@@ -444,12 +544,12 @@
         "bbox": {
           "max": [
             -15.444417382415923,
-            -2.444417382415921,
+            42.55558261758408,
             1.975
           ],
           "min": [
             -19.394417382415924,
-            -6.394417382415923,
+            38.605582617584076,
             -1.975
           ]
         },
@@ -461,12 +561,12 @@
         "bbox": {
           "max": [
             -11.025,
-            -4.275000000000001,
+            40.725,
             1.975
           ],
           "min": [
             -14.975000000000003,
-            -8.225,
+            36.775,
             -1.975
           ]
         },
@@ -478,12 +578,12 @@
         "bbox": {
           "max": [
             -6.605582617584078,
-            -2.444417382415922,
+            42.55558261758408,
             1.975
           ],
           "min": [
             -10.55558261758408,
-            -6.394417382415924,
+            38.605582617584076,
             -1.975
           ]
         },
@@ -495,12 +595,12 @@
         "bbox": {
           "max": [
             17.75,
-            4.75,
+            49.75,
             3.0
           ],
           "min": [
             8.25,
-            -4.75,
+            40.25,
             -3.000000000000003
           ]
         },
@@ -512,12 +612,12 @@
         "bbox": {
           "max": [
             22.500000000000046,
-            9.500000000000046,
+            54.50000000000004,
             3.0
           ],
           "min": [
             3.499999999999954,
-            -9.500000000000046,
+            35.49999999999996,
             -3.0
           ]
         },
@@ -529,12 +629,12 @@
         "bbox": {
           "max": [
             21.150000000000002,
-            8.15,
+            53.15,
             2.5000000000000004
           ],
           "min": [
             4.85,
-            -8.15,
+            36.85,
             2.5
           ]
         },
@@ -545,12 +645,12 @@
         "bbox": {
           "max": [
             21.150000000000002,
-            8.15,
+            53.15,
             -2.5
           ],
           "min": [
             4.85,
-            -8.15,
+            36.85,
             -2.5000000000000004
           ]
         },
@@ -561,12 +661,12 @@
         "bbox": {
           "max": [
             43.215,
-            4.215,
+            49.215,
             3.0
           ],
           "min": [
             34.785,
-            -4.215,
+            40.785,
             -3.000000000000003
           ]
         },
@@ -578,12 +678,12 @@
         "bbox": {
           "max": [
             48.50000000000004,
-            9.500000000000046,
+            54.50000000000004,
             3.0
           ],
           "min": [
             29.499999999999954,
-            -9.500000000000046,
+            35.49999999999996,
             -3.0
           ]
         },
@@ -595,12 +695,12 @@
         "bbox": {
           "max": [
             47.1775,
-            8.1775,
+            53.1775,
             2.89
           ],
           "min": [
             30.822499999999998,
-            -8.1775,
+            36.8225,
             2.89
           ]
         },
@@ -611,12 +711,12 @@
         "bbox": {
           "max": [
             47.1775,
-            8.1775,
+            53.1775,
             -2.89
           ],
           "min": [
             30.822499999999998,
-            -8.1775,
+            36.8225,
             -2.89
           ]
         },
@@ -627,12 +727,12 @@
         "bbox": {
           "max": [
             71.1,
-            6.1,
+            51.1,
             3.5
           ],
           "min": [
             58.9,
-            -6.1,
+            38.9,
             -3.5000000000000018
           ]
         },
@@ -644,12 +744,12 @@
         "bbox": {
           "max": [
             76.00000000000004,
-            11.000000000000048,
+            56.00000000000005,
             3.5000000000000004
           ],
           "min": [
             53.99999999999995,
-            -11.000000000000048,
+            33.99999999999995,
             -3.5000000000000004
           ]
         },
@@ -661,12 +761,12 @@
         "bbox": {
           "max": [
             74.65,
-            9.65,
+            54.65,
             2.9
           ],
           "min": [
             55.35,
-            -9.65,
+            35.35,
             2.8999999999999995
           ]
         },
@@ -677,21 +777,269 @@
         "bbox": {
           "max": [
             74.65,
-            9.65,
+            54.65,
             -2.8999999999999995
           ],
           "min": [
             55.35,
-            -9.65,
+            35.35,
             -2.9
           ]
         },
         "area_mm2": 175.6542992345474,
         "body": "Bearing B608ZZ Shield back"
+      },
+      {
+        "body": "CSK clutch CSK8PP Inner ring",
+        "bbox": {
+          "min": [
+            -65.72,
+            -5.72,
+            -4.5
+          ],
+          "max": [
+            -54.28,
+            5.72,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK8PP Outer ring",
+        "bbox": {
+          "min": [
+            -71.0,
+            -10.954451150103322,
+            -4.5
+          ],
+          "max": [
+            -49.0,
+            11.0,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK8PP Cover front",
+        "bbox": {
+          "min": [
+            -69,
+            -9,
+            4.5
+          ],
+          "max": [
+            -51,
+            9,
+            4.5
+          ]
+        },
+        "area_mm2": 151.68111986356098
+      },
+      {
+        "body": "CSK clutch CSK8PP Cover back",
+        "bbox": {
+          "min": [
+            -69,
+            -9,
+            -4.5
+          ],
+          "max": [
+            -51,
+            9,
+            -4.5
+          ]
+        },
+        "area_mm2": 151.68111986356098
+      },
+      {
+        "body": "CSK clutch CSK15P Inner ring",
+        "bbox": {
+          "min": [
+            -31.055,
+            -11.055,
+            -5.5
+          ],
+          "max": [
+            -8.945,
+            11.055,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK15P Outer ring",
+        "bbox": {
+          "min": [
+            -37.5,
+            -17.5,
+            -5.5
+          ],
+          "max": [
+            -2.5,
+            17.5,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK15P Cover front",
+        "bbox": {
+          "min": [
+            -35.245,
+            -15.245,
+            5.5
+          ],
+          "max": [
+            -4.755000000000001,
+            15.245,
+            5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "body": "CSK clutch CSK15P Cover back",
+        "bbox": {
+          "min": [
+            -35.245,
+            -15.245,
+            -5.5
+          ],
+          "max": [
+            -4.755000000000001,
+            15.245,
+            -5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "body": "CSK clutch CSK15PP Inner ring",
+        "bbox": {
+          "min": [
+            8.945,
+            -11.055,
+            -5.5
+          ],
+          "max": [
+            31.055,
+            11.055,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK15PP Outer ring",
+        "bbox": {
+          "min": [
+            2.5,
+            -17.471405209656147,
+            -5.5
+          ],
+          "max": [
+            37.5,
+            17.5,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK15PP Cover front",
+        "bbox": {
+          "min": [
+            4.755000000000001,
+            -15.245,
+            5.5
+          ],
+          "max": [
+            35.245,
+            15.245,
+            5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "body": "CSK clutch CSK15PP Cover back",
+        "bbox": {
+          "min": [
+            4.755000000000001,
+            -15.245,
+            -5.5
+          ],
+          "max": [
+            35.245,
+            15.245,
+            -5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "body": "CSK clutch CSK15-2RS Inner ring",
+        "bbox": {
+          "min": [
+            48.945,
+            -11.055,
+            -8.0
+          ],
+          "max": [
+            71.055,
+            11.055,
+            8.0
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK15-2RS Outer ring",
+        "bbox": {
+          "min": [
+            42.5,
+            -17.5,
+            -8.0
+          ],
+          "max": [
+            77.5,
+            17.5,
+            8.0
+          ]
+        }
+      },
+      {
+        "body": "CSK clutch CSK15-2RS Seal front",
+        "bbox": {
+          "min": [
+            44.755,
+            -15.245,
+            8.0
+          ],
+          "max": [
+            75.245,
+            15.245,
+            8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "body": "CSK clutch CSK15-2RS Seal back",
+        "bbox": {
+          "min": [
+            44.755,
+            -15.245,
+            -8.0
+          ],
+          "max": [
+            75.245,
+            15.245,
+            -8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444
       }
     ],
     "catalog_definitions": {
-      "techsquid-bearings": 6
+      "techsquid-bearings": 10
     }
   }
 }

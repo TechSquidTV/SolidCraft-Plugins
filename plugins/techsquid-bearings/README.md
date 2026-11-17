@@ -2,13 +2,18 @@
 
 Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). The radial bearings have separate steel rings and sourced closures. CSK presets have separate chamfered rings, cover or seal faces, editable keyways, and recorded references. Supplied STEP files establish eight exterior profiles; other presets use estimates based on those measurements.
 
-![Radial bearings, left to right: OpenBuilds 625 2RS and 105ZZ; MISUMI B626, B626ZZ, B626DDU and B608ZZ](bearings.png)
+![Six radial bearings above four representative CSK clutches, shown at the same scale](bearings.png)
 
-The six radial bearings are shown left to right at the same scale, in the order
-of the first six rows of the [supported-parts table](#supported-bearings-and-csk-presets).
-Dark faces are rubber seals, gray faces are metal shields, and the open B626 shows
-its balls and raceways. See the [reference](REFERENCE.md#sources) for sources and
-modeling limits.
+The preview shows every supported radial bearing and four representative CSK presets,
+all at the same scale. Left to right:
+
+- **Back row — radial bearings:** OpenBuilds 625 2RS and 105ZZ; MISUMI B626, B626ZZ, B626DDU and B608ZZ.
+- **Front row — CSK clutches:** CSK8PP, CSK15P, CSK15PP and CSK15-2RS. These show small dual-keyed, inner-keyed, dual-keyed and sealed variants.
+
+Dark faces depict seals; gray closure faces depict shields or dust covers. The open
+B626 shows its balls and raceways. [Open the combined example](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/bearings.json)
+in SolidCraft, or see the [full supported-parts table](#supported-bearings-and-csk-presets)
+and [source references](REFERENCE.md#sources).
 
 ## Install
 

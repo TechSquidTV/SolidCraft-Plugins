@@ -1,6 +1,6 @@
 # Heat-set inserts
 
-A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). The `make-insert` workflow drills the hole for every sketch point or circle you select and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)). The read-only `catalog` entry provides discovery for scripts and other catalog clients.
+A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). The `make-insert` workflow drills the hole for every sketch point or circle you select and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)).
 
 ![An M3 x 5.7 heat-set insert: two star-shaped knurls twisting opposite ways with a groove between them, the chamfer under the lower knurl, the smooth pilot at the tip, and the threaded bore](insert.png)
 
@@ -50,42 +50,14 @@ The package uses the shared [verified component library](../../docs/parts-librar
 
 `short` and `Voron` mark a second row of the same thread. D1 is the insert diameter, D2 is the plastic hole, and W is the minimum wall beside that hole.
 
-## Catalog API
+## Product identity
 
-Call the `catalog` entry with `{"version":1,"request":{"operation":"list"}}`.
-The response includes the catalog revision, a bounded page of permanent part IDs,
-and the next offset. `query`, `offset`, and `limit` filter and page the list; at most
-64 rows are returned at once.
-
-Use `{"version":1,"request":{"operation":"describe","part":"m3-5.7"}}`
-for dimensions, sources, and supported detail modes. To resolve a selection,
-include the revision returned by discovery:
-
-```json
-{
-  "version": 1,
-  "revision": "1",
-  "request": {
-    "operation": "resolve",
-    "part": "m3-5.7",
-    "configuration": {"detail": "cosmetic"}
-  }
-}
-```
-
-The result identifies the physical product separately from its CAD representation
-and gives an `insertion` route. Pass that route's `params` to its `entry` unchanged;
-its `catalog_selection` precondition rejects stale catalogs or altered part inputs.
-Placement and hole controls may be added without changing the selected part.
-Cosmetic and modeled threads are different CAD representations of the same product.
-Modeled detail is available only for metric rows; unsupported combinations are refused.
-
-Discovery describes the compiled catalog, without reading selection or editing the
-design. It does not check stock availability or assert a supplier SKU. Three rows
+Shared internal definitions retain sourced dimensions and configuration rules.
+The package exposes `make-insert` only; catalog discovery is not available.
+Cosmetic and modeled threads are representations of the same product. Three rows
 absent from the cited dimension guide—M1.6 × 2.5, M6 × 6.8 short, and M8 × 6.8
-short—are identified as custom models. Custom dimensions also use custom identity.
-The current host's generic dialog cannot display this nested query protocol;
-use `make-insert` for interactive insertion and `catalog` through the API or CLI.
+short—use custom identity, as do explicit dimension overrides. See the
+[shared part-definition and reuse rules](../../docs/parts-library.md).
 
 ## Metric inserts
 

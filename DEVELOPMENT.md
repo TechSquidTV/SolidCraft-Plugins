@@ -92,38 +92,32 @@ cargo test
 ./build.sh
 ```
 
-### Catalog discovery
+### Internal part definitions
 
-`crates/parts` owns the versioned, host-independent product and representation
-identities and the bounded `list`, `describe`, and `resolve` protocol. Domain
-providers own their typed configurations and dimensional data. A read entry has
-no runner argument; discovery cannot inspect selection or change a design.
-All six packages implement this contract. See [the protocol](docs/catalog-contract.md)
-and [the shared library](docs/parts-library.md) for the final architecture, identity
-semantics, inspection limits and native acceptance tests.
+`crates/parts` owns the host-independent product and representation identities and
+internal list/describe/resolve types. Domain providers own configurations, source
+measurements and assembly members. These descriptors remain the single source for
+insertion and reuse; packages do not export a `catalog` entry or query handler.
+See the [internal contract](docs/catalog-contract.md) and [shared library](docs/parts-library.md).
 
-`tools/catalog-tool` generates catalog-owned manifest fields from those same
-descriptors, including the new bearing/wheel reference tables. Run `cargo run -p catalog-tool -- --write` after changing them;
-`./build.sh` runs `--check` and refuses stale fields. Workflow controls remain in
-the plugin's manifest. The package and guest both use that manifest.
+`tools/catalog-tool` generates catalog-owned insertion choices and reference tables
+from the same data. Run `cargo run -p catalog-tool -- --write` after changing them;
+`./build.sh` runs `--check` and refuses drift. Workflow controls remain hand-authored.
+The package and guest both use that manifest. The generator must not add API entries.
 
-A resolved result includes the existing insertion entry and its validated inputs.
-It also includes `catalog_selection`, an API-only precondition carrying the
-protocol version, catalog revision, and representation. The workflow parses the
-inputs again and compares that precondition before any host calls. A normal dialog
-run resolves current inputs without this precondition. The precondition passes
-through the existing workflow schema's allowed additional properties; it is not a
-dialog control. Declaring a nested object as a form field would disable the current
-SolidCraft plugin dialog. Do not set `additionalProperties: false` on an insertion
-entry without explicitly accommodating this protocol field.
+The internal resolver's `catalog_selection` precondition pins the protocol version,
+catalog revision and representation for provider round-trip tests. The ordinary
+insertion dialogs resolve directly from their inputs. There is no installed query
+route for obtaining a resolved selection; discovery is deferred until the host has
+a suitable presentation contract.
 
-Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/catalog_test.py` after
-building. It checks actual read-only behavior, pagination, dimensions, resolved
-insertion, and stale or altered selections through the compiled Wasm guest.
-`tests/parts_inspection_test.py` checks the host evidence required for reuse:
-external cuts, edits with unchanged volume and bounds, complete feature history,
-and shared nested definitions after reopening. It uses a generic test cylinder;
-the separate `parts_library_test.py` validates real catalog assemblies and reuse.
+Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/plugin_entries_test.py`
+after building. It checks that every package offers only insertion workflows,
+removed catalog calls preserve the model/selection/undo state, no dormant guest
+handler can be enabled by redeclaring the entry, and non-XY insertion still works.
+Rust tests retain the internal provider query and round-trip coverage.
+`catalog_reuse_test.py` checks the existing families' identity and verified reuse;
+`parts_library_test.py` validates real assemblies and composed reuse.
 
 `cargo test` checks the parameter rules and the commands each run sends. `./build.sh` wraps each core module as a component and leaves one `dist/<id>/` for every folder under `plugins/`.
 
@@ -131,8 +125,8 @@ the separate `parts_library_test.py` validates real catalog assemblies and reuse
 
 `tests/cli_test.py` needs the package from `./build.sh` and an unsigned
 `solidcraft-cli` meeting the [host requirements](docs/parts-library.md#host-requirements).
-The occurrence-context regressions need both new inspection fields; an unmodified
-0.42 or 0.43 build is insufficient.
+The occurrence-context regressions need both new inspection fields; a
+0.42 or 0.43 build from before host PR #17999 is insufficient.
 
 ```
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/cli_test.py

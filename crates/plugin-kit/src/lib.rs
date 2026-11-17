@@ -17,12 +17,3 @@ pub mod timeline;
 pub use host::Runner;
 pub use input::FieldError;
 pub use place::{Placement, Source};
-
-/// Catalog dispatch has no runner argument and therefore cannot change a design.
-/// This also keeps protocol errors consistent across every guest.
-pub fn query_catalog(
-    catalog: &impl parts::Catalog,
-    request: &serde_json::Value,
-) -> Result<serde_json::Value, parts::CatalogError> {
-    catalog.query(request)?.json()
-}

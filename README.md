@@ -28,7 +28,7 @@ Try the [screw attachment test plate](examples/screw-attachment-test.md) to move
 
 Try the [bearing example](examples/bearings.json) and [wheel assemblies](examples/v-wheels.json) to inspect the visible seals, shields and shared components.
 
-Every package also exposes a read-only catalog for scripts. Parts share identity, verified reuse and composition through one [parts-library foundation](docs/parts-library.md); the host does not yet offer a unified catalog browser. [Developer reference](DEVELOPMENT.md) covers builds, tests and example rendering.
+Packages expose their insertion tools only. Parts share definitions, identity, verified reuse and composition through one [parts-library foundation](docs/parts-library.md). Catalog discovery is internal; there are no Catalog menu entries or public discovery API. [Developer reference](DEVELOPMENT.md) covers builds, tests and example rendering.
 
 ## License
 

@@ -16,4 +16,4 @@ The rings and any closure faces belong to one purchased component. Later inserti
 
 The built-in bearing tool provides a simple ring envelope. This plugin shows the exterior ring and closure boundaries, with visible balls and raceways in open B626. Closed variants omit hidden balls and internals; cages are not modeled. It does not use the built-in **Change Part Size** workflow.
 
-See the [reference](REFERENCE.md) for dimensions, part numbers, placement fields and representation limits. The [catalog contract](../../docs/catalog-contract.md) documents the read-only discovery entry for scripts. The example design opens without the plugin installed.
+See the [reference](REFERENCE.md) for dimensions, part numbers, placement fields and representation limits. Shared internal definitions drive the insertion choices and verified reuse; no Catalog entry is exposed. The example design opens without the plugin installed.

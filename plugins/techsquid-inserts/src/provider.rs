@@ -261,19 +261,6 @@ mod tests {
     }
 
     #[test]
-    fn packaged_query_schema_matches_the_shared_contract() {
-        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
-        let entries = manifest["runtime"]["entries"].as_array().unwrap();
-        let catalog = entries
-            .iter()
-            .find(|entry| entry["name"] == "catalog")
-            .unwrap();
-        assert_eq!(catalog["effect"], "read");
-        assert_eq!(catalog["input_schema"], catalog::entry_schema());
-        assert!(!catalog.as_object().unwrap().contains_key("output_schema"));
-    }
-
-    #[test]
     fn every_catalog_row_round_trips_through_the_real_workflow() {
         for item in Inserts.summaries() {
             let resolved = Inserts.resolve(&item.id, &json!({})).unwrap();

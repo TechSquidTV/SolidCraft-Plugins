@@ -6,7 +6,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# Catalog choices and query schemas come from the compiled descriptors.
+# Catalog choices and reference tables come from the compiled descriptors.
 cargo run --quiet --locked -p catalog-tool -- --check
 
 build_one() {

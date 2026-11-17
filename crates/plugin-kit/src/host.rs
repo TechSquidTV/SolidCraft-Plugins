@@ -189,7 +189,7 @@ pub fn labelled<K: AsRef<str>, L: AsRef<str>>(
 
 /// The wasm guest of a plugin. Every plugin exports the same thing: read the parameters,
 /// build, and turn each failure into the host's error for it. Workflows are listed
-/// under `entries`; a catalog provider can add the read-only discovery route.
+/// under `entries`; only these insertion workflows are exported.
 ///
 /// - `manifest`: `include_str!("../plugin.json")`, for the dialog labels.
 /// - `parse`: `fn(&Value) -> Result<Params, FieldError>`.
@@ -197,13 +197,10 @@ pub fn labelled<K: AsRef<str>, L: AsRef<str>>(
 ///   starts with a field key and `": "` is that field's, one that starts with a command
 ///   id is that command's, and anything else is a trap.
 /// - `describe`: `fn(&Params) -> String`, the line logged before building.
-/// - `catalog` (optional, before `entries`): a pure `parts::Catalog` provider. It
-///   handles the read entry without constructing or calling the host runner.
 #[macro_export]
 macro_rules! guest {
     (
         manifest: $manifest:expr,
-        $(catalog: $catalog:expr,)?
         entries: [$({
             entry: $entry:literal,
             noun: $noun:literal,
@@ -295,13 +292,6 @@ macro_rules! guest {
                     }
                     let v: serde_json::Value = serde_json::from_str(&params)
                         .map_err(|err| invalid("params", &err.to_string()))?;
-                    $(
-                        if entry == "catalog" {
-                            return $crate::query_catalog(&$catalog, &v)
-                                .map(|reply| reply.to_string())
-                                .map_err(|err| invalid(&err.field, &err.reason));
-                        }
-                    )?
                     $(
                         if entry == $entry {
                             let p = $parse(&v).map_err(|err| invalid(&err.field, &err.reason))?;

@@ -1172,7 +1172,6 @@ mod tests {
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    catalog: crate::provider::Inserts,
     entries: [{
         entry: "make-insert",
         noun: "insert",

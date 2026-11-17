@@ -195,8 +195,8 @@ In the bill of materials a finished rail is a custom (`normal`) part with a gene
 
 ## Catalog and reuse
 
-The read-only `catalog` entry supports list, describe and resolve using the
-[shared contract](../../docs/catalog-contract.md). Discovery lists nine stock profiles and the verified MISUMI M5 HNTT5-5/HNTP5-5 slot nuts. A cut or machined rail is a custom finished configuration with stock-profile provenance. Slot-nut mounting orientation is placement, not a different purchase. Sketch-driven rails remain a separate workflow.
+Shared internal definitions cover nine stock profiles and the verified MISUMI M5 HNTT5-5/HNTP5-5 slot nuts.
+The package exposes insertion workflows only; catalog discovery is not available. A cut or machined rail is a custom finished configuration with stock-profile provenance. Slot-nut mounting orientation is placement, not a different purchase. Sketch-driven rails remain a separate workflow.
 
 Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
 representations reuse verified native definitions across runs. Renamed components

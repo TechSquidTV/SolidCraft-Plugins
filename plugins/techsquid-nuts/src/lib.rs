@@ -1260,7 +1260,6 @@ mod tests {
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    catalog: crate::provider::Nuts,
     entries: [{
         entry: "make-nut", noun: "nut",
         parse: crate::nut::parse, make: crate::make_nut,

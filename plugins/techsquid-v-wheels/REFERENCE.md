@@ -1,7 +1,7 @@
 # V-wheels reference
 
-`make-v-wheel` inserts one of five fixed OpenBuilds wheel products. The read-only
-`catalog` entry exposes those products and resolves their bare or assembled form.
+`make-v-wheel` inserts one of five fixed OpenBuilds wheel products, bare or
+assembled. It is the package’s only entry.
 
 ## Parameters
 
@@ -38,8 +38,8 @@ Full-size bearings are centred at Z = −3 and +3 mm, producing an 11 mm overall
 width. Mini bearings are centred at Z = −2.5 and +2.5 mm, producing a 9 mm core width.
 The shim is centred at Z = 0. Its supplier SKU is 05 for the full-size 10 mm shim
 and 170 for the mini 8 mm shim. Bearings seat against the 1 mm centre shoulder.
-The catalog advertises the centre and both bearing-centre frames and ordered
-member frames for the complete core.
+The shared internal recipe defines the centre, both bearing-centre frames and
+ordered member frames for the complete core.
 
 ## Geometry and sources
 

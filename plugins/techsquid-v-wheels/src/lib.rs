@@ -58,7 +58,6 @@ pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    catalog: crate::provider::Wheels,
     entries: [{
         entry: "make-v-wheel", noun: "wheel",
         parse: parse, make: make,

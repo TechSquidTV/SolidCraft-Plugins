@@ -375,7 +375,6 @@ fn summary(p: &Params, profile: &Profile, places: &[Placement], placed: &Placed)
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    catalog: crate::provider::Extrusions,
     entries: [
         {
             entry: "make-extrusion",

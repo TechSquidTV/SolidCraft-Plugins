@@ -178,11 +178,6 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
             .ok_or("manifest has no insertion workflow")?;
         workflow["input_schema"]["properties"][field]["enum"] = json!(choices);
     }
-    let catalog = json!({"name": "catalog", "effect": "read", "input_schema": parts::catalog::entry_schema()});
-    match entries.iter_mut().find(|entry| entry["name"] == "catalog") {
-        Some(entry) => *entry = catalog,
-        None => entries.push(catalog),
-    }
     let mut commands: std::collections::BTreeSet<String> =
         serde_json::from_value(manifest["runtime"]["commands"].clone())
             .map_err(|e| e.to_string())?;
@@ -202,4 +197,30 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
         .map_err(|e| e.to_string())?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generation_keeps_packages_insertion_only() {
+        let plugins = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../plugins");
+        for plugin in fs::read_dir(plugins).unwrap() {
+            let manifest = plugin.unwrap().path().join("plugin.json");
+            if !manifest.is_file() {
+                continue;
+            }
+            let value: Value =
+                serde_json::from_str(&fs::read_to_string(&manifest).unwrap()).unwrap();
+            let entries = value["runtime"]["entries"].as_array().unwrap();
+            assert!(!entries.is_empty());
+            for entry in entries {
+                assert_eq!(entry["effect"], "edit", "{}", manifest.display());
+                assert_ne!(entry["name"], "catalog", "{}", manifest.display());
+            }
+            // Re-running the generator must not restore a discovery entry.
+            update(&manifest, vec![], false).unwrap();
+        }
+    }
 }

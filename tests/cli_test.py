@@ -54,8 +54,7 @@ CASES = {
 
 
 # The entries a plugin lists beside the one its case runs.
-OTHER_ENTRIES = {plugin: ["catalog"] for plugin in CASES}
-OTHER_ENTRIES["techsquid-extrusions"].insert(0, "make-t-nut")
+OTHER_ENTRIES = {"techsquid-extrusions": ["make-t-nut"]}
 
 # Bearings have two solid ring envelopes and two annular closure surfaces.
 BODY_COUNTS = {"techsquid-bearings": (2, 2)}

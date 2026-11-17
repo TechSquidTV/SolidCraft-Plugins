@@ -7,7 +7,6 @@ publish.workspace = true
 description = "Check and generate catalog-owned plugin manifest fields"
 
 [dependencies]
-parts.workspace = true
 plugin-kit.workspace = true
 serde_json.workspace = true
 techsquid-inserts = { path = "../../plugins/techsquid-inserts" }

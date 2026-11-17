@@ -108,8 +108,8 @@ A pocket keeps its kind and size in its own name because it stays in the part, a
 
 ## Catalog and reuse
 
-The read-only `catalog` entry supports list, describe and resolve using the
-[shared contract](../../docs/catalog-contract.md). Discovery lists 29 ISO 4032 sizes. Standard coarse-pitch dimensions identify standards-based configurations; fine pitches and explicit width/thickness overrides are custom, even if an override matches a table value.
+Shared internal definitions cover 29 ISO 4032 sizes.
+The package exposes insertion workflows only; catalog discovery is not available. Standard coarse-pitch dimensions identify standards-based configurations; fine pitches and explicit width/thickness overrides are custom, even if an override matches a table value.
 
 Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
 representations reuse verified native definitions across runs. Renamed components

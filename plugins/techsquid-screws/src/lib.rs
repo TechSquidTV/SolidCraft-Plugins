@@ -2178,7 +2178,6 @@ mod tests {
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    catalog: crate::provider::Screws,
     entries: [{
         entry: "make-screw", noun: "screw",
         parse: crate::screw::parse, make: crate::make_screw,

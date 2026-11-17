@@ -1,18 +1,18 @@
 # Shared parts libraries
 
-All six packages use one catalog contract and one native component library. The
-packages remain independently installable. V-wheels calls the same bearing factory
+All six packages use shared internal part definitions and one native component
+library. The packages remain independently installable. V-wheels calls the same bearing factory
 as Bearings through shared Rust code; it never invokes another plugin at runtime.
 
 ## Host requirements
 
 Version 0.3 requires a SolidCraft build exposing `component.list.active_path` and
-`sketch.inspect.world_plane`. Unmodified 0.42 and 0.43 builds do not expose these
-fields. Use the host change tracked in [the plugin PR](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/4)
-until it ships in a release.
+`sketch.inspect.world_plane`. Earlier 0.42 and 0.43 builds lack these fields.
+Use a build containing merged [SolidCraft PR #17999](https://github.com/tangency-labs/solidcraft/pull/17999),
+validated on commit `a28a0b777`; the version label alone is insufficient.
 Missing fields are refused; the library never guesses a selected occurrence or
-uses component-local axes as world axes. Catalog discovery and saved native
-designs do not depend on these new inspection fields.
+uses component-local axes as world axes. Saved native designs do not depend on
+these new inspection fields.
 
 ## Responsibilities
 
@@ -27,9 +27,10 @@ designs do not depend on these new inspection fields.
   Cut geometry remains in the receiving component. Sketch-driven rails remain
   independent native path features rather than reusable stock definitions.
 
-See [the catalog contract](catalog-contract.md) for request examples and ownership
-rules. `catalog` is an explicit read entry; the current host has no unified browser,
-provider registry or automatic parts advertisement beyond its entry metadata.
+See [the internal catalog contract](catalog-contract.md) for ownership and identity
+rules. Packages expose only insertion workflows. The `catalog` entry and its guest
+handler are removed; script calls to it are rejected. Internal descriptors remain
+shared, but there is no public discovery API, provider registry or unified browser.
 
 ## Verified component reuse
 
@@ -130,7 +131,7 @@ loading Wasm; skipped runs provide no runtime evidence.
 
 | Check | Evidence |
 |---|---|
-| `catalog_discovery_test.py` | Every packaged catalog item, pagination, source/route data, state-preserving reads, stale/altered inputs, non-XY insertion |
+| `plugin_entries_test.py` | Insertion-only packages, removed catalog route rejection without edits, no residual guest handler, invalid fields and non-XY insertion |
 | `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, rename, modified appearance, custom identity, equivalent size spellings, unrelated parameters and mounting invariance |
 | `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, copied-folder isolation and replacement reuse, consecutive fresh/reused insertions through copied and rotated nested occurrences, exact authoring context, undo/redo, save/reopen, modified children, late rollback and batch limits |
 | `parts_directory_test.py` | Missing IDs, obsolete revisions/snapshots, incorrect digest candidates, malformed/unsupported directories and unchanged failed transactions |

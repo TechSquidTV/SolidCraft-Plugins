@@ -43,4 +43,4 @@ For all options, supported standards, dimensions and placement details, see the 
 
 [MIT](../../LICENSE)
 
-The read-only catalog exposes this tool’s parts to scripts. [Shared catalog and reuse rules](../../docs/parts-library.md) explain product identity, modified-part preservation and BOM grouping.
+The package exposes its insertion tools only. [Shared part-definition and reuse rules](../../docs/parts-library.md) explain product identity, modified-part preservation and BOM grouping.

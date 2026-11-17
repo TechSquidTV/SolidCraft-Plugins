@@ -492,33 +492,6 @@ pub trait Catalog {
     }
 }
 
-/// The same declaration is used by every package. Detailed responses are validated
-/// by our typed protocol; the host currently advertises entry input schemas only.
-pub fn entry_schema() -> Value {
-    json!({
-        "type": "object", "additionalProperties": false,
-        "required": ["version", "request"],
-        "properties": {
-            "version": {"type": "integer", "enum": [PROTOCOL_VERSION]},
-            "revision": {"type": "string", "minLength": 1, "maxLength": 128},
-            "request": {"type": "object", "oneOf": [
-                {"required": ["operation"], "additionalProperties": false, "properties": {
-                    "operation": {"const": "list"}, "query": {"type": "string", "maxLength": MAX_QUERY_BYTES},
-                    "offset": {"type": "integer", "minimum": 0, "maximum": 1000000},
-                    "limit": {"type": "integer", "minimum": 1, "maximum": MAX_PAGE_SIZE, "default": default_limit()}
-                }},
-                {"required": ["operation", "part"], "additionalProperties": false, "properties": {
-                    "operation": {"const": "describe"}, "part": {"type": "string", "minLength": 1, "maxLength": 128}
-                }},
-                {"required": ["operation", "part"], "additionalProperties": false, "properties": {
-                    "operation": {"const": "resolve"}, "part": {"type": "string", "minLength": 1, "maxLength": 128},
-                    "configuration": {"type": "object", "default": {}}
-                }}
-            ]}
-        }
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

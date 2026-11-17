@@ -52,7 +52,6 @@ pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
 
 plugin_kit::guest! {
     manifest: include_str!("../plugin.json"),
-    catalog: crate::provider::Bearings,
     entries: [{
         entry: "make-bearing", noun: "bearing",
         parse: parse, make: make,

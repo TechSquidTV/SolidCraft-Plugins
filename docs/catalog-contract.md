@@ -1,13 +1,19 @@
-# Parts catalog contract
+# Internal parts catalog contract
 
-Each package declares one `catalog` entry with `effect: read`. The current host can
-inspect that entry and explicitly invoke it. It does not provide an automatic
-provider registry or a unified browser. These packages do not invoke each other;
-wheel assemblies reuse the same Rust bearing factory as the Bearings package.
+This documents the internal Rust descriptors and query types, not a public plugin
+API. Packages export insertion workflows only. The former `catalog` entry and its
+runtime handler have been removed: scripts calling that entry now fail, with no
+compatibility alias. Discovery and a graphical catalog browser are deferred.
 
-## Requests and responses
+Shared descriptors still own product identity, configuration, sources and assembly
+members. These packages do not invoke each other; wheel assemblies reuse the same
+Rust bearing factory as the Bearings package.
 
-List without a revision to discover the current catalog:
+## Internal requests and responses
+
+The examples below describe serialized Rust queries used by provider tests. They
+are not requests accepted by an installed plugin entry. List without a revision
+to inspect the current internal catalog:
 
 ```json
 {"version":1,"request":{"operation":"list","query":"625","offset":0,"limit":16}}
@@ -54,10 +60,10 @@ not trust client-supplied dimensions or command sequences. Changing the selected
 product requires another resolve request. Ordinary dialog runs resolve directly
 against the current catalog.
 
-The host's current form builder cannot display nested API-only fields. Therefore
-`catalog_selection` travels through allowed additional properties rather than
-appearing as a dialog control. `catalog` is a visible read entry; it is not a
-hidden host capability. No output-schema field is invented in the manifest.
+The internal resolver retains its typed `catalog_selection` validation so provider
+round-trip tests exercise the real workflow parser. Normal insertion dialogs do
+not need a resolved selection. No catalog query handler, hidden entry, or invented
+host capability is exported by the packages.
 
 ## Identity and composition
 
@@ -79,7 +85,7 @@ and ordered arrays. Full canonical equality is authoritative. A digest is only a
 lookup key. Placement, selection, display names and creator plugin are excluded.
 The creator remains provenance in a separate saved record.
 
-All advertised frames are right-handed local frames in millimetres: `origin`,
+All descriptor frames are right-handed local frames in millimetres: `origin`,
 `x_axis`, `z_axis`; Y follows Z cross X. They describe part geometry before a
 document occurrence transform. Bearing and wheel origins are axle centres with
 Z along the axle. Screws seat under the head at Z=0 and extend down −Z; nuts seat
@@ -99,13 +105,14 @@ inspection, definition reuse, composition and placement. Domain crates own
 measurements, standards and geometry. Thin provider modules adapt the same
 validated parameters used by insertion; there is no second dimension table.
 
-`tools/catalog-tool` generates catalog-owned manifest choices and the shared
-query declaration. `build.sh` refuses drift. Workflow-specific placement and
-machining controls remain hand-authored. Bump a catalog revision when its choices
+`tools/catalog-tool` generates catalog-owned insertion choices and reference
+tables; it does not add runtime entries. `build.sh` refuses drift. Workflow-specific
+placement and machining controls remain hand-authored. Bump a catalog revision when its choices
 or resolution rules change; bump a geometry revision when dimensions, geometry,
 default appearances or recipe placements change. Do not silently adopt obsolete
 identities or restore removed field names through compatibility aliases.
 
-Native acceptance tests exercise every packaged item and insertion route, verify
-that queries leave the design context untouched, reject stale selections, and
-verify shared wheel/bearing reuse, edited-part preservation and transaction rollback.
+Rust provider tests exercise product descriptions, bounded queries, resolved
+configurations and stale-selection rejection. Native tests verify that removed
+catalog calls leave the design unchanged, insertion routes still work, and shared
+wheel/bearing reuse, edited-part preservation and transaction rollback are intact.

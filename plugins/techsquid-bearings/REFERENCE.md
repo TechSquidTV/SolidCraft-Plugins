@@ -1,7 +1,7 @@
 # Bearings reference
 
-`make-bearing` inserts a fixed catalog product. `catalog` advertises its dimensions,
-sources, attachment frames and insertion route without reading or editing a design.
+`make-bearing` inserts a fixed catalog product. It is the package’s only entry;
+product dimensions, sources and placement conventions are documented below.
 
 ## Parameters
 
@@ -13,7 +13,7 @@ sources, attachment frames and insertion route without reading or editing a desi
 
 No diameter, width or seal overrides are accepted. With no point selection, insert
 at the origin. The local origin is the centre plane, with Z along the axle.
-The catalog advertises `axle-centre`, `negative-seat` and `positive-seat` frames.
+The internal descriptor defines `axle-centre`, `negative-seat` and `positive-seat` frames.
 Choose up to 32 points; creation or inspection of a complex document can require a
 smaller batch to stay within the host command limit.
 

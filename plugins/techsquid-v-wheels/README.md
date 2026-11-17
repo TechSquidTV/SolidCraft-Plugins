@@ -16,4 +16,4 @@ The list includes Solid, Xtreme Solid, grooved Delrin, Delrin Mini and Xtreme Mi
 
 An assembly contains one wheel, two bearing occurrences and one internal shim. It does not include an axle, eccentric spacer, external washers or a nut. Its bill of materials lists the separate purchases rather than treating the assembly as a retail kit. Unchanged bearings and wheels are reused across later insertions and the standalone Bearings tool.
 
-See the [reference](REFERENCE.md) for dimensions, component placement, sources and limits. The [catalog contract](../../docs/catalog-contract.md) describes discovery for scripts and future browsers.
+See the [reference](REFERENCE.md) for dimensions, component placement, sources and limits. Shared internal definitions drive the insertion choices and assembly members; no Catalog entry is exposed.

@@ -73,8 +73,9 @@ measurements and assembly members. These descriptors remain the single source fo
 insertion and reuse; packages do not export a `catalog` entry or query handler.
 See the [internal contract](docs/catalog-contract.md) and [shared library](docs/parts-library.md).
 
-`tools/catalog-tool` generates catalog-owned insertion choices and reference tables
-from the same data. Run `cargo run -p catalog-tool -- --write` after changing them;
+`tools/catalog-tool` generates catalog-owned insertion choices and documentation
+tables from the same data, including the Bearings README and reference table.
+Run `cargo run -p catalog-tool -- --write` after changing them;
 `./build.sh` runs `--check` and refuses drift. Workflow controls remain hand-authored.
 The package and guest both use that manifest. The generator must not add API entries.
 
@@ -215,7 +216,7 @@ Nine standalone examples show the plugins’ parts and editing modes. Each plugi
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
-| `bearings` | `techsquid-bearings` | Six sourced radial bearings: open, sealed and shielded | `bearings.png` |
+| `bearings` | `techsquid-bearings` | Six radial bearings and four representative CSK clutches: keyed and sealed variants at the same scale | `bearings.png` |
 | `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
@@ -246,7 +247,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 ```
 
 ```sh
-solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 550 --camera '{"target":[1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":110}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 850 --camera '{"target":[2.25,20,0],"yaw":0,"pitch":0.9,"distance":105}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 800 --camera '{"target":[0.75,25,0],"yaw":0.05,"pitch":0.9,"distance":150}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```

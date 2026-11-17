@@ -20,6 +20,10 @@ for a saved design, reproducible commands and expected BOM rows.
 | `size` | `CSK12P` | Preset designation; fixes bore, OD, width and which keyways exist |
 | `inner_keyway_width` / `inner_keyway_depth` | Reference value | Optional positive millimetres; P and PP only |
 | `outer_keyway_width` / `outer_keyway_depth` | Reference value | Optional positive millimetres; PP only |
+| `part_number` | Empty | Internal BOM number; incompatible existing numbers are rejected |
+| `purchase_supplier` / `purchase_sku` | Empty | Supplier product identity; provide both |
+| `purchase_manufacturer` / `purchase_mpn` | Empty | Optional manufacturer product identity; provide both and supplier/SKU |
+| `purchase_url` | Empty | Listing metadata; does not change identity or split BOM quantities |
 | `sketch` / `sketch_point` | Empty | Placement, as described below |
 
 Keyways face local +Y; widths are measured along X, depths radially from the
@@ -38,7 +42,8 @@ simulate one-way motion or predict mass.
 
 A CSK part saves its resolved geometry, including the selected designation and
 actual keyway values, separately from reference evidence and the original profile.
-No manufacturer, supplier or BOM part number is assigned by this workflow.
+No manufacturer, supplier or BOM part number is inferred from the drawing.
+Explicit purchasing assignments are saved separately.
 
 An unassigned CSK design still appears in the BOM. Repeated placements count as
 occurrences of one definition. Different keyway values create distinct definitions;
@@ -46,7 +51,10 @@ an explicit override equal to the reference value reuses the default definition.
 
 `org.techsquid.specification` metadata stores geometry, its source-neutral identity,
 and reference evidence with schema version 2. Save/reopen preserves these records.
-Purchasing assignments are a separate feature, outside this generator's inputs.
+The separate `org.techsquid.purchasing` version 1 record stores explicit assignments
+and listing metadata. Blank fields leave the geometry-only identity unchanged.
+See [purchasing rules](../../docs/purchasing.md) for grouping, collision errors,
+URL updates and save/reopen behavior.
 
 ## Radial bearing workflow
 
@@ -142,11 +150,12 @@ profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
 ## Breaking changes
 
 CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
-there is no old-route alias. Catalog revision 6 requires refreshing saved resolved
+there is no old-route alias. Catalog revision 7 requires refreshing saved resolved
 selections. Previous supplier-identified CSK definitions are not reused as the new
 source-neutral specifications. Their existing geometry is preserved. Ring details
 in the Rust `Dimensions` API live under `section`.
 
-Earlier PR revisions accepted `part_number` and `purchase_*` fields in `make-csk`.
-These inputs are now rejected without aliases. Purchasing moves to a separate PR;
-old saved definitions remain intact but are not adopted as current definitions.
+Earlier combined PR revisions stored loose purchasing fields and URLs inside
+CSK design identity. The purchasing follow-up requires supplier/SKU pairs and
+manufacturer/MPN pairs, and excludes URLs from identity. Legacy assignment
+records are not adopted; no aliases or fallback identities are provided.

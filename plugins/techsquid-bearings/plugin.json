@@ -287,6 +287,36 @@
             "sketch_point": {
               "title": "Sketch point",
               "type": "string"
+            },
+            "part_number": {
+              "description": "Optional BOM number. Conflicts with different designs or purchasing assignments are rejected.",
+              "title": "Your BOM part number",
+              "type": "string"
+            },
+            "purchase_manufacturer": {
+              "description": "Optional; requires manufacturer part number.",
+              "title": "Manufacturer",
+              "type": "string"
+            },
+            "purchase_sku": {
+              "description": "Supplier-specific product identifier; requires supplier.",
+              "title": "Supplier part number",
+              "type": "string"
+            },
+            "purchase_supplier": {
+              "description": "Provide together with supplier SKU to identify a purchasing assignment.",
+              "title": "Supplier / seller",
+              "type": "string"
+            },
+            "purchase_url": {
+              "description": "Optional listing URL. Updates the shared definition without changing its purchasing identity; blank preserves the existing URL.",
+              "title": "Purchase URL",
+              "type": "string"
+            },
+            "purchase_mpn": {
+              "type": "string",
+              "title": "Manufacturer part number",
+              "description": "Provide with manufacturer; supplier and SKU are also required."
             }
           },
           "required": [

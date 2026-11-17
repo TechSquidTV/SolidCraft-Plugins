@@ -11,6 +11,7 @@ pub mod host;
 pub mod input;
 pub mod name;
 pub mod place;
+pub mod purchasing;
 pub mod revolve;
 pub mod timeline;
 

@@ -48,8 +48,8 @@ The saved design has five occurrences and four definitions. Its flat BOM has:
 The two custom occurrences share a definition and count together. Reference
 drawings do not assign manufacturers or suppliers. The specification metadata
 retains actual dimensions, a stable design identity, the reference baseline and
-customization status after save/reopen. Purchasing assignment is a separate
-feature; `make-csk` has no purchasing or part-number inputs.
+customization status after save/reopen. This example leaves purchasing inputs empty. The separate
+[purchasing example](csk-purchasing.md) covers assignments and BOM-number conflicts.
 
 ## What the example verifies
 

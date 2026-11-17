@@ -10,7 +10,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub struct Bearings;
-pub const REVISION: &str = "6";
+pub const REVISION: &str = "7";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

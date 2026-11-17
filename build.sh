@@ -22,7 +22,7 @@ build_one() {
   cp "plugins/$id/plugin.json" "$out/"
   cp "plugins/$id/README.md" "plugins/$id/REFERENCE.md" LICENSE "$out/"
   mkdir -p "$out/docs/sources"
-  cp docs/catalog-contract.md docs/parts-library.md docs/bearing-coverage.md "$out/docs/"
+  cp docs/catalog-contract.md docs/parts-library.md docs/bearing-coverage.md docs/purchasing.md "$out/docs/"
   cp docs/sources/*.md docs/sources/*.json "$out/docs/sources/"
   # Keep installed guides self-contained while repository links remain navigable.
   python3 - "$out" <<'PY'

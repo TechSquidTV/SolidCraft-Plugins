@@ -14,6 +14,8 @@ use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 
+mod purchasing;
+
 const DIRECTORY_KEY: &str = "org.techsquid.parts.index";
 const VERSION: u16 = 1;
 const MAX_CALLS: usize = 248;

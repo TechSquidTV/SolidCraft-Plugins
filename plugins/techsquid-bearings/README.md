@@ -17,9 +17,12 @@ Select sketch points or circle centres, then choose a workflow:
   for the reference dimensions, or enter overrides. For example, CSK12P can use
   a 4 × 1.2 mm inner keyway while keeping its 12 × 32 × 10 mm envelope.
 
-CSK parts have no assigned manufacturer, supplier or BOM part number. Drawing
-references remain separate from geometry. Custom and unsourced parts still count
-in the BOM. Purchasing assignments are a separate feature.
+CSK parts start without an assigned supplier or BOM part number. Optionally enter
+a supplier and its SKU together, plus your internal BOM number. Listing URLs are
+separate metadata: updating a link preserves the definition and BOM quantity.
+Conflicting internal numbers are rejected before insertion. Drawing references
+remain separate. See [purchasing rules](../../docs/purchasing.md) and the
+[purchasing example](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/csk-purchasing.md).
 
 With nothing selected, the part sits at the origin. Its centre plane sits on the
 point and its axle follows the sketch normal. Optional **Sketch** and **Sketch

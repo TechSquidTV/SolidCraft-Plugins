@@ -324,6 +324,7 @@ pub fn representation(geometry: &Geometry) -> parts::Representation<Geometry> {
 
 pub fn ensure<R: Runner>(
     geometry: &Geometry,
+    purchasing: &parts::purchasing::Details,
     library: &mut plugin_kit::component::Library<'_, R>,
     creator: &str,
 ) -> Result<plugin_kit::component::Handle, String> {
@@ -333,11 +334,11 @@ pub fn ensure<R: Runner>(
         "CSK clutch {designation}{}",
         if geometry.customized() { " custom" } else { "" }
     );
-    library.ensure(&plugin_kit::component::Definition {
+    library.ensure_assigned(&plugin_kit::component::Definition {
         plugin: creator, base: &name, description: designation,
         bom_type: "normal",
         site: plugin_kit::component::Site::Origin,
-    }, "", &representation(geometry), |library, name, frame| {
+    }, representation(geometry), purchasing, |library, name, frame| {
         library.geometry(name, |mut r| {
             geometry.build(&mut r, name, frame)?;
             r.run("component.metadata.set", json!({"component":name,"values": {

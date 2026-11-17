@@ -1,0 +1,175 @@
+{
+  "description": "Fictional supplier assignments. Two custom CSK12P occurrences share one definition despite different listing URLs; a second supplier and reference keyway use a distinct BOM number.",
+  "steps": [
+    {
+      "caption": "Lay out purchased clutch examples",
+      "command": "sketch.create",
+      "params": {
+        "name": "Purchase centres",
+        "plane": "XY"
+      }
+    },
+    {
+      "caption": "Centre 1",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -45,
+          0
+        ],
+        "id": "p0"
+      }
+    },
+    {
+      "caption": "Centre 2",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          0,
+          0
+        ],
+        "id": "p1"
+      }
+    },
+    {
+      "caption": "Centre 3",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          45,
+          0
+        ],
+        "id": "p2"
+      }
+    },
+    {
+      "caption": "Finish placement sketch",
+      "command": "sketch.finish",
+      "params": {}
+    },
+    {
+      "caption": "Custom CSK12P assigned to seller A",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK12P",
+          "sketch": "Purchase centres",
+          "sketch_point": "p0",
+          "part_number": "DEMO-A",
+          "purchase_supplier": "Example seller A",
+          "purchase_sku": "12P",
+          "purchase_url": "https://example.com/clutch",
+          "inner_keyway_depth": 1.2
+        }
+      }
+    },
+    {
+      "caption": "Same assignment with a different listing URL",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK12P",
+          "sketch": "Purchase centres",
+          "sketch_point": "p1",
+          "part_number": "DEMO-A",
+          "purchase_supplier": "Example seller A",
+          "purchase_sku": "12P",
+          "purchase_url": "https://example.com/clutch?ref=other",
+          "inner_keyway_depth": 1.2
+        }
+      }
+    },
+    {
+      "caption": "Reference keyway assigned to seller B",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-csk",
+        "params": {
+          "size": "CSK12P",
+          "sketch": "Purchase centres",
+          "sketch_point": "p2",
+          "part_number": "DEMO-B",
+          "purchase_supplier": "Example seller B",
+          "purchase_sku": "12P",
+          "purchase_url": "https://example.com/clutch"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "bodies": 3,
+    "bbox": {
+      "min": [
+        -61,
+        -16,
+        -5
+      ],
+      "max": [
+        61,
+        16,
+        5
+      ]
+    },
+    "placed": [
+      {
+        "label": "Custom CSK12P assigned to seller A",
+        "bbox": {
+          "min": [
+            -61.0,
+            -16.0,
+            -5.0
+          ],
+          "max": [
+            -29.0,
+            16.0,
+            5.0
+          ]
+        },
+        "volume_mm3": 6858.982210290877
+      },
+      {
+        "label": "Same assignment with a different listing URL",
+        "bbox": {
+          "min": [
+            -16.0,
+            -16.0,
+            -5.0
+          ],
+          "max": [
+            16.0,
+            16.0,
+            5.0
+          ]
+        },
+        "volume_mm3": 6858.982210290877
+      },
+      {
+        "label": "Reference keyway assigned to seller B",
+        "bbox": {
+          "min": [
+            29.0,
+            -16.0,
+            -5.0
+          ],
+          "max": [
+            61.0,
+            16.0,
+            5.0
+          ]
+        },
+        "volume_mm3": 6834.9822102908765
+      }
+    ],
+    "catalog_definitions": {
+      "techsquid-bearings": 2
+    }
+  }
+}

@@ -321,6 +321,12 @@ python3 tests/examples_test.py --update examples/csk-clutches.steps.json
 python3 tests/examples_test.py examples/csk-clutches.steps.json
 ```
 
+The separate [purchasing example](examples/csk-purchasing.md) covers supplier
+assignments, URL changes and shared BOM quantities. After building packages, run
+`python3 tests/purchasing_test.py` and
+`python3 tests/examples_test.py examples/csk-purchasing.steps.json`. Rebuild that
+saved design with `--update` when its recipe changes.
+
 ## Components
 
 All fixed parts use [one shared library](docs/parts-library.md) for canonical identity,

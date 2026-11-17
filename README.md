@@ -26,7 +26,9 @@ Try the [sketch-driven rail example](examples/sketch-driven-rails.json), or read
 
 Try the [screw attachment test plate](examples/screw-attachment-test.md) to move counterbored and tapped holes, change the recess depth, and check that the screws stay seated after save/reopen. See the [0.3.0 release notes](release-notes/v0.3.0.md) for improvements and migration notes.
 
-Try the [bearing example](examples/bearings.json) and [wheel assemblies](examples/v-wheels.json) to inspect the visible seals, shields and shared components. The [CSK clutch example](examples/csk-clutches.md) demonstrates reference keyways, custom dimensions and repeated placements.
+Try the [bearing example](examples/bearings.json) and [wheel assemblies](examples/v-wheels.json) to inspect the visible seals, shields and shared components. The [CSK clutch example](examples/csk-clutches.md) demonstrates reference keyways, custom dimensions and repeated placements. Its separate
+[purchasing companion](examples/csk-purchasing.md) demonstrates explicit supplier
+assignments and stable BOM quantities across listing-URL changes.
 
 Packages expose their insertion tools only. Parts share definitions, identity, verified reuse and composition through one [parts-library foundation](docs/parts-library.md). Catalog discovery is internal; there are no Catalog menu entries or public discovery API. [Developer reference](DEVELOPMENT.md) covers builds, tests and example rendering.
 

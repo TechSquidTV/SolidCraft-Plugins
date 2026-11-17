@@ -170,7 +170,8 @@ the native suites above establish actual reuse and edited-content behavior.
 The CSK generator identifies a resolved `bearings::csk::Geometry` independently
 of its drawing sources. A default CSK is a `design_specification`; changed keyway
 dimensions make it `custom`. Neither implies a supplier purchase or a universal
-CSK standard. No purchasing API is introduced by the CSK generator.
+CSK standard. Optional assignments use the separate [purchasing API](purchasing.md), shared
+by design factories. The CSK geometry record remains unchanged.
 
 Equivalent resolved geometry reuses a definition and counts its occurrences in
 the BOM without assigning a part number. The version 2
@@ -178,3 +179,8 @@ the BOM without assigning a part number. The version 2
 reference baseline and customization status. Existing supplier-product workflows
 remain valid for explicitly chosen catalog products; using a reference drawing
 alone must not create that identity.
+
+`Library::ensure_assigned` applies assignment identity, checks occupied BOM numbers
+against current native definitions and saves listing metadata separately. The
+first workflow using this API is `make-csk`; existing fixed-product workflows
+retain their current inputs. See [assignment rules](purchasing.md).

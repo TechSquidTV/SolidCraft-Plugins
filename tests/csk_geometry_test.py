@@ -133,7 +133,7 @@ with Headless() as host:
           and host.command('component.metadata', component=component['id'])['metadata'] == record)
     before = host.command('document.inspect', measure=False)
     for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1},
-                   {'part_number': 'CL-12'}, {'purchase_supplier': 'Seller'}]:
+                   {'purchase_supplier': 'Seller'}]:
         result = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
                               params={'size': 'CSK12P', **params}, allow_error=True)
         check('custom: invalid keyway fails without edits', 'error' in result

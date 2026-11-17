@@ -5,6 +5,7 @@ use serde_json::{json, Value};
 
 pub struct Params {
     pub geometry: Geometry,
+    purchasing: parts::purchasing::Details,
     place: place::PlaceInput,
 }
 
@@ -40,14 +41,18 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     geometry
         .validate()
         .map_err(|e| FieldError::new("keyway", e))?;
+    let purchasing = plugin_kit::purchasing::parse(v)?;
     parts::catalog::validate_selection(
         v,
         crate::provider::REVISION,
-        &csk::representation(&geometry),
+        &purchasing
+            .assignment
+            .representation(csk::representation(&geometry)),
     )
     .map_err(|e| FieldError::new(e.field, e.reason))?;
     Ok(Params {
         geometry,
+        purchasing,
         place: place::parse_input(v)?,
     })
 }
@@ -57,7 +62,7 @@ pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
         r,
         &p.place,
         json!({"specification":p.geometry}),
-        |library| csk::ensure(&p.geometry, library, crate::PLUGIN),
+        |library| csk::ensure(&p.geometry, &p.purchasing, library, crate::PLUGIN),
     )
 }
 
@@ -93,7 +98,6 @@ mod tests {
             json!({"size":"CSK12","inner_keyway_depth":1}),
             json!({"size":"CSK15PP","inner_keyway_depth":8,"outer_keyway_depth":3}),
             json!({"size":"CSK12P","bore":13}),
-            json!({"size":"CSK12P","part_number":"CL-12"}),
             json!({"size":"CSK12P","purchase_supplier":"Seller"}),
         ] {
             assert!(parse(&value).is_err(), "{value}");

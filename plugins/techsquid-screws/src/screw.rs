@@ -440,7 +440,7 @@ pub fn validate(p: &Params) -> Result<(), FieldError> {
                 ));
             }
         }
-        let ends = p.point_chamfer().unwrap_or(0.0) + p.socket_end_chamfer().unwrap_or(0.0);
+        let ends = p.point_chamfer().unwrap_or(0.0) + p.socket_end_chamfer_length().unwrap_or(0.0);
         if ends > 0.0 && p.length - ends < pitch {
             let least = metric::number(ends + pitch);
             return Err(FieldError::new(
@@ -986,7 +986,7 @@ fn plan_phillips(
 
 impl Params {
     /// The cylinder a thread can cover: the shank less a point, and less the chamfers
-    /// on the ends of a set screw.
+    /// on the ends of a set screw, each by how far it runs along the shank.
     pub fn thread_room(&self) -> f64 {
         let point = match self.resolved.tip {
             ResolvedTip::Point { length } => length,
@@ -995,7 +995,7 @@ impl Params {
         self.length
             - point
             - self.point_chamfer().unwrap_or(0.0)
-            - self.socket_end_chamfer().unwrap_or(0.0)
+            - self.socket_end_chamfer_length().unwrap_or(0.0)
     }
 
     /// How far the chamfer on a set screw's point runs up the shank from the tip: it is
@@ -2741,6 +2741,30 @@ mod tests {
         let room = p.thread_room();
         assert!(room < 6.0);
         assert_eq!(p.thread_length, Some(room));
+    }
+
+    #[test]
+    fn a_short_set_screw_is_threaded_up_to_its_120_degree_chamfer() {
+        // M3 x 3 flat point: the 45° point chamfer takes (3 - 2) / 2 = 0.5 mm of the
+        // length, and the 120° socket end chamfer 0.3067 / tan 60° = 0.17707 mm, not
+        // the 0.3067 mm it narrows the end by.
+        let short = parse(&json!({"head": "Set screw", "length": 3, "thread_length": 3})).unwrap();
+        assert_eq!(short.socket_end_angle_deg(), 120.0);
+        let room = short.thread_room();
+        assert!((room - (3.0 - 0.5 - 0.17707)).abs() < 1e-5, "{room}");
+        assert_eq!(short.thread_length, Some(room));
+        // At 90° the chamfer runs as far down the shank as it narrows the end.
+        let longer = parse(&json!({"head": "Set screw", "length": 4})).unwrap();
+        assert!((longer.thread_room() - (4.0 - 0.5 - 0.3067)).abs() < 1e-9);
+        // The shortest length is counted the same way: with a socket shallow enough to
+        // fit, 0.5 + 0.17707 mm of chamfers leave one 0.5 mm pitch in 1.2 mm.
+        let shallow = |length: f64| {
+            parse(&json!({"head": "Set screw", "drive_size": "1.5x0.2", "length": length}))
+        };
+        assert!((shallow(1.2).unwrap().thread_room() - 0.52293).abs() < 1e-5);
+        let err = shallow(1.1).unwrap_err();
+        assert_eq!(err.field, "length");
+        assert!(err.reason.contains("take 0.6771 mm"), "{}", err.reason);
     }
 
     #[test]

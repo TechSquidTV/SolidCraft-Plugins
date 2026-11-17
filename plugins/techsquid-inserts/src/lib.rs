@@ -15,7 +15,7 @@ pub mod provider;
 use fasteners::FOLDER;
 use insert::{HoleCut, HoleShape, Params};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{add_new, body_name_of, sketch_id};
+use plugin_kit::host::{add_new, body_name_of, cut_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement, Spot};
 use plugin_kit::Runner;
@@ -37,13 +37,7 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     // The holes go first: the insert would otherwise be a body under the point too.
     let mut drilled: Vec<String> = Vec::new();
     if let Some(cut) = &p.cut {
-        let mut sketches: Vec<&str> = Vec::new();
-        for spot in &spots {
-            if !sketches.contains(&spot.sketch.as_str()) {
-                sketches.push(&spot.sketch);
-            }
-        }
-        for sketch in sketches {
+        for (sketch, _) in place::by_sketch(&spots) {
             add_new(&mut drilled, cut_holes(r, p, cut, sketch, &spots)?);
         }
     }
@@ -169,20 +163,7 @@ fn cut_holes<R: Runner>(
 /// The bodies a hole changed. A through hole on a sketch that is not on a face of the
 /// part also drills whatever lies beyond it, and that is refused.
 fn drilled(reply: &Value, through: bool) -> Result<Vec<String>, String> {
-    let Some(changed) = reply.get("changed_bodies").and_then(Value::as_array) else {
-        return Ok(Vec::new());
-    };
-    let bodies: Vec<String> = changed
-        .iter()
-        .filter_map(Value::as_str)
-        .map(str::to_string)
-        .collect();
-    if bodies.is_empty() {
-        return Err(
-            "sketch_point: there is no part under the point to drill; put the sketch on the part, or set Create to Insert only"
-                .into(),
-        );
-    }
+    let bodies = cut_bodies(reply, "to drill", "Insert only")?;
     if through && bodies.len() > 1 {
         return Err(format!(
             "hole_depth: a through hole here drills {} bodies ({}); use Blind, or put the sketch on a face of the part",

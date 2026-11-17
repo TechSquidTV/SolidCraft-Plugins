@@ -31,7 +31,7 @@ pub fn extrude<R: Runner>(r: &mut R, hex: &Hex) -> Result<Option<String>, String
 
 /// Extrude the hex and hand back the host's whole reply. A cut reads the bodies it
 /// changed from it.
-pub fn extrude_reply<R: Runner>(r: &mut R, hex: &Hex) -> Result<serde_json::Value, String> {
+fn extrude_reply<R: Runner>(r: &mut R, hex: &Hex) -> Result<serde_json::Value, String> {
     let created = r.run(
         "sketch.create",
         json!({

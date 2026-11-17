@@ -22,9 +22,10 @@ use fasteners::phillips;
 use fasteners::torx;
 use fasteners::FOLDER;
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{add_new, body_name_of, changed_bodies, sketch_id};
+use plugin_kit::host::{add_new, body_name_of, cut_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
+use plugin_kit::revolve;
 use plugin_kit::Runner;
 use screw::{Head, Hole, HoleKind, Params, ResolvedHead, ResolvedTip};
 use serde_json::{json, Value};
@@ -73,13 +74,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             Some(hole) => {
                 for (sketch, points) in place::by_sketch(&spots) {
                     let reply = r.run("solid.hole", hole_args(p, hole, sketch, &points))?;
-                    match changed_bodies(&reply) {
-                        Some(bodies) if bodies.is_empty() => {
-                            return Err("sketch_point: there is no part under the point to drill; put the sketch on the part, or set Create to Screw only".into());
-                        }
-                        Some(bodies) => add_new(&mut drilled, bodies),
-                        None => {}
-                    }
+                    add_new(&mut drilled, cut_bodies(&reply, "to drill", "Screw only")?);
                 }
                 hole.sink
             }
@@ -274,7 +269,21 @@ fn build_screw<R: Runner>(
         ResolvedHead::Round { diameter, height } => {
             let body = shank_body(body.clone())?;
             match head::profile(p.resolved.crown, diameter, height) {
-                Some(profile) => revolve_head(r, &place, &body, part, &profile)?,
+                // A domed or rounded head: its half profile in the plane through the
+                // axis, revolved onto the shank.
+                Some(profile) => {
+                    revolve::build(
+                        r,
+                        &place,
+                        &name::part(part, "Head profile"),
+                        revolve::Section::CurvedSolid(&profile),
+                        json!({
+                            "operation": "join",
+                            "targets": [body],
+                            "name": name::part(part, "Head"),
+                        }),
+                    )?;
+                }
                 None => {
                     r.run(
                         "solid.cylinder",
@@ -393,43 +402,6 @@ fn build_screw<R: Runner>(
     Ok(())
 }
 
-/// A domed or rounded head: its half profile in the plane through the axis, revolved
-/// onto the shank. The sketch's x is the radius and its y runs up the axis.
-fn revolve_head<R: Runner>(
-    r: &mut R,
-    place: &Placement,
-    body: &str,
-    part: &str,
-    profile: &[plugin_kit::revolve::Segment],
-) -> Result<(), String> {
-    let created = r.run(
-        "sketch.create",
-        json!({
-            "plane": {
-                "origin": place.point,
-                "x_dir": place.x_dir,
-                "y_dir": place.normal,
-            },
-            "name": name::part(part, "Head profile"),
-        }),
-    )?;
-    let sketch = sketch_id(&created)?;
-    plugin_kit::revolve::draw(r, &sketch, profile)?;
-    r.run("sketch.finish", json!({}))?;
-    r.run(
-        "solid.revolve",
-        json!({
-            "sketch": sketch,
-            "axis": {"origin": place.point, "dir": place.normal},
-            "angle": 360,
-            "operation": "join",
-            "targets": [body],
-            "name": name::part(part, "Head"),
-        }),
-    )?;
-    Ok(())
-}
-
 /// The 30° chamfer on the top of a hex head, out to the across-flats circle: the same
 /// cut a DIN 934 nut has on each end.
 fn chamfer_hex_head<R: Runner>(
@@ -442,37 +414,15 @@ fn chamfer_hex_head<R: Runner>(
 ) -> Result<(), String> {
     let end = fasteners::nut::end_chamfer(across_flats, None);
     let name = name::part(part, "Head chamfer");
-    revolve_cut(r, place, body, height, &end.triangle, &name)
-}
-
-/// Cut a triangle revolved about the screw axis from the end face `along` above the
-/// point. The triangle's x is the radius and its y runs from that face into the screw.
-/// A revolved cut is the same whichever way the screw points, where a chamfer with
-/// two unequal legs depends on which of its faces the host takes first.
-fn revolve_cut<R: Runner>(
-    r: &mut R,
-    place: &Placement,
-    body: &str,
-    along: f64,
-    triangle: &[[f64; 2]; 3],
-    name: &str,
-) -> Result<(), String> {
-    plugin_kit::revolve::build(
+    revolve::cut_end(
         r,
-        &Placement {
-            point: place.along(along),
-            normal: opposite(place.normal),
-            ..*place
-        },
-        &format!("{name} profile"),
-        plugin_kit::revolve::Section::Solid(triangle),
-        json!({
-            "operation": "cut",
-            "targets": [body],
-            "name": name,
-        }),
-    )?;
-    Ok(())
+        place,
+        body,
+        height,
+        opposite(place.normal),
+        &end.triangle,
+        &name,
+    )
 }
 
 /// The chamfers ISO 4026 and ISO 4029 give a set screw: 45° on the point, down to the
@@ -521,7 +471,15 @@ fn add_set_screw_chamfers<R: Runner>(
         [rim + past, (radial + past) * length / radial],
     ];
     let name = name::part(part, "Socket end chamfer");
-    revolve_cut(r, place, &body, 0.0, &triangle, &name)
+    revolve::cut_end(
+        r,
+        place,
+        &body,
+        0.0,
+        opposite(place.normal),
+        &triangle,
+        &name,
+    )
 }
 
 /// The cone for a point or a cup. A flat end adds nothing. A missing body name stops here.

@@ -112,31 +112,31 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             bom_type: if p.custom { "normal" } else { "purchased" },
             site: Site::for_thread(p.modeled),
         };
-        let mut library = fasten::Library::new(
+        let number = provider::part_number(p)?;
+        let (placed, report) = fasten::insert(
             r,
-            fasten::Budget {
-                creation_calls: 128,
-                placements: places.len(),
+            128,
+            &places,
+            FOLDER,
+            |library| {
+                library.ensure_built(
+                    &def,
+                    &number,
+                    &provider::representation(p),
+                    |mut r, site, name| build_nut(&mut r, p, site, name).map(|_| ()),
+                )
+            },
+            |mut r, placed| {
+                let joint = format!("Nut {}", p.designation);
+                for ((seat, place), occurrence) in
+                    seats.iter().zip(&places).zip(&placed.occurrences)
+                {
+                    seat.attach(&mut r, *occurrence, place, &joint)?;
+                }
+                Ok(())
             },
         )?;
-        let handle = library.ensure(
-            &def,
-            &provider::part_number(p)?,
-            &provider::representation(p),
-            |library, name, site| {
-                library.geometry(name, |mut r| build_nut(&mut r, p, site, name).map(|_| ()))
-            },
-        )?;
-        let placed = library.place_all(&handle, &places, FOLDER)?;
-        for ((seat, place), occurrence) in seats.iter().zip(&places).zip(&placed.occurrences) {
-            seat.attach(
-                &mut library.runner(),
-                *occurrence,
-                place,
-                &format!("Nut {}", p.designation),
-            )?;
-        }
-        library_report = library.finish()?;
+        library_report = report;
         Some(placed)
     } else {
         None

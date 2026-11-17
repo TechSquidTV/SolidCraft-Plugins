@@ -84,21 +84,19 @@ fn place_inserts<R: Runner>(
         // `#2-56` has no tap name here, so its bore is plain and has no thread to cut.
         site: Site::for_thread(p.modeled && p.plain_bore.is_none()),
     };
-    let mut library = fasten::Library::new(
+    let number = provider::part_number(p)?;
+    fasten::insert(
         r,
-        fasten::Budget {
-            creation_calls: 128,
-            placements: places.len(),
+        128,
+        places,
+        FOLDER,
+        |library| {
+            library.ensure_built(&def, &number, &representation, |mut r, site, name| {
+                build_insert(&mut r, p, site, name)
+            })
         },
-    )?;
-    let handle = library.ensure(
-        &def,
-        &provider::part_number(p)?,
-        &representation,
-        |library, name, site| library.geometry(name, |mut r| build_insert(&mut r, p, site, name)),
-    )?;
-    let placed = library.place_all(&handle, places, FOLDER)?;
-    Ok((placed, library.finish()?))
+        |_, _| Ok(()),
+    )
 }
 
 /// The body name before any number: `Insert M3 x 5.7`. The thread and the length are

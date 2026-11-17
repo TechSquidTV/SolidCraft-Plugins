@@ -144,12 +144,7 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
             p.holes.len()
         ));
     }
-    let spots = place::resolve_all(r, &p.place)?;
-    let places: Vec<Placement> = if spots.is_empty() {
-        vec![Placement::on_origin()]
-    } else {
-        spots.iter().map(|spot| spot.place).collect()
-    };
+    let places = place::resolve_each(r, &p.place)?;
     let base = body_base(p);
     let description = description(p);
     let def = Definition {
@@ -161,18 +156,18 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
     };
     let representation = provider::rail_representation(p);
     let number = component::model_number(&representation.product)?;
-    let mut library = component::Library::new(
+    let (placed, report) = component::insert(
         r,
-        component::Budget {
-            creation_calls: build + SEAL_CALLS,
-            placements: places.len(),
+        build + SEAL_CALLS,
+        &places,
+        FOLDER,
+        |library| {
+            library.ensure_built(&def, &number, &representation, |mut r, site, name| {
+                build_rail(&mut r, &profile, p, site, name)
+            })
         },
+        |_, _| Ok(()),
     )?;
-    let handle = library.ensure(&def, &number, &representation, |library, name, site| {
-        library.geometry(name, |mut r| build_rail(&mut r, &profile, p, site, name))
-    })?;
-    let placed = library.place_all(&handle, &places, FOLDER)?;
-    let report = library.finish()?;
     let mut reply = summary(p, &profile, &places, &placed);
     reply["library"] = report;
     Ok(reply)

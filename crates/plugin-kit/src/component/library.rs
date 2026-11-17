@@ -157,6 +157,24 @@ impl<'a, R: Runner> Library<'a, R> {
         timeline::folded(&mut self.host, name, build)
     }
 
+    /// `ensure` for a part whose build is its own geometry and nothing nested: the
+    /// build gets the folded runner, the site to stand on and the reserved name.
+    pub fn ensure_built<C, F>(
+        &mut self,
+        def: &Definition<'_>,
+        part_number: &str,
+        representation: &Representation<C>,
+        build: F,
+    ) -> Result<Handle, String>
+    where
+        C: Serialize,
+        F: FnOnce(&mut dyn Runner, &Placement, &str) -> Result<(), String>,
+    {
+        self.ensure(def, part_number, representation, |library, name, site| {
+            library.geometry(name, |r| build(r, site, name))
+        })
+    }
+
     pub fn ensure<C, F>(
         &mut self,
         def: &Definition<'_>,
@@ -405,4 +423,36 @@ impl<'a, R: Runner> Library<'a, R> {
         self.activate(self.original_active.clone())?;
         Ok(json!({"host_calls": self.host.calls, "preserved_modified_definitions": self.rejected}))
     }
+}
+
+/// The most places one run puts a part on.
+pub const MAX_PLACEMENTS: usize = 32;
+
+/// One part on every place, as one library transaction: reuse or build its
+/// definition with `ensure`, place it in `folder`, let `attach` join each placement
+/// to what it sits on, and seal. Returns the placements and the library's report.
+pub fn insert<R: Runner>(
+    host: &mut R,
+    creation_calls: usize,
+    places: &[Placement],
+    folder: &str,
+    ensure: impl FnOnce(&mut Library<'_, R>) -> Result<Handle, String>,
+    attach: impl FnOnce(&mut dyn Runner, &Placed) -> Result<(), String>,
+) -> Result<(Placed, Value), String> {
+    if places.len() > MAX_PLACEMENTS {
+        return Err(format!(
+            "sketch_point: choose at most {MAX_PLACEMENTS} points"
+        ));
+    }
+    let mut library = Library::new(
+        host,
+        Budget {
+            creation_calls,
+            placements: places.len(),
+        },
+    )?;
+    let handle = ensure(&mut library)?;
+    let placed = library.place_all(&handle, places, folder)?;
+    attach(library.runner(), &placed)?;
+    Ok((placed, library.finish()?))
 }

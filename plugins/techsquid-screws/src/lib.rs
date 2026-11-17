@@ -119,26 +119,25 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             site: built_at(p),
         };
         let representation = provider::representation(p);
-        let mut library = fasten::Library::new(
+        let number = provider::part_number(p)?;
+        let (placed, report) = fasten::insert(
             r,
-            fasten::Budget {
-                creation_calls: 160,
-                placements: places.len(),
+            160,
+            &places,
+            FOLDER,
+            |library| {
+                library.ensure_built(&def, &number, &representation, |mut r, site, name| {
+                    build_screw(&mut r, p, site, name)
+                })
+            },
+            |mut r, placed| {
+                for (seat, occurrence) in seats.iter().zip(&placed.occurrences) {
+                    seat.attach(&mut r, *occurrence, &base)?;
+                }
+                Ok(())
             },
         )?;
-        let handle = library.ensure(
-            &def,
-            &provider::part_number(p)?,
-            &representation,
-            |library, name, site| {
-                library.geometry(name, |mut r| build_screw(&mut r, p, site, name))
-            },
-        )?;
-        let placed = library.place_all(&handle, &places, FOLDER)?;
-        for (seat, occurrence) in seats.iter().zip(&placed.occurrences) {
-            seat.attach(&mut library.runner(), *occurrence, &base)?;
-        }
-        library_report = library.finish()?;
+        library_report = report;
         Some(placed)
     } else {
         None

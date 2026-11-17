@@ -1,0 +1,5494 @@
+[
+  {
+    "file": "CSK8.stp",
+    "sha256": "a4549d2ba2bfbe8d2ac4b4500503fd577f39bbfd648ee3ef214854421aa864a8",
+    "bodies": [
+      {
+        "name": "KAEFIG_CSK8_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            2.9850000000000008,
+            9.345,
+            8.900009906943076
+          ],
+          "min": [
+            -3.6999999999999997,
+            -8.9,
+            -8.900009906943074
+          ]
+        },
+        "volume_mm3": 730.0141251383043,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C10-3_0_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.6,
+            7.085209947488952,
+            6.837722574074066
+          ],
+          "min": [
+            -3.6,
+            3.3375440072002496,
+            3.266833329082
+          ]
+        },
+        "volume_mm3": 18.378750000000014,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C10-3_0_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/KLEMMKOERPER_CSK_C10-3_0_NICO_1:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.6,
+            6.837722574074066,
+            -3.3375440072002496
+          ],
+          "min": [
+            -3.6,
+            3.266833329082,
+            -7.085209947488952
+          ]
+        },
+        "volume_mm3": 18.37875000000001,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C10-3_0_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/KLEMMKOERPER_CSK_C10-3_0_NICO_1:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.6,
+            -3.3375440072002496,
+            -3.266833329082
+          ],
+          "min": [
+            -3.6,
+            -7.085209947488952,
+            -6.837722574074066
+          ]
+        },
+        "volume_mm3": 18.378750000000014,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C10-3_0_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/KLEMMKOERPER_CSK_C10-3_0_NICO_1:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.6,
+            -3.266833329082,
+            7.085209947488952
+          ],
+          "min": [
+            -3.6,
+            -6.837722574074066,
+            3.3375440072002496
+          ]
+        },
+        "volume_mm3": 18.37875000000001,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "DECKSCHEIBE_CSK8_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -3.6999999999999997,
+            9.0,
+            9.000000000000002
+          ],
+          "min": [
+            -3.9,
+            -9.0,
+            -9.0
+          ]
+        },
+        "volume_mm3": 30.336223974274056,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "SCHEIBE_CSK8_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -4.300000000000001,
+            9.0,
+            9.000000000000002
+          ],
+          "min": [
+            -4.500000000000001,
+            -9.0,
+            -9.0
+          ]
+        },
+        "volume_mm3": 30.336223974273906,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "SCHEIBE_CSK8_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/SCHEIBE_CSK8_NICO_1:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.500000000000001,
+            9.0,
+            9.000000000000002
+          ],
+          "min": [
+            4.300000000000001,
+            -9.0,
+            -9.0
+          ]
+        },
+        "volume_mm3": 30.3362239742739,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "KUGEL_CSK8_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.0,
+            9.36,
+            2.0
+          ],
+          "min": [
+            -1.0,
+            5.36,
+            -2.0
+          ]
+        },
+        "volume_mm3": 33.51032163978375,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "KUGEL_CSK8_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK8_NICO_ASM__ASM:1/KUGEL_CSK8_NICO_1:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.0,
+            2.0,
+            -5.36
+          ],
+          "min": [
+            -1.0,
+            -2.0,
+            -9.36
+          ]
+        },
+        "volume_mm3": 33.510321637732474,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "KUGEL_CSK8_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK8_NICO_ASM__ASM:1/KUGEL_CSK8_NICO_1:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.0,
+            -5.36,
+            2.0
+          ],
+          "min": [
+            -1.0,
+            -9.36,
+            -2.0
+          ]
+        },
+        "volume_mm3": 33.51032163978375,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "KUGEL_CSK8_NICO_1 (CSK8:1/FREILAUF_CSK8_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK8_NICO_ASM__ASM:1/KUGEL_CSK8_NICO_1:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.0,
+            2.0,
+            9.36
+          ],
+          "min": [
+            -1.0,
+            -2.0,
+            5.36
+          ]
+        },
+        "volume_mm3": 33.510321637732474,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0028",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.500000000000471,
+            11.000000000000002,
+            11.0
+          ],
+          "min": [
+            -4.500000000000471,
+            -11.0,
+            -11.0
+          ]
+        },
+        "volume_mm3": 1076.0005859331732,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0029",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.5000000000002585,
+            5.72,
+            5.72
+          ],
+          "min": [
+            -4.500000000000275,
+            -5.72,
+            -5.72
+          ]
+        },
+        "volume_mm3": 452.00244987637996,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 578,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -4.5,
+            9.0
+          ],
+          [
+            -4.5,
+            10.63603
+          ],
+          [
+            -3.5,
+            11.0
+          ],
+          [
+            -0.118313,
+            9.0
+          ],
+          [
+            1.0,
+            9.345
+          ],
+          [
+            2.118313,
+            9.0
+          ],
+          [
+            3.5,
+            11.0
+          ],
+          [
+            4.5,
+            9.0
+          ],
+          [
+            4.5,
+            10.63603
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.0
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.0
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              7.36,
+              1.985
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1123,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -4.5,
+            4.181985
+          ],
+          [
+            -4.5,
+            5.72
+          ],
+          [
+            -4.0,
+            4.0
+          ],
+          [
+            -0.118313,
+            5.72
+          ],
+          [
+            1.0,
+            5.375
+          ],
+          [
+            2.118313,
+            5.72
+          ],
+          [
+            4.0,
+            4.0
+          ],
+          [
+            4.5,
+            4.181985
+          ],
+          [
+            4.5,
+            5.72
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              4.0
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              5.72
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              7.36,
+              1.985
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1362,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.0,
+            0.0
+          ],
+          [
+            0.0,
+            2.0
+          ],
+          [
+            2.0,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.0
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3033,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -3.11,
+            5.85
+          ],
+          [
+            -3.11,
+            8.9
+          ],
+          [
+            -0.01,
+            5.85
+          ],
+          [
+            -0.01,
+            8.9
+          ],
+          [
+            0.301542,
+            5.85
+          ],
+          [
+            0.337552,
+            8.9
+          ],
+          [
+            1.59,
+            5.85
+          ],
+          [
+            1.59,
+            6.083556
+          ],
+          [
+            1.59,
+            8.9
+          ],
+          [
+            2.842448,
+            8.9
+          ],
+          [
+            2.878458,
+            5.85
+          ],
+          [
+            3.11,
+            5.85
+          ],
+          [
+            3.11,
+            6.083354
+          ],
+          [
+            3.11,
+            7.469901
+          ],
+          [
+            3.11,
+            8.636646
+          ],
+          [
+            3.11,
+            8.9
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              5.85
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              8.9
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              1.985
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3291,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -1.5,
+            0.0
+          ],
+          [
+            -1.5,
+            2.1
+          ],
+          [
+            -1.5,
+            2.478911
+          ],
+          [
+            -1.5,
+            3.2
+          ],
+          [
+            -1.5,
+            3.696282
+          ],
+          [
+            1.5,
+            0.0
+          ],
+          [
+            1.5,
+            2.1
+          ],
+          [
+            1.5,
+            2.478911
+          ],
+          [
+            1.5,
+            3.2
+          ],
+          [
+            1.5,
+            3.696282
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3580,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.1,
+            5.72
+          ],
+          [
+            -0.1,
+            9.0
+          ],
+          [
+            0.1,
+            5.72
+          ],
+          [
+            0.1,
+            9.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              5.72
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.0
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3817,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.1,
+            5.72
+          ],
+          [
+            -0.1,
+            9.0
+          ],
+          [
+            0.1,
+            5.72
+          ],
+          [
+            0.1,
+            9.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              5.72
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.0
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK12_2RS.stp",
+    "sha256": "f9fdf8e146aa825f2d17d747f916159c1f48fa1fb88c71c7fea35db782f060df",
+    "bodies": [
+      {
+        "name": "KAEFIG_CSK12_NICO_1",
+        "closed": false,
+        "bbox": {
+          "max": [
+            6.454999999999999,
+            13.985000000000003,
+            13.10000339563821
+          ],
+          "min": [
+            -2.18,
+            -13.1,
+            -13.100003395638211
+          ]
+        },
+        "volume_mm3": null,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C18-3_8_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            1.72,
+            10.1858731829925,
+            10.327294539229214
+          ],
+          "min": [
+            -2.08,
+            5.271481053745994,
+            5.660389783398
+          ]
+        },
+        "volume_mm3": 38.902500000000096,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C18-3_8_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/KLEMMKOERPER_CSK_C18-3_8_NICO_1:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            1.72,
+            10.327294539229214,
+            -5.271481053745995
+          ],
+          "min": [
+            -2.08,
+            5.660389783398001,
+            -10.185873182992502
+          ]
+        },
+        "volume_mm3": 38.90250000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C18-3_8_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/KLEMMKOERPER_CSK_C18-3_8_NICO_1:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            1.72,
+            -5.271481053745995,
+            -5.660389783398001
+          ],
+          "min": [
+            -2.08,
+            -10.185873182992502,
+            -10.327294539229214
+          ]
+        },
+        "volume_mm3": 38.90250000000011,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "KLEMMKOERPER_CSK_C18-3_8_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/KLEMMKOERPER_CSK_C18-3_8_NICO_1:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            1.72,
+            -5.660389783398001,
+            10.185873182992502
+          ],
+          "min": [
+            -2.08,
+            -10.327294539229214,
+            5.271481053745995
+          ]
+        },
+        "volume_mm3": 38.90250000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "DECKSCHEIBE_CSK12_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -2.18,
+            13.295,
+            13.295
+          ],
+          "min": [
+            -2.4800000000000004,
+            -13.295,
+            -13.295
+          ]
+        },
+        "volume_mm3": 88.45719603396023,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "SCHEIBE_CSK12_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -6.699999999999999,
+            13.295,
+            13.295
+          ],
+          "min": [
+            -7.0,
+            -13.295,
+            -13.295
+          ]
+        },
+        "volume_mm3": 88.45719603396057,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "SCHEIBE_CSK12_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/SCHEIBE_CSK12_NICO_1:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.0,
+            13.295,
+            13.295
+          ],
+          "min": [
+            6.699999999999999,
+            -13.295,
+            -13.295
+          ]
+        },
+        "volume_mm3": 88.4571960339606,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "KUGEL_CSK12_NICO_1",
+        "closed": true,
+        "bbox": {
+          "max": [
+            6.47,
+            14.0,
+            2.8
+          ],
+          "min": [
+            0.8700000000000001,
+            8.399999999999999,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956658,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "KUGEL_CSK12_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK12-2RS_NICO_ASM:1/KUGEL_CSK12_NICO_1:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            6.47,
+            2.8,
+            -8.399999999999999
+          ],
+          "min": [
+            0.8700000000000001,
+            -2.8,
+            -14.0
+          ]
+        },
+        "volume_mm3": 91.9523225739379,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "KUGEL_CSK12_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK12-2RS_NICO_ASM:1/KUGEL_CSK12_NICO_1:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            6.47,
+            -8.399999999999999,
+            2.8
+          ],
+          "min": [
+            0.8700000000000001,
+            -14.0,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956658,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "KUGEL_CSK12_NICO_1 (CSK12_2RS:1/FREILAUF_CSK12-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK12-2RS_NICO_ASM:1/KUGEL_CSK12_NICO_1:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            6.47,
+            2.8,
+            14.0
+          ],
+          "min": [
+            0.8700000000000001,
+            -2.8,
+            8.399999999999999
+          ]
+        },
+        "volume_mm3": 91.9523225739379,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "MANIFOLD_SOLID_BREP_364",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.000000000001701,
+            16.0,
+            16.0
+          ],
+          "min": [
+            -7.000000000001701,
+            -16.0,
+            -16.0
+          ]
+        },
+        "volume_mm3": 3302.7245519891485,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      },
+      {
+        "name": "MANIFOLD_SOLID_BREP_728",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.0,
+            9.105,
+            9.105000000000002
+          ],
+          "min": [
+            -7.0,
+            -9.105,
+            -9.105
+          ]
+        },
+        "volume_mm3": 1953.6883209400037,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 578,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -7.0,
+            13.295
+          ],
+          [
+            -7.0,
+            15.63603
+          ],
+          [
+            -6.0,
+            16.0
+          ],
+          [
+            1.842604,
+            13.295
+          ],
+          [
+            3.67,
+            13.98
+          ],
+          [
+            5.497396,
+            13.295
+          ],
+          [
+            6.0,
+            16.0
+          ],
+          [
+            7.0,
+            13.295
+          ],
+          [
+            7.0,
+            15.63603
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              13.295
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              16.0
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              11.2,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1123,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -7.0,
+            6.36397
+          ],
+          [
+            -7.0,
+            9.105
+          ],
+          [
+            -6.0,
+            6.0
+          ],
+          [
+            1.842604,
+            9.105
+          ],
+          [
+            3.67,
+            8.42
+          ],
+          [
+            5.497396,
+            9.105
+          ],
+          [
+            6.0,
+            6.0
+          ],
+          [
+            7.0,
+            6.36397
+          ],
+          [
+            7.0,
+            9.105
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              6.0
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.105
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              11.2,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1362,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.8,
+            0.0
+          ],
+          [
+            0.0,
+            2.8
+          ],
+          [
+            2.8,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.8
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3083,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -4.0,
+            9.3
+          ],
+          [
+            -4.0,
+            13.1
+          ],
+          [
+            -0.186228,
+            9.3
+          ],
+          [
+            -0.186228,
+            13.1
+          ],
+          [
+            -0.1,
+            9.3
+          ],
+          [
+            -0.1,
+            13.1
+          ],
+          [
+            1.85,
+            9.3
+          ],
+          [
+            1.85,
+            9.735628
+          ],
+          [
+            1.85,
+            9.750675
+          ],
+          [
+            1.85,
+            13.1
+          ],
+          [
+            3.886228,
+            9.3
+          ],
+          [
+            3.886228,
+            13.1
+          ],
+          [
+            4.0,
+            9.3
+          ],
+          [
+            4.0,
+            9.429767
+          ],
+          [
+            4.0,
+            11.339035
+          ],
+          [
+            4.0,
+            12.970233
+          ],
+          [
+            4.0,
+            13.1
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.3
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              13.1
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.785
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3341,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -1.9,
+            0.0
+          ],
+          [
+            -1.9,
+            2.563201
+          ],
+          [
+            -1.9,
+            2.75
+          ],
+          [
+            -1.9,
+            4.2
+          ],
+          [
+            -1.9,
+            4.837355
+          ],
+          [
+            1.9,
+            0.0
+          ],
+          [
+            1.9,
+            2.563201
+          ],
+          [
+            1.9,
+            2.75
+          ],
+          [
+            1.9,
+            4.2
+          ],
+          [
+            1.9,
+            4.837355
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3630,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            9.105
+          ],
+          [
+            -0.15,
+            13.295
+          ],
+          [
+            0.15,
+            9.105
+          ],
+          [
+            0.15,
+            13.295
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.105
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              13.295
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3867,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            9.105
+          ],
+          [
+            -0.15,
+            13.295
+          ],
+          [
+            0.15,
+            9.105
+          ],
+          [
+            0.15,
+            13.295
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              9.105
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              13.295
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK15_P.stp",
+    "sha256": "f9bd9384ee9107e45cca180a7ee3d26415cc5ef28fb79ec1fd009b0a32fa925c",
+    "bodies": [
+      {
+        "name": "PRT0011",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.905000000000001,
+            15.935000000000004,
+            15.000002410290803
+          ],
+          "min": [
+            -4.585000000000001,
+            -15.0,
+            -15.000002410290804
+          ]
+        },
+        "volume_mm3": 2440.941078478311,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "PRT0012",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            11.4940207281875,
+            11.776863440662215
+          ],
+          "min": [
+            -4.485,
+            6.579628598940993,
+            7.109958684831
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0012 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/PRT0012:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            11.776863440662215,
+            -6.579628598940993
+          ],
+          "min": [
+            -4.485,
+            7.109958684831,
+            -11.4940207281875
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0012 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/PRT0012:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            -6.579628598940993,
+            -7.109958684831
+          ],
+          "min": [
+            -4.485,
+            -11.4940207281875,
+            -11.776863440662215
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0012 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/PRT0012:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            -7.109958684831,
+            11.4940207281875
+          ],
+          "min": [
+            -4.485,
+            -11.776863440662215,
+            6.579628598940993
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0013",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -4.585,
+            15.245,
+            15.245
+          ],
+          "min": [
+            -4.885000000000002,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.8582257002629,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0014",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -5.199999999999999,
+            15.245,
+            15.245
+          ],
+          "min": [
+            -5.5,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.85822570026284,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0014 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/PRT0014:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.5,
+            15.245,
+            15.245
+          ],
+          "min": [
+            5.199999999999999,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.8582257002627,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0010",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            15.95,
+            2.8
+          ],
+          "min": [
+            -0.6799999999999997,
+            10.350000000000001,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956656,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0010 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-P_NICO_A_ASM:1/PRT0010:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            2.8,
+            -10.350000000000001
+          ],
+          "min": [
+            -0.6799999999999997,
+            -2.8,
+            -15.95
+          ]
+        },
+        "volume_mm3": 91.95232257393786,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0010 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-P_NICO_A_ASM:1/PRT0010:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            -10.350000000000001,
+            2.8
+          ],
+          "min": [
+            -0.6799999999999997,
+            -15.95,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956656,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0010 (CSK15_P:1/FREILAUF_CSK15-P_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-P_NICO_A_ASM:1/PRT0010:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            2.8,
+            15.95
+          ],
+          "min": [
+            -0.6799999999999997,
+            -2.8,
+            10.350000000000001
+          ]
+        },
+        "volume_mm3": 91.95232257393786,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "MANIFOLD_SOLID_BREP_396",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.500006174428,
+            11.055,
+            11.055
+          ],
+          "min": [
+            -5.500006122097,
+            -11.055,
+            -11.055
+          ]
+        },
+        "volume_mm3": 2074.028915332766,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 5
+        }
+      },
+      {
+        "name": "MANIFOLD_SOLID_BREP_760",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.500000000002,
+            17.500000000000004,
+            17.5
+          ],
+          "min": [
+            -5.500000000002,
+            -17.5,
+            -17.5
+          ]
+        },
+        "volume_mm3": 2344.7196423213054,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 610,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -5.500006,
+            7.863731
+          ],
+          [
+            -5.500006,
+            9.05207
+          ],
+          [
+            -5.500006,
+            9.052072
+          ],
+          [
+            -5.5,
+            7.863627
+          ],
+          [
+            -5.5,
+            7.863897
+          ],
+          [
+            -5.5,
+            7.864011
+          ],
+          [
+            -5.5,
+            11.055
+          ],
+          [
+            -4.499852,
+            7.499621
+          ],
+          [
+            -4.499852,
+            7.499658
+          ],
+          [
+            -4.499852,
+            7.49989
+          ],
+          [
+            -4.499852,
+            7.500003
+          ],
+          [
+            -4.499852,
+            7.500272
+          ],
+          [
+            0.292604,
+            11.055
+          ],
+          [
+            2.12,
+            10.37
+          ],
+          [
+            3.947396,
+            11.055
+          ],
+          [
+            4.499853,
+            7.499621
+          ],
+          [
+            4.499853,
+            7.499658
+          ],
+          [
+            5.5,
+            7.863628
+          ],
+          [
+            5.5,
+            7.863899
+          ],
+          [
+            5.5,
+            7.864009
+          ],
+          [
+            5.5,
+            11.055
+          ],
+          [
+            5.500006,
+            7.86373
+          ],
+          [
+            5.500006,
+            9.05207
+          ],
+          [
+            5.500006,
+            9.052072
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              7.5
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              13.15,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1155,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -5.5,
+            15.245
+          ],
+          [
+            -5.5,
+            17.13603
+          ],
+          [
+            -4.5,
+            17.5
+          ],
+          [
+            0.292604,
+            15.245
+          ],
+          [
+            2.12,
+            15.93
+          ],
+          [
+            3.947396,
+            15.245
+          ],
+          [
+            4.5,
+            17.5
+          ],
+          [
+            5.5,
+            15.245
+          ],
+          [
+            5.5,
+            17.13603
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              17.5
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              13.15,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1394,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.8,
+            0.0
+          ],
+          [
+            0.0,
+            2.8
+          ],
+          [
+            2.8,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.8
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3101,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -4.495,
+            11.3
+          ],
+          [
+            -4.495,
+            15.0
+          ],
+          [
+            -0.195,
+            11.3
+          ],
+          [
+            -0.195,
+            15.0
+          ],
+          [
+            0.12824,
+            11.3
+          ],
+          [
+            0.12824,
+            15.0
+          ],
+          [
+            2.21,
+            11.3
+          ],
+          [
+            2.21,
+            11.677219
+          ],
+          [
+            2.21,
+            15.0
+          ],
+          [
+            4.29176,
+            11.3
+          ],
+          [
+            4.29176,
+            15.0
+          ],
+          [
+            4.495,
+            11.3
+          ],
+          [
+            4.495,
+            11.557832
+          ],
+          [
+            4.495,
+            13.246037
+          ],
+          [
+            4.495,
+            14.742168
+          ],
+          [
+            4.495,
+            15.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.3
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.0
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.785
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3359,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.1,
+            0.0
+          ],
+          [
+            -2.1,
+            2.563201
+          ],
+          [
+            -2.1,
+            2.75
+          ],
+          [
+            -2.1,
+            4.2
+          ],
+          [
+            -2.1,
+            4.837355
+          ],
+          [
+            2.1,
+            0.0
+          ],
+          [
+            2.1,
+            2.563201
+          ],
+          [
+            2.1,
+            2.75
+          ],
+          [
+            2.1,
+            4.2
+          ],
+          [
+            2.1,
+            4.837355
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3648,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            11.055
+          ],
+          [
+            -0.15,
+            15.245
+          ],
+          [
+            0.15,
+            11.055
+          ],
+          [
+            0.15,
+            15.245
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3885,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            11.055
+          ],
+          [
+            -0.15,
+            15.245
+          ],
+          [
+            0.15,
+            11.055
+          ],
+          [
+            0.15,
+            15.245
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK15_PP.stp",
+    "sha256": "ff598394508a1ccf766fe3bf77d876b10673d521129648314bd81f3b98dc428a",
+    "bodies": [
+      {
+        "name": "PRT0017",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.905000000000001,
+            15.935000000000004,
+            15.000002410290803
+          ],
+          "min": [
+            -4.585000000000001,
+            -15.0,
+            -15.000002410290804
+          ]
+        },
+        "volume_mm3": 2440.941078478311,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "PRT0018",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            11.4940207281875,
+            11.776863440662215
+          ],
+          "min": [
+            -4.485,
+            6.579628598940993,
+            7.109958684831
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0018 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/PRT0018:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            11.776863440662215,
+            -6.579628598940993
+          ],
+          "min": [
+            -4.485,
+            7.109958684831,
+            -11.4940207281875
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0018 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/PRT0018:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            -6.579628598940993,
+            -7.109958684831
+          ],
+          "min": [
+            -4.485,
+            -11.4940207281875,
+            -11.776863440662215
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0018 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/PRT0018:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -0.285,
+            -7.109958684831,
+            11.4940207281875
+          ],
+          "min": [
+            -4.485,
+            -11.776863440662215,
+            6.579628598940993
+          ]
+        },
+        "volume_mm3": 42.99750000000012,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0019",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -4.585,
+            15.245,
+            15.245
+          ],
+          "min": [
+            -4.885000000000002,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.8582257002629,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0020",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -5.199999999999999,
+            15.245,
+            15.245
+          ],
+          "min": [
+            -5.5,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.85822570026284,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0020 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/PRT0020:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.5,
+            15.245,
+            15.245
+          ],
+          "min": [
+            5.199999999999999,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.8582257002627,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0016",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            15.95,
+            2.8
+          ],
+          "min": [
+            -0.6799999999999997,
+            10.350000000000001,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956656,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0016 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-PP_NICO__ASM:1/PRT0016:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            2.8,
+            -10.350000000000001
+          ],
+          "min": [
+            -0.6799999999999997,
+            -2.8,
+            -15.95
+          ]
+        },
+        "volume_mm3": 91.95232257393786,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0016 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-PP_NICO__ASM:1/PRT0016:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            -10.350000000000001,
+            2.8
+          ],
+          "min": [
+            -0.6799999999999997,
+            -15.95,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956656,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0016 (CSK15_PP:1/FREILAUF_CSK15-PP_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-PP_NICO__ASM:1/PRT0016:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            4.92,
+            2.8,
+            15.95
+          ],
+          "min": [
+            -0.6799999999999997,
+            -2.8,
+            10.350000000000001
+          ]
+        },
+        "volume_mm3": 91.95232257393786,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0015",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.500006174428,
+            11.055,
+            11.055
+          ],
+          "min": [
+            -5.500006122097,
+            -11.055,
+            -11.055
+          ]
+        },
+        "volume_mm3": 2074.028915332777,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 5
+        }
+      },
+      {
+        "name": "MANIFOLD_SOLID_BREP_792",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.500031295462537,
+            17.5,
+            17.50014513193
+          ],
+          "min": [
+            -5.500031304731,
+            -17.47328488991,
+            -17.50014306088009
+          ]
+        },
+        "volume_mm3": 2332.4464994380696,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 5
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 610,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -5.500006,
+            7.863731
+          ],
+          [
+            -5.500006,
+            9.05207
+          ],
+          [
+            -5.500006,
+            9.052072
+          ],
+          [
+            -5.5,
+            7.863627
+          ],
+          [
+            -5.5,
+            7.863897
+          ],
+          [
+            -5.5,
+            7.864011
+          ],
+          [
+            -5.5,
+            11.055
+          ],
+          [
+            -4.499852,
+            7.499621
+          ],
+          [
+            -4.499852,
+            7.499658
+          ],
+          [
+            0.292604,
+            11.055
+          ],
+          [
+            2.12,
+            10.37
+          ],
+          [
+            3.947396,
+            11.055
+          ],
+          [
+            4.499853,
+            7.499621
+          ],
+          [
+            4.499853,
+            7.499658
+          ],
+          [
+            4.499853,
+            7.499892
+          ],
+          [
+            4.499853,
+            7.500001
+          ],
+          [
+            4.499853,
+            7.500272
+          ],
+          [
+            5.5,
+            7.863628
+          ],
+          [
+            5.5,
+            7.863899
+          ],
+          [
+            5.5,
+            7.864009
+          ],
+          [
+            5.5,
+            11.055
+          ],
+          [
+            5.500006,
+            7.86373
+          ],
+          [
+            5.500006,
+            9.05207
+          ],
+          [
+            5.500006,
+            9.052072
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              7.5
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              13.15,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1207,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -5.500031,
+            16.92956
+          ],
+          [
+            -5.500031,
+            17.137379
+          ],
+          [
+            -5.5,
+            15.245
+          ],
+          [
+            -5.5,
+            17.135941
+          ],
+          [
+            -5.5,
+            17.136044
+          ],
+          [
+            -5.5,
+            17.137782
+          ],
+          [
+            -4.499748,
+            17.500041
+          ],
+          [
+            -4.499748,
+            17.500143
+          ],
+          [
+            -4.499748,
+            17.501876
+          ],
+          [
+            -4.499748,
+            17.501882
+          ],
+          [
+            0.292604,
+            15.245
+          ],
+          [
+            2.12,
+            15.93
+          ],
+          [
+            3.947396,
+            15.245
+          ],
+          [
+            4.499748,
+            17.498302
+          ],
+          [
+            4.499748,
+            17.500039
+          ],
+          [
+            4.499748,
+            17.500145
+          ],
+          [
+            4.499748,
+            17.501876
+          ],
+          [
+            4.499748,
+            17.501882
+          ],
+          [
+            5.5,
+            15.245
+          ],
+          [
+            5.5,
+            17.135939
+          ],
+          [
+            5.5,
+            17.136046
+          ],
+          [
+            5.5,
+            17.137782
+          ],
+          [
+            5.500031,
+            16.92956
+          ],
+          [
+            5.500031,
+            17.137379
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              17.5
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              13.15,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1446,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.8,
+            0.0
+          ],
+          [
+            0.0,
+            2.8
+          ],
+          [
+            2.8,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.8
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3153,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -4.495,
+            11.3
+          ],
+          [
+            -4.495,
+            15.0
+          ],
+          [
+            -0.195,
+            11.3
+          ],
+          [
+            -0.195,
+            15.0
+          ],
+          [
+            0.12824,
+            11.3
+          ],
+          [
+            0.12824,
+            15.0
+          ],
+          [
+            2.21,
+            11.3
+          ],
+          [
+            2.21,
+            11.677219
+          ],
+          [
+            2.21,
+            15.0
+          ],
+          [
+            4.29176,
+            11.3
+          ],
+          [
+            4.29176,
+            15.0
+          ],
+          [
+            4.495,
+            11.3
+          ],
+          [
+            4.495,
+            11.557832
+          ],
+          [
+            4.495,
+            13.246037
+          ],
+          [
+            4.495,
+            14.742168
+          ],
+          [
+            4.495,
+            15.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.3
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.0
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.785
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3411,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.1,
+            0.0
+          ],
+          [
+            -2.1,
+            2.563201
+          ],
+          [
+            -2.1,
+            2.75
+          ],
+          [
+            -2.1,
+            4.2
+          ],
+          [
+            -2.1,
+            4.837355
+          ],
+          [
+            2.1,
+            0.0
+          ],
+          [
+            2.1,
+            2.563201
+          ],
+          [
+            2.1,
+            2.75
+          ],
+          [
+            2.1,
+            4.2
+          ],
+          [
+            2.1,
+            4.837355
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3700,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            11.055
+          ],
+          [
+            -0.15,
+            15.245
+          ],
+          [
+            0.15,
+            11.055
+          ],
+          [
+            0.15,
+            15.245
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3937,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            11.055
+          ],
+          [
+            -0.15,
+            15.245
+          ],
+          [
+            0.15,
+            11.055
+          ],
+          [
+            0.15,
+            15.245
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK15_2RS.stp",
+    "sha256": "9e8e35d00f7be8ffef54b27ca036d5677bf4a73435c293efdba00736e753258b",
+    "bodies": [
+      {
+        "name": "PRT0006",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.405,
+            15.935000000000004,
+            15.000002410290803
+          ],
+          "min": [
+            -2.0850000000000004,
+            -15.0,
+            -15.000002410290804
+          ]
+        },
+        "volume_mm3": 2440.941078478317,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "PRT0007",
+        "closed": true,
+        "bbox": {
+          "max": [
+            2.215,
+            11.564731406305501,
+            11.706152762543216
+          ],
+          "min": [
+            -1.9850000000000003,
+            6.650339277058994,
+            7.039248006712
+          ]
+        },
+        "volume_mm3": 42.997500000000116,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0007 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/PRT0007:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            2.215,
+            11.706152762543216,
+            -6.650339277058994
+          ],
+          "min": [
+            -1.9850000000000003,
+            7.039248006712,
+            -11.564731406305501
+          ]
+        },
+        "volume_mm3": 42.997500000000116,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0007 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/PRT0007:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            2.215,
+            -6.650339277058994,
+            -7.039248006712
+          ],
+          "min": [
+            -1.9850000000000003,
+            -11.564731406305501,
+            -11.706152762543216
+          ]
+        },
+        "volume_mm3": 42.997500000000116,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0007 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/PRT0007:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            2.215,
+            -7.039248006712,
+            11.564731406305501
+          ],
+          "min": [
+            -1.9850000000000003,
+            -11.706152762543216,
+            6.650339277058994
+          ]
+        },
+        "volume_mm3": 42.997500000000116,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0008",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -2.085,
+            15.245,
+            15.245
+          ],
+          "min": [
+            -2.3850000000000002,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.85822570026237,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0009",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -7.699999999999999,
+            15.245,
+            15.245
+          ],
+          "min": [
+            -8.0,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.8582257002629,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0009 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/PRT0009:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            8.0,
+            15.245,
+            15.245
+          ],
+          "min": [
+            7.699999999999999,
+            -15.245,
+            -15.245
+          ]
+        },
+        "volume_mm3": 103.85822570026285,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0005",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.42,
+            15.95,
+            2.8
+          ],
+          "min": [
+            1.8200000000000003,
+            10.350000000000001,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956656,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0005 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-2RS_NICO_ASM:1/PRT0005:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.42,
+            2.8,
+            -10.350000000000001
+          ],
+          "min": [
+            1.8200000000000003,
+            -2.8,
+            -15.95
+          ]
+        },
+        "volume_mm3": 91.95232257393789,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0005 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-2RS_NICO_ASM:1/PRT0005:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.42,
+            -10.350000000000001,
+            2.8
+          ],
+          "min": [
+            1.8200000000000003,
+            -15.95,
+            -2.8
+          ]
+        },
+        "volume_mm3": 91.95232257956656,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0005 (CSK15_2RS:1/FREILAUF_CSK15-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK15-2RS_NICO_ASM:1/PRT0005:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            7.42,
+            2.8,
+            15.95
+          ],
+          "min": [
+            1.8200000000000003,
+            -2.8,
+            10.350000000000001
+          ]
+        },
+        "volume_mm3": 91.95232257393789,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0003",
+        "closed": true,
+        "bbox": {
+          "max": [
+            8.000000000002,
+            17.500000000000004,
+            17.5
+          ],
+          "min": [
+            -8.000000000002,
+            -17.5,
+            -17.5
+          ]
+        },
+        "volume_mm3": 3504.595257335345,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0004",
+        "closed": true,
+        "bbox": {
+          "max": [
+            8.0,
+            11.055,
+            11.055
+          ],
+          "min": [
+            -8.0,
+            -11.055,
+            -11.055
+          ]
+        },
+        "volume_mm3": 3182.0935895326606,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 578,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -8.0,
+            15.245
+          ],
+          [
+            -8.0,
+            17.13603
+          ],
+          [
+            -7.0,
+            17.5
+          ],
+          [
+            2.792604,
+            15.245
+          ],
+          [
+            4.62,
+            15.93
+          ],
+          [
+            6.447396,
+            15.245
+          ],
+          [
+            7.0,
+            17.5
+          ],
+          [
+            8.0,
+            15.245
+          ],
+          [
+            8.0,
+            17.13603
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              17.5
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              13.15,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1123,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -8.0,
+            7.86397
+          ],
+          [
+            -8.0,
+            11.055
+          ],
+          [
+            -7.0,
+            7.5
+          ],
+          [
+            2.792604,
+            11.055
+          ],
+          [
+            4.62,
+            10.37
+          ],
+          [
+            6.447396,
+            11.055
+          ],
+          [
+            7.0,
+            7.5
+          ],
+          [
+            8.0,
+            7.86397
+          ],
+          [
+            8.0,
+            11.055
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              7.5
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              13.15,
+              2.78
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1362,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.8,
+            0.0
+          ],
+          [
+            0.0,
+            2.8
+          ],
+          [
+            2.8,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.8
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3069,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -4.495,
+            11.3
+          ],
+          [
+            -4.495,
+            15.0
+          ],
+          [
+            -0.195,
+            11.3
+          ],
+          [
+            -0.195,
+            15.0
+          ],
+          [
+            0.12824,
+            11.3
+          ],
+          [
+            0.12824,
+            15.0
+          ],
+          [
+            2.21,
+            11.3
+          ],
+          [
+            2.21,
+            11.677219
+          ],
+          [
+            2.21,
+            15.0
+          ],
+          [
+            4.29176,
+            11.3
+          ],
+          [
+            4.29176,
+            15.0
+          ],
+          [
+            4.495,
+            11.3
+          ],
+          [
+            4.495,
+            11.557832
+          ],
+          [
+            4.495,
+            13.246037
+          ],
+          [
+            4.495,
+            14.742168
+          ],
+          [
+            4.495,
+            15.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.3
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.0
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              2.785
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3327,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -2.1,
+            0.0
+          ],
+          [
+            -2.1,
+            2.563201
+          ],
+          [
+            -2.1,
+            2.75
+          ],
+          [
+            -2.1,
+            4.2
+          ],
+          [
+            -2.1,
+            4.837355
+          ],
+          [
+            2.1,
+            0.0
+          ],
+          [
+            2.1,
+            2.563201
+          ],
+          [
+            2.1,
+            2.75
+          ],
+          [
+            2.1,
+            4.2
+          ],
+          [
+            2.1,
+            4.837355
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3616,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            11.055
+          ],
+          [
+            -0.15,
+            15.245
+          ],
+          [
+            0.15,
+            11.055
+          ],
+          [
+            0.15,
+            15.245
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3853,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.15,
+            11.055
+          ],
+          [
+            -0.15,
+            15.245
+          ],
+          [
+            0.15,
+            11.055
+          ],
+          [
+            0.15,
+            15.245
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              11.055
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              15.245
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK40_P.stp",
+    "sha256": "bf82a950368abcf3bc9ee2695750c0bced950f747a1dd94231c6a87e42dbe8b8",
+    "bodies": [
+      {
+        "name": "PRT0017",
+        "closed": false,
+        "bbox": {
+          "max": [
+            9.97,
+            34.57,
+            33.25014583963465
+          ],
+          "min": [
+            -9.600000000000001,
+            -33.25,
+            -33.25014583959823
+          ]
+        },
+        "volume_mm3": null,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "PRT0018",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            24.40579055265274,
+            24.971475977605074
+          ],
+          "min": [
+            -9.5,
+            18.60751494692305,
+            19.45604308435
+          ]
+        },
+        "volume_mm3": 186.7919999999981,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0018 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/PRT0018:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            24.971475977605074,
+            -18.60751494692305
+          ],
+          "min": [
+            -9.5,
+            19.45604308435,
+            -24.40579055265274
+          ]
+        },
+        "volume_mm3": 186.79199999999815,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0018 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/PRT0018:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            -18.60751494692305,
+            -19.45604308435
+          ],
+          "min": [
+            -9.5,
+            -24.40579055265274,
+            -24.971475977605074
+          ]
+        },
+        "volume_mm3": 186.7919999999981,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0018 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/PRT0018:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            -19.45604308435,
+            24.40579055265274
+          ],
+          "min": [
+            -9.5,
+            -24.971475977605074,
+            18.60751494692305
+          ]
+        },
+        "volume_mm3": 186.79199999999815,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0019",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -9.599999999999998,
+            33.495,
+            33.495
+          ],
+          "min": [
+            -10.200000000000001,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298365,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0020",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -10.399999999999999,
+            33.495,
+            33.495
+          ],
+          "min": [
+            -11.0,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298373,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0020 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/PRT0020:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            11.0,
+            33.495,
+            33.495
+          ],
+          "min": [
+            10.399999999999999,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298375,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0016",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            34.6,
+            3.6
+          ],
+          "min": [
+            2.8000000000000003,
+            27.4,
+            -3.6
+          ]
+        },
+        "volume_mm3": 195.43219580321886,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0016 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-P_NICO_A_ASM:1/PRT0016:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            3.6,
+            -27.4
+          ],
+          "min": [
+            2.8000000000000003,
+            -3.6,
+            -34.6
+          ]
+        },
+        "volume_mm3": 195.43219579125585,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0016 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-P_NICO_A_ASM:1/PRT0016:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            -27.4,
+            3.6
+          ],
+          "min": [
+            2.8000000000000003,
+            -34.6,
+            -3.6
+          ]
+        },
+        "volume_mm3": 195.43219580321886,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0016 (CSK40_P:1/FREILAUF_CSK40-P_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-P_NICO_A_ASM:1/PRT0016:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            3.6,
+            34.6
+          ],
+          "min": [
+            2.8000000000000003,
+            -3.6,
+            27.4
+          ]
+        },
+        "volume_mm3": 195.43219579125585,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0014",
+        "closed": true,
+        "bbox": {
+          "max": [
+            11.00000000075008,
+            28.515,
+            28.515
+          ],
+          "min": [
+            -11.00000000783,
+            -28.515,
+            -28.515
+          ]
+        },
+        "volume_mm3": 26405.435504491026,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 5
+        }
+      },
+      {
+        "name": "PRT0015",
+        "closed": true,
+        "bbox": {
+          "max": [
+            11.0,
+            40.00000000000001,
+            40.0
+          ],
+          "min": [
+            -11.0,
+            -40.0,
+            -40.0
+          ]
+        },
+        "volume_mm3": 31126.912865906485,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 640,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -11.0,
+            21.273896
+          ],
+          [
+            -11.0,
+            24.060133
+          ],
+          [
+            -11.0,
+            28.515
+          ],
+          [
+            -7.5,
+            20.0
+          ],
+          [
+            3.836862,
+            28.515
+          ],
+          [
+            6.4,
+            27.43
+          ],
+          [
+            7.5,
+            20.0
+          ],
+          [
+            8.963138,
+            28.515
+          ],
+          [
+            11.0,
+            21.273896
+          ],
+          [
+            11.0,
+            24.060133
+          ],
+          [
+            11.0,
+            28.515
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              20.0
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              31.0,
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1185,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -11.0,
+            33.495
+          ],
+          [
+            -11.0,
+            38.726104
+          ],
+          [
+            -7.5,
+            40.0
+          ],
+          [
+            3.846595,
+            33.495
+          ],
+          [
+            6.4,
+            34.57
+          ],
+          [
+            7.5,
+            40.0
+          ],
+          [
+            8.953405,
+            33.495
+          ],
+          [
+            11.0,
+            33.495
+          ],
+          [
+            11.0,
+            38.726104
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              40.0
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              31.0,
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1424,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -3.6,
+            0.0
+          ],
+          [
+            0.0,
+            3.6
+          ],
+          [
+            3.6,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              3.6
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3061,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -9.6,
+            28.75
+          ],
+          [
+            -9.6,
+            33.25
+          ],
+          [
+            3.4,
+            28.75
+          ],
+          [
+            3.4,
+            33.25
+          ],
+          [
+            3.628286,
+            28.75
+          ],
+          [
+            3.628286,
+            33.25
+          ],
+          [
+            6.4,
+            28.75
+          ],
+          [
+            6.4,
+            29.015984
+          ],
+          [
+            6.4,
+            33.25
+          ],
+          [
+            9.171714,
+            28.75
+          ],
+          [
+            9.171714,
+            33.25
+          ],
+          [
+            9.6,
+            28.75
+          ],
+          [
+            9.6,
+            29.417312
+          ],
+          [
+            9.6,
+            31.040375
+          ],
+          [
+            9.6,
+            32.582688
+          ],
+          [
+            9.6,
+            33.25
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.75
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.25
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3319,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -6.45,
+            0.0
+          ],
+          [
+            -6.45,
+            3.2
+          ],
+          [
+            -6.45,
+            3.687818
+          ],
+          [
+            -6.45,
+            5.0
+          ],
+          [
+            -6.45,
+            5.73062
+          ],
+          [
+            6.45,
+            0.0
+          ],
+          [
+            6.45,
+            3.2
+          ],
+          [
+            6.45,
+            3.687818
+          ],
+          [
+            6.45,
+            5.0
+          ],
+          [
+            6.45,
+            5.73062
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3608,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.3,
+            28.515
+          ],
+          [
+            -0.3,
+            33.495
+          ],
+          [
+            0.3,
+            28.515
+          ],
+          [
+            0.3,
+            33.495
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3845,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.3,
+            28.515
+          ],
+          [
+            -0.3,
+            33.495
+          ],
+          [
+            0.3,
+            28.515
+          ],
+          [
+            0.3,
+            33.495
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK40_PP.stp",
+    "sha256": "1e3de24dfab327c6becbba8cef76da889b19590ae4fd826029f35d219eadfa18",
+    "bodies": [
+      {
+        "name": "PRT0024",
+        "closed": false,
+        "bbox": {
+          "max": [
+            9.97,
+            34.57,
+            33.25014583963465
+          ],
+          "min": [
+            -9.600000000000001,
+            -33.25,
+            -33.25014583959823
+          ]
+        },
+        "volume_mm3": null,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "PRT0025",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            24.40579055265274,
+            24.971475977605074
+          ],
+          "min": [
+            -9.5,
+            18.60751494692305,
+            19.45604308435
+          ]
+        },
+        "volume_mm3": 186.7919999999981,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0025 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/PRT0025:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            24.971475977605074,
+            -18.60751494692305
+          ],
+          "min": [
+            -9.5,
+            19.45604308435,
+            -24.40579055265274
+          ]
+        },
+        "volume_mm3": 186.79199999999815,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0025 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/PRT0025:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            -18.60751494692305,
+            -19.45604308435
+          ],
+          "min": [
+            -9.5,
+            -24.40579055265274,
+            -24.971475977605074
+          ]
+        },
+        "volume_mm3": 186.7919999999981,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0025 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/PRT0025:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            3.4,
+            -19.45604308435,
+            24.40579055265274
+          ],
+          "min": [
+            -9.5,
+            -24.971475977605074,
+            18.60751494692305
+          ]
+        },
+        "volume_mm3": 186.79199999999815,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0026",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -9.599999999999998,
+            33.495,
+            33.495
+          ],
+          "min": [
+            -10.200000000000001,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298365,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0027",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -10.399999999999999,
+            33.495,
+            33.495
+          ],
+          "min": [
+            -11.0,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298373,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0027 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/PRT0027:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            11.0,
+            33.495,
+            33.495
+          ],
+          "min": [
+            10.399999999999999,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298375,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0023",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            34.6,
+            3.6
+          ],
+          "min": [
+            2.8000000000000003,
+            27.4,
+            -3.6
+          ]
+        },
+        "volume_mm3": 195.43219580321886,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0023 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-PP_NICO__ASM:1/PRT0023:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            3.6,
+            -27.4
+          ],
+          "min": [
+            2.8000000000000003,
+            -3.6,
+            -34.6
+          ]
+        },
+        "volume_mm3": 195.43219579125585,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0023 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-PP_NICO__ASM:1/PRT0023:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            -27.4,
+            3.6
+          ],
+          "min": [
+            2.8000000000000003,
+            -34.6,
+            -3.6
+          ]
+        },
+        "volume_mm3": 195.43219580321886,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0023 (CSK40_PP:1/FREILAUF_CSK40-PP_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-PP_NICO__ASM:1/PRT0023:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            10.0,
+            3.6,
+            34.6
+          ],
+          "min": [
+            2.8000000000000003,
+            -3.6,
+            27.4
+          ]
+        },
+        "volume_mm3": 195.43219579125585,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0021",
+        "closed": true,
+        "bbox": {
+          "max": [
+            11.00000000075008,
+            28.515,
+            28.515
+          ],
+          "min": [
+            -11.00000000783,
+            -28.515,
+            -28.515
+          ]
+        },
+        "volume_mm3": 26405.43550449103,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 5
+        }
+      },
+      {
+        "name": "PRT0022",
+        "closed": true,
+        "bbox": {
+          "max": [
+            11.00000652013,
+            40.0,
+            40.00004867925
+          ],
+          "min": [
+            -11.00000652285,
+            -39.68666895662,
+            -40.00004840538475
+          ]
+        },
+        "volume_mm3": 30534.553022864442,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 5
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 640,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -11.0,
+            21.273896
+          ],
+          [
+            -11.0,
+            24.060133
+          ],
+          [
+            -11.0,
+            28.515
+          ],
+          [
+            -7.5,
+            20.0
+          ],
+          [
+            3.836862,
+            28.515
+          ],
+          [
+            6.4,
+            27.43
+          ],
+          [
+            7.5,
+            20.0
+          ],
+          [
+            8.963138,
+            28.515
+          ],
+          [
+            11.0,
+            21.273896
+          ],
+          [
+            11.0,
+            24.060133
+          ],
+          [
+            11.0,
+            28.515
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              20.0
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              31.0,
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1237,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -11.000007,
+            37.336309
+          ],
+          [
+            -11.000007,
+            37.33631
+          ],
+          [
+            -11.000007,
+            38.726382
+          ],
+          [
+            -11.0,
+            33.495
+          ],
+          [
+            -11.0,
+            38.726068
+          ],
+          [
+            -11.0,
+            38.726116
+          ],
+          [
+            -11.0,
+            38.726469
+          ],
+          [
+            -7.499934,
+            40.0
+          ],
+          [
+            -7.499934,
+            40.000048
+          ],
+          [
+            -7.499934,
+            40.000395
+          ],
+          [
+            -7.499934,
+            40.000401
+          ],
+          [
+            3.846595,
+            33.495
+          ],
+          [
+            6.4,
+            34.57
+          ],
+          [
+            7.499934,
+            39.999647
+          ],
+          [
+            7.499934,
+            39.999999
+          ],
+          [
+            7.499934,
+            40.000049
+          ],
+          [
+            7.499934,
+            40.000395
+          ],
+          [
+            7.499934,
+            40.000401
+          ],
+          [
+            8.953405,
+            33.495
+          ],
+          [
+            11.0,
+            33.495
+          ],
+          [
+            11.0,
+            38.726068
+          ],
+          [
+            11.0,
+            38.726117
+          ],
+          [
+            11.0,
+            38.726469
+          ],
+          [
+            11.000007,
+            37.336309
+          ],
+          [
+            11.000007,
+            37.33631
+          ],
+          [
+            11.000007,
+            38.726382
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              40.0
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              31.0,
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1476,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -3.6,
+            0.0
+          ],
+          [
+            0.0,
+            3.6
+          ],
+          [
+            3.6,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              3.6
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3113,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -9.6,
+            28.75
+          ],
+          [
+            -9.6,
+            33.25
+          ],
+          [
+            3.4,
+            28.75
+          ],
+          [
+            3.4,
+            33.25
+          ],
+          [
+            3.628286,
+            28.75
+          ],
+          [
+            3.628286,
+            33.25
+          ],
+          [
+            6.4,
+            28.75
+          ],
+          [
+            6.4,
+            29.015984
+          ],
+          [
+            6.4,
+            33.25
+          ],
+          [
+            9.171714,
+            28.75
+          ],
+          [
+            9.171714,
+            33.25
+          ],
+          [
+            9.6,
+            28.75
+          ],
+          [
+            9.6,
+            29.417312
+          ],
+          [
+            9.6,
+            31.040375
+          ],
+          [
+            9.6,
+            32.582688
+          ],
+          [
+            9.6,
+            33.25
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.75
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.25
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3371,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -6.45,
+            0.0
+          ],
+          [
+            -6.45,
+            3.2
+          ],
+          [
+            -6.45,
+            3.687818
+          ],
+          [
+            -6.45,
+            5.0
+          ],
+          [
+            -6.45,
+            5.73062
+          ],
+          [
+            6.45,
+            0.0
+          ],
+          [
+            6.45,
+            3.2
+          ],
+          [
+            6.45,
+            3.687818
+          ],
+          [
+            6.45,
+            5.0
+          ],
+          [
+            6.45,
+            5.73062
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3660,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.3,
+            28.515
+          ],
+          [
+            -0.3,
+            33.495
+          ],
+          [
+            0.3,
+            28.515
+          ],
+          [
+            0.3,
+            33.495
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3897,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.3,
+            28.515
+          ],
+          [
+            -0.3,
+            33.495
+          ],
+          [
+            0.3,
+            28.515
+          ],
+          [
+            0.3,
+            33.495
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "CSK40_2RS.stp",
+    "sha256": "4cacf8e2ad3364eb4546f6e9127d0e460855f52d154d0455c1723297a038991f",
+    "bodies": [
+      {
+        "name": "PRT0010",
+        "closed": false,
+        "bbox": {
+          "max": [
+            12.47,
+            34.57,
+            33.25014583963465
+          ],
+          "min": [
+            -7.1000000000000005,
+            -33.25,
+            -33.25014583959823
+          ]
+        },
+        "volume_mm3": null,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 17,
+          "sphere": 5
+        }
+      },
+      {
+        "name": "PRT0011",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.9,
+            24.476501230772737,
+            24.900765299485073
+          ],
+          "min": [
+            -7.0,
+            18.678225625043048,
+            19.38533240623
+          ]
+        },
+        "volume_mm3": 186.7919999999982,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0011 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/PRT0011:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.9,
+            24.900765299485073,
+            -18.67822562504305
+          ],
+          "min": [
+            -7.0,
+            19.38533240623,
+            -24.47650123077274
+          ]
+        },
+        "volume_mm3": 186.79199999999815,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0011 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/PRT0011:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.9,
+            -18.67822562504305,
+            -19.38533240623
+          ],
+          "min": [
+            -7.0,
+            -24.47650123077274,
+            -24.900765299485073
+          ]
+        },
+        "volume_mm3": 186.7919999999981,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0011 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/PRT0011:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            5.9,
+            -19.38533240623,
+            24.47650123077274
+          ],
+          "min": [
+            -7.0,
+            -24.900765299485073,
+            18.67822562504305
+          ]
+        },
+        "volume_mm3": 186.79199999999815,
+        "face_types": {
+          "plane": 7
+        }
+      },
+      {
+        "name": "PRT0012",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -7.1000000000000005,
+            33.495,
+            33.495
+          ],
+          "min": [
+            -7.7,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.092759429837,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0013",
+        "closed": true,
+        "bbox": {
+          "max": [
+            -12.899999999999999,
+            33.495,
+            33.495
+          ],
+          "min": [
+            -13.5,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.0927594298377,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0013 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/PRT0013:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            13.5,
+            33.495,
+            33.495
+          ],
+          "min": [
+            12.899999999999999,
+            -33.495,
+            -33.495
+          ]
+        },
+        "volume_mm3": 582.092759429836,
+        "face_types": {
+          "cylinder": 2,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0009",
+        "closed": true,
+        "bbox": {
+          "max": [
+            12.5,
+            34.6,
+            3.6
+          ],
+          "min": [
+            5.300000000000001,
+            27.4,
+            -3.6
+          ]
+        },
+        "volume_mm3": 195.43219580321886,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0009 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-2RS_NICO_ASM:1/PRT0009:2)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            12.5,
+            3.6,
+            -27.4
+          ],
+          "min": [
+            5.300000000000001,
+            -3.6,
+            -34.6
+          ]
+        },
+        "volume_mm3": 195.43219579125582,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0009 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-2RS_NICO_ASM:1/PRT0009:3)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            12.5,
+            -27.4,
+            3.6
+          ],
+          "min": [
+            5.300000000000001,
+            -34.6,
+            -3.6
+          ]
+        },
+        "volume_mm3": 195.43219580321886,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0009 (CSK40_2RS:1/FREILAUF_CSK40-2RS_NICO_ASM_1_ASM:1/RILLENKUGELLAGER_CSK40-2RS_NICO_ASM:1/PRT0009:4)",
+        "closed": true,
+        "bbox": {
+          "max": [
+            12.5,
+            3.6,
+            34.6
+          ],
+          "min": [
+            5.300000000000001,
+            -3.6,
+            27.4
+          ]
+        },
+        "volume_mm3": 195.43219579125582,
+        "face_types": {
+          "sphere": 1
+        }
+      },
+      {
+        "name": "PRT0007",
+        "closed": true,
+        "bbox": {
+          "max": [
+            13.5,
+            40.00000000000032,
+            40.0
+          ],
+          "min": [
+            -13.5,
+            -40.0,
+            -40.0
+          ]
+        },
+        "volume_mm3": 38636.654092378914,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      },
+      {
+        "name": "PRT0008",
+        "closed": true,
+        "bbox": {
+          "max": [
+            13.5,
+            28.515,
+            28.515
+          ],
+          "min": [
+            -13.5,
+            -28.515,
+            -28.515
+          ]
+        },
+        "volume_mm3": 33791.677123536516,
+        "face_types": {
+          "cone": 2,
+          "cylinder": 3,
+          "other": 1,
+          "plane": 2
+        }
+      }
+    ],
+    "source_solid_sections": [
+      {
+        "solid_id": 578,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -13.5,
+            33.495
+          ],
+          [
+            -13.5,
+            38.726104
+          ],
+          [
+            -10.0,
+            40.0
+          ],
+          [
+            6.346595,
+            33.495
+          ],
+          [
+            8.9,
+            34.57
+          ],
+          [
+            10.0,
+            40.0
+          ],
+          [
+            11.453405,
+            33.495
+          ],
+          [
+            13.5,
+            33.495
+          ],
+          [
+            13.5,
+            38.726104
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              40.0
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              31.0,
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1123,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -13.5,
+            21.273896
+          ],
+          [
+            -13.5,
+            28.515
+          ],
+          [
+            -10.0,
+            20.0
+          ],
+          [
+            6.336862,
+            28.515
+          ],
+          [
+            8.9,
+            27.43
+          ],
+          [
+            10.0,
+            20.0
+          ],
+          [
+            11.463138,
+            28.515
+          ],
+          [
+            13.5,
+            21.273896
+          ],
+          [
+            13.5,
+            28.515
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              20.0
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "toroidal",
+            "radii_mm": [
+              31.0,
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 1362,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -3.6,
+            0.0
+          ],
+          [
+            0.0,
+            3.6
+          ],
+          [
+            3.6,
+            0.0
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              3.6
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 2999,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -9.6,
+            28.75
+          ],
+          [
+            -9.6,
+            33.25
+          ],
+          [
+            3.4,
+            28.75
+          ],
+          [
+            3.4,
+            33.25
+          ],
+          [
+            3.628286,
+            28.75
+          ],
+          [
+            3.628286,
+            33.25
+          ],
+          [
+            6.4,
+            28.75
+          ],
+          [
+            6.4,
+            29.015984
+          ],
+          [
+            6.4,
+            33.25
+          ],
+          [
+            9.171714,
+            28.75
+          ],
+          [
+            9.171714,
+            33.25
+          ],
+          [
+            9.6,
+            28.75
+          ],
+          [
+            9.6,
+            29.417312
+          ],
+          [
+            9.6,
+            31.040375
+          ],
+          [
+            9.6,
+            32.582688
+          ],
+          [
+            9.6,
+            33.25
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.75
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.25
+            ]
+          },
+          {
+            "kind": "spherical",
+            "radii_mm": [
+              3.57
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3257,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -6.45,
+            0.0
+          ],
+          [
+            -6.45,
+            3.2
+          ],
+          [
+            -6.45,
+            3.687818
+          ],
+          [
+            -6.45,
+            5.0
+          ],
+          [
+            -6.45,
+            5.73062
+          ],
+          [
+            6.45,
+            0.0
+          ],
+          [
+            6.45,
+            3.2
+          ],
+          [
+            6.45,
+            3.687818
+          ],
+          [
+            6.45,
+            5.0
+          ],
+          [
+            6.45,
+            5.73062
+          ]
+        ],
+        "analytic_surfaces": []
+      },
+      {
+        "solid_id": 3546,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.3,
+            28.515
+          ],
+          [
+            -0.3,
+            33.495
+          ],
+          [
+            0.3,
+            28.515
+          ],
+          [
+            0.3,
+            33.495
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          }
+        ]
+      },
+      {
+        "solid_id": 3783,
+        "centered_axial_radial_vertices_mm": [
+          [
+            -0.3,
+            28.515
+          ],
+          [
+            -0.3,
+            33.495
+          ],
+          [
+            0.3,
+            28.515
+          ],
+          [
+            0.3,
+            33.495
+          ]
+        ],
+        "analytic_surfaces": [
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              28.515
+            ]
+          },
+          {
+            "kind": "cylindrical",
+            "radii_mm": [
+              33.495
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

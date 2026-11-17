@@ -58,14 +58,16 @@ These nominal dimensions are editable, including the presence of either slot.
 
 ## Geometry and evidence limits
 
-Slots are rectangular, through the full width, at local +Y. Depth is radial from
-the bore/OD apex; width is along X. Rotate the component for alignment. The model
-is a mounting envelope, not a mass model: races, balls, sprags, seal surfaces,
-tolerances and one-way motion are not represented. Torque and load ratings are not
+Slots are rectangular and through the full width. Inner keyways default to local
++Y (0°); outer keyways default to -Y (180°), matching the supplied 15PP/40PP CAD.
+Each angle can be overridden counterclockwise from +Y as viewed from +Z.
+Depth is radial from the bore/OD apex; width is perpendicular to that direction. The model
+shows separate rings and closure faces, not a mass model: hidden raceways, balls,
+sprags, seal cross-sections, tolerances and one-way motion are not represented. Torque and load ratings are not
 assigned to generic or modified geometry. Current stock was not checked.
 
-Presets retain their original reference when customized. Custom mode has no preset
-or source reference. Purchasing assignment remains future shared-component work.
+Presets retain their original reference when customized. Custom mode has no catalog preset; its estimated exterior still records the CAD
+sources used for its proportions. Purchasing assignment remains future shared-component work.
 
 The seller table supplied earlier matches [PEAK's WCB6205-2RS table](https://www.peakbearings.com/WCB6205-2RS.htm)
 and cannot establish the seller's manufacturer. WCB6205-2RS is 25 × 52 × 15 mm,
@@ -81,3 +83,55 @@ not the 20 mm-wide CSK25-2RS, and is not a catalog alias here.
   `9a48350e6fe7f65b71927b25b03df56186b0f092264aaa82da44baffb24be963`.
   Its STEP AP214 model, `FREILAUF_CSK8_CDS_ASM`, confirms 8 mm bore, 22 mm OD
   and 9 mm axial extent. It does not establish other sizes' internal geometry.
+
+
+## Supplied exterior CAD and estimation
+
+The eight-file [source ledger](csk-files.json) contains the STEP and ZIP hashes,
+envelopes and measured exterior sections. The [native measurement report](csk-measurements.json)
+records imported bodies and each source solid's axial/radial vertices. Source
+STEP files remain external; generated models use native geometry.
+
+| Supplied model | Inner ring outside radius | Outer ring inside radius | Inner chamfer, radial × axial | Outer chamfer, radial × axial |
+|---|---:|---:|---|---|
+| CSK8 | 5.720 | 9.000 | 0.181985 × 0.5 | 0.363970 × 1.0 |
+| CSK12-2RS | 9.105 | 13.295 | 0.363970 × 1.0 | 0.363970 × 1.0 |
+| CSK15P, CSK15PP, CSK15-2RS | 11.055 | 15.245 | 0.363970 × 1.0 | 0.363970 × 1.0 |
+| CSK40P, CSK40PP, CSK40-2RS | 28.515 | 33.495 | 1.273896 × 3.5 | 1.273896 × 3.5 |
+
+All dimensions are millimetres. The outermost cover/seal faces lie at ±half-width
+in all eight references: recess is zero. Chamfers are approximately 20 degrees,
+not 45-degree or rounded edges. Small numerical deviations in imported keyed
+edges are normalized using the unkeyed 2RS ring surfaces and the nominal envelope.
+The supplied PP inner slots face +Y and outer slots face -Y in source coordinates
+(with source X as the bearing axis); the generator preserves their 180° relative
+orientation, with editable clocking. The 15 mm and 40 mm P/PP ring boundaries agree; 2RS uses the same boundaries with
+its wider catalog width. Hidden raceways are intentionally filled within each
+ring envelope; closure thickness is not modeled. The imported cage has geometry
+warnings, so its surfaces are not used to generate the exterior.
+
+Only the eight exact supplied designations at their measured envelope are marked
+**measured**. Other variants are marked **estimated**, including transfers between
+variants of the same size. Radial shoulder and chamfer dimensions are normalized
+by the radial space between bore and OD, interpolated linearly by bore between
+8, 12, 15 and 40 mm, and applied to the requested envelope. Outside that range,
+the nearest reference's radial proportions are retained. Axial chamfer lengths
+are interpolated in millimetres and limited to one quarter of the requested width.
+For thin rings, radial chamfers are limited to 45% of ring thickness.
+
+A keyway must leave a radial web behind its floor/corners. When necessary, the
+ring is widened using a modeling allowance of 2% of the total radial space;
+this is an estimation rule, not a physical design rating. A remaining closure
+gap of at least that allowance is required. Adapted sections are marked estimated,
+with `adapted_for_keyways` recorded. Closure style can be overridden independently;
+it changes visible faces and colour, not the envelope width.
+
+Geometry metadata records resolved exterior dimensions, basis, method, source
+filenames/hashes and keyway adaptation. Original catalog references remain separate
+from these CAD-derived exterior references and from future purchasing assignment.
+
+Reproduce the source measurement report with the extracted, hash-matching files:
+
+```sh
+SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tools/measure_parts.py docs/sources/csk-files.json /path/to/extracted/files > docs/sources/csk-measurements.json
+```

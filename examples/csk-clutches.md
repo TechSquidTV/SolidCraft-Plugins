@@ -5,7 +5,7 @@
 require the plugin. Rebuilding it requires the built Bearings package and the
 [documented host API](../docs/parts-library.md#host-requirements).
 
-![Eight CSK mounting envelopes, ordered as described below](../plugins/techsquid-bearings/csk-clutches.png)
+![Eight CSK exterior models, ordered as described below](../plugins/techsquid-bearings/csk-clutches.png)
 
 The lower row, from left to right:
 
@@ -50,7 +50,8 @@ For the final part, use:
 
 Custom mode has no catalog designation or reference. A changed preset keeps its
 baseline and records that it was customized.
-Keyways face local +Y and pass through the full width. Depth is measured from
+Keyways pass through the full width. Inner slots default to +Y, outer slots to -Y,
+as in the supplied PP references; each angle is editable. Depth is measured from
 the bore or OD apex, not from a mating shaft's keyway. These dimensions do not
 specify a complete fit or tolerance system.
 
@@ -77,15 +78,20 @@ after creation; `make-csk` has no purchasing or part-number inputs.
 
 ## What the example verifies
 
-The reproducible recipe checks eight closed mounting envelopes, their placed
-bounding boxes and volumes, and seven definitions. Expected volumes subtract the
-rectangular slot intersections from an annulus using the dimensions above.
-Saved-example checks compare geometry, catalog identities and reference metadata
-against a fresh build. The separate CSK test suite covers all 55 presets, envelope and keyway
-overrides, BOM quantities and rejected inputs.
+The reproducible recipe checks eight components containing sixteen solid rings
+and sixteen closure faces. It checks placed bounding boxes, ring volumes from
+independent section integration, closure areas, and seven reusable definitions.
+Saved-example checks compare geometry, identities and source metadata against a
+fresh build. The CSK suite covers all 55 presets and checks measured shoulders,
+chamfers, closures, custom geometry, BOM quantities and rejected inputs.
 
-These envelopes represent mounting geometry. Internal sprags, races and seals
-are not modeled. Torque ratings do not change the CAD shape and are not assigned
+CSK15PP has directly measured exterior dimensions. The other variants in this
+example use shared or interpolated sections from the supplied 8/12/15/40 mm STEP
+files; their metadata explicitly says estimated. Rings have edge chamfers and
+closures are flush, as in the references. The CSK15P-2RS closure faces are dark;
+unsealed variants use grey covers. Neither colour assigns a material. Hidden
+sprags, raceways, balls and seal cross-sections are not modeled.
+Torque ratings do not change the CAD shape and are not assigned
 to these generic specifications. Equal designation or envelope dimensions alone
 do not establish supplier interchangeability. See the [CSK source ledger](../docs/sources/csk.md)
 and [workflow reference](../plugins/techsquid-bearings/REFERENCE.md) for source

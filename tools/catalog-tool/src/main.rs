@@ -107,7 +107,7 @@ fn run() -> Result<(), String> {
         )?;
     }
     let mut bearings_table = String::from(
-        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure / mounting |\n|---|---|---|---|---|\n",
+        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure / mounting | Exterior |\n|---|---|---|---|---|---|\n",
     );
     for bearing in bearings::ALL {
         let d = bearing.dimensions();
@@ -117,7 +117,7 @@ fn run() -> Result<(), String> {
             bearings::Closure::MetalShields => "Metal shields, both sides",
         };
         bearings_table.push_str(&format!(
-            "| {} | {} | {} | {} × {} × {} | {closure} |\n",
+            "| {} | {} | {} | {} × {} × {} | {closure} | Measured |\n",
             bearing.designation(),
             bearing.supplier().name,
             bearing.sku(),
@@ -128,8 +128,9 @@ fn run() -> Result<(), String> {
     }
     for csk in bearings::csk::ALL {
         let d = csk.dimensions();
+        let basis = exterior_basis(csk);
         bearings_table.push_str(&format!(
-            "| {} | Unassigned | — | {} × {} × {} | {} ([reference]({})) |\n",
+            "| {} | Unassigned | — | {} × {} × {} | {} ([reference]({})) | {basis} |\n",
             csk.designation(),
             d.bore,
             d.diameter,
@@ -168,6 +169,16 @@ fn run() -> Result<(), String> {
         )?;
     }
     Ok(())
+}
+
+fn exterior_basis(csk: bearings::csk::Csk) -> &'static str {
+    match bearings::csk::exterior::resolve(&csk.geometry())
+        .expect("valid CSK preset")
+        .basis
+    {
+        bearings::csk::exterior::Basis::Measured => "Measured",
+        bearings::csk::exterior::Basis::Estimated => "Estimated",
+    }
 }
 
 fn update_table(path: &Path, table: &str, write: bool) -> Result<(), String> {
@@ -226,6 +237,7 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                             title.push_str(&format!("; {label} {} × {}", key.width, key.depth));
                         }
                     }
+                    title.push_str(&format!("; {}", exterior_basis(csk).to_lowercase()));
                     json!({"const":csk.designation(), "title":title})
                 })
                 .collect();
@@ -269,8 +281,13 @@ mod tests {
             if !manifest.is_file() {
                 continue;
             }
-            let value: Value =
-                serde_json::from_str(&fs::read_to_string(&manifest).unwrap()).unwrap();
+            let text = fs::read_to_string(&manifest).unwrap();
+            assert!(
+                text.len() <= 16 * 1024,
+                "{} exceeds the host's 16 KiB manifest limit",
+                manifest.display()
+            );
+            let value: Value = serde_json::from_str(&text).unwrap();
             let entries = value["runtime"]["entries"].as_array().unwrap();
             assert!(!entries.is_empty());
             for entry in entries {

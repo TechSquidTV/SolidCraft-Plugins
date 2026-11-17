@@ -216,7 +216,7 @@ Nine standalone examples show the plugins’ parts and editing modes. Each plugi
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
 | `bearings` | `techsquid-bearings` | Six sourced radial bearings: open, sealed and shielded | `bearings.png` |
-| `csk-clutches` | `techsquid-bearings` | Eight CSK envelopes: reference, repeated custom keyways, small keyed presets and a custom envelope | `csk-clutches.png` |
+| `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line
@@ -309,8 +309,9 @@ bore/shoulder radii, closure recesses and colours, the open bearing's race depth
 section vertices and eight spheres, and purchase/reuse
 behavior through the installed workflow.
 
-The CSK suite checks all 55 reference envelopes, custom dimensions and keyway
-presence, separate geometry and reference metadata, BOM quantities, definition
+The CSK suite checks all 55 presets, measured shoulders/chamfers, closure areas
+and appearance, custom dimensions and keyway presence, exterior estimation
+metadata, BOM quantities, definition
 reuse, invalid-input rollback and save/reopen. It uses the built Bearings package;
 run `./build.sh` first. The [CSK walkthrough](examples/csk-clutches.md) explains the
 example’s seven BOM rows and independent volume expectations. Rebuild and check it

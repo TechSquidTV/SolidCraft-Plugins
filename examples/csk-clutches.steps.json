@@ -1,5 +1,5 @@
 {
-  "description": "Eight CSK envelopes: reference and repeated custom keyways, keyed 8/10 mm presets, sealed width, and a fully custom outer-keyed part. Volumes independently subtract rectangular slot intersections from annuli.",
+  "description": "Eight CSK exterior models with separate chamfered rings and cover/seal faces. Includes measured small keyed presets, estimated sections, repeated custom keyways, and a fully custom outer-keyed part. Independent section integration checks ring volumes.",
   "steps": [
     {
       "caption": "Lay out eight clutch centres",
@@ -161,7 +161,7 @@
       }
     },
     {
-      "caption": "Wider CSK15P-2RS envelope",
+      "caption": "Wider CSK15P-2RS exterior",
       "command": "plugin.run",
       "params": {
         "path": "dist/techsquid-bearings",
@@ -224,7 +224,7 @@
     }
   ],
   "expect": {
-    "bodies": 8,
+    "bodies": 32,
     "bbox": {
       "min": [
         -106.0,
@@ -233,13 +233,29 @@
       ],
       "max": [
         107.5,
-        71.9336942218761,
+        72,
         8.0
       ]
     },
     "placed": [
       {
-        "label": "Reference CSK12P",
+        "label": "Reference CSK12P Inner ring",
+        "bbox": {
+          "min": [
+            -99.105,
+            -9.105,
+            -5.0
+          ],
+          "max": [
+            -80.895,
+            9.105,
+            5.0
+          ]
+        },
+        "volume_mm3": 1384.401859390034
+      },
+      {
+        "label": "Reference CSK12P Outer ring",
         "bbox": {
           "min": [
             -106.0,
@@ -252,10 +268,58 @@
             5.0
           ]
         },
-        "volume_mm3": 6834.9822102908765
+        "volume_mm3": 2453.1786790197125
       },
       {
-        "label": "Custom CSK12P",
+        "label": "Reference CSK12P Cover front",
+        "bbox": {
+          "min": [
+            -103.295,
+            -13.295,
+            5.0
+          ],
+          "max": [
+            -76.705,
+            13.295,
+            5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Reference CSK12P Cover back",
+        "bbox": {
+          "min": [
+            -103.295,
+            -13.295,
+            -5.0
+          ],
+          "max": [
+            -76.705,
+            13.295,
+            -5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Custom CSK12P Inner ring",
+        "bbox": {
+          "min": [
+            -54.105000000000004,
+            -9.105,
+            -5.0
+          ],
+          "max": [
+            -35.894999999999996,
+            9.105,
+            5.0
+          ]
+        },
+        "volume_mm3": 1408.4018593900337
+      },
+      {
+        "label": "Custom CSK12P Outer ring",
         "bbox": {
           "min": [
             -61.0,
@@ -268,10 +332,58 @@
             5.0
           ]
         },
-        "volume_mm3": 6858.982210290877
+        "volume_mm3": 2453.1786790197125
       },
       {
-        "label": "Repeated custom CSK12P",
+        "label": "Custom CSK12P Cover front",
+        "bbox": {
+          "min": [
+            -58.295,
+            -13.295,
+            5.0
+          ],
+          "max": [
+            -31.705,
+            13.295,
+            5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Custom CSK12P Cover back",
+        "bbox": {
+          "min": [
+            -58.295,
+            -13.295,
+            -5.0
+          ],
+          "max": [
+            -31.705,
+            13.295,
+            -5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Repeated custom CSK12P Inner ring",
+        "bbox": {
+          "min": [
+            -9.105,
+            -9.105,
+            -5.0
+          ],
+          "max": [
+            9.105,
+            9.105,
+            5.0
+          ]
+        },
+        "volume_mm3": 1408.4018593900337
+      },
+      {
+        "label": "Repeated custom CSK12P Outer ring",
         "bbox": {
           "min": [
             -16.0,
@@ -284,26 +396,122 @@
             5.0
           ]
         },
-        "volume_mm3": 6858.982210290877
+        "volume_mm3": 2453.1786790197125
       },
       {
-        "label": "CSK15PP with both keyways",
+        "label": "Repeated custom CSK12P Cover front",
+        "bbox": {
+          "min": [
+            -13.295,
+            -13.295,
+            5.0
+          ],
+          "max": [
+            13.295,
+            13.295,
+            5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Repeated custom CSK12P Cover back",
+        "bbox": {
+          "min": [
+            -13.295,
+            -13.295,
+            -5.0
+          ],
+          "max": [
+            13.295,
+            13.295,
+            -5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "CSK15PP Inner ring",
+        "bbox": {
+          "min": [
+            33.945,
+            -11.055,
+            -5.5
+          ],
+          "max": [
+            56.055,
+            11.055,
+            5.5
+          ]
+        },
+        "volume_mm3": 2190.1719972747583
+      },
+      {
+        "label": "CSK15PP Outer ring",
         "bbox": {
           "min": [
             27.5,
-            -17.5,
+            -17.471405209656147,
             -5.5
           ],
           "max": [
             62.5,
-            17.471405209656147,
+            17.5,
             5.5
           ]
         },
-        "volume_mm3": 8552.617876476268
+        "volume_mm3": 2499.7211506601543
       },
       {
-        "label": "Wider CSK15P-2RS envelope",
+        "label": "CSK15PP Cover front",
+        "bbox": {
+          "min": [
+            29.755000000000003,
+            -15.245,
+            5.5
+          ],
+          "max": [
+            60.245,
+            15.245,
+            5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK15PP Cover back",
+        "bbox": {
+          "min": [
+            29.755000000000003,
+            -15.245,
+            -5.5
+          ],
+          "max": [
+            60.245,
+            15.245,
+            -5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK15P-2RS Inner ring",
+        "bbox": {
+          "min": [
+            78.945,
+            -11.055,
+            -8.0
+          ],
+          "max": [
+            101.055,
+            11.055,
+            8.0
+          ]
+        },
+        "volume_mm3": 3192.784262196298
+      },
+      {
+        "label": "CSK15P-2RS Outer ring",
         "bbox": {
           "min": [
             72.5,
@@ -316,59 +524,236 @@
             8.0
           ]
         },
-        "volume_mm3": 12459.0665453425
+        "volume_mm3": 3671.858829519399
       },
       {
-        "label": "CSK8PP",
+        "label": "CSK15P-2RS Seal front",
+        "bbox": {
+          "min": [
+            74.755,
+            -15.245,
+            8.0
+          ],
+          "max": [
+            105.245,
+            15.245,
+            8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK15P-2RS Seal back",
+        "bbox": {
+          "min": [
+            74.755,
+            -15.245,
+            -8.0
+          ],
+          "max": [
+            105.245,
+            15.245,
+            -8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK8PP Inner ring",
+        "bbox": {
+          "min": [
+            -50.72,
+            49.28,
+            -4.5
+          ],
+          "max": [
+            -39.28,
+            60.72,
+            4.5
+          ]
+        },
+        "volume_mm3": 454.5721258929388
+      },
+      {
+        "label": "CSK8PP Outer ring",
         "bbox": {
           "min": [
             -56.0,
-            44.0,
+            44.045548849896676,
             -4.5
           ],
           "max": [
             -34.0,
-            65.95445115010332,
+            66.0,
             4.5
           ]
         },
-        "volume_mm3": 2943.9905993239477
+        "volume_mm3": 1098.0970314345736
       },
       {
-        "label": "CSK10PP",
+        "label": "CSK8PP Cover front",
+        "bbox": {
+          "min": [
+            -54,
+            46,
+            4.5
+          ],
+          "max": [
+            -36,
+            64,
+            4.5
+          ]
+        },
+        "area_mm2": 151.68111986356098
+      },
+      {
+        "label": "CSK8PP Cover back",
+        "bbox": {
+          "min": [
+            -54,
+            46,
+            -4.5
+          ],
+          "max": [
+            -36,
+            64,
+            -4.5
+          ]
+        },
+        "area_mm2": 151.68111986356098
+      },
+      {
+        "label": "CSK10PP Inner ring",
+        "bbox": {
+          "min": [
+            -7.781071428571429,
+            47.21892857142857,
+            -4.5
+          ],
+          "max": [
+            7.781071428571429,
+            62.78107142857143,
+            4.5
+          ]
+        },
+        "volume_mm3": 979.9688577281781
+      },
+      {
+        "label": "CSK10PP Outer ring",
         "bbox": {
           "min": [
             -15.0,
-            40.0,
+            40.03337045290424,
             -4.5
           ],
           "max": [
             15.0,
-            69.96662954709576,
+            70.0,
             4.5
           ]
         },
-        "volume_mm3": 5627.8136532561675
+        "volume_mm3": 2091.1441612507283
       },
       {
-        "label": "Custom",
+        "label": "CSK10PP Cover front",
+        "bbox": {
+          "min": [
+            -12.21892857142857,
+            42.78107142857143,
+            4.5
+          ],
+          "max": [
+            12.21892857142857,
+            67.21892857142856,
+            4.5
+          ]
+        },
+        "area_mm2": 278.83878795361966
+      },
+      {
+        "label": "CSK10PP Cover back",
+        "bbox": {
+          "min": [
+            -12.21892857142857,
+            42.78107142857143,
+            -4.5
+          ],
+          "max": [
+            12.21892857142857,
+            67.21892857142856,
+            -4.5
+          ]
+        },
+        "area_mm2": 278.83878795361966
+      },
+      {
+        "label": "Custom Inner ring",
+        "bbox": {
+          "min": [
+            35.08225,
+            45.08225,
+            -6.0
+          ],
+          "max": [
+            54.91775,
+            64.91775,
+            6.0
+          ]
+        },
+        "volume_mm3": 2099.4497838382204
+      },
+      {
+        "label": "Custom Outer ring",
         "bbox": {
           "min": [
             28.0,
-            38.0,
+            38.066305778123905,
             -6.0
           ],
           "max": [
             62.0,
-            71.9336942218761,
+            72.0,
             6.0
           ]
         },
-        "volume_mm3": 9267.050894901386
+        "volume_mm3": 3092.769824687626
+      },
+      {
+        "label": "Custom Cover front",
+        "bbox": {
+          "min": [
+            30.68275,
+            40.68275,
+            6.0
+          ],
+          "max": [
+            59.31725,
+            69.31725,
+            6.0
+          ]
+        },
+        "area_mm2": 334.9625227739141
+      },
+      {
+        "label": "Custom Cover back",
+        "bbox": {
+          "min": [
+            30.68275,
+            40.68275,
+            -6.0
+          ],
+          "max": [
+            59.31725,
+            69.31725,
+            -6.0
+          ]
+        },
+        "area_mm2": 334.9625227739141
       }
     ],
     "catalog_definitions": {
       "techsquid-bearings": 7
-    }
+    },
+    "surface_bodies": 16
   }
 }

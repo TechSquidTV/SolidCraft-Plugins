@@ -1,5 +1,6 @@
-//! CSK reference presets and customizable mounting geometry. See docs/sources/csk.md.
+//! CSK reference presets and customizable exterior geometry. See docs/sources/csk.md.
 use super::Dimensions;
+pub mod exterior;
 use plugin_kit::{
     host::sketch_id,
     name::part,
@@ -29,12 +30,23 @@ enum Mounting {
     Both,
 }
 
+/// Visible closures; their colour is illustrative, not a material assignment.
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum Closure {
+    DustCovers,
+    LipSeals,
+    SingleLipSeal,
+}
+
 /// Nominal rectangular keyway: depth is measured radially from the bore/OD apex.
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Keyway {
     pub width: f64,
     pub depth: f64,
+    /// Counterclockwise from local +Y, viewed from +Z; normalized to [0, 360).
+    pub angle_degrees: f64,
 }
 
 macro_rules! products {
@@ -187,10 +199,12 @@ impl Csk {
             Some(Keyway {
                 width: iw,
                 depth: id,
+                angle_degrees: 0.0,
             }),
             matches!(mount, Mounting::Both).then_some(Keyway {
                 width: ow,
                 depth: od,
+                angle_degrees: 180.0,
             }),
         )
     }
@@ -199,6 +213,11 @@ impl Csk {
         let d = self.dimensions();
         Geometry {
             designation: Some(self),
+            closure: match self.configuration() {
+                (Size::S8, _, true) => Closure::SingleLipSeal,
+                (_, _, true) => Closure::LipSeals,
+                _ => Closure::DustCovers,
+            },
             bore: d.bore,
             diameter: d.diameter,
             width: d.width,
@@ -213,6 +232,7 @@ impl Csk {
 #[serde(deny_unknown_fields)]
 pub struct Geometry {
     pub designation: Option<Csk>,
+    pub closure: Closure,
     pub bore: f64,
     pub diameter: f64,
     pub width: f64,
@@ -249,6 +269,11 @@ impl Geometry {
             return Err("bore must be smaller than the outside diameter".into());
         }
         for key in [self.inner_keyway, self.outer_keyway].into_iter().flatten() {
+            if !key.angle_degrees.is_finite() || !(0.0..360.0).contains(&key.angle_degrees) {
+                return Err(
+                    "keyway angles must be finite and normalized to [0, 360) degrees".into(),
+                );
+            }
             if !key.width.is_finite()
                 || !key.depth.is_finite()
                 || key.width <= 0.0
@@ -279,40 +304,63 @@ impl Geometry {
                 return Err("inner and outer keyways must not meet".into());
             }
         }
+        exterior::resolve(self)?;
         Ok(())
     }
 
     pub fn build(&self, r: &mut impl Runner, base: &str, frame: &Placement) -> Result<(), String> {
         self.validate()?;
-        let d = self.dimensions();
-        let h = d.width / 2.0;
-        let name = format!("{base} Mounting envelope");
-        let feature = part(base, "Mounting envelope");
-        revolve::build(
-            r,
-            frame,
-            &part(&feature, "Section"),
-            Section::Solid(&[
-                [d.bore / 2.0, -h],
-                [d.diameter / 2.0, -h],
-                [d.diameter / 2.0, h],
-                [d.bore / 2.0, h],
-            ]),
-            json!({"name":feature,"body_name":name}),
-        )?;
-        self.cut_keyways(r, base, &name, frame)?;
+        let exterior = exterior::resolve(self)?;
+        let section = &exterior.section;
+        let mut steel = Vec::new();
+        for (label, outer) in [("Inner ring", false), ("Outer ring", true)] {
+            let name = format!("{base} {label}");
+            let feature = part(base, label);
+            revolve::build(
+                r,
+                frame,
+                &part(&feature, "Section"),
+                Section::Solid(&exterior::ring(self, section, outer)),
+                json!({"name":feature,"body_name":name}),
+            )?;
+            steel.push(name);
+        }
+        self.cut_keyways(r, base, frame)?;
         r.run(
             "appearance.assign",
-            json!({"bodies":[name],"color":[160,160,160]}),
+            json!({"bodies":steel,"color":[160,160,160]}),
         )?;
+        for (side, sign) in [("front", 1.0), ("back", -1.0)] {
+            let sealed = self.closure == Closure::LipSeals
+                || self.closure == Closure::SingleLipSeal && sign > 0.0;
+            let label = format!("{} {side}", if sealed { "Seal" } else { "Cover" });
+            let name = format!("{base} {label}");
+            let feature = part(base, &label);
+            let z = sign * (self.width / 2.0 - section.closure_recess);
+            revolve::build(
+                r,
+                frame,
+                &part(&feature, "Section"),
+                Section::Surface(&[
+                    [section.inner_ring_radius, z],
+                    [section.outer_ring_radius, z],
+                ]),
+                json!({"name":feature,"body_name":name}),
+            )?;
+            let color = if sealed {
+                [64, 64, 64]
+            } else {
+                [160, 160, 160]
+            };
+            r.run("appearance.assign", json!({"bodies":[name],"color":color}))?;
+        }
         Ok(())
     }
-    /// Both slots face local +Y, extend through the full width, and rotate with the placement.
+    /// Slots extend through the full width, with independent clocking in the placement frame.
     fn cut_keyways(
         &self,
         r: &mut impl Runner,
         base: &str,
-        body: &str,
         frame: &Placement,
     ) -> Result<(), String> {
         let d = self.dimensions();
@@ -327,6 +375,7 @@ impl Geometry {
             let origin: [f64; 3] =
                 std::array::from_fn(|i| frame.point[i] - frame.normal[i] * d.width / 2.0);
             let feature = part(base, label);
+            let body = format!("{base} {} ring", if is_outer { "Outer" } else { "Inner" });
             let sketch = r.run("sketch.create", json!({"name":part(&feature,"Section"),"plane":{"origin":origin,"x_dir":frame.x_dir,"y_dir":frame.y_dir}}))?;
             let sketch = sketch_id(&sketch)?;
             let (low, high) = if is_outer {
@@ -335,7 +384,13 @@ impl Geometry {
                 (0.0, d.bore / 2.0 + key.depth)
             };
             let w = key.width / 2.0;
-            r.run("sketch.line",json!({"sketch":sketch,"closed":true,"points":[[-w,low],[w,low],[w,high],[-w,high]]}))?;
+            let (sin, cos) = key.angle_degrees.to_radians().sin_cos();
+            let points = [[-w, low], [w, low], [w, high], [-w, high]]
+                .map(|[x, y]| [x * cos - y * sin, x * sin + y * cos]);
+            r.run(
+                "sketch.line",
+                json!({"sketch":sketch,"closed":true,"points":points}),
+            )?;
             r.run("sketch.finish", json!({}))?;
             r.run("solid.extrude",json!({"name":feature,"sketch":sketch,"distance":d.width,"operation":"cut","targets":[body]}))?;
         }
@@ -357,8 +412,8 @@ pub fn representation(geometry: &Geometry) -> parts::Representation<Geometry> {
             configuration: geometry.clone(),
             members: vec![],
         },
-        revision: "2".into(),
-        detail: "mounting-geometry".into(),
+        revision: "3".into(),
+        detail: "exterior".into(),
         dependencies: vec![],
     }
 }
@@ -387,7 +442,8 @@ pub fn ensure<R: Runner>(
             geometry.build(&mut r, name, frame)?;
             r.run("component.metadata.set", json!({"component":name,"values": {
                 "org.techsquid.specification": {
-                    "version":3, "geometry":geometry,
+                    "version":4, "geometry":geometry,
+                    "exterior":exterior::resolve(geometry)?,
                     "geometry_identity":representation(geometry).product.identity().map_err(|e| e.to_string())?,
                     "reference": geometry.designation.map(|preset| json!({
                         "source": preset.source(),

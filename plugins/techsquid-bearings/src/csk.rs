@@ -1,5 +1,5 @@
 //! CSK workflow: editable reference presets or fully custom mounting geometry.
-use bearings::csk::{self, Geometry, Keyway};
+use bearings::csk::{self, Closure, Geometry, Keyway};
 use plugin_kit::{input, place, FieldError, Runner};
 use serde_json::{json, Value};
 
@@ -14,6 +14,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let mut geometry = if size == "Custom" {
         Geometry {
             designation: None,
+            closure: Closure::DustCovers,
             bore: required_length(v, "bore")?,
             diameter: required_length(v, "diameter")?,
             width: required_length(v, "width")?,
@@ -26,6 +27,13 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             .find(|c| c.designation() == size)
             .ok_or_else(|| FieldError::new("size", "choose a listed CSK designation or Custom"))?
             .geometry()
+    };
+    geometry.closure = match input::choice(v, "closure", "Preset")? {
+        "Preset" => geometry.closure,
+        "Dust covers" => Closure::DustCovers,
+        "Lip seals" => Closure::LipSeals,
+        "Single lip seal" => Closure::SingleLipSeal,
+        _ => return Err(FieldError::new("closure", "choose a listed closure style")),
     };
     for (field, dimension) in [
         ("bore", &mut geometry.bore),
@@ -46,6 +54,20 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         let depth_field = format!("{field}_depth");
         let width = input::optional_length(v, &width_field)?;
         let depth = input::optional_length(v, &depth_field)?;
+        let angle_field = format!("{field}_angle");
+        let angle = match v.get(&angle_field) {
+            None | Some(Value::Null) => None,
+            Some(value) => Some(
+                value
+                    .as_f64()
+                    .filter(|a| a.is_finite())
+                    .ok_or_else(|| {
+                        FieldError::new(&angle_field, "must be a finite number of degrees")
+                    })?
+                    .rem_euclid(360.0),
+            ),
+        };
+        let angle = angle.map(|a| if a == 0.0 { 0.0 } else { a });
         let enabled = match input::choice(v, &field, "Preset")? {
             "Preset" => key.is_some(),
             "Enabled" => true,
@@ -54,6 +76,9 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         };
         *key = if enabled {
             Some(Keyway {
+                angle_degrees: angle
+                    .or(key.map(|k| k.angle_degrees))
+                    .unwrap_or(if prefix == "inner" { 0.0 } else { 180.0 }),
                 width: width.or(key.map(|k| k.width)).ok_or_else(|| {
                     FieldError::new(&width_field, "enter a width for the added keyway")
                 })?,
@@ -62,10 +87,10 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
                 })?,
             })
         } else {
-            if width.is_some() || depth.is_some() {
+            if width.is_some() || depth.is_some() || angle.is_some() {
                 return Err(FieldError::new(
                     &field,
-                    "enable this keyway to specify its dimensions",
+                    "enable this keyway to specify its dimensions or angle",
                 ));
             }
             None
@@ -138,7 +163,8 @@ mod tests {
             g.outer_keyway.unwrap(),
             Keyway {
                 width: 2.0,
-                depth: 0.5
+                depth: 0.5,
+                angle_degrees: 180.0,
             }
         );
         assert!(g.customized());
@@ -163,6 +189,37 @@ mod tests {
         assert_eq!(g, restored);
     }
     #[test]
+    fn closure_overrides_are_custom_geometry_and_do_not_change_width() {
+        let g = parse(&json!({"size":"CSK15P", "closure":"Lip seals"}))
+            .unwrap()
+            .geometry;
+        assert_eq!(g.closure, Closure::LipSeals);
+        assert_eq!(g.width, 11.0);
+        assert!(g.customized());
+        assert_ne!(
+            csk::representation(&g).identity(),
+            csk::representation(&csk::Csk::Csk15P.geometry()).identity()
+        );
+    }
+    #[test]
+    fn keyway_angles_normalize_for_reuse() {
+        let preset = parse(&json!({"size":"CSK15PP"})).unwrap().geometry;
+        let wrapped =
+            parse(&json!({"size":"CSK15PP","inner_keyway_angle":-360,"outer_keyway_angle":-180}))
+                .unwrap()
+                .geometry;
+        assert_eq!(preset, wrapped);
+        let aligned = parse(&json!({"size":"CSK15PP","outer_keyway_angle":0}))
+            .unwrap()
+            .geometry;
+        assert!(aligned.customized());
+        assert_ne!(
+            csk::representation(&preset).identity(),
+            csk::representation(&aligned).identity()
+        );
+        assert!(parse(&json!({"size":"CSK15","inner_keyway_angle":90})).is_err());
+    }
+    #[test]
     fn invalid_geometry_and_purchasing_fields_are_rejected_before_host_edits() {
         for value in [
             json!({"size":"Custom"}),
@@ -181,6 +238,8 @@ mod tests {
             json!({"size":"CSK12P","part_number":"CL-12"}),
             json!({"size":"CSK12P","purchase_supplier":"Seller"}),
             json!({"size":"CSK50"}),
+            json!({"size":"CSK12P","closure":"invalid"}),
+            json!({"size":"CSK12PP","inner_keyway_depth":7,"outer_keyway_depth":2.5}),
         ] {
             assert!(parse(&value).is_err(), "{value}");
         }

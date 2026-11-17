@@ -10,6 +10,7 @@ use crate::catalog::CatalogError;
 #[serde(rename_all = "snake_case")]
 pub enum ProductKind {
     SupplierProduct,
+    DesignSpecification,
     StandardConfiguration,
     Custom,
     Assembly,
@@ -88,7 +89,7 @@ pub(crate) fn key(field: &str, value: &str) -> Result<(), CatalogError> {
     Ok(())
 }
 
-fn canonical(value: &impl Serialize) -> Result<CanonicalIdentity, CatalogError> {
+pub(crate) fn canonical(value: &impl Serialize) -> Result<CanonicalIdentity, CatalogError> {
     let text = canonical_json(value).map_err(|e| CatalogError::new("identity", e.to_string()))?;
     if text.len() > 16 * 1024 {
         return Err(CatalogError::new("identity", "exceeds 16 KiB"));

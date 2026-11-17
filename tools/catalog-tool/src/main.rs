@@ -40,14 +40,24 @@ fn run() -> Result<(), String> {
         ),
         (
             "techsquid-bearings",
-            vec![(
-                "make-bearing",
-                "size",
-                bearings::ALL
-                    .into_iter()
-                    .map(|b| b.designation().to_string())
-                    .collect(),
-            )],
+            vec![
+                (
+                    "make-bearing",
+                    "size",
+                    bearings::ALL
+                        .into_iter()
+                        .map(|b| b.designation().to_string())
+                        .collect(),
+                ),
+                (
+                    "make-csk",
+                    "size",
+                    bearings::csk::ALL
+                        .into_iter()
+                        .map(|c| c.designation().to_string())
+                        .collect(),
+                ),
+            ],
         ),
         (
             "techsquid-v-wheels",
@@ -97,7 +107,7 @@ fn run() -> Result<(), String> {
         )?;
     }
     let mut bearings_table = String::from(
-        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure |\n|---|---|---|---|---|\n",
+        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure / mounting | Exterior |\n|---|---|---|---|---|---|\n",
     );
     for bearing in bearings::ALL {
         let d = bearing.dimensions();
@@ -107,13 +117,26 @@ fn run() -> Result<(), String> {
             bearings::Closure::MetalShields => "Metal shields, both sides",
         };
         bearings_table.push_str(&format!(
-            "| {} | {} | {} | {} × {} × {} | {closure} |\n",
+            "| {} | {} | {} | {} × {} × {} | {closure} | Measured |\n",
             bearing.designation(),
             bearing.supplier().name,
             bearing.sku(),
             d.bore,
             d.diameter,
             d.width
+        ));
+    }
+    for csk in bearings::csk::ALL {
+        let d = csk.dimensions();
+        let basis = exterior_basis(csk);
+        bearings_table.push_str(&format!(
+            "| {} | Unassigned | — | {} × {} × {} | {} ([reference]({})) | {basis} |\n",
+            csk.designation(),
+            d.bore,
+            d.diameter,
+            d.width,
+            csk.mounting_description(),
+            csk.source().url
         ));
     }
     let mut wheels_table = String::from("| Part | OpenBuilds SKU | OD × bare width (mm) | Bearings | Internal shim, OD × bore × width (mm) |\n|---|---|---|---|---|\n");
@@ -130,6 +153,11 @@ fn run() -> Result<(), String> {
             shim.thickness()
         ));
     }
+    update_table(
+        &root.join("plugins/techsquid-bearings/README.md"),
+        &bearings_table,
+        write,
+    )?;
     for (plugin, table) in [
         ("techsquid-bearings", bearings_table),
         ("techsquid-v-wheels", wheels_table),
@@ -141,6 +169,16 @@ fn run() -> Result<(), String> {
         )?;
     }
     Ok(())
+}
+
+fn exterior_basis(csk: bearings::csk::Csk) -> &'static str {
+    match bearings::csk::exterior::resolve(&csk.geometry())
+        .expect("valid CSK preset")
+        .basis
+    {
+        bearings::csk::exterior::Basis::Measured => "Measured",
+        bearings::csk::exterior::Basis::Estimated => "Estimated",
+    }
 }
 
 fn update_table(path: &Path, table: &str, write: bool) -> Result<(), String> {
@@ -176,7 +214,39 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
             .iter_mut()
             .find(|e| e["name"] == entry)
             .ok_or("manifest has no insertion workflow")?;
-        workflow["input_schema"]["properties"][field]["enum"] = json!(choices);
+        let property = &mut workflow["input_schema"]["properties"][field];
+        if entry == "make-csk" && field == "size" {
+            property
+                .as_object_mut()
+                .ok_or("missing CSK size property")?
+                .remove("enum");
+            let mut options: Vec<_> = bearings::csk::ALL
+                .into_iter()
+                .map(|csk| {
+                    let d = csk.dimensions();
+                    let mut title = format!(
+                        "{} — {} × {} × {} mm",
+                        csk.designation(),
+                        d.bore,
+                        d.diameter,
+                        d.width
+                    );
+                    let (inner, outer) = csk.keyways();
+                    for (label, key) in [("inner", inner), ("outer", outer)] {
+                        if let Some(key) = key {
+                            title.push_str(&format!("; {label} {} × {}", key.width, key.depth));
+                        }
+                    }
+                    title.push_str(&format!("; {}", exterior_basis(csk).to_lowercase()));
+                    json!({"const":csk.designation(), "title":title})
+                })
+                .collect();
+            options
+                .push(json!({"const":"Custom", "title":"Custom — enter dimensions and keyways"}));
+            property["oneOf"] = json!(options);
+        } else {
+            property["enum"] = json!(choices);
+        }
     }
     let mut commands: std::collections::BTreeSet<String> =
         serde_json::from_value(manifest["runtime"]["commands"].clone())
@@ -211,8 +281,13 @@ mod tests {
             if !manifest.is_file() {
                 continue;
             }
-            let value: Value =
-                serde_json::from_str(&fs::read_to_string(&manifest).unwrap()).unwrap();
+            let text = fs::read_to_string(&manifest).unwrap();
+            assert!(
+                text.len() <= 16 * 1024,
+                "{} exceeds the host's 16 KiB manifest limit",
+                manifest.display()
+            );
+            let value: Value = serde_json::from_str(&text).unwrap();
             let entries = value["runtime"]["entries"].as_array().unwrap();
             assert!(!entries.is_empty());
             for entry in entries {

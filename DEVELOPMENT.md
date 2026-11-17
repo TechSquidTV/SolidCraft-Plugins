@@ -10,7 +10,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
-| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings | Six sourced OpenBuilds and MISUMI products with visible ring and closure detail |
+| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings and clutches | Six sourced OpenBuilds and MISUMI radial bearings, plus 55 CSK presets with editable envelopes, keyway configuration and source references |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | `techsquid-v-wheels` | Wheels | Five OpenBuilds products, bare or composed with bearings and an internal shim |
 
 Each plugin's README links to its detailed reference for dialog fields, standards and naming. Each release has one zip per plugin.
@@ -205,7 +205,7 @@ The checks compare actual pocket floors, bolt-hole axes, nut bounding boxes, sea
 solidcraft-cli snapshot --in examples/nut-pockets.json --out examples/nut-pockets.png --width 1280 --height 600 --camera '{"target":[0,0,6],"yaw":0.18,"pitch":0.45,"distance":70}' --section y=0,flip --no-grid --no-axes --quality fine --body 'Plate:color=#708da5' --body 'Nut M6:color=#d7af57'
 ```
 
-Eight standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+Nine standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
 
 | Example | Plugin | What it builds | Picture |
 |---|---|---|---|
@@ -215,7 +215,8 @@ Eight standalone examples show the plugins’ parts and editing modes. Each plug
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
-| `bearings` | `techsquid-bearings` | Six sourced bearings: open, sealed and shielded variants | `bearings.png` |
+| `bearings` | `techsquid-bearings` | Six sourced radial bearings: open, sealed and shielded | `bearings.png` |
+| `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line
@@ -246,6 +247,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 
 ```sh
 solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 550 --camera '{"target":[1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":110}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 800 --camera '{"target":[0.75,25,0],"yaw":0.05,"pitch":0.9,"distance":150}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
 
@@ -278,8 +280,9 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 ## Wheel and bearing source geometry
 
-The `bearings` and `wheels` crates own fixed supplier products and their exterior
-geometry. The [OpenBuilds ledger](docs/sources/openbuilds.md) records wheel profiles,
+The `bearings` and `wheels` crates own radial-bearing and wheel supplier products
+and their exterior geometry. The `bearings::csk` module separately owns editable
+CSK design specifications. The [OpenBuilds ledger](docs/sources/openbuilds.md) records wheel profiles,
 assembly references and the 105ZZ width correction. The [MISUMI ledger](docs/sources/misumi.md)
 records rounded ring profiles, closures and the open B626's visible balls. Both
 retain source hashes and independent measurements. No source STEP files or
@@ -293,6 +296,7 @@ cargo build -p wheels --example reference_geometry
 cargo build -p plugin-kit --example inspect_content
 SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/wheel_geometry_test.py
 SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/bearing_geometry_test.py
+SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/csk_geometry_test.py
 ```
 
 The test compares wheels to independently imported STEP measurements, verifies
@@ -304,6 +308,19 @@ The bearing suite separately verifies MISUMI ring volumes against the STEP ledge
 bore/shoulder radii, closure recesses and colours, the open bearing's race depths,
 section vertices and eight spheres, and purchase/reuse
 behavior through the installed workflow.
+
+The CSK suite checks all 55 presets, measured shoulders/chamfers, closure areas
+and appearance, custom dimensions and keyway presence, exterior estimation
+metadata, BOM quantities, definition
+reuse, invalid-input rollback and save/reopen. It uses the built Bearings package;
+run `./build.sh` first. The [CSK walkthrough](examples/csk-clutches.md) explains the
+example’s seven BOM rows and independent volume expectations. Rebuild and check it
+with:
+
+```bash
+python3 tests/examples_test.py --update examples/csk-clutches.steps.json
+python3 tests/examples_test.py examples/csk-clutches.steps.json
+```
 
 ## Components
 

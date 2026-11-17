@@ -1,20 +1,20 @@
 //! Measured MISUMI ring sections. Rounded outside edges and exposed open-bearing
 //! raceways use true arcs, not faceted approximations. See docs/sources/misumi.md.
 
-use super::Bearing;
+use super::{Bearing, RingSection};
 use plugin_kit::revolve::Segment;
 
-pub fn ring(bearing: Bearing, outer: bool) -> Vec<Segment> {
+pub fn ring(bearing: Bearing, section: &RingSection, outer: bool) -> Vec<Segment> {
     let d = bearing.dimensions();
     let h = d.width / 2.0;
-    let f = d.edge_radius;
+    let f = section.edge_radius;
     if f == 0.0 {
         return vec![];
     }
     let (edge, shoulder, sign) = if outer {
-        (d.diameter / 2.0, d.outer_ring_radius, -1.0)
+        (d.diameter / 2.0, section.outer_ring_radius, -1.0)
     } else {
-        (d.bore / 2.0, d.inner_ring_radius, 1.0)
+        (d.bore / 2.0, section.inner_ring_radius, 1.0)
     };
     let a = [edge + sign * f, -h];
     let b = [edge + sign * f, h];

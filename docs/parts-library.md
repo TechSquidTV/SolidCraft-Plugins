@@ -164,3 +164,31 @@ loading Wasm; skipped runs provide no runtime evidence.
 The native inspection fixture used by Rust geometry-command recorders is deliberately
 a fixed cylinder, not a CAD emulator. Those unit tests assert builder commands;
 the native suites above establish actual reuse and edited-content behavior.
+
+## Design specifications before purchasing
+
+The CSK generator identifies a resolved `bearings::csk::Geometry` independently
+of its drawing sources. A default CSK is a `design_specification`; changed
+dimensions, closure style or keyway configuration make it `custom`. Neither implies
+a supplier purchase or a universal CSK standard. No purchasing API is introduced
+by the CSK generator.
+
+Equivalent resolved geometry with the same starting designation reuses a definition
+and counts its occurrences in the BOM without assigning a part number. The version 4
+`org.techsquid.specification` record stores actual geometry, its identity, the
+reference baseline and customization status, plus measured/estimated exterior
+dimensions and source hashes. Existing supplier-product workflows
+remain valid for explicitly chosen catalog products; using a reference drawing
+alone must not create that identity.
+
+## Future component purchasing workflow
+
+Purchasing assignment is future work for a shared workflow applied to an existing
+component after creation. It should support generated, imported and custom
+components independently of their geometry generators. CSK remains focused on
+geometry, keyway customization and reference evidence.
+
+That workflow must define whether an assignment applies to all copies of a
+component or selected occurrences, separate stable product identifiers from
+listing URLs, and handle BOM-number conflicts consistently. No purchasing
+assignment interface is provided by the CSK generator.

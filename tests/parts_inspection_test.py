@@ -4,6 +4,7 @@
 The fixture is a generic hollow cylinder, not a catalog bearing model. These
 checks establish inspection coverage; they do not assert that reuse is implemented.
 """
+import math
 import os
 
 from harness import TMP, check, finish, run
@@ -59,7 +60,9 @@ check("owned cut can change while retaining its identity", code == 0, text[-1000
 if not code:
     before, after = measured["bodies"][0], changed[4]["bodies"][0]
     check("volume and bounds miss a relocated bore", abs(before["volume_mm3"] - after["volume_mm3"]) < 1e-6
-          and before["bbox"] == after["bbox"])
+          and all(math.isclose(a, b, rel_tol=0, abs_tol=1e-6)
+                  for bound in ("min", "max")
+                  for a, b in zip(before["bbox"][bound], after["bbox"][bound])))
     check("body history IDs alone miss feature edits", changed[3] == history)
     check("feature definition reveals the relocated bore", changed[0]["definition"] != changed[2]["definition"])
 

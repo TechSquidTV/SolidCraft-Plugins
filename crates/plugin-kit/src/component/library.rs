@@ -67,7 +67,10 @@ struct Counted<'a, R> {
 impl<R: Runner> Runner for Counted<'_, R> {
     fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
         if self.calls >= MAX_CALLS {
-            return Err("parts: insertion exceeds its command budget; use a smaller batch".into());
+            return Err(
+                "sketch_point: this takes more commands than one run allows; choose fewer points"
+                    .into(),
+            );
         }
         self.calls += 1;
         self.host.run(command, args)
@@ -90,6 +93,10 @@ pub struct Library<'a, R: Runner> {
     index: Index,
     directory: Directory,
     resolved: BTreeMap<String, Resolved>,
+    /// The snapshot of every definition this run verified or sealed. Nothing the
+    /// library does afterwards changes a finished definition's own contents: the
+    /// same holds between runs, or a sealed part could never be reused.
+    sealed: BTreeMap<u64, Snapshot>,
     visiting: BTreeSet<String>,
     original_active: Activation,
     active: Activation,
@@ -101,7 +108,7 @@ pub struct Library<'a, R: Runner> {
 impl<'a, R: Runner> Library<'a, R> {
     pub fn new(host: &'a mut R, budget: Budget) -> Result<Self, String> {
         if budget.placements == 0 || budget.placements > 32 || budget.creation_calls > MAX_CALLS {
-            return Err("parts: choose 1–32 placements within the recipe budget".into());
+            return Err("sketch_point: choose 1 to 32 points".into());
         }
         let calls = host.command_count();
         let mut host = Counted { host, calls };
@@ -123,6 +130,7 @@ impl<'a, R: Runner> Library<'a, R> {
             index,
             directory,
             resolved: BTreeMap::new(),
+            sealed: BTreeMap::new(),
             visiting: BTreeSet::new(),
             original_active: active.clone(),
             active,
@@ -231,6 +239,7 @@ impl<'a, R: Runner> Library<'a, R> {
                 {
                     match self.index.snapshot(&mut self.host, id) {
                         Ok(snapshot) if snapshot == record.snapshot => {
+                            self.sealed.insert(id, snapshot);
                             let handle = Handle {
                                 component: id,
                                 name: node.name,
@@ -261,7 +270,7 @@ impl<'a, R: Runner> Library<'a, R> {
             && self.host.calls + self.budget.creation_calls + self.budget.placements * 3 + 8
                 > MAX_CALLS
         {
-            return Err("parts: this creation batch exceeds the command budget; insert fewer points, then reuse the part".into());
+            return Err("sketch_point: a new part on this many points takes more commands than one run allows; choose fewer points, then run again to reuse the part".into());
         }
         let mut taken: Vec<_> = self
             .index
@@ -296,7 +305,9 @@ impl<'a, R: Runner> Library<'a, R> {
         // A mutation invalidates the old view. Seal finished contents, including
         // child transforms, after setting purchasing properties.
         self.index = Index::read(&mut self.host)?;
+        self.index.trust(&self.sealed);
         let snapshot = self.index.snapshot(&mut self.host, component)?;
+        self.sealed.insert(component, snapshot.clone());
         let record = Record {
             version: VERSION,
             product,
@@ -365,7 +376,7 @@ impl<'a, R: Runner> Library<'a, R> {
         folder: &str,
     ) -> Result<Placed, String> {
         if places.is_empty() || places.len() > 32 {
-            return Err("parts: choose 1–32 placements".into());
+            return Err("sketch_point: choose 1 to 32 points".into());
         }
         let listed = self.host.run("component.list", json!({"compact": true}))?;
         let listed = components(&listed);

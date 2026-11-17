@@ -207,7 +207,7 @@ with Headless() as host:
     batch = {'size':'Xtreme Mini V Wheel','sketch':'Batch points','sketch_point':','.join(f'p{i}.center' for i in range(32))}
     before_doc = host.command('document.inspect',measure=False)
     refused = host.command('plugin.run',allow_error=True,path=package(WHEELS),approval=approvals[WHEELS],entry='make-v-wheel',params=batch)
-    check('oversized creation batch is refused by preflight','creation batch exceeds' in str(refused.get('error')))
+    check('oversized creation batch is refused by preflight','more commands than one run allows' in str(refused.get('error')))
     check('preflight refusal preserves the complete design',host.command('document.inspect',measure=False) == before_doc)
     batch['sketch_point'] = ','.join(f'p{i}.center' for i in range(24))
     placed = insert(WHEELS,**batch)

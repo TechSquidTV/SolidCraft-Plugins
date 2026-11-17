@@ -184,6 +184,44 @@ pub fn site_at(at: [f64; 2]) -> Placement {
     }
 }
 
+/// Counts the commands a build sends, with no host behind it. It answers every
+/// command with what a build reads from a reply: sketch 1, the body it asked for by
+/// name and one curve.
+#[derive(Default)]
+pub struct CallCount(pub usize);
+impl Runner for CallCount {
+    fn run(&mut self, _: &str, args: Value) -> Result<Value, String> {
+        self.0 += 1;
+        let body = args.get("body_name").cloned().unwrap_or(json!("Body"));
+        Ok(json!({
+            "sketch": 1,
+            "created_bodies": [body],
+            "changed_bodies": [body],
+            "created": {"curves": ["l1"]},
+        }))
+    }
+    fn site(&mut self, _: [f64; 2]) -> Placement {
+        Placement::on_origin()
+    }
+}
+
+/// What the library spends on a new definition beside its build: naming it, its
+/// metadata and the record that lets a later run reuse it. Through the host a plain
+/// rail took 18 and a tapped rail drilled from two faces took 30.
+pub const SEAL_CALLS: usize = 48;
+
+/// The commands a new definition takes: its build, counted with no host behind it on
+/// the kind of site the library will give it, and what the library adds around it.
+/// This is the `creation_calls` [`insert`] takes.
+pub fn creation_calls(
+    site: Site,
+    build: impl FnOnce(&mut dyn Runner, &Placement, &str) -> Result<(), String>,
+) -> Result<usize, String> {
+    let mut count = CallCount::default();
+    build(&mut count, &site_at(site.of(1)), "Part")?;
+    Ok(count.0 + SEAL_CALLS)
+}
+
 /// Inspection fixture for geometry-command unit recorders. This deliberately
 /// describes a fixed cylinder, not the recorder's generated CAD. It lets those
 /// unit tests inspect the builder commands independently of the native document.

@@ -98,7 +98,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     if modeled && !bore.metric {
         return Err(FieldError::new(
             "thread_modeled",
-            "this host models metric threads only; choose cosmetic for this product",
+            "this host models metric threads only; turn Modeled thread off for this size",
         ));
     }
     let smallest = knurl::min_crest_diameter(bore.major);

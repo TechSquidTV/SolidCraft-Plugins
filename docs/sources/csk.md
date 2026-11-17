@@ -45,6 +45,8 @@ Default evidence, reviewed November 17, 2026:
 - [DKC's catalog, page 3](https://dkc-as.dk/wp-content/uploads/2015/05/DKC-FRIL%C3%98BSLEJER-ENVEJSLEJER-FREEWHEEL-BEARINGS-ONEWAY-CLUTCHES-needle-clutch-brg.pdf)
   explicitly supplies CSK8P-2RS at 8 × 22 × 9 mm, with a 3 × 0.5 mm inner slot.
   Its outer-slot values are not substituted for PEAK's unsealed 8PP baseline.
+  The table does not say how it is closed. The model gives it one lip seal, like
+  CSK8-2RS, because both keep the unsealed 9 mm width; that is an inference.
 - [PTI's CSK series sheet](https://static.s123-cdn-static-d.com/uploads/1952747/normal_5eb6121f4e1cf.pdf)
   documents PP from size 15 upward, sealed widths, and the PP-2RS suffix combination.
   It supplies the added 15, 17, 20, 25, 35 and 40PP-2RS presets. The

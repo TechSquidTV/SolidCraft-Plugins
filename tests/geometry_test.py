@@ -725,6 +725,40 @@ def holes_from_two_faces(name):
 machined_rail("rail: two screw holes take the lips and the core out of a 2020",
               {"slot": "T-slot", "size": "2020", "length": 100, "holes": "10, 90", "hole_face": "-Y"},
               rail_area(T, 1, 1.0), 2 * HOLE_2020)
+
+
+@case
+def on_grooved_plate(name, hole_type, removed):
+    """A 40 x 40 x 12 plate with a 6 mm groove across its top, which leaves two faces in
+    one plane. A screw and its hole on one side of the groove stay attached there."""
+    before = [
+        {"command": "solid.box", "params": {"length": 40, "width": 40, "height": 12,
+                                            "body_name": "Plate"}},
+        {"command": "solid.box", "params": {"length": 40, "width": 6, "height": 3,
+                                            "corner": [0, 17, 9], "operation": "cut",
+                                            "targets": ["Plate"]}},
+        {"command": "sketch.create", "params": {"plane": {"face": [20, 5, 12]},
+                                                "name": "Holes"}},
+        {"command": "sketch.circle.center", "params": {"center": [10, 8], "diameter": 3}},
+        {"command": "sketch.finish", "params": {}},
+    ]
+    found, reply = plugin_run(*SCREW, {"placement": picks("Holes", "c1", curve=True),
+                                       "create": "Screw and hole", "hole_type": hole_type,
+                                       "thread_modeled": False}, before)
+    if found is None:
+        check(name, False, "| " + reply)
+        return
+    want = 1600 * 12 - 40 * 6 * 3 - removed
+    got = found["Plate"]["volume_mm3"]
+    check(name, abs(got - want) < 0.3 and "Screw M3 x 12 socket" in found,
+          f"| plate {got:.2f}, expected {want:.2f}; bodies {sorted(found)}")
+
+
+on_grooved_plate("screw: a clearance hole beside a groove keeps its screw", "Clearance",
+                 cyl(3.4, 12))
+on_grooved_plate("screw: a tapped hole beside a groove keeps its screw", "Tapped",
+                 cyl(2.5, 12))
+
 holes_from_two_faces("rail: holes from two faces of a 2020 each take one hole's metal")
 refused("rail: holes from two faces at one place are refused", "techsquid-extrusions", "make-extrusion",
         {"length": 100, "holes": "+Y 50 +X 52"}, "would meet inside the rail")

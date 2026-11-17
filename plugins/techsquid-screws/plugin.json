@@ -22,6 +22,7 @@
       "joint.list",
       "material.list",
       "model.body_features",
+      "model.edges",
       "model.faces",
       "occurrence.copy",
       "occurrence.move",

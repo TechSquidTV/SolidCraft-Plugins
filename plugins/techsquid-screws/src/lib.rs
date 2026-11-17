@@ -115,9 +115,12 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         };
         let representation = provider::representation(p);
         let number = provider::part_number(p)?;
+        let creation = fasten::creation_calls(def.site, |mut r, site, name| {
+            build_screw(&mut r, p, site, name)
+        })?;
         let (placed, report) = fasten::insert(
             r,
-            160,
+            creation,
             &places,
             FOLDER,
             |library| {
@@ -2054,6 +2057,39 @@ mod tests {
             asked: vec![],
             sketch: 0,
         }
+    }
+
+    /// The budget a run reserves for a new part is its counted build, and the largest
+    /// build in the catalog leaves room for the most points a run takes.
+    #[test]
+    fn the_counted_build_is_the_build_the_host_gets() {
+        use plugin_kit::component::{creation_calls, site_at, MAX_PLACEMENTS, SEAL_CALLS};
+        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
+        let props = &manifest["runtime"]["entries"][0]["input_schema"]["properties"];
+        let choices = |key: &str| props[key]["enum"].as_array().unwrap().clone();
+        let mut largest = 0;
+        for head in choices("head") {
+            for drive in choices("drive") {
+                for tip in choices("tip") {
+                    for modeled in [true, false] {
+                        let v = json!({"head": head, "drive": drive, "tip": tip,
+                            "thread_modeled": modeled});
+                        let Ok(p) = screw::parse(&v) else { continue };
+                        let site = built_at(&p);
+                        let mut rec = Rec(vec![]);
+                        build_screw(&mut rec, &p, &site_at(site.of(1)), "Part").unwrap();
+                        let counted = creation_calls(site, |mut r, at, name| {
+                            build_screw(&mut r, &p, at, name)
+                        })
+                        .unwrap();
+                        assert_eq!(counted, rec.0.len() + SEAL_CALLS, "{v}");
+                        largest = largest.max(counted);
+                    }
+                }
+            }
+        }
+        // Reading the design and the reply take 20 commands, each placement three.
+        assert!(largest + 3 * MAX_PLACEMENTS + 28 <= 248, "{largest}");
     }
 
     /// A taken name makes the host number the body, and that number changes on a rebuild.

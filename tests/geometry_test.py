@@ -742,7 +742,7 @@ def on_grooved_plate(name, hole_type, removed):
         {"command": "sketch.circle.center", "params": {"center": [10, 8], "diameter": 3}},
         {"command": "sketch.finish", "params": {}},
     ]
-    found, reply = plugin_run(*SCREW, {"sketch": "Holes", "sketch_point": "c1",
+    found, reply = plugin_run(*SCREW, {"placement": picks("Holes", "c1", curve=True),
                                        "create": "Screw and hole", "hole_type": hole_type,
                                        "thread_modeled": False}, before)
     if found is None:

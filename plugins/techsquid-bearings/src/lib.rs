@@ -42,20 +42,8 @@ fn place_part<R: Runner>(
     ensure: impl FnOnce(&mut Library<'_, R>) -> Result<component::Handle, String>,
 ) -> Result<Value, String> {
     let places = place::resolve_each(r, placement)?;
-    if places.len() > 32 {
-        return Err("sketch_point: choose at most 32 points".into());
-    }
-    let mut library = Library::new(
-        r,
-        component::Budget {
-            creation_calls: 64,
-            placements: places.len(),
-        },
-    )?;
-    let handle = ensure(&mut library)?;
-    let placed = library.place_all(&handle, &places, "Bearings")?;
-    let report = library.finish()?;
-    result["library"] = json!(report);
+    let (placed, report) = component::insert(r, 64, &places, "Bearings", ensure, |_, _| Ok(()))?;
+    result["library"] = report;
     Ok(component::with_placements(result, &places, Some(&placed)))
 }
 

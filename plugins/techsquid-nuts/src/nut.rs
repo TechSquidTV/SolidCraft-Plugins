@@ -183,39 +183,8 @@ fn resolve_size(designation: &str) -> Result<(MetricSize, String, Option<NutSize
             "size",
             "an ISO 4032 nut is metric; use a size such as M6 or M8x1",
         )),
-        Err(err) => match listed_major(designation) {
-            Some(nut) => Ok((
-                MetricSize {
-                    major: nut.nominal,
-                    pitch: nut.pitch,
-                },
-                format_metric(nut.nominal, nut.pitch),
-                Some(nut),
-            )),
-            None => Err(err),
-        },
+        Err(err) => Err(err),
     }
-}
-
-/// `M3.5` has no coarse pitch in the metric list, but it is an ISO 4032 size.
-fn listed_major(designation: &str) -> Option<NutSize> {
-    let rest = designation.trim().strip_prefix(['M', 'm'])?;
-    if rest.contains(['x', 'X', '×']) {
-        return None;
-    }
-    // Plain decimals only: `f64::parse` would also take `1e1` and `+3.5`.
-    if rest.is_empty() || !rest.chars().all(|c| c.is_ascii_digit() || c == '.') {
-        return None;
-    }
-    let major = rest.parse::<f64>().ok()?;
-    if !(major.is_finite() && major > 0.0) {
-        return None;
-    }
-    nut::standard_nut(major)
-}
-
-fn format_metric(major: f64, pitch: f64) -> String {
-    format!("M{}x{}", metric::number(major), metric::number(pitch))
 }
 
 fn resolve_body(
@@ -420,9 +389,10 @@ mod tests {
 
     #[test]
     fn a_listed_size_is_a_plain_decimal() {
-        assert!(listed_major("M3.5").is_some());
-        assert!(listed_major("M1e1").is_none());
-        assert!(listed_major("M+3.5").is_none());
+        // M3.5 is an ISO 4032 size, and ISO 261 gives it a coarse pitch.
+        assert_eq!(parse(&json!({"custom_size": "M3.5"})).unwrap().pitch, 0.6);
         assert!(parse(&json!({"custom_size": "M1e1"})).is_err());
+        assert!(parse(&json!({"custom_size": "M+3.5"})).is_err());
+        assert!(parse(&json!({"custom_size": "M3."})).is_err());
     }
 }

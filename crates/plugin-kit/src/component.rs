@@ -44,7 +44,7 @@ use crate::{Placement, Runner};
 mod activation;
 mod library;
 pub use activation::Activation;
-pub use library::{Budget, Handle, Library};
+pub use library::{insert, Budget, Handle, Library, MAX_PLACEMENTS};
 
 /// A generated model number for custom geometry, never a supplier SKU. The full
 /// product record remains authoritative for reuse; this stable number keeps

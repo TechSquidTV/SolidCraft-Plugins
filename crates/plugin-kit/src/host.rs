@@ -109,6 +109,19 @@ pub fn changed_bodies(reply: &Value) -> Option<Vec<String>> {
     )
 }
 
+/// The bodies a cut into a part changed. A cut that found no part under the point is
+/// refused: `cut` is what it was for (`to drill`) and `alone` is the Create choice that
+/// needs no part. A host that does not say what changed gives an empty list.
+pub fn cut_bodies(reply: &Value, cut: &str, alone: &str) -> Result<Vec<String>, String> {
+    match changed_bodies(reply) {
+        Some(bodies) if bodies.is_empty() => Err(format!(
+            "sketch_point: there is no part under the point {cut}; put the sketch on the part, or set Create to {alone}"
+        )),
+        Some(bodies) => Ok(bodies),
+        None => Ok(Vec::new()),
+    }
+}
+
 /// JSON from a host command. A reply that is not JSON becomes null, and a failure names the command.
 pub fn command_reply<E: std::fmt::Display>(
     command: &str,

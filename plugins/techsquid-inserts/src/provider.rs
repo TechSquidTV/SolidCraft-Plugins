@@ -1,26 +1,16 @@
 //! Discovery of the same rows used by the heat-set insertion workflow.
 
-use parts::catalog::{
-    self, CatalogInfo, Dimension, Frame, Insertion, PartDescription, PartSummary, Provenance,
-    ResolvedPart, Route, Source,
-};
-use parts::{Catalog, CatalogError, Product, ProductKind, Representation};
+use parts::catalog::{self};
+use parts::{CatalogError, Product, ProductKind, Representation};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::Value;
 
-use crate::{
-    catalog::{rows, Row},
-    insert,
-};
-
-pub struct Inserts;
+use crate::{catalog::Row, insert};
 
 /// Increment when catalog choices, dimensions, or resolution rules change.
 pub const REVISION: &str = "1";
 /// Increment when the procedural knurl, thread, or default appearance changes.
 const GEOMETRY_REVISION: &str = "1";
-const GUIDELINES: &str =
-    "https://www.cnckitchen.com/s/CNCKitchen_Heat-Set-Insert-Dimensions-and-Design-Guidelines.pdf";
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -30,57 +20,10 @@ pub struct Specification {
     pub diameter_mm: f64,
 }
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Configuration {
-    #[serde(default)]
-    detail: parts::detail::ThreadDetail,
-}
-
 /// These three existing generator rows are absent from the source dimension table.
 /// Keep them discoverable as custom models without asserting a supplier product.
 fn documented(row: &Row) -> bool {
     !matches!(row.id, "m1.6-2.5" | "m6-6.8-short" | "m8-6.8-short")
-}
-
-fn row(id: &str) -> Result<&'static Row, CatalogError> {
-    rows()
-        .find(|row| row.id == id)
-        .ok_or_else(|| CatalogError::new("part", format!("unknown insert {id}")))
-}
-
-fn summary(row: &Row) -> PartSummary {
-    PartSummary {
-        id: row.id.into(),
-        name: format!("Heat-set insert {}", row.size),
-        family: "heat-set-inserts".into(),
-        kind: if documented(row) {
-            ProductKind::SupplierProduct
-        } else {
-            ProductKind::Custom
-        },
-        designation: row.size.into(),
-    }
-}
-
-fn dimensions(row: &Row) -> Vec<Dimension> {
-    vec![
-        Dimension::mm("length", row.length),
-        Dimension::mm("outside_diameter", row.diameter),
-        Dimension::mm("recommended_hole_diameter", row.hole),
-        Dimension::mm("minimum_wall", row.wall),
-    ]
-}
-
-fn configuration_schema(row: &Row) -> Value {
-    let details = if crate::catalog::metric(row.thread) {
-        vec!["cosmetic", "modeled"]
-    } else {
-        vec!["cosmetic"]
-    };
-    json!({"type": "object", "additionalProperties": false, "properties": {
-        "detail": {"type": "string", "enum": details, "default": "cosmetic"}
-    }})
 }
 
 /// Resolve physical identity from the workflow's validated parameters. Hole cutting
@@ -133,89 +76,154 @@ pub fn part_number(p: &insert::Params) -> Result<String, String> {
     }
 }
 
-impl Catalog for Inserts {
-    type Configuration = Specification;
-
-    fn info(&self) -> CatalogInfo {
-        CatalogInfo {
-            id: "techsquid-inserts".into(),
-            name: "Heat-set inserts".into(),
-            revision: REVISION.into(),
-        }
-    }
-
-    fn summaries(&self) -> Vec<PartSummary> {
-        rows().map(summary).collect()
-    }
-
-    fn describe(&self, id: &str) -> Result<PartDescription, CatalogError> {
-        let row = row(id)?;
-        let schema = configuration_schema(row);
-        Ok(PartDescription {
-            part: summary(row),
-            dimensions: dimensions(row),
-            configuration_schema: schema.clone(),
-            sources: if documented(row) {
-                vec![Source {
-                    title: "CNC Kitchen dimension guidelines".into(),
-                    url: GUIDELINES.into(),
-                }]
-            } else {
-                vec![]
-            },
-            details: schema["properties"]["detail"]["enum"]
-                .as_array()
-                .expect("detail choices")
-                .iter()
-                .map(|v| v.as_str().expect("detail choice").into())
-                .collect(),
-            provenance: Provenance {
-                supplier: documented(row).then(|| "CNC Kitchen".into()),
-                ..Provenance::default()
-            },
-            attachments: vec![Frame::axial("top", 0.0), Frame::axial("bottom", -row.length)],
-            insertion: Route { plugin: crate::PLUGIN.into(), entry: "make-insert".into() },
-            notes: vec!["Knurls and threads are procedural representations; no supplier stock availability is asserted.".into()],
-        })
-    }
-
-    fn resolve(
-        &self,
-        id: &str,
-        value: &Value,
-    ) -> Result<ResolvedPart<Specification>, CatalogError> {
-        let row = row(id)?;
-        let configuration: Configuration = serde_json::from_value(value.clone())
-            .map_err(|e| CatalogError::new("configuration", e.to_string()))?;
-        let modeled = configuration.detail.modeled();
-        if modeled && !crate::catalog::metric(row.thread) {
-            return Err(CatalogError::new(
-                "detail",
-                "this host supports modeled insert threads only for metric sizes",
-            ));
-        }
-        let params = json!({"size": row.size, "create": "Insert only", "thread_modeled": modeled});
-        let parsed = insert::parse(&params).map_err(|e| CatalogError::new(e.field, e.reason))?;
-        let representation = representation(&parsed);
-        let insertion = Insertion::resolved(
-            crate::PLUGIN,
-            "make-insert",
-            params,
-            REVISION,
-            &representation,
-        )?;
-        Ok(ResolvedPart {
-            representation,
-            description: self.describe(id)?,
-            members: vec![],
-            insertion,
-        })
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use parts::catalog::{
+        CatalogInfo, Dimension, Frame, Insertion, PartDescription, PartSummary, Provenance,
+        ResolvedPart, Route, Source,
+    };
+    use parts::{Catalog, CatalogError, ProductKind};
+    use serde::Deserialize;
+    use serde_json::{json, Value};
+
+    use crate::{
+        catalog::{rows, Row},
+        insert,
+    };
+    const GUIDELINES: &str =
+        "https://www.cnckitchen.com/s/CNCKitchen_Heat-Set-Insert-Dimensions-and-Design-Guidelines.pdf";
+
+    pub struct Inserts;
+
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Configuration {
+        #[serde(default)]
+        detail: parts::detail::ThreadDetail,
+    }
+
+    fn row(id: &str) -> Result<&'static Row, CatalogError> {
+        rows()
+            .find(|row| row.id == id)
+            .ok_or_else(|| CatalogError::new("part", format!("unknown insert {id}")))
+    }
+
+    fn summary(row: &Row) -> PartSummary {
+        PartSummary {
+            id: row.id.into(),
+            name: format!("Heat-set insert {}", row.size),
+            family: "heat-set-inserts".into(),
+            kind: if documented(row) {
+                ProductKind::SupplierProduct
+            } else {
+                ProductKind::Custom
+            },
+            designation: row.size.into(),
+        }
+    }
+
+    fn dimensions(row: &Row) -> Vec<Dimension> {
+        vec![
+            Dimension::mm("length", row.length),
+            Dimension::mm("outside_diameter", row.diameter),
+            Dimension::mm("recommended_hole_diameter", row.hole),
+            Dimension::mm("minimum_wall", row.wall),
+        ]
+    }
+
+    fn configuration_schema(row: &Row) -> Value {
+        let details = if crate::catalog::metric(row.thread) {
+            vec!["cosmetic", "modeled"]
+        } else {
+            vec!["cosmetic"]
+        };
+        json!({"type": "object", "additionalProperties": false, "properties": {
+            "detail": {"type": "string", "enum": details, "default": "cosmetic"}
+        }})
+    }
+
+    impl Catalog for Inserts {
+        type Configuration = Specification;
+
+        fn info(&self) -> CatalogInfo {
+            CatalogInfo {
+                id: "techsquid-inserts".into(),
+                name: "Heat-set inserts".into(),
+                revision: REVISION.into(),
+            }
+        }
+
+        fn summaries(&self) -> Vec<PartSummary> {
+            rows().map(summary).collect()
+        }
+
+        fn describe(&self, id: &str) -> Result<PartDescription, CatalogError> {
+            let row = row(id)?;
+            let schema = configuration_schema(row);
+            Ok(PartDescription {
+                part: summary(row),
+                dimensions: dimensions(row),
+                configuration_schema: schema.clone(),
+                sources: if documented(row) {
+                    vec![Source {
+                        title: "CNC Kitchen dimension guidelines".into(),
+                        url: GUIDELINES.into(),
+                    }]
+                } else {
+                    vec![]
+                },
+                details: schema["properties"]["detail"]["enum"]
+                    .as_array()
+                    .expect("detail choices")
+                    .iter()
+                    .map(|v| v.as_str().expect("detail choice").into())
+                    .collect(),
+                provenance: Provenance {
+                    supplier: documented(row).then(|| "CNC Kitchen".into()),
+                    ..Provenance::default()
+                },
+                attachments: vec![Frame::axial("top", 0.0), Frame::axial("bottom", -row.length)],
+                insertion: Route { plugin: crate::PLUGIN.into(), entry: "make-insert".into() },
+                notes: vec!["Knurls and threads are procedural representations; no supplier stock availability is asserted.".into()],
+            })
+        }
+
+        fn resolve(
+            &self,
+            id: &str,
+            value: &Value,
+        ) -> Result<ResolvedPart<Specification>, CatalogError> {
+            let row = row(id)?;
+            let configuration: Configuration = serde_json::from_value(value.clone())
+                .map_err(|e| CatalogError::new("configuration", e.to_string()))?;
+            let modeled = configuration.detail.modeled();
+            if modeled && !crate::catalog::metric(row.thread) {
+                return Err(CatalogError::new(
+                    "detail",
+                    "this host supports modeled insert threads only for metric sizes",
+                ));
+            }
+            let params =
+                json!({"size": row.size, "create": "Insert only", "thread_modeled": modeled});
+            let parsed =
+                insert::parse(&params).map_err(|e| CatalogError::new(e.field, e.reason))?;
+            let representation = representation(&parsed);
+            let insertion = Insertion::resolved(
+                crate::PLUGIN,
+                "make-insert",
+                params,
+                REVISION,
+                &representation,
+            )?;
+            Ok(ResolvedPart {
+                representation,
+                description: self.describe(id)?,
+                members: vec![],
+                insertion,
+            })
+        }
+    }
 
     #[test]
     fn discovery_is_sorted_bounded_and_pins_the_catalog_revision() {

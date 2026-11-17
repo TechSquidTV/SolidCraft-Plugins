@@ -1,7 +1,7 @@
 pub mod provider;
 
 use plugin_kit::{
-    component::{self, Library},
+    component::{self},
     input, place, FieldError, Runner,
 };
 use serde_json::{json, Value};
@@ -36,19 +36,14 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 
 pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
     let places = place::resolve_each(r, &p.place)?;
-    if places.len() > 32 {
-        return Err("sketch_point: choose at most 32 points".into());
-    }
-    let mut library = Library::new(
+    let (placed, report) = component::insert(
         r,
-        component::Budget {
-            creation_calls: if p.assembled { 160 } else { 40 },
-            placements: places.len(),
-        },
+        if p.assembled { 160 } else { 40 },
+        &places,
+        "Wheels",
+        |library| p.wheel.ensure(library, PLUGIN, p.assembled),
+        |_, _| Ok(()),
     )?;
-    let handle = p.wheel.ensure(&mut library, PLUGIN, p.assembled)?;
-    let placed = library.place_all(&handle, &places, "Wheels")?;
-    let report = library.finish()?;
     Ok(component::with_placements(
         json!({"part":p.wheel,"assembled":p.assembled,"library":report}),
         &places,

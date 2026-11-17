@@ -291,6 +291,16 @@ impl Index {
         })
     }
 
+    /// Take the snapshots this run has already worked out for parts it has not
+    /// changed since, so a parent that holds them does not read them all again.
+    pub fn trust(&mut self, snapshots: &BTreeMap<u64, Snapshot>) {
+        for (component, snapshot) in snapshots {
+            if self.components.iter().any(|c| c.id == *component) {
+                self.snapshots.insert(*component, snapshot.clone());
+            }
+        }
+    }
+
     pub fn reads(&self) -> usize {
         self.reads
     }

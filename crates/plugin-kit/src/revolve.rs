@@ -87,3 +87,35 @@ pub fn build(
     feature["angle"] = json!(360);
     r.run(command, feature)
 }
+
+/// Cut a triangle revolved about `place`'s axis from the end face `along` above its
+/// point. `into` points from that face into the part: the triangle's x is the radius
+/// and its y runs that way. A revolved cut is the same whichever way the part points,
+/// where a chamfer with two unequal legs depends on which of its faces the host takes
+/// first. Hexagon heads, nuts and set screws all chamfer their ends with it.
+pub fn cut_end(
+    r: &mut impl Runner,
+    place: &Placement,
+    body: &str,
+    along: f64,
+    into: [f64; 3],
+    triangle: &[[f64; 2]; 3],
+    name: &str,
+) -> Result<(), String> {
+    build(
+        r,
+        &Placement {
+            point: place.along(along),
+            normal: into,
+            ..*place
+        },
+        &format!("{name} profile"),
+        Section::Solid(triangle),
+        json!({
+            "operation": "cut",
+            "targets": [body],
+            "name": name,
+        }),
+    )?;
+    Ok(())
+}

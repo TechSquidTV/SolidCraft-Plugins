@@ -14,7 +14,7 @@ use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{add_new, changed_bodies, sketch_id};
+use plugin_kit::host::{add_new, cut_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::timeline;
@@ -112,31 +112,31 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             bom_type: if p.custom { "normal" } else { "purchased" },
             site: Site::for_thread(p.modeled),
         };
-        let mut library = fasten::Library::new(
+        let number = provider::part_number(p)?;
+        let (placed, report) = fasten::insert(
             r,
-            fasten::Budget {
-                creation_calls: 128,
-                placements: places.len(),
+            128,
+            &places,
+            FOLDER,
+            |library| {
+                library.ensure_built(
+                    &def,
+                    &number,
+                    &provider::representation(p),
+                    |mut r, site, name| build_nut(&mut r, p, site, name).map(|_| ()),
+                )
+            },
+            |mut r, placed| {
+                let joint = format!("Nut {}", p.designation);
+                for ((seat, place), occurrence) in
+                    seats.iter().zip(&places).zip(&placed.occurrences)
+                {
+                    seat.attach(&mut r, *occurrence, place, &joint)?;
+                }
+                Ok(())
             },
         )?;
-        let handle = library.ensure(
-            &def,
-            &provider::part_number(p)?,
-            &provider::representation(p),
-            |library, name, site| {
-                library.geometry(name, |mut r| build_nut(&mut r, p, site, name).map(|_| ()))
-            },
-        )?;
-        let placed = library.place_all(&handle, &places, FOLDER)?;
-        for ((seat, place), occurrence) in seats.iter().zip(&places).zip(&placed.occurrences) {
-            seat.attach(
-                &mut library.runner(),
-                *occurrence,
-                place,
-                &format!("Nut {}", p.designation),
-            )?;
-        }
-        library_report = library.finish()?;
+        library_report = report;
         Some(placed)
     } else {
         None
@@ -243,14 +243,7 @@ fn cut_pocket<R: Runner>(
             "operation": "cut", "name": name::reserve(names, &format!("Nut pocket {}", p.designation)),
         }),
     )?;
-    match changed_bodies(&made) {
-        Some(bodies) if bodies.is_empty() => Err(
-            "sketch_point: there is no part under the point for a pocket; put the sketch on the part, or set Create to Nut only"
-                .into(),
-        ),
-        Some(bodies) => Ok(bodies),
-        None => Ok(Vec::new()),
-    }
+    cut_bodies(&made, "for a pocket", "Nut only")
 }
 
 /// The plugin id, which a nut component's metadata names.
@@ -292,22 +285,23 @@ fn build_nut<R: Runner>(
     )?;
     let body = made.ok_or_else(|| "solid.extrude did not name the nut body".to_string())?;
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
-    chamfer(
+    // One conical chamfer on each end, cut from that end face into the nut.
+    plugin_kit::revolve::cut_end(
         r,
         &place,
         &body,
-        &end,
         0.0,
         place.normal,
+        &end.triangle,
         &named("Bearing chamfer"),
     )?;
-    chamfer(
+    plugin_kit::revolve::cut_end(
         r,
         &place,
         &body,
-        &end,
         p.height,
         opposite(place.normal),
+        &end.triangle,
         &named("Outer chamfer"),
     )?;
     if site.point != place.point {
@@ -356,52 +350,6 @@ fn build_nut<R: Runner>(
         }
     }
     Ok(end)
-}
-
-/// One conical chamfer. `into` points from that end face into the nut.
-fn chamfer<R: Runner>(
-    r: &mut R,
-    place: &Placement,
-    body: &str,
-    end: &EndChamfer,
-    along: f64,
-    into: [f64; 3],
-    name: &str,
-) -> Result<(), String> {
-    let origin = place.along(along);
-    let created = r.run(
-        "sketch.create",
-        json!({
-            "name": format!("{name} profile"),
-            "plane": {
-                "origin": origin,
-                "x_dir": place.x_dir,
-                "y_dir": into,
-            },
-        }),
-    )?;
-    let sketch = sketch_id(&created)?;
-    r.run(
-        "sketch.line",
-        json!({
-            "sketch": sketch,
-            "closed": true,
-            "points": end.triangle,
-        }),
-    )?;
-    r.run("sketch.finish", json!({}))?;
-    r.run(
-        "solid.revolve",
-        json!({
-            "sketch": sketch,
-            "axis": {"origin": place.point, "dir": place.normal},
-            "angle": 360,
-            "operation": "cut",
-            "targets": [body],
-            "name": name,
-        }),
-    )?;
-    Ok(())
 }
 
 // Each argument is one dimension or handle the countersink command needs.

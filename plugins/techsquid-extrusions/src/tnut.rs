@@ -134,12 +134,7 @@ pub fn seat(p: &Params, face: &Placement) -> Placement {
 
 /// Build the nut on every point. Returns a summary of what was made.
 pub fn make_t_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
-    let spots = place::resolve_all(r, &p.place)?;
-    let faces: Vec<Placement> = if spots.is_empty() {
-        vec![Placement::on_origin()]
-    } else {
-        spots.iter().map(|spot| spot.place).collect()
-    };
+    let faces = place::resolve_each(r, &p.place)?;
     let seats: Vec<Placement> = faces.iter().map(|face| seat(p, face)).collect();
     let base = body_base(p);
     let description = description(p);
@@ -150,21 +145,21 @@ pub fn make_t_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         bom_type: "purchased",
         site: built_at(p),
     };
-    let mut library = component::Library::new(
+    let (placed, report) = component::insert(
         r,
-        component::Budget {
-            creation_calls: 128,
-            placements: seats.len(),
+        128,
+        &seats,
+        FOLDER,
+        |library| {
+            library.ensure_built(
+                &def,
+                &format!("MISUMI {}", part(p)),
+                &crate::provider::nut_representation(p),
+                |mut r, site, name| build_nut(&mut r, p, site, name),
+            )
         },
+        |_, _| Ok(()),
     )?;
-    let handle = library.ensure(
-        &def,
-        &format!("MISUMI {}", part(p)),
-        &crate::provider::nut_representation(p),
-        |library, name, site| library.geometry(name, |mut r| build_nut(&mut r, p, site, name)),
-    )?;
-    let placed = library.place_all(&handle, &seats, FOLDER)?;
-    let report = library.finish()?;
     let mut reply = summary(p, &faces, &placed);
     reply["library"] = report;
     Ok(reply)

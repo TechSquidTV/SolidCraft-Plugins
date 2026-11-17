@@ -5,7 +5,7 @@
 use super::{components, id_of, make_folder, put, Activation, Definition, Placed};
 use crate::{
     content::{Index, Snapshot, METADATA_KEY},
-    host::free_body_name,
+    name::reserve,
     timeline, Placement, Runner,
 };
 use parts::Representation;
@@ -255,7 +255,7 @@ impl<'a, R: Runner> Library<'a, R> {
             .flat_map(|c| &c.bodies)
             .collect();
         let name = loop {
-            let candidate = free_body_name(&mut taken, def.base);
+            let candidate = reserve(&mut taken, def.base);
             let prefix = format!("{candidate} ");
             if !body_names.iter().any(|name| name.starts_with(&prefix)) {
                 break candidate;
@@ -359,7 +359,7 @@ impl<'a, R: Runner> Library<'a, R> {
         // Walk the shared naming sequence so a numbered replacement is reused.
         let mut unavailable = Vec::new();
         let folder = loop {
-            let name = free_body_name(&mut unavailable, folder);
+            let name = reserve(&mut unavailable, folder);
             match listed.iter().find(|c| c.name == name) {
                 Some(c)
                     if c.id != 0

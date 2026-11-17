@@ -6,7 +6,7 @@ use extrusions::{
     Profile,
 };
 use plugin_kit::{
-    host::{free_body_name, sketch_id},
+    host::sketch_id,
     input::{self, FieldError},
     name, timeline, Runner,
 };
@@ -254,7 +254,7 @@ pub fn make<R: Runner>(r: &mut R, p: &Params, input: &Input) -> Result<Value, St
     let mut template = None;
     let mut bodies = Vec::new();
     for path in &paths {
-        let body = free_body_name(
+        let body = name::reserve(
             &mut taken,
             &format!("{} {} path {}", p.slot.name, p.size, path.line),
         );

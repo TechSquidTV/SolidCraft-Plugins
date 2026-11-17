@@ -156,6 +156,10 @@ with `python3 tests/examples_test.py --update examples/sketch-driven-rails.steps
 
 ### Nut pocket references
 
+The naming regression builds multi-pocket batches beside existing names in another
+component, including case variants and reserved suffixes, then saves, reopens and
+inserts another batch. It checks distinct profile/cut names and their native links.
+
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut. A horizontal layout covers the previously failing move from -14 to -22 mm, larger horizontal and vertical moves across the origin, and pocket-width and depth edits followed by reopening.
 
 ### Screw seat references

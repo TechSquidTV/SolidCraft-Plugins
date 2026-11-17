@@ -16,6 +16,54 @@ def near(a, b):
     return abs(a - b) < 1e-4
 
 
+def test_pocket_names():
+    """Batches and later runs avoid names in every component, even after reopening."""
+    code, text, info = inspect("techsquid-nuts")
+    if code or not info:
+        raise SystemExit(f"Build the packages first: {text}")
+    saved = os.path.join(TMP, "nut-pocket-names.json")
+    setup = [
+        cmd("sketch.create", plane="XY", name="NUT POCKET M6 PROFILE"),
+        cmd("sketch.point", point=[0, 0]),
+        cmd("sketch.finish"),
+        cmd("construct.plane.offset", base="XY", offset=80, name="Nut pocket M6 profile (2)"),
+        cmd("construct.plane.offset", base="XY", offset=90, name="Nut pocket M6"),
+        cmd("construct.plane.offset", base="XY", offset=100, name="NUT POCKETS M6: PLANE"),
+        cmd("component.create", name="Carrier", activate=True),
+        cmd("solid.box", length=100, width=40, height=12, corner=[-50, -20, 0], body_name="Plate"),
+    ]
+    for name, xs in [("First layout", [-30, -10]), ("Second layout", [10, 30])]:
+        setup += [cmd("sketch.create", plane="XY", offset=12, name=name),
+                  cmd("sketch.point", point=[xs[0], 0], id="a"),
+                  cmd("sketch.point", point=[xs[1], 0], id="b"), cmd("sketch.finish")]
+    for index, layout in enumerate(["First layout", "Second layout"]):
+        steps = setup if index == 0 else []
+        steps += [cmd("plugin.run", path=package("techsquid-nuts"), approval=info["approval"],
+                      entry="make-nut", params={"size": "M6", "create": "Pocket only",
+                                               "sketch": layout, "sketch_point": "a,b"})]
+        code, text, _ = run(steps, inp=saved if index else None, save=saved)
+        if killed(code):
+            skip("nut pocket name reservations", "host killed while loading plugin")
+            return
+        check(f"pocket names: batch {index + 1} builds beside existing names", code == 0, text[-1000:])
+        if code:
+            return
+        with open(saved) as f:
+            features = json.load(f)["features"]
+        profiles = [f for f in features if f["type"] == "sketch"
+                    and f["name"].startswith("Nut pocket M6 profile")]
+        count = 2 * (index + 1)
+        check(f"pocket names: batch {index + 1} skips case variants and reserved suffixes",
+              [f["name"] for f in profiles] == [f"Nut pocket M6 profile ({i})" for i in range(3, 3 + count)])
+        cuts = [f for f in features if f["type"] == "extrude" and f["operation"] == "cut"]
+        check(f"pocket names: batch {index + 1} keeps cuts linked to distinct profiles",
+              [f["name"] for f in cuts] == [f"Nut pocket M6 ({i})" for i in range(2, 2 + count)]
+              and len({f["sketch"] for f in cuts}) == count
+              and {f["sketch"] for f in cuts} == {f["id"] for f in profiles})
+        check(f"pocket names: batch {index + 1} has no duplicate feature names",
+              len({f["name"].lower() for f in features}) == len(features))
+
+
 def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
     code, text, info = inspect("techsquid-nuts")
     if code or not info:
@@ -201,6 +249,7 @@ def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
 
 
 if __name__ == "__main__":
+    test_pocket_names()
     test()
     test(with_nuts=True)
     test(with_nuts=True, modeled=True, reuse=True)

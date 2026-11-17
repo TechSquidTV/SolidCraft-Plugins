@@ -1,9 +1,17 @@
 {
-  "format": "solidcraft/57",
+  "format": "solidcraft/58",
   "format_pending": [
-    "extrude-to-object-keeps-picked-placements",
-    "linked-cosmetic-threads",
-    "plane-at-angle-follows-named-axis"
+    "bounding-solid-side-margins",
+    "joint-lateral-offsets",
+    "move-rotate-about-edge",
+    "sketch-3d-constraints",
+    "sketch-3d-dimensions",
+    "sketch-3d-relations",
+    "sketch-reference-placements",
+    "split-planar-tool",
+    "step-import-solid-items",
+    "surface-sweep-exact-spline-path",
+    "whole-profile-holes-share-a-curve"
   ],
   "name": "nut-pockets",
   "units": "mm",
@@ -646,7 +654,7 @@
     },
     {
       "id": 6,
-      "name": "Nut pocket M6 profile",
+      "name": "Nut pocket M6 profile (2)",
       "suppressed": false,
       "type": "sketch",
       "plane": {
@@ -943,7 +951,7 @@
     },
     {
       "id": 7,
-      "name": "Nut pocket M6",
+      "name": "Nut pocket M6 (2)",
       "suppressed": false,
       "param_names": [
         "d32"
@@ -1645,7 +1653,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "7d154f0113a921ab3025530eec902ac4650f5522d3c0bf8e29476940f13c763f",
+            "sha256": "e3f0a77a6c761f86fb35f8dfc3520a5d896bf36f58fbc980b92bd83f17974477",
             "version": 2
           },
           "version": 1
@@ -1812,6 +1820,10 @@
         "limits": [],
         "flip": true,
         "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
         "angle": 0.0
       },
       {
@@ -1859,6 +1871,10 @@
         "limits": [],
         "flip": true,
         "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
         "angle": 0.0
       }
     ]

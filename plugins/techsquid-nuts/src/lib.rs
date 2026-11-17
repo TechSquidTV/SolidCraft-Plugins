@@ -14,7 +14,7 @@ use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{add_new, changed_bodies, free_body_name, sketch_id};
+use plugin_kit::host::{add_new, changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::timeline;
@@ -44,17 +44,25 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                 // one folder in the part's timeline.
                 drilled = timeline::folded(r, &pockets_name(p), |mut r| {
                     let mut drilled: Vec<String> = Vec::new();
+                    let mut names = name::feature_names(&mut r)?;
                     for (sketch, _) in place::by_sketch(&spots) {
-                        let plane = pocket_plane(&mut r, sketch, &p.designation)?;
+                        let plane_name = name::reserve(
+                            &mut names,
+                            &format!("Nut pockets {}: Plane", p.designation),
+                        );
+                        let plane = pocket_plane(&mut r, sketch, &plane_name)?;
                         for spot in spots.iter().filter(|spot| spot.sketch == sketch) {
-                            add_new(&mut drilled, cut_pocket(&mut r, p, pocket, spot, &plane)?);
+                            add_new(
+                                &mut drilled,
+                                cut_pocket(&mut r, p, pocket, spot, &plane, &mut names)?,
+                            );
                         }
                     }
                     for (sketch, points) in place::by_sketch(&spots) {
                         let mut hole = json!({
                             "sketch": sketch,
                             "points": points,
-                            "name": format!("Bolt hole {}", p.designation),
+                            "name": name::reserve(&mut names, &format!("Bolt hole {}", p.designation)),
                         });
                         pocket.clearance.apply(&mut hole);
                         // Through the parts the pockets are in, and nothing beyond them.
@@ -144,24 +152,7 @@ pub fn pockets_name(p: &Params) -> String {
 
 /// Keep the pocket plane tied to the source sketch's axes. Construction lines do
 /// not split its profiles, and their ends are not standalone hole-placement points.
-fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, designation: &str) -> Result<Value, String> {
-    // Construction planes reject duplicate names, unlike auto-numbered sketches.
-    // A later run (or another source sketch) needs a free name too.
-    let listed = r.run("component.list", json!({}))?;
-    let mut names = listed
-        .get("components")
-        .and_then(Value::as_array)
-        .ok_or("component.list did not return components for the pocket plane name")?
-        .iter()
-        .flat_map(|c| {
-            ["features", "sketches", "construction"]
-                .into_iter()
-                .flat_map(move |key| c.get(key).and_then(Value::as_array).into_iter().flatten())
-        })
-        .filter_map(Value::as_str)
-        .map(str::to_string)
-        .collect();
-    let name = free_body_name(&mut names, &format!("Nut pockets {designation}: Plane"));
+fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, name: &str) -> Result<Value, String> {
     r.run("sketch.edit", json!({"sketch": sketch}))?;
     let drawn = r.run(
         "sketch.line",
@@ -209,11 +200,12 @@ fn cut_pocket<R: Runner>(
     pocket: &Pocket,
     spot: &place::Spot,
     plane: &Value,
+    names: &mut Vec<String>,
 ) -> Result<Vec<String>, String> {
     let created = r.run(
         "sketch.create",
         json!({
-            "plane": plane, "name": format!("Nut pocket {} profile", p.designation),
+            "plane": plane, "name": name::reserve(names, &format!("Nut pocket {} profile", p.designation)),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -239,7 +231,7 @@ fn cut_pocket<R: Runner>(
         "solid.extrude",
         json!({
             "sketch": sketch, "distance": pocket.depth, "direction": "negative",
-            "operation": "cut", "name": format!("Nut pocket {}", p.designation),
+            "operation": "cut", "name": name::reserve(names, &format!("Nut pocket {}", p.designation)),
         }),
     )?;
     match changed_bodies(&made) {
@@ -1052,7 +1044,10 @@ mod tests {
             match c.as_str() {
                 "sketch.create" => {
                     sketches += 1;
-                    if args["name"] == "Nut pocket M6 profile" {
+                    if args["name"]
+                        .as_str()
+                        .is_some_and(|name| name.starts_with("Nut pocket M6 profile"))
+                    {
                         rows.push(sketches);
                     }
                 }

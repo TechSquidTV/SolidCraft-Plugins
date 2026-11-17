@@ -68,22 +68,6 @@ pub fn measured_body_names(reply: &Value) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// A body name that is not in `taken`: `base`, then `base (2)`, `base (3)` and so on. A
-/// base often ends in a size, so a bare number after it would read as part of the size.
-/// The name joins `taken`. A name that is taken makes the host number the body `BodyN`, and
-/// that number changes when the design is rebuilt, so the features that name the body
-/// fail when the design is reopened.
-pub fn free_body_name(taken: &mut Vec<String>, base: &str) -> String {
-    let mut name = base.to_string();
-    let mut n = 1;
-    while taken.contains(&name) {
-        n += 1;
-        name = format!("{base} ({n})");
-    }
-    taken.push(name.clone());
-    name
-}
-
 /// The id `sketch.create` returned. The host sends a number or a non-empty name.
 pub fn sketch_id(reply: &Value) -> Result<Value, String> {
     match reply.get("sketch") {
@@ -361,19 +345,19 @@ mod tests {
             ["Base", "Screw M3 x 12 socket", "Screw M3 x 12 socket (2)"]
         );
         assert_eq!(
-            free_body_name(&mut taken, "Screw M3 x 12 socket"),
+            crate::name::reserve(&mut taken, "Screw M3 x 12 socket"),
             "Screw M3 x 12 socket (3)"
         );
         assert_eq!(
-            free_body_name(&mut taken, "Screw M3 x 12 socket"),
+            crate::name::reserve(&mut taken, "Screw M3 x 12 socket"),
             "Screw M3 x 12 socket (4)"
         );
         assert_eq!(
-            free_body_name(&mut taken, "Insert M3 x 5.7"),
+            crate::name::reserve(&mut taken, "Insert M3 x 5.7"),
             "Insert M3 x 5.7"
         );
         assert_eq!(
-            free_body_name(&mut taken, "Insert M3 x 5.7"),
+            crate::name::reserve(&mut taken, "Insert M3 x 5.7"),
             "Insert M3 x 5.7 (2)"
         );
         assert!(measured_body_names(&json!(null)).is_empty());

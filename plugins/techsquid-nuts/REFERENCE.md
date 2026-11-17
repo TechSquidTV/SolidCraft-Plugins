@@ -98,13 +98,18 @@ The body, the hole and every feature say what the part is and its size, so a des
 | Nut body | `Nut M3`, `Nut M8x1` |
 | Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
 | Pocket reference plane | `Nut pockets M3: Plane`, linked to the source sketch; later planes are numbered `(2)`, `(3)`, ... |
-| Pocket profile | `Nut pocket M3 profile`, with a projected source point and a constrained hexagon |
+| Pocket profile | `Nut pocket M3 profile`, with a projected source point and a constrained hexagon; later profiles are numbered `(2)`, `(3)`, ... |
 | Nut seat joint | `Nut M3: Seat <occurrence>`, holding that placement on its pocket floor and bolt-hole axis |
 | Pocket folder | `Nut pockets M3`, holding one run's pockets, their sketches, reference planes and bolt holes, folded |
 | Features and sketches of a nut | the nut's name, then the feature: `Nut M3: Thread` |
 | Timeline folder | the nut's name, `Nut M3`, holding every sketch and feature of the nut, folded |
 
 A pocket keeps its kind and size in its own name because it stays in the part, and with Pocket only there is no nut body at all.
+
+Pocket planes, profiles, cuts and bolt holes reserve unused feature names across
+the whole design, including other components and names that differ only by letter
+case. Multi-point batches and later runs continue numbering after existing names,
+including after saving and reopening. Existing features are not renamed.
 
 ## Catalog and reuse
 

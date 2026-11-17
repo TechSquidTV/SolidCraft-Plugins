@@ -4,7 +4,7 @@ import json
 import math
 import os
 
-from harness import TMP, check, finish, inspect, killed, package, run, skip
+from harness import TMP, check, finish, inspect, killed, package, picks, run, skip
 from headless import Headless
 
 
@@ -43,7 +43,7 @@ def test(kind, modeled=False, reuse=False, layout="plane", active_root=False):
         "size": "M3", "length": 8, "create": "Screw and hole",
         "hole_type": "Clearance, head recessed" if recessed else "Tapped" if kind == "tapped" else "Clearance",
         "head": "Countersunk" if kind == "countersink" else "Socket head",
-        "thread_modeled": modeled, "sketch": "Layout", "sketch_point": "p,c",
+        "thread_modeled": modeled,
     }
     setup = [
         cmd("parameters.change", name="thickness", expression="16 mm"),
@@ -71,9 +71,10 @@ def test(kind, modeled=False, reuse=False, layout="plane", active_root=False):
         setup.insert(0, cmd("component.create", name="Carrier", activate=True, grounded=True))
     if active_root:
         setup.append(cmd("component.activate", component=0))
-    for points in ("p", "c") if reuse else ("p,c",):
+    point, circle = picks("Layout", "p"), picks("Layout", "c", curve=True)
+    for placement in (point, circle) if reuse else (point + circle,):
         setup.append(cmd("plugin.run", path=package("techsquid-screws"), approval=info["approval"],
-                         entry="make-screw", params={**params, "sketch_point": points}))
+                         entry="make-screw", params={**params, "placement": placement}))
     code, text, results = run(setup + [cmd("component.list")], save=saved)
     if killed(code):
         skip(label, "host killed while loading plugin")
@@ -192,7 +193,7 @@ def test_thin_countersunk_seat():
                               entry='make-screw', allow_error=True, params={
                                   'size': 'M3', 'length': 8, 'create': 'Screw and hole',
                                   'hole_type': 'Clearance, head recessed', 'head': 'Countersunk',
-                                  'thread_modeled': False, 'sketch': str(sketch), 'sketch_point': 'p'})
+                                  'thread_modeled': False, 'placement': picks(sketch, 'p')})
         check('thin countersunk seat builds', 'error' not in result, str(result))
         if 'error' in result:
             return
@@ -221,7 +222,7 @@ def test_copied_tapped_seat_is_refused():
                               entry='make-screw', allow_error=True, params={
                                   'size': 'M4', 'length': 8, 'create': 'Screw and hole',
                                   'hole_type': 'Tapped', 'thread_modeled': False,
-                                  'sketch': str(sketch), 'sketch_point': 'p'})
+                                  'placement': picks(sketch, 'p')})
         check('copied tapped seat refuses an unsupported axis placement',
               'complete hole and seating face' in result.get('error', ''), str(result))
         check('copied tapped seat failure preserves geometry and exact activation',

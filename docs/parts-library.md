@@ -14,6 +14,11 @@ Missing fields are refused; the library never guesses a selected occurrence or
 uses component-local axes as world axes. Saved native designs do not depend on
 these new inspection fields.
 
+The Placement field is a native selection field, which needs SolidCraft 0.44 or newer
+([PR #18302](https://github.com/tangency-labs/solidcraft/pull/18302)). An older build
+cannot draw it, so it leaves the dialog's Run off and says to run the entry from the
+agent or the CLI. A program can still run it there by passing the picks itself.
+
 ## Responsibilities
 
 - `parts` owns typed discovery, product and representation identities. It has no
@@ -23,7 +28,7 @@ these new inspection fields.
   advertised child frames and actual child placements.
 - `plugin-kit::component::Library` owns inspection, reuse, composition, naming,
   placement, context restoration and command accounting.
-- Plugin workflows own selection, receiving-part cuts and attachment joints.
+- Plugin workflows own placement picks, receiving-part cuts and attachment joints.
   Cut geometry remains in the receiving component. Sketch-driven rails remain
   independent native path features rather than reusable stock definitions.
 

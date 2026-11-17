@@ -2,7 +2,7 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Based on ISO 4032. Select sketch points or circles: each gets a nut, and its pocket if you want one. With nothing selected, one nut sits on the origin.",
+  "description": "Based on ISO 4032. Pick sketch points or circles: each gets a nut, and its pocket if you want one. With nothing picked, one nut sits on the origin.",
   "id": "techsquid-nuts",
   "name": "Hex nuts",
   "runtime": {
@@ -88,6 +88,19 @@
               "type": "number",
               "unit": "mm"
             },
+            "placement": {
+              "description": "The sketch points or circles to put a nut on, picked in the view. Each gets a nut, and its pocket if Create says so. With nothing picked, one nut sits on the origin.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
+            },
             "pocket_adjust": {
               "default": 0.2,
               "description": "Used when Create cuts a pocket. Gap between each flat of the nut and the pocket. Printed pockets come out small: raise this until the nut drops in.",
@@ -132,16 +145,6 @@
                 "M64"
               ],
               "title": "Size",
-              "type": "string"
-            },
-            "sketch": {
-              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point.",
-              "title": "Sketch",
-              "type": "string"
-            },
-            "sketch_point": {
-              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection.",
-              "title": "Sketch point",
               "type": "string"
             },
             "thread_modeled": {

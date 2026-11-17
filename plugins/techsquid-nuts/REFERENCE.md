@@ -12,11 +12,9 @@ The sizes below are the ISO 4032 table, preferred and second-choice. ISO 4032 re
 
 All sizes are millimetres. The form opens on an M3 nut, the size the screw form opens on. Size lists the ISO 4032 sizes, M1.6 to M64, with the coarse thread. For any other metric size, such as `M8x1` or `M3.5`, type it in Custom size, which replaces Size.
 
-Select a sketch point, or a circle, before you open the dialog. Leave Sketch and Sketch point empty. The bearing face sits on that point and the nut stands on the outer side of the sketch. On a face sketch the normal already points out of the material, so the nut stands off the face. With nothing selected, the nut sits on the origin: the bearing face is on the XY plane and the nut runs along +Z. The reply says which of these happened in `placed`. Select several points or circles and each one gets a nut, as one undo step; `count` and `points` in the reply list them. By name, Sketch point takes several ids with commas, such as `c1, c2`.
+Pick a sketch point, or a circle, for Placement in the view. Points or circles already selected when the dialog opens fill the field. The bearing face sits on that point and the nut stands on the outer side of the sketch. On a face sketch the normal already points out of the material, so the nut stands off the face. With nothing picked, the nut sits on the origin: the bearing face is on the XY plane and the nut runs along +Z. The reply says which of these happened in `placed`. Pick several points or circles and each one gets a nut, as one undo step; `count` and `points` in the reply list them. An edge, face or body is refused against Placement.
 
-Name Sketch and Sketch point together to place the nut without a selection. Sketch point is a point id such as `c1.center`, or a circle id such as `c1`.
-
-Create decides whether the part gets a pocket. `Nut only`, the default, builds the nut and leaves the part alone. `Nut and pocket` first cuts a hexagonal pocket in the part under each selected point, as deep as the nut is tall, with an ISO 273 medium clearance hole for the bolt through the rest of that part, and then sets the nut in the pocket so it ends flush. `Pocket only` cuts without a nut. A pocket needs selected points on a part. With nothing selected, `Nut and pocket` puts a loose nut on the origin and its reply's `note` says no pocket was cut, and `Pocket only` asks you to select the points. Pocket adjustment is the gap on each flat: printed pockets come out small, so raise it until the nut drops in.
+Create decides whether the part gets a pocket. `Nut only`, the default, builds the nut and leaves the part alone. `Nut and pocket` first cuts a hexagonal pocket in the part under each picked point, as deep as the nut is tall, with an ISO 273 medium clearance hole for the bolt through the rest of that part, and then sets the nut in the pocket so it ends flush. `Pocket only` cuts without a nut. A pocket needs picked points on a part. With nothing picked, `Nut and pocket` puts a loose nut on the origin and its reply's `note` says no pocket was cut, and `Pocket only` asks you to pick the points. Pocket adjustment is the gap on each flat: printed pockets come out small, so raise it until the nut drops in.
 
 The pocket, bolt hole and pocketed nut follow the same source sketch point. Move that point or change the source sketch's plane and both cuts rebuild and the nut follows them, including after saving and reopening. Each pocket profile projects the source point and constrains the hexagon's center to it. The profile's diameter dimension sets the width across flats. The pocket cuts inward from the source plane, so editing its extrusion depth moves the floor while keeping its opening on that plane; the depth can be an expression over design parameters.
 
@@ -33,13 +31,12 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | Parameter | Default | Meaning |
 |---|---|---|
 | `size` | `M3` | Shown as Size. A listed size, `M1.6` to `M64` |
-| `create` | `Nut only` | `Nut only`, `Nut and pocket` or `Pocket only`. A pocket needs selected points on a part; with none, `Nut and pocket` makes the nut alone |
+| `create` | `Nut only` | `Nut only`, `Nut and pocket` or `Pocket only`. A pocket needs picked points on a part; with none, `Nut and pocket` makes the nut alone |
 | `pocket_adjust` | 0.2 | Gap between each flat of the nut and its pocket, mm, 0 to 1 |
 | `custom_size` | empty | Shown as Custom size. Any metric size, such as `M8x1` or `M3.5`. Replaces Size when filled |
 | `custom_thickness` | standard | Nut height, mm |
 | `custom_width` | standard | Width across the flats, mm |
-| `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
-| `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
+| `placement` | empty | The sketch points or circles to put a nut on, picked in the view; a circle means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
 | `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 
 The package calls `select.set` and `selection.get` (seat inspection temporarily selects bodies to resolve their assembly paths, then restores the selection), `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.edit`, `sketch.project`, `sketch.constraint.fix`, `sketch.constraint.coincident`, `construct.plane.two_edges`, `browser.visibility`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.move` (the nut is cut on the origin and moved aside before it is tapped), `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it, plus `model.faces` and `joint.create` to attach a pocketed nut. The hexagon is the same profile a hex-head screw uses.
@@ -124,7 +121,7 @@ rules, inspection limits and migration from legacy metadata.
 
 ## Older field names
 
-Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, and `custom_thickness` instead of `custom_height`.
+Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, and `custom_thickness` instead of `custom_height`. `sketch` and `sketch_point` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone.
 
 ## License
 

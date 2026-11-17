@@ -86,6 +86,16 @@ def plugin_ids():
                   if os.path.isfile(os.path.join(plugins, d, "plugin.json")))
 
 
+def picks(sketch, ids, curve=False):
+    """The Placement field's value, as SolidCraft's pick field sends it: one reference per
+    id in `ids` (a list, or text with commas). `sketch` is the sketch's feature id, or its
+    name as a program may give it. `curve` picks circles or lines instead of points."""
+    if isinstance(ids, str):
+        ids = [i.strip() for i in ids.split(",") if i.strip()]
+    kind = "external_sketch_curve" if curve else "external_sketch_point"
+    return [{"type": kind, "sketch": sketch, "id": i} for i in ids]
+
+
 def package(plugin_id):
     return os.path.join(ROOT, "dist", plugin_id)
 

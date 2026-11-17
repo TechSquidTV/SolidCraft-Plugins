@@ -28,7 +28,6 @@
       "occurrence.reparent",
       "parameters.list",
       "parameters.users",
-      "selection.get",
       "sketch.arc.three_point",
       "sketch.circle.center",
       "sketch.constraint.coincident",
@@ -113,10 +112,18 @@
               "title": "Mode",
               "type": "string"
             },
-            "path_lines": {
-              "description": "Sketch driven only: comma-separated line ids, such as l1, l2. With a named sketch and no ids, uses all its drawn straight lines. Otherwise select lines in one sketch. Up to 16 rails per run; machining may require smaller batches.",
-              "title": "Path lines",
-              "type": "string"
+            "placement": {
+              "description": "Picked in the view. Fixed length: the sketch points or circles each rail starts on; with nothing picked, one rail stands on the origin. Sketch driven: 1 to 16 straight lines in one sketch, each a rail; machining may need smaller batches.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
             },
             "size": {
               "default": "2020",
@@ -129,16 +136,6 @@
                 "4040"
               ],
               "title": "Size",
-              "type": "string"
-            },
-            "sketch": {
-              "description": "Fixed length: placement sketch. Sketch driven: the sketch containing the path lines; leave empty to use selected straight lines from one sketch.",
-              "title": "Sketch",
-              "type": "string"
-            },
-            "sketch_point": {
-              "description": "Fixed length only. Point or circle ids in the placement sketch, such as c1 or c1.center. Leave empty to use the selection. Leave empty in Sketch driven mode.",
-              "title": "Sketch point",
               "type": "string"
             },
             "slot": {
@@ -186,6 +183,19 @@
               "title": "Rail runs along",
               "type": "string"
             },
+            "placement": {
+              "description": "The sketch points or circles to put a nut on, picked in the view: on the rail's face, in the middle of a slot. With nothing picked, one nut sits on the origin.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
+            },
             "size": {
               "default": "M5",
               "description": "The thread the nut is tapped with.",
@@ -193,16 +203,6 @@
                 "M5"
               ],
               "title": "Size",
-              "type": "string"
-            },
-            "sketch": {
-              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point.",
-              "title": "Sketch",
-              "type": "string"
-            },
-            "sketch_point": {
-              "description": "Optional. The id of a point or circle in that sketch, on the rail's face in the middle of a slot, such as c1 or c1.center. Leave empty to use the selection.",
-              "title": "Sketch point",
               "type": "string"
             },
             "slot": {

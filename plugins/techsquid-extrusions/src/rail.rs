@@ -444,8 +444,12 @@ mod tests {
     }
 
     #[test]
-    fn a_named_point_needs_its_sketch() {
-        let err = parse(&json!({"sketch_point": "c1"})).unwrap_err();
-        assert_eq!(err.field, "sketch");
+    fn the_retired_placement_fields_are_refused() {
+        for key in ["sketch", "sketch_point", "path_lines"] {
+            let err = parse(&json!({key: "c1"})).unwrap_err();
+            assert_eq!(err.field, key);
+        }
+        let err = parse(&json!({"placement": [{"type": "face", "body": "Plate"}]})).unwrap_err();
+        assert_eq!(err.field, "placement");
     }
 }

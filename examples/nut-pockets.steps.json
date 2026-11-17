@@ -63,9 +63,19 @@
         "params": {
           "size": "M6",
           "create": "Nut and pocket",
-          "sketch": "Nut centers",
-          "sketch_point": "left,right",
-          "thread_modeled": false
+          "thread_modeled": false,
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Nut centers",
+              "id": "left"
+            },
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Nut centers",
+              "id": "right"
+            }
+          ]
         }
       }
     },

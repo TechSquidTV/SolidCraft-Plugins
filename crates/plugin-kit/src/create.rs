@@ -94,10 +94,10 @@ impl Words {
         Ok(create.cut())
     }
 
-    /// The reply's note when a cut was skipped because nothing was selected.
+    /// The reply's note when a cut was skipped because no point was picked.
     pub fn skipped(&self) -> String {
         format!(
-            "no {} was {} because nothing was selected; select the sketch points or circles where the {} go to {} them",
+            "no {} was {} because no point was picked; pick the sketch points or circles where the {} go to {} them",
             self.cut, self.made, self.cuts, self.make
         )
     }
@@ -155,11 +155,11 @@ mod tests {
         assert_eq!(SCREW.nothing_selected(Create::Both), Ok(true));
         assert_eq!(
             SCREW.nothing_selected(Create::Cut),
-            Err("sketch_point: select the sketch points or circles where the holes go, then run this again; or set Create to Screw only for a loose screw on the origin".to_string())
+            Err("placement: pick the sketch points or circles where the holes go; or set Create to Screw only for a loose screw on the origin".to_string())
         );
         assert_eq!(
             SCREW.skipped(),
-            "no hole was drilled because nothing was selected; select the sketch points or circles where the holes go to drill them"
+            "no hole was drilled because no point was picked; pick the sketch points or circles where the holes go to drill them"
         );
     }
 }

@@ -4,13 +4,13 @@
   {"caption": "Sketch across the rail's start: one point on its axis", "command": "sketch.create", "params": {"plane": "YZ", "name": "Rail point", "offset": -40}},
   {"caption": "", "command": "sketch.point", "params": {"point": [0, 10], "id": "r1"}},
   {"caption": "", "command": "sketch.finish", "params": {}},
-  {"caption": "A T-slot 2020, 80 mm long, lying along X", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 80, "sketch": "Rail point", "sketch_point": "r1"}}},
+  {"caption": "A T-slot 2020, 80 mm long, lying along X", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-extrusion", "params": {"slot": "T-slot", "size": "2020", "length": 80, "placement": [{"type": "external_sketch_point", "sketch": "Rail point", "id": "r1"}]}}},
   {"caption": "Sketch on the top face of the rail: one point in the slot for each nut", "command": "sketch.create", "params": {"plane": "XY", "name": "Nut points", "offset": 20}},
   {"caption": "", "command": "sketch.point", "params": {"point": [-20, 0], "id": "n1"}},
   {"caption": "", "command": "sketch.point", "params": {"point": [20, 0], "id": "n2"}},
   {"caption": "", "command": "sketch.finish", "params": {}},
-  {"caption": "An M5 pre-assembly nut, slid in from the end of the rail", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Pre-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "sketch": "Nut points", "sketch_point": "n1"}}},
-  {"caption": "An M5 post-assembly nut, dropped in through the slot", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Post-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "sketch": "Nut points", "sketch_point": "n2"}}}
+  {"caption": "An M5 pre-assembly nut, slid in from the end of the rail", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Pre-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "placement": [{"type": "external_sketch_point", "sketch": "Nut points", "id": "n1"}]}}},
+  {"caption": "An M5 post-assembly nut, dropped in through the slot", "command": "plugin.run", "params": {"path": "dist/techsquid-extrusions", "approval": "@approval", "entry": "make-t-nut", "params": {"type": "Post-assembly", "size": "M5", "slot": "T-slot", "along": "Sketch X", "thread_modeled": true, "placement": [{"type": "external_sketch_point", "sketch": "Nut points", "id": "n2"}]}}}
  ],
  "expect": {
   "bodies": 3,

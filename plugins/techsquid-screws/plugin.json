@@ -2,7 +2,7 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Based on the ISO metric screw standards. Select sketch points or circles: each gets a screw, and its hole if you want one. With nothing selected, one screw sits on the origin.",
+  "description": "Based on the ISO metric screw standards. Pick sketch points or circles: each gets a screw, and its hole if you want one. With nothing picked, one screw sits on the origin.",
   "id": "techsquid-screws",
   "name": "Screws",
   "runtime": {
@@ -144,6 +144,19 @@
               "type": "number",
               "unit": "mm"
             },
+            "placement": {
+              "description": "The sketch points or circles to put a screw on, picked in the view. Each gets a screw, and its hole if Create says so. With nothing picked, one screw sits on the origin.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
+            },
             "size": {
               "default": "M3",
               "description": "Common machine screw sizes with the coarse thread. For any other metric size, such as a fine pitch, fill in Custom size.",
@@ -162,16 +175,6 @@
                 "M20"
               ],
               "title": "Size",
-              "type": "string"
-            },
-            "sketch": {
-              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point.",
-              "title": "Sketch",
-              "type": "string"
-            },
-            "sketch_point": {
-              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection.",
-              "title": "Sketch point",
               "type": "string"
             },
             "thread_length": {

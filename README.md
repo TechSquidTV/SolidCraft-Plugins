@@ -20,7 +20,7 @@ Saved example designs open without the plugins.
 | [Bearings](plugins/techsquid-bearings/README.md) | Six OpenBuilds and MISUMI radial bearings with sourced detail, plus 55 customizable CSK presets with editable keyways and recorded references |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | Five OpenBuilds wheel products, bare or assembled with two bearings and an internal shim |
 
-Place parts on one or more sketch points, choose your dimensions, and run the plugin. Fixed-length hardware is organized into reusable components, and cuts remain with the part they modify. For sketch-driven extrusions, select straight sketch lines to create independent rails that follow later path edits. Choose modeled threads for detail or cosmetic threads for faster rebuilds.
+Pick one or more sketch points in the view, choose your dimensions, and run the plugin. Fixed-length hardware is organized into reusable components, and cuts remain with the part they modify. For sketch-driven extrusions, pick straight sketch lines to create independent rails that follow later path edits. Choose modeled threads for detail or cosmetic threads for faster rebuilds.
 
 Try the [sketch-driven rail example](examples/sketch-driven-rails.json), or read the [extrusion guide](plugins/techsquid-extrusions/README.md#sketch-driven-rails) for profile choices, machining and batch limits.
 

@@ -55,8 +55,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 socket placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 socket placement 1", "id": "p1"}]
         }
       }
     },
@@ -114,8 +113,7 @@
           "drive": "Torx",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 socket (2) placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 socket (2) placement 1", "id": "p1"}]
         }
       }
     },
@@ -173,8 +171,7 @@
           "drive": "Torx",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 button placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 button placement 1", "id": "p1"}]
         }
       }
     },
@@ -232,8 +229,7 @@
           "drive": "Phillips",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 countersunk placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 countersunk placement 1", "id": "p1"}]
         }
       }
     },
@@ -291,8 +287,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 hex placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 hex placement 1", "id": "p1"}]
         }
       }
     },
@@ -351,8 +346,7 @@
           "thread_modeled": true,
           "create": "Screw only",
           "tip": "Point",
-          "sketch": "Screw M5 x 16 pan placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 pan placement 1", "id": "p1"}]
         }
       }
     },
@@ -410,8 +404,7 @@
           "drive": "Slotted",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 pan (2) placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 pan (2) placement 1", "id": "p1"}]
         }
       }
     },
@@ -469,8 +462,7 @@
           "drive": "Slotted",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 16 cheese placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 16 cheese placement 1", "id": "p1"}]
         }
       }
     },
@@ -529,8 +521,7 @@
           "thread_modeled": true,
           "create": "Screw only",
           "tip": "Cup",
-          "sketch": "Set screw M5 x 16 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Set screw M5 x 16 placement 1", "id": "p1"}]
         }
       }
     },
@@ -588,8 +579,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Threaded rod M5 x 16 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Threaded rod M5 x 16 placement 1", "id": "p1"}]
         }
       }
     },
@@ -646,8 +636,7 @@
           "length": 100,
           "thread_modeled": true,
           "holes": "-Y 20 80 -X 10 90",
-          "sketch": "T-slot 2020 x 100 holes -Y 20 80 -X 10 90 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "T-slot 2020 x 100 holes -Y 20 80 -X 10 90 placement 1", "id": "p1"}]
         }
       }
     },
@@ -704,8 +693,7 @@
           "length": 100,
           "thread_modeled": true,
           "holes": "-Y 20 80 +X 10 90",
-          "sketch": "T-slot 2020 x 100 holes -Y 20 80 +X 10 90 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "T-slot 2020 x 100 holes -Y 20 80 +X 10 90 placement 1", "id": "p1"}]
         }
       }
     },
@@ -762,8 +750,7 @@
           "length": 100,
           "thread_modeled": true,
           "holes": "+Y 20 80 -X 10 90",
-          "sketch": "T-slot 2020 x 100 holes +Y 20 80 -X 10 90 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "T-slot 2020 x 100 holes +Y 20 80 -X 10 90 placement 1", "id": "p1"}]
         }
       }
     },
@@ -820,8 +807,7 @@
           "length": 100,
           "thread_modeled": true,
           "holes": "+Y 20 80 +X 10 90",
-          "sketch": "T-slot 2020 x 100 holes +Y 20 80 +X 10 90 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "T-slot 2020 x 100 holes +Y 20 80 +X 10 90 placement 1", "id": "p1"}]
         }
       }
     },
@@ -911,8 +897,7 @@
           "length": 50,
           "thread_modeled": true,
           "end_taps": "Both",
-          "sketch": "V-slot 2020 x 50 taps both placement 1",
-          "sketch_point": "p1, p2, p3, p4"
+          "placement": [{"type": "external_sketch_point", "sketch": "V-slot 2020 x 50 taps both placement 1", "id": "p1"}, {"type": "external_sketch_point", "sketch": "V-slot 2020 x 50 taps both placement 1", "id": "p2"}, {"type": "external_sketch_point", "sketch": "V-slot 2020 x 50 taps both placement 1", "id": "p3"}, {"type": "external_sketch_point", "sketch": "V-slot 2020 x 50 taps both placement 1", "id": "p4"}]
         }
       }
     },
@@ -1002,8 +987,7 @@
           "length": 30,
           "thread_modeled": true,
           "end_taps": "Both",
-          "sketch": "T-slot 2020 x 30 taps both placement 1",
-          "sketch_point": "p1, p2, p3, p4"
+          "placement": [{"type": "external_sketch_point", "sketch": "T-slot 2020 x 30 taps both placement 1", "id": "p1"}, {"type": "external_sketch_point", "sketch": "T-slot 2020 x 30 taps both placement 1", "id": "p2"}, {"type": "external_sketch_point", "sketch": "T-slot 2020 x 30 taps both placement 1", "id": "p3"}, {"type": "external_sketch_point", "sketch": "T-slot 2020 x 30 taps both placement 1", "id": "p4"}]
         }
       }
     },
@@ -1094,8 +1078,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 25 socket placement 1",
-          "sketch_point": "p1, p2, p3, p4"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 1", "id": "p1"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 1", "id": "p2"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 1", "id": "p3"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 1", "id": "p4"}]
         }
       }
     },
@@ -1186,8 +1169,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 25 socket placement 2",
-          "sketch_point": "p1, p2, p3, p4"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 2", "id": "p1"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 2", "id": "p2"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 2", "id": "p3"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 25 socket placement 2", "id": "p4"}]
         }
       }
     },
@@ -1278,8 +1260,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 20 socket placement 1",
-          "sketch_point": "p1, p2, p3, p4"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 1", "id": "p1"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 1", "id": "p2"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 1", "id": "p3"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 1", "id": "p4"}]
         }
       }
     },
@@ -1370,8 +1351,7 @@
           "drive": "Standard",
           "thread_modeled": true,
           "create": "Screw only",
-          "sketch": "Screw M5 x 20 socket placement 2",
-          "sketch_point": "p1, p2, p3, p4"
+          "placement": [{"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 2", "id": "p1"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 2", "id": "p2"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 2", "id": "p3"}, {"type": "external_sketch_point", "sketch": "Screw M5 x 20 socket placement 2", "id": "p4"}]
         }
       }
     },
@@ -1437,8 +1417,7 @@
           "size": "M5 \u00d7 9.5",
           "create": "Insert only",
           "thread_modeled": true,
-          "sketch": "Insert M5 x 9.5 placement 1",
-          "sketch_point": "p1, p2"
+          "placement": [{"type": "external_sketch_point", "sketch": "Insert M5 x 9.5 placement 1", "id": "p1"}, {"type": "external_sketch_point", "sketch": "Insert M5 x 9.5 placement 1", "id": "p2"}]
         }
       }
     },
@@ -1493,8 +1472,7 @@
           "size": "M5",
           "create": "Nut only",
           "thread_modeled": true,
-          "sketch": "Nut M5 placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Nut M5 placement 1", "id": "p1"}]
         }
       }
     },
@@ -1549,8 +1527,7 @@
           "size": "M5",
           "type": "Pre-assembly",
           "thread_modeled": true,
-          "sketch": "T-nut M5 pre-assembly placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "T-nut M5 pre-assembly placement 1", "id": "p1"}]
         }
       }
     },
@@ -1603,8 +1580,7 @@
         "entry": "make-bearing",
         "params": {
           "size": "625 2RS",
-          "sketch": "625 2RS placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "625 2RS placement 1", "id": "p1"}]
         }
       }
     },
@@ -1657,8 +1633,7 @@
         "entry": "make-bearing",
         "params": {
           "size": "105ZZ",
-          "sketch": "105ZZ placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "105ZZ placement 1", "id": "p1"}]
         }
       }
     },
@@ -1711,8 +1686,7 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Solid V Wheel",
-          "sketch": "Solid V Wheel placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Solid V Wheel placement 1", "id": "p1"}]
         }
       }
     },
@@ -1765,8 +1739,7 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Xtreme Mini V Wheel",
-          "sketch": "Xtreme Mini V Wheel placement 1",
-          "sketch_point": "p1"
+          "placement": [{"type": "external_sketch_point", "sketch": "Xtreme Mini V Wheel placement 1", "id": "p1"}]
         }
       }
     },

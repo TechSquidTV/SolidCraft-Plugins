@@ -5,7 +5,7 @@ import json
 import math
 import os
 
-from harness import TMP, check, finish, inspect, killed, package, run, skip
+from harness import TMP, check, finish, inspect, killed, package, picks, run, skip
 from headless import Headless
 
 
@@ -41,7 +41,7 @@ def test_pocket_names():
         steps = setup if index == 0 else []
         steps += [cmd("plugin.run", path=package("techsquid-nuts"), approval=info["approval"],
                       entry="make-nut", params={"size": "M6", "create": "Pocket only",
-                                               "sketch": layout, "sketch_point": "a,b"})]
+                                               "placement": picks(layout, "a,b")})]
         code, text, _ = run(steps, inp=saved if index else None, save=saved)
         if killed(code):
             skip("nut pocket name reservations", "host killed while loading plugin")
@@ -96,7 +96,7 @@ def test_face_attached_copies(nested, with_nuts, copies=1):
             result = host.command('plugin.run', path=package('techsquid-nuts'), approval=approval,
                                   entry='make-nut', allow_error=True, params={
                                       'size': 'M6', 'create': 'Nut and pocket' if with_nuts else 'Pocket only',
-                                      'sketch': str(sketch), 'sketch_point': point, 'thread_modeled': False})
+                                      'placement': picks(sketch, point, curve=True), 'thread_modeled': False})
             return result.get('result', result)
 
         def mounts():
@@ -183,13 +183,14 @@ def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
         cmd("sketch.finish"),
         cmd("plugin.run", path=package("techsquid-nuts"), approval=info["approval"], entry="make-nut",
             params={"size": "M6", "create": "Nut and pocket" if with_nuts else "Pocket only",
-                    "thread_modeled": modeled, "sketch": "Layout", "sketch_point": "p,c"}),
+                    "thread_modeled": modeled,
+                    "placement": picks("Layout", "p") + picks("Layout", "c", curve=True)}),
         cmd("sketch.inspect", sketch="Layout"),
     ]
     if reuse:
         second = copy.deepcopy(setup[-2])
-        setup[-2]["params"]["params"]["sketch_point"] = "p"
-        second["params"]["params"]["sketch_point"] = "c"
+        setup[-2]["params"]["params"]["placement"] = picks("Layout", "p")
+        second["params"]["params"]["placement"] = picks("Layout", "c", curve=True)
         setup.insert(-1, second)
         # Build on an already rotated and tilted frame; the second invocation must
         # reuse the off-origin threaded definition without moving the first nut.

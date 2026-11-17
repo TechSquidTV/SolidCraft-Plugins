@@ -115,7 +115,7 @@ pub fn changed_bodies(reply: &Value) -> Option<Vec<String>> {
 pub fn cut_bodies(reply: &Value, cut: &str, alone: &str) -> Result<Vec<String>, String> {
     match changed_bodies(reply) {
         Some(bodies) if bodies.is_empty() => Err(format!(
-            "sketch_point: there is no part under the point {cut}; put the sketch on the part, or set Create to {alone}"
+            "placement: there is no part under the point {cut}; put the sketch on the part, or set Create to {alone}"
         )),
         Some(bodies) => Ok(bodies),
         None => Ok(Vec::new()),
@@ -301,7 +301,7 @@ macro_rules! guest {
                                 log::log(
                                     log::Level::Warn,
                                     concat!(
-                                        "nothing was selected, so the ",
+                                        "no point was picked, so the ",
                                         $noun,
                                         " is on the origin"
                                     ),
@@ -400,8 +400,8 @@ mod tests {
             Some(("sketch", "Holes has no plane"))
         );
         assert_eq!(
-            input_field("sketch_point: select a sketch point or a circle"),
-            Some(("sketch_point", "select a sketch point or a circle"))
+            input_field("placement: pick a sketch point or a circle"),
+            Some(("placement", "pick a sketch point or a circle"))
         );
         assert!(input_field("solid.extrude did not name the nut body").is_none());
     }
@@ -410,7 +410,7 @@ mod tests {
     fn labels_come_from_the_manifest_titles() {
         let manifest = r#"{"runtime": {"entries": [{"input_schema": {"properties": {
             "length": {"type": "number", "title": "Length"},
-            "sketch_point": {"type": "string", "title": "Sketch point"},
+            "placement": {"type": "array", "title": "Placement"},
             "untitled": {"type": "string"}
         }}}]}}"#;
         let labels = manifest_labels(manifest);
@@ -418,10 +418,7 @@ mod tests {
             labelled(&labels, "length", "must be a number"),
             "Length: must be a number"
         );
-        assert_eq!(
-            labelled(&labels, "sketch_point", "no p9"),
-            "Sketch point: no p9"
-        );
+        assert_eq!(labelled(&labels, "placement", "no p9"), "Placement: no p9");
         assert_eq!(labelled(&labels, "untitled", "x"), "x");
         assert!(manifest_labels("not json").is_empty());
     }
@@ -433,7 +430,7 @@ mod tests {
             Some(("solid.thread", "no thread M99 in the table"))
         );
         assert!(command_failure("solid.extrude did not name the nut body").is_none());
-        assert!(command_failure("sketch_point: no point p9").is_none());
+        assert!(command_failure("placement: no point p9").is_none());
         assert_eq!(
             input_field("hole_depth: use Blind"),
             Some(("hole_depth", "use Blind"))

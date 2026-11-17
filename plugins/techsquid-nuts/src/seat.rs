@@ -16,7 +16,7 @@ pub fn find_all<R: Runner>(
     major: f64,
 ) -> Result<Vec<Seat>, String> {
     let radius = fasteners::clearance::medium(major)
-        .ok_or("sketch_point: the pocket has no bolt clearance size")?
+        .ok_or("placement: the pocket has no bolt clearance size")?
         / 2.0;
     let faces = Faces::read_all(r, bodies, places, true)?;
     places
@@ -50,7 +50,7 @@ fn find(
         }));
         if let (Some(floor), Some(wall), Some(bore)) = (floor, wall, bore) {
             if found.is_some() {
-                return Err("sketch_point: more than one part has this nut seat".into());
+                return Err("placement: more than one part has this nut seat".into());
             }
             found = Some(Seat::Hole {
                 body: body.clone(),
@@ -61,7 +61,7 @@ fn find(
         }
     }
     found.ok_or_else(|| {
-            "sketch_point: the nut needs a complete pocket floor, wall and bolt hole to stay attached; move the point clear of edges or overlapping cuts".into()
+            "placement: the nut needs a complete pocket floor, wall and bolt hole to stay attached; move the point clear of edges or overlapping cuts".into()
         })
 }
 

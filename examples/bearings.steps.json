@@ -133,8 +133,13 @@
         "entry": "make-bearing",
         "params": {
           "size": "625 2RS",
-          "sketch": "Bearing centres",
-          "sketch_point": "p0"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "p0"
+            }
+          ]
         }
       }
     },
@@ -147,8 +152,13 @@
         "entry": "make-bearing",
         "params": {
           "size": "105ZZ",
-          "sketch": "Bearing centres",
-          "sketch_point": "p1"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "p1"
+            }
+          ]
         }
       }
     },
@@ -161,8 +171,13 @@
         "entry": "make-bearing",
         "params": {
           "size": "B626",
-          "sketch": "Bearing centres",
-          "sketch_point": "p2"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "p2"
+            }
+          ]
         }
       }
     },
@@ -175,8 +190,13 @@
         "entry": "make-bearing",
         "params": {
           "size": "B626ZZ",
-          "sketch": "Bearing centres",
-          "sketch_point": "p3"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "p3"
+            }
+          ]
         }
       }
     },
@@ -189,8 +209,13 @@
         "entry": "make-bearing",
         "params": {
           "size": "B626DDU",
-          "sketch": "Bearing centres",
-          "sketch_point": "p4"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "p4"
+            }
+          ]
         }
       }
     },
@@ -203,8 +228,13 @@
         "entry": "make-bearing",
         "params": {
           "size": "B608ZZ",
-          "sketch": "Bearing centres",
-          "sketch_point": "p5"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "p5"
+            }
+          ]
         }
       }
     },
@@ -217,8 +247,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK8PP",
-          "sketch": "Bearing centres",
-          "sketch_point": "csk0"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "csk0"
+            }
+          ]
         }
       }
     },
@@ -231,8 +266,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK15P",
-          "sketch": "Bearing centres",
-          "sketch_point": "csk1"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "csk1"
+            }
+          ]
         }
       }
     },
@@ -245,8 +285,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK15PP",
-          "sketch": "Bearing centres",
-          "sketch_point": "csk2"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "csk2"
+            }
+          ]
         }
       }
     },
@@ -259,8 +304,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK15-2RS",
-          "sketch": "Bearing centres",
-          "sketch_point": "csk3"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "csk3"
+            }
+          ]
         }
       }
     },

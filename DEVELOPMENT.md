@@ -6,9 +6,9 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 
 | Plugin | Id | Family | What it builds |
 |---|---|---|---|
-| [Screws](plugins/techsquid-screws/README.md) | `techsquid-screws` | Fasteners | Metric machine screws to ISO standards on selected sketch points (socket, button, countersunk, hex, pan and cheese heads, set screws and threaded rod), with any drive, and optionally the clearance, counterbored, countersunk or tapped hole |
+| [Screws](plugins/techsquid-screws/README.md) | `techsquid-screws` | Fasteners | Metric machine screws to ISO standards on picked sketch points (socket, button, countersunk, hex, pan and cheese heads, set screws and threaded rod), with any drive, and optionally the clearance, counterbored, countersunk or tapped hole |
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
-| [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
+| [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on picked sketch points, and optionally a hexagonal pocket with a bolt hole |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
 | [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings and clutches | Six sourced OpenBuilds and MISUMI radial bearings, plus 55 CSK presets with editable envelopes, keyway configuration and source references |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | `techsquid-v-wheels` | Wheels | Five OpenBuilds products, bare or composed with bearings and an internal shim |
@@ -25,7 +25,7 @@ A draft can also be prepared from a pushed release branch before its tag exists.
 
 Threads themselves are a host command. `solid.thread` cuts or annotates a cylindrical face from a designation such as `M6` or `M8x1`. The screw plugin places the screw and passes that designation through. The insert and nut plugins use `solid.hole` for the bore. Each plugin does the fastener geometry, and the host owns the thread form.
 
-The three fastener plugins share field names (`size`, `custom_size`, `create`, `sketch`, `sketch_point`, `thread_modeled`) and a naming scheme for bodies: the kind of part, then its size, as in `Screw M3 x 12 socket`.
+The three fastener plugins share field names (`size`, `custom_size`, `create`, `placement`, `thread_modeled`) and a naming scheme for bodies: the kind of part, then its size, as in `Screw M3 x 12 socket`.
 
 ## Extrusions
 
@@ -115,10 +115,10 @@ Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/rail_references_test.p
 Sketch-driven mode was verified with SolidCraft 0.42.0. Run
 `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/sketch_rails_test.py` after building.
 It covers every profile with independent path lengths, translation and tilt edits,
-modeled end taps, end-relative cross-holes, selection, repeated runs, save/reopen,
-and the 16-rail limit. Run `python3 tests/sketch_selection_test.py` for the focused
-duplicate-name regression: it checks the selected rail’s position and length and
-rejects lines from different sketch IDs even when their names match.
+modeled end taps, end-relative cross-holes, a picked subset of lines, repeated runs,
+save/reopen, and the 16-rail limit. Run `python3 tests/sketch_selection_test.py` for the
+focused check that a pick names its sketch by id: two sketches each have a line `l1`, and it
+checks the picked rail’s position and length and refuses lines from both sketches.
 The plugin estimates its command count before creation;
 complex machining can require smaller batches. Its execution allowance also covers
 fixing copied section geometry, while the host's 256-call and 30-second limits remain.

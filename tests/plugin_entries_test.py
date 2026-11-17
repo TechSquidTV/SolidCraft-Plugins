@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import shutil
 
-from harness import TMP, check, finish, package, plugin_ids
+from harness import TMP, check, finish, package, picks, plugin_ids
 from headless import Headless
 
 for plugin in plugin_ids():
@@ -18,7 +18,6 @@ for plugin in plugin_ids():
         sketch = host.command('sketch.create', name='Mount', plane='YZ')['sketch']
         host.command('sketch.circle.center', center=[12, 15], radius=1, id='mount')
         host.command('sketch.finish')
-        host.command('select.set', items=[{'type': 'sketch_curve', 'sketch': sketch, 'id': 'mount'}])
 
         def state():
             return (host.command('document.inspect', measure=False),
@@ -50,6 +49,7 @@ for plugin in plugin_ids():
         entry = entries[0]
         properties = entry['input_schema']['properties']
         params = {key: value['default'] for key, value in properties.items() if 'default' in value}
+        params['placement'] = picks(sketch, 'mount', curve=True)
         if 'create' in properties:
             # Insertion-only choice comes from the public form, not another part table.
             params['create'] = next(c for c in properties['create']['enum']
@@ -65,7 +65,7 @@ for plugin in plugin_ids():
         inserted = host.command('plugin.run', path=package(plugin), approval=approval,
                                 entry=entry['name'], params=params)
         inserted = inserted.get('result', inserted)
-        check(f'{plugin}: insertion still uses the selected non-XY frame',
+        check(f'{plugin}: insertion uses the picked non-XY frame',
               inserted.get('normal') == [1, 0, 0])
 
 finish()

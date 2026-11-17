@@ -21,7 +21,7 @@ Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In Solid
 
 ## Use
 
-Select sketch points or circle centres, then choose a workflow:
+Choose a workflow:
 
 - **Plugins > Bearing** (`make-bearing` in scripts) inserts a fixed OpenBuilds or MISUMI radial bearing.
 - **Plugins > CSK clutch** (`make-csk` in scripts) starts with a CSK designation. Leave dimension fields blank
@@ -36,9 +36,10 @@ in the BOM. Purchasing assignment is
 [future work for a shared component workflow](../../docs/parts-library.md#future-component-purchasing-workflow)
 after creation.
 
-With nothing selected, the part sits at the origin. Its centre plane sits on the
-point and its axle follows the sketch normal. Optional **Sketch** and **Sketch
-point** fields address points by name.
+In either dialog, pick sketch points or circles for **Placement** in the view; a
+circle means its centre. Points or circles already selected when the dialog opens
+fill the field. With nothing picked, the part sits at the origin. Its centre plane
+sits on the point and its axle follows the sketch normal.
 
 Each radial bearing’s rings and closure faces belong to one purchased component. Later insertions reuse an unchanged definition, including bearings already inside V-wheel assemblies. Edited definitions are preserved; a new insertion builds a clean replacement. New occurrences remain free to move or join to your assembly.
 

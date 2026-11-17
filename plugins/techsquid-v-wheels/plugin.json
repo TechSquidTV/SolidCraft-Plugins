@@ -26,7 +26,6 @@
       "occurrence.reparent",
       "parameters.list",
       "parameters.users",
-      "selection.get",
       "sketch.create",
       "sketch.finish",
       "sketch.inspect",
@@ -47,6 +46,19 @@
               "title": "Include bearings and internal shim",
               "type": "boolean"
             },
+            "placement": {
+              "description": "The sketch points or circles to put a wheel on, picked in the view. With nothing picked, one wheel sits on the origin.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
+            },
             "size": {
               "default": "Solid V Wheel",
               "enum": [
@@ -57,14 +69,6 @@
                 "Xtreme Mini V Wheel"
               ],
               "title": "Part",
-              "type": "string"
-            },
-            "sketch": {
-              "title": "Sketch",
-              "type": "string"
-            },
-            "sketch_point": {
-              "title": "Sketch point",
               "type": "string"
             }
           },

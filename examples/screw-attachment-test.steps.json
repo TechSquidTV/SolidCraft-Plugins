@@ -200,10 +200,20 @@
           "head": "Socket head",
           "create": "Screw and hole",
           "thread_modeled": false,
-          "sketch_point": "back,front",
           "length": 6,
           "hole_type": "Clearance, head recessed",
-          "sketch": "Counterbore positions"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Counterbore positions",
+              "id": "back"
+            },
+            {
+              "type": "external_sketch_point",
+              "sketch": "Counterbore positions",
+              "id": "front"
+            }
+          ]
         }
       }
     },
@@ -228,10 +238,20 @@
           "head": "Socket head",
           "create": "Screw and hole",
           "thread_modeled": false,
-          "sketch_point": "back,front",
           "length": 8,
           "hole_type": "Tapped",
-          "sketch": "Tapped positions"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Tapped positions",
+              "id": "back"
+            },
+            {
+              "type": "external_sketch_point",
+              "sketch": "Tapped positions",
+              "id": "front"
+            }
+          ]
         }
       }
     },

@@ -9,12 +9,13 @@ assembled. It is the package’s only entry.
 |---|---|---|
 | `size` | `Solid V Wheel` | Product name from the catalog |
 | `assembled` | `true` | Include two matching bearings and one internal shim |
-| `sketch` | empty | Named sketch; otherwise use current selection |
-| `sketch_point` | empty | Point or circle-center IDs, separated by commas |
+| `placement` | empty | Sketch points or circles picked in the view; a circle means its centre |
 
-The local origin is the wheel centre plane, with Z along the axle. With no point
-selection, insert at the origin. Up to 32 points can reuse a definition; a new
+The local origin is the wheel centre plane, with Z along the axle. Points or circles
+already selected when the dialog opens fill Placement. With nothing picked, insert
+at the origin. Up to 32 points can reuse a definition; a new
 assembly may need a smaller batch. Errors leave the design unchanged.
+Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name. An edge, face or body is refused against Placement.
 No arbitrary diameter, seat, material or bearing substitutions are accepted.
 
 ## Sizes and composition
@@ -82,4 +83,4 @@ See [verified reuse](../../docs/parts-library.md) and the [catalog contract](../
 
 ## Older field names
 
-This is a new workflow. Unknown fields are rejected.
+`sketch` and `sketch_point` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone. Unknown fields are rejected.

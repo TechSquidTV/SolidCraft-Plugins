@@ -16,7 +16,7 @@ killed that way is reported as SKIP, as in cli_test.py; any other failure is a F
 """
 import functools, json, math, os, subprocess, sys
 
-from harness import CLI, ROOT, TMP, check, finish, killed, last_line, skip
+from harness import CLI, ROOT, TMP, check, finish, killed, last_line, picks, skip
 
 PI = math.pi
 
@@ -103,7 +103,7 @@ def case(fn):
 def on_plate(name, plugin_id, entry, params, removed_each, thickness=10, loose=False,
              bodies=None, top=None):
     """Two points on the plate: each must remove `removed_each` mm3 from it."""
-    named = dict({"sketch": "Holes", "sketch_point": "c1, c2"}, **params)
+    named = dict({"placement": picks("Holes", "c1, c2", curve=True)}, **params)
     found, reply = plugin_run(plugin_id, entry, named, plate(thickness, loose))
     if found is None:
         check(name, False, "| " + reply)
@@ -191,10 +191,10 @@ on_plate("insert: glue-in stepped, through", *INSERT,
 on_plate("insert: blind hole on a loose sketch", *INSERT, {"create": "Hole only"},
          cyl(4.0, 6.7), loose=True)
 refused("insert: through hole on a loose sketch is refused", *INSERT,
-        {"sketch": "Holes", "sketch_point": "c1, c2", "hole_depth": "Through"},
+        {"placement": picks("Holes", "c1, c2", curve=True), "hole_depth": "Through"},
         "Hole depth", plate(10, loose=True))
 refused("insert: a hole with nothing selected says what to select", *INSERT,
-        {"create": "Hole only"}, "select the sketch points")
+        {"create": "Hole only"}, "pick the sketch points")
 alone("insert: the default with nothing selected is a loose insert", *INSERT, {},
       ["Insert M3 x 5.7"])
 
@@ -226,7 +226,7 @@ on_plate("screw: blind clearance hole for a shorter screw", *SCREW,
 on_plate("screw: no hole by default", *SCREW, {}, 0, 12,
          bodies=SCREWS)
 refused("screw: a hole with nothing selected says what to select", *SCREW,
-        {"create": "Hole only"}, "select the sketch points")
+        {"create": "Hole only"}, "pick the sketch points")
 alone("screw: screw and hole with nothing selected is a loose screw", *SCREW,
       {"create": "Screw and hole"}, ["Screw M3 x 12 socket"])
 
@@ -239,7 +239,7 @@ on_plate("nut: pocket only, no gap", *NUT, {"size": "M6", "create": "Pocket only
 on_plate("nut: no pocket by default", *NUT, {"size": "M6"}, 0, 12,
          bodies=["Nut M6", second("Nut M6"), "Plate", "Under"], top=17.2)
 refused("nut: a pocket with nothing selected says what to select", *NUT,
-        {"create": "Pocket only"}, "select the sketch points")
+        {"create": "Pocket only"}, "pick the sketch points")
 alone("nut: nut and pocket with nothing selected is a loose nut", *NUT,
       {"size": "M6", "create": "Nut and pocket"}, ["Nut M6"])
 
@@ -429,7 +429,7 @@ def rails_on_points(name):
     and leaving it as it was."""
     found, reply = plugin_run(
         "techsquid-extrusions", "make-extrusion",
-        {"slot": "V-slot", "size": "2020", "length": 60, "sketch": "Holes", "sketch_point": "c1, c2"},
+        {"slot": "V-slot", "size": "2020", "length": 60, "placement": picks("Holes", "c1, c2", curve=True)},
         plate(10, False))
     if found is None:
         check(name, False, "| " + reply)
@@ -525,7 +525,7 @@ def nut_in_slot(name, slot, kind):
     before = rail_and_face(slot)
     rail_only, _ = measured(before)
     found, hits = measured(before + [nut_step(
-        {"type": kind, "slot": slot, "along": "Sketch Y", "sketch": "Face", "sketch_point": "b"})])
+        {"type": kind, "slot": slot, "along": "Sketch Y", "placement": picks("Face", "b")})])
     if found is None or rail_only is None:
         check(name, False, "| " + str(hits))
         return
@@ -552,10 +552,10 @@ def nuts_keep_their_own_threads(name):
     """SolidCraft 0.41 cuts a modeled thread into any bore of that size on the same
     axis. A second kind of nut must leave the first as it was built."""
     before = rail_and_face("T-slot")
-    place = {"along": "Sketch Y", "sketch": "Face"}
-    first = nut_step(dict(place, type="Pre-assembly", sketch_point="a"))
+    place = {"along": "Sketch Y"}
+    first = nut_step(dict(place, type="Pre-assembly", placement=picks("Face", "a")))
     alone, _ = measured(before + [first])
-    found, hits = measured(before + [first, nut_step(dict(place, type="Post-assembly", sketch_point="b"))])
+    found, hits = measured(before + [first, nut_step(dict(place, type="Post-assembly", placement=picks("Face", "b")))])
     if found is None or alone is None:
         check(name, False, "| " + str(hits))
         return
@@ -585,7 +585,7 @@ def hex_nut_beside_a_rail(name):
     the origin, the nut must take its own thread and the rail must stay as it was."""
     before = rail_and_face("T-slot")
     rail_only, _ = measured(before)
-    on_face = {"size": "M5", "sketch": "Face", "sketch_point": "a"}
+    on_face = {"size": "M5", "placement": picks("Face", "a")}
     plain, _ = measured(before + [hex_nut_step(dict(on_face, thread_modeled=False))])
     found, hits = measured(before + [hex_nut_step(on_face)])
     if found is None or plain is None or rail_only is None:
@@ -606,9 +606,9 @@ def two_definitions_of_one_nut(name):
     """A nut with a plain hole and the same nut with a modeled thread are two
     definitions. Building the second must not thread the first."""
     sketch = plate(10, True)
-    first = hex_nut_step({"size": "M5", "thread_modeled": False, "sketch": "Holes", "sketch_point": "c1"})
+    first = hex_nut_step({"size": "M5", "thread_modeled": False, "placement": picks("Holes", "c1", curve=True)})
     alone, _ = measured(sketch + [first])
-    found, hits = measured(sketch + [first, hex_nut_step({"size": "M5", "sketch": "Holes", "sketch_point": "c2"})])
+    found, hits = measured(sketch + [first, hex_nut_step({"size": "M5", "placement": picks("Holes", "c2", curve=True)})])
     if found is None or alone is None:
         check(name, False, "| " + str(hits))
         return
@@ -740,12 +740,12 @@ def screwed_joint(name):
         {"command": "sketch.point", "params": {"point": [0, -10], "id": "b"}},
         {"command": "sketch.finish", "params": {}},
         rail_step({"slot": "T-slot", "size": "2020", "length": 100, "holes": "40, 60",
-                   "hole_face": "+Y", "sketch": "Base section", "sketch_point": "b"}),
+                   "hole_face": "+Y", "placement": picks("Base section", "b")}),
         {"command": "sketch.create", "params": {"plane": "XY", "offset": 20, "name": "Post foot"}},
         {"command": "sketch.point", "params": {"point": [0, 0], "id": "p"}},
         {"command": "sketch.finish", "params": {}},
         rail_step({"slot": "T-slot", "size": "2040", "length": 80, "end_taps": "Start",
-                   "sketch": "Post foot", "sketch_point": "p"}),
+                   "placement": picks("Post foot", "p")}),
         {"command": "sketch.create", "params": {
             "plane": {"origin": [0, 0, 6], "x_dir": [1, 0, 0], "y_dir": [0, -1, 0]},
             "name": "Screw seats"}},
@@ -756,7 +756,7 @@ def screwed_joint(name):
             "path": os.path.join(ROOT, "dist", "techsquid-screws"),
             "approval": approval("techsquid-screws"), "entry": "make-screw",
             "params": {"size": "M5", "length": 25, "head": "Socket head", "create": "Screw only",
-                       "sketch": "Screw seats", "sketch_point": "s1, s2"}}},
+                       "placement": picks("Screw seats", "s1, s2")}}},
         {"command": "inspect.measure", "params": {"summary": True}},
         {"command": "inspect.interference", "params": {}},
     ]
@@ -794,7 +794,7 @@ def two_lengths_of_one_screw(name):
         return {"command": "plugin.run", "params": {
             "path": os.path.join(ROOT, "dist", "techsquid-screws"),
             "approval": approval("techsquid-screws"), "entry": "make-screw",
-            "params": {"size": "M5", "length": length, "sketch": "Holes", "sketch_point": point}}}
+            "params": {"size": "M5", "length": length, "placement": picks("Holes", point, curve=True)}}}
     sketch = plate(10, True)
     long_alone, _ = measured(sketch + [screw(25, "c1")])
     short_alone, _ = measured(sketch + [screw(20, "c1")])
@@ -816,7 +816,7 @@ two_lengths_of_one_screw("screw: a second length of an M5 screw leaves the first
 def run_of(plugin_id, entry, params):
     return lambda point: {"command": "plugin.run", "params": {
         "path": os.path.join(ROOT, "dist", plugin_id), "approval": approval(plugin_id),
-        "entry": entry, "params": dict(params, sketch="Holes", sketch_point=point)}}
+        "entry": entry, "params": dict(params, placement=picks("Holes", point, curve=True))}}
 
 
 @case

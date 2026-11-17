@@ -13,16 +13,15 @@ Go from a sketch to a frame with configurable T-slot and V-slot rails for [Solid
 
 ## Get started
 
-Select one or more sketch points or circles and open **Plugins > Extrusion**. Choose a profile, size and length, then press **Run**. Leave **Sketch** and **Sketch point** blank to use your selection; with no selection, the rail starts at the origin. The default is a 500 mm T-slot 2020 rail.
+Open **Plugins > Extrusion** and pick one or more sketch points or circles for **Placement** in the view. Points or circles already selected when the dialog opens fill the field. Choose a profile, size and length, then press **Run**. With nothing picked, the rail starts at the origin. The default is a 500 mm T-slot 2020 rail.
 
 ## Sketch-driven rails
 
 ![Paired T-slot 2020, T-slot 4040 and V-slot 2080 rails with path-driven machining](sketch-driven-rails.png)
 
-Choose **Sketch driven** in the Extrusion dialog. Select straight lines from one
-sketch, or enter its name in **Sketch**. **Path lines** accepts ids such as `l1, l2`;
-leave it empty with a named sketch to use all its drawn straight lines. Each run
-supports up to 16 lines, all with the chosen profile. Machining reduces the batch
+Choose **Sketch driven** in the Extrusion dialog and pick straight lines from one
+sketch for **Placement**. Each run supports up to 16 lines, all with the chosen
+profile. Machining reduces the batch
 size under SolidCraft’s command limit; oversized batches are rejected before
 creation. Run again for another profile or another batch.
 All listed T-slot and V-slot sizes are supported.
@@ -40,7 +39,7 @@ orientation. Use the generated section sketch to inspect its X/Y orientation.
 
 Paths must be drawn, non-construction straight lines in a 2D sketch; the sketch can
 lie on any plane. Arcs, projected lines and 3D sketch wires are not accepted. The
-chosen line set is captured when you run the plugin: adding another line later does
+picked line set is captured when you run the plugin: adding another line later does
 not add a rail until you run the plugin on it. Deleting a source line breaks its rail.
 
 At creation, each rail must be 0.01–6000 mm long and fit its requested machining.
@@ -63,7 +62,7 @@ endpoint dimensions positive; for example, use `Rail_X = 90 mm` for a combined e
 
 This is an additional mode. Existing fixed-length instances are not converted.
 
-For a slot nut, sketch a point at the center of the slot on the rail's face, select it and open **Plugins > Slot nut**. Set the rail direction to match the slot.
+For a slot nut, sketch a point at the center of the slot on the rail's face, open **Plugins > Slot nut** and pick the point for **Placement**. Set the rail direction to match the slot.
 
 ![Pre-assembly and post-assembly slot nuts in a transparent rail](slot-nuts.png)
 

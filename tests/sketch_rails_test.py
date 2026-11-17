@@ -5,7 +5,7 @@ Run after ./build.sh. SOLIDCRAFT_CLI may select an unsigned host build.
 """
 import math
 import os
-from harness import check, finish, inspect, package, run, killed, skip, TMP
+from harness import check, finish, inspect, package, picks, run, killed, skip, TMP
 
 PLUGIN = 'techsquid-extrusions'
 
@@ -28,9 +28,9 @@ def path_steps():
             steps += [cmd('sketch.dimension',entities=['origin',point],type=axis,value=value)]
     return steps + [cmd('sketch.finish')]
 
-def plugin(slot,size,**options):
+def plugin(slot,size,lines='l1,l2',**options):
     return cmd('plugin.run',path=package(PLUGIN),approval=APPROVAL,entry='make-extrusion',params={
-        'mode':'Sketch driven','sketch':'Paths','slot':slot,'size':size,**options})
+        'mode':'Sketch driven','placement':picks('Paths',lines,curve=True),'slot':slot,'size':size,**options})
 
 code,text,meta=inspect(PLUGIN)
 if code:
@@ -93,18 +93,12 @@ for slot,size,taps,modeled in [('T-slot','2040','End',True),('T-slot','4040','Bo
     code,text,reopened=run([cmd('inspect.measure',summary=True)],inp=save)
     check(label+' reopens',code==0 and all(b['closed'] for b in reopened[-1]['bodies']),text[-500:] if code else '')
 
-# Selection mode and explicit subsets must not accidentally generate every line.
-for select in [False, True]:
-    steps=path_steps()
-    options={'path_lines':'l2'}
-    if select:
-        steps += [cmd('select.set',items=[{'type':'sketch_curve','sketch':1,'id':'l2'}])]
-        options={'sketch':''}
-    code,text,res=run(steps+[plugin('T-slot','2020',**options),cmd('inspect.measure',summary=True)])
-    check(('selected' if select else 'explicit')+' subset',code==0 and res[-2]['lines']==['l2'] and res[-1]['body_count']==1,text[-600:] if code else '')
+# A picked subset must not generate every line.
+code,text,res=run(path_steps()+[plugin('T-slot','2020',lines='l2'),cmd('inspect.measure',summary=True)])
+check('picked subset',code==0 and res[-2]['lines']==['l2'] and res[-1]['body_count']==1,text[-600:] if code else '')
 
 # Repeated runs use unique body names and preserve their own dependencies.
-code,text,res=run(path_steps()+[plugin('T-slot','2020',path_lines='l1'),plugin('V-slot','2020',path_lines='l2'),plugin('T-slot','2020',path_lines='l1'),cmd('inspect.measure',summary=True)])
+code,text,res=run(path_steps()+[plugin('T-slot','2020',lines='l1'),plugin('V-slot','2020',lines='l2'),plugin('T-slot','2020',lines='l1'),cmd('inspect.measure',summary=True)])
 check('mixed profiles and repeated runs',code==0 and res[-1]['body_count']==3 and len({b['name'] for b in res[-1]['bodies']})==3,text[-600:] if code else '')
 
 # Regression for the prototype's almost-vertical boolean failure.
@@ -114,7 +108,7 @@ check('near-vertical machining',code==0 and all(not f.get('error') for f in res[
 steps=[cmd('sketch.create',name='Paths',plane='XZ')]
 steps += [cmd('sketch.line',points=[[i*60,0],[i*60,100]]) for i in range(16)]
 steps += [cmd('sketch.constraint.fix',entities=[f'l{i}' for i in range(1,17)],fixed=True),cmd('sketch.finish')]
-code,text,res=run(steps+[plugin('T-slot','4040'),cmd('inspect.measure',summary=True)])
+code,text,res=run(steps+[plugin('T-slot','4040',lines=[f'l{i}' for i in range(1,17)]),cmd('inspect.measure',summary=True)])
 check('sixteen plain 4040 rails fit one run',code==0 and res[-2]['count']==16 and res[-1]['body_count']==16 and all(b['closed'] for b in res[-1]['bodies']),text[-600:] if code else '')
 
 finish()

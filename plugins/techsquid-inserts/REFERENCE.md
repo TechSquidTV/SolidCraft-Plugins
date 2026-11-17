@@ -1,6 +1,6 @@
 # Heat-set inserts
 
-A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). The `make-insert` workflow drills the hole for every sketch point or circle you select and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)).
+A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). The `make-insert` workflow drills the hole for every sketch point or circle you pick and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)).
 
 ![An M3 x 5.7 heat-set insert: two star-shaped knurls twisting opposite ways with a groove between them, the chamfer under the lower knurl, the smooth pilot at the tip, and the threaded bore](insert.png)
 
@@ -10,9 +10,9 @@ Sizes are [CNC Kitchen](https://cnckitchen.store/)'s. The outside follows CNC Ki
 
 ## Use
 
-Sketch on the face of the part, put a point or a circle where each insert goes, select them all, and open Plugins > Heat-set insert. Pick a Size and press Run. Each point gets the hole for that insert and a placement of the insert, as one undo step.
+Sketch on the face of the part, put a point or a circle where each insert goes, open Plugins > Heat-set insert and pick them all for Placement in the view. Points or circles already selected when the dialog opens fill the field. Pick a Size and press Run. Each point gets the hole for that insert and a placement of the insert, as one undo step.
 
-Create chooses what is made: `Hole and insert` (the default), `Hole only`, or `Insert only`. A hole needs a part to drill. With nothing selected, `Hole and insert` and `Insert only` put a loose insert on the origin, and `Hole only` asks you to select the points. The reply's `note` says when no hole was drilled.
+Create chooses what is made: `Hole and insert` (the default), `Hole only`, or `Insert only`. A hole needs a part to drill. With nothing picked, `Hole and insert` and `Insert only` put a loose insert on the origin, and `Hole only` asks you to pick the points. The reply's `note` says when no hole was drilled.
 
 The hole is an ordinary `solid.hole` feature on the sketch points, so it follows the sketch and can be edited afterwards. No body is named: the host drills the part under each point.
 
@@ -24,7 +24,7 @@ The hole goes into the material, whichever side of the sketch that is. The inser
 
 All sizes are millimetres. Size lists the rows of the tables below and sets the diameter, the length and the thread together. The form opens on `M3 × 5.7`, a 4.6 mm by 5.7 mm insert with an M3 bore. Each custom field replaces one of those and leaves the others on the row: Custom diameter is across the knurl points, Custom length is the insert, and Custom thread is the screw in the bore, such as `M3` or `M8x1`. The insert has to stay larger than its thread, by enough that the knurl clears it: about (thread + 0.2 mm) / 0.97, so 3.3 mm for M3. From the command line, `M3 x 5.7` finds the same row.
 
-Select a sketch point, or a circle, before you open the dialog. The face end sits on that point and the tip runs into the part. On a face sketch the normal already points out of the material, so the insert hangs into the plastic and the face end is flush with the face. With nothing selected, the insert sits on the origin: the face end is on the XY plane and the tip runs along −Z. The reply says which of these happened in `placed`. Name Sketch and Sketch point together to place the insert without a selection.
+Pick a sketch point, or a circle, for Placement. The face end sits on that point and the tip runs into the part. On a face sketch the normal already points out of the material, so the insert hangs into the plastic and the face end is flush with the face. With nothing picked, the insert sits on the origin: the face end is on the XY plane and the tip runs along −Z. The reply says which of these happened in `placed`. An edge, face or body is refused against Placement.
 
 Radii are fractions of the top ring's points: the valley 0.85, the middle ring's points 0.97, the groove 0.83, the neck 0.79 and the pilot 0.875, but never wider than the plastic hole D2. Along the insert, the top ring is 0.29 of the length, the groove 0.11, the neck 0.10 and the pilot 0.135, and the middle ring and its chamfer take the rest. Both knurls run at 50° from the axis. On a long insert the twist stops at 40° so the teeth do not fold through each other. Those proportions are measured off CNC Kitchen's section drawing, and the tooth count and the hand of each knurl off their photographs. On a large insert, or a diameter set close to the thread, the valley, the groove and the neck are lifted so they stay outside the bore.
 
@@ -43,10 +43,9 @@ The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall 
 | `custom_length` | the row's | Overall length, mm. A blind hole wants at least this plus 1 mm |
 | `custom_thread` | the row's | Screw size for the bore |
 | `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
-| `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
-| `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas: `c1, c2` |
+| `placement` | empty | The sketch points or circles to put an insert on, picked in the view; a circle means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
 
-The package uses the shared [verified component library](../../docs/parts-library.md). Geometry and workflow commands include `selection.get`, `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.revolve` (the smooth core and the middle chamfer), `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package uses the shared [verified component library](../../docs/parts-library.md). Geometry and workflow commands include `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.revolve` (the smooth core and the middle chamfer), `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 `short` and `Voron` mark a second row of the same thread. D1 is the insert diameter, D2 is the plastic hole, and W is the minimum wall beside that hole.
 
@@ -123,7 +122,7 @@ A hole keeps its kind and size in its own name because it stays in the part, and
 
 ## Older field names
 
-Breaking change: use `thread_modeled` instead of `modeled`. Retired or unknown input fields are rejected. Explicitly requesting modeled Unified or pipe threads is an error; select cosmetic geometry. The script default is modeled for metric sizes and cosmetic for other sizes.
+Breaking change: use `thread_modeled` instead of `modeled`. `sketch` and `sketch_point` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone. Retired or unknown input fields are rejected. Explicitly requesting modeled Unified or pipe threads is an error; select cosmetic geometry. The script default is modeled for metric sizes and cosmetic for other sizes.
 
 ## License
 

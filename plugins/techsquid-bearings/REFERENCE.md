@@ -21,7 +21,7 @@ The resulting part does not claim to be a purchase from the reference publisher.
 | `outer_keyway_width` / `outer_keyway_depth` | Existing value | Positive millimetres; both required when adding an outer slot |
 | `inner_keyway_angle` / `outer_keyway_angle` | 0° / 180° | Optional independent clocking in degrees; values wrap at 360°. Requires an enabled keyway. |
 | `closure` | `Preset` | `Preset`, `Dust covers`, `Lip seals`, or `Single lip seal`; Custom starts with dust covers. Width is edited separately. |
-| `sketch` / `sketch_point` | Empty | Placement, as described below |
+| `placement` | Empty | Placement, as described below |
 
 To add a slot to an unkeyed preset, choose Enabled and provide width and depth.
 To remove a slot, choose None and clear its dimension overrides. A disabled slot
@@ -80,7 +80,7 @@ after creation, outside this generator's inputs.
 
 ## Radial bearing workflow
 
-`make-bearing` accepts `size` (default `625 2RS`), `sketch` and `sketch_point`.
+`make-bearing` accepts `size` (default `625 2RS`) and `placement`.
 It inserts fixed supplier products and rejects dimensional overrides. OpenBuilds
 and MISUMI purchasing identities remain explicit for these catalog products.
 Their separate rings and source-measured seals, shields or exposed raceways are
@@ -89,10 +89,14 @@ balls. Cages and closure thickness are not inferred.
 
 ## Placement and reuse
 
-With no point selection, insert at the origin. The centre plane sits on the point,
-with local Z along the sketch normal. Select sketch points or circle centres, or
-address them with `sketch` and comma-separated `sketch_point` IDs. Up to 32 placements
-are accepted; complex documents may require a smaller batch.
+Pick sketch points or circles for **Placement** in the view; a circle means its
+centre. Points or circles already selected when the dialog opens fill the field.
+With nothing picked, insert at the origin. The centre plane sits on the point, with
+local Z along the sketch normal. Up to 32 placements are accepted; complex documents
+may require a smaller batch.
+
+Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name. An edge, face or body is refused against
+Placement.
 
 CSK components are named `CSK clutch <designation>` with `custom` appended when
 any dimensions, closure style or keyway configuration differ from the reference. Their bodies are named `Inner ring`, `Outer ring`, and `Cover` or `Seal`
@@ -193,3 +197,5 @@ in the Rust `Dimensions` API live under `section`.
 Earlier PR revisions accepted `part_number` and `purchase_*` fields in `make-csk`.
 These inputs are now rejected without aliases. Old saved definitions remain intact
 but are not adopted as current definitions.
+
+Both workflows: `sketch` and `sketch_point` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone.

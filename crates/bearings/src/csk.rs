@@ -143,6 +143,9 @@ impl Csk {
             (Size::S8, Mounting::Plain, true) => "Unkeyed; one lip seal",
             (_, Mounting::Plain, true) => "Unkeyed; 2RS",
             (_, Mounting::Inner, false) => "Inner keyway",
+            // The model gives every sealed size 8 one lip seal, as its 9 mm width is the
+            // unsealed width too; DKC's table does not say how CSK8P-2RS is closed.
+            (Size::S8, Mounting::Inner, true) => "Inner keyway; one lip seal",
             (_, Mounting::Inner, true) => "Inner keyway; 2RS",
             (_, Mounting::Both, false) => "Inner and outer keyways",
             (_, Mounting::Both, true) => "Inner and outer keyways; 2RS",

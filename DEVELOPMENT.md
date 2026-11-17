@@ -73,8 +73,9 @@ measurements and assembly members. These descriptors remain the single source fo
 insertion and reuse; packages do not export a `catalog` entry or query handler.
 See the [internal contract](docs/catalog-contract.md) and [shared library](docs/parts-library.md).
 
-`tools/catalog-tool` generates catalog-owned insertion choices and reference tables
-from the same data. Run `cargo run -p catalog-tool -- --write` after changing them;
+`tools/catalog-tool` generates catalog-owned insertion choices and documentation
+tables from the same data, including the Bearings README and reference table.
+Run `cargo run -p catalog-tool -- --write` after changing them;
 `./build.sh` runs `--check` and refuses drift. Workflow controls remain hand-authored.
 The package and guest both use that manifest. The generator must not add API entries.
 
@@ -245,7 +246,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 ```
 
 ```sh
-solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 550 --camera '{"target":[1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":110}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 500 --camera '{"target":[1.5,0,0],"yaw":0,"pitch":0.9,"distance":75}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
 

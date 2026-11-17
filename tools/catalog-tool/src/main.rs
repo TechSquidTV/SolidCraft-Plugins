@@ -1,4 +1,4 @@
-//! Update only catalog-owned manifest fields; workflow fields stay hand-authored.
+//! Keep catalog-owned choices and documentation tables in sync; workflow fields stay hand-authored.
 
 use std::{env, fs, path::Path, process::ExitCode};
 
@@ -116,6 +116,11 @@ fn run() -> Result<(), String> {
             d.width
         ));
     }
+    update_table(
+        &root.join("plugins/techsquid-bearings/README.md"),
+        &bearings_table,
+        write,
+    )?;
     let mut wheels_table = String::from("| Part | OpenBuilds SKU | OD × bare width (mm) | Bearings | Internal shim, OD × bore × width (mm) |\n|---|---|---|---|---|\n");
     for wheel in wheels::ALL {
         let (diameter, width) = wheel.dimensions();

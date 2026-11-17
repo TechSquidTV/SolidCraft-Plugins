@@ -2,7 +2,31 @@
 
 Place fixed OpenBuilds and MISUMI bearing products in [SolidCraft](https://github.com/tangency-labs/solidcraft), with separate steel rings and recessed rubber seals or metal shields. Choose a catalog designation instead of entering arbitrary dimensions.
 
-![Six sourced bearings with open, sealed and shielded variants](bearings.png)
+## Supported bearings
+
+Choose a designation from this table in **Bearings > make-bearing**. Dimensions
+are bore × outside diameter × width, in millimetres. Part numbers are the
+supplier's catalog numbers.
+
+<!-- catalog-table:start -->
+
+| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure |
+|---|---|---|---|---|
+| 625 2RS | OpenBuilds | 30 | 5 × 16 × 5 | Rubber seals, both sides |
+| 105ZZ | OpenBuilds | 800 | 5 × 10 × 4 | Metal shields, both sides |
+| B626 | MISUMI | B626 | 6 × 19 × 6 | Open, visible balls |
+| B626ZZ | MISUMI | B626ZZ | 6 × 19 × 6 | Metal shields, both sides |
+| B626DDU | MISUMI | B626DDU | 6 × 19 × 6 | Rubber seals, both sides |
+| B608ZZ | MISUMI | B608ZZ | 8 × 22 × 7 | Metal shields, both sides |
+
+<!-- catalog-table:end -->
+
+![Supported bearings, left to right: OpenBuilds 625 2RS and 105ZZ; MISUMI B626, B626ZZ, B626DDU and B608ZZ](bearings.png)
+
+The preview follows the table order, left to right, at the same scale. Dark faces
+are rubber seals, gray faces are metal shields, and the open B626 shows its balls
+and raceways. See the [reference](REFERENCE.md#geometry-and-sources) for sources
+and modeling limits.
 
 ## Install
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CSK mounting envelopes against the independent Formsprag catalog dimensions."""
+"""CSK mounting envelopes against the independent manufacturer catalog dimensions."""
 import math
 
 from harness import TMP, check, finish, package
@@ -7,9 +7,10 @@ from pathlib import Path
 from headless import Headless
 
 
-# Formsprag P-1352-FC, page 3; not read from the compiled plugin catalog.
+# Formsprag P-1352-FC p3, plus Yuki size 10; independent of the compiled catalog.
 SIZES = [
     ('CSK8', 8, 22, 9),
+    ('CSK10', 10, 30, 9),
     ('CSK12', 12, 32, 10),
     ('CSK15', 15, 35, 11),
     ('CSK17', 17, 40, 12),
@@ -21,8 +22,9 @@ SIZES = [
 ]
 
 # Keyways independently transcribed from Formsprag P-1352-FC p4 and
-# MCC-P-956-FC-EN-US 11/25 pp28–29. Depths are from the bore/OD apex.
-KEYS = {12: (4, 1.8, None, None), 15: (5, 1.2, 2, .6),
+# MCC-P-956-FC-EN-US 11/25 pp28–29, PEAK sizes 8/12PP, Yuki size 10,
+# DKC 8P-2RS and PTI sealed PP. Depths are from the bore/OD apex.
+KEYS = {8: (3, .5, 2, .5), 10: (3, .6, 2, .5), 12: (4, 1.8, 2, .6), 15: (5, 1.2, 2, .6),
         17: (5, 1.2, 2, 1), 20: (6, 1.6, 3, 1.5),
         25: (8, 2, 6, 2), 30: (8, 2, 6, 2),
         35: (10, 2.4, 8, 2.5), 40: (12, 3.3, 10, 3)}
@@ -33,9 +35,7 @@ for sku, bore, od, width in SIZES:
             ('-2RS', True, False, False), ('P', False, True, False),
             ('PP', False, True, True), ('P-2RS', True, True, False),
             ('PP-2RS', True, True, True)]:
-        if keyed and bore == 8 or outer and bore == 12:
-            continue
-        if suffix == 'PP-2RS' and bore != 30:
+        if bore == 10 and sealed or suffix == 'PP-2RS' and bore in (8,12):
             continue
         CASES.append((sku + suffix, bore, od, sealed_width if sealed else width, keyed, outer))
 
@@ -64,6 +64,8 @@ with Headless() as host:
             edges = host.command('model.edges', body=name)['edges']
             vertices = [p for edge in edges for p in (edge['start'], edge['end']) if p is not None]
             iw, depth, ow, outer_depth = KEYS[bore]
+            if bore == 12 and outer:
+                depth = 1.2
             slots = [(iw, bore / 2 + depth)]
             if outer:
                 slots.append((ow, od / 2 - outer_depth))
@@ -77,10 +79,10 @@ with Headless() as host:
               sum(body_name.startswith(f'CSK clutch {sku} ') for body_name in bodies) == 1
               and not result['component']['reused'])
     rows = host.command('assembly.bom')['rows']
-    check('CSK: 42 distinct unsourced specifications', len(rows) == len(CASES) and
+    check('CSK: 55 distinct unassigned specifications', len(rows) == len(CASES) and
           all(not row.get('part_number') and row['count'] == 1 for row in rows))
 
-    for invalid in ['CSK8P', 'CSK12PP', 'CSK20PP-2RS']:
+    for invalid in ['CSK50', 'invalid', 'CSK10-2RS']:
         rejected = host.command('plugin.run', path=path, approval=approval,
                                 entry='make-csk', params={'size': invalid}, allow_error=True)
         check(invalid + ': unsourced combination rejected', 'error' in rejected)
@@ -105,7 +107,7 @@ with Headless() as host:
           spec['geometry']['inner_keyway'] == {'width': 4.0, 'depth': 1.2}
           and [spec['geometry'][k] for k in ('bore','diameter','width')] == [12,32,10]
           and spec['reference']['baseline']['inner_keyway']['depth'] == 1.8
-          and spec['reference']['customized'] and 'Formsprag' in spec['reference']['title']
+          and spec['reference']['customized'] and 'Formsprag' in spec['reference']['source']['title']
           and 'purchasing' not in spec and 'purchasing_identity' not in spec
           and not record.get('part_number'))
     check('custom: reference vendor is absent from canonical design identity',
@@ -133,10 +135,47 @@ with Headless() as host:
           and host.command('component.metadata', component=component['id'])['metadata'] == record)
     before = host.command('document.inspect', measure=False)
     for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1},
+                   {'bore':32}, {'width':0}, {'outer_keyway':'Enabled'}, {'size':'Custom'},
                    {'part_number': 'CL-12'}, {'purchase_supplier': 'Seller'}]:
         result = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
                               params={'size': 'CSK12P', **params}, allow_error=True)
         check('custom: invalid keyway fails without edits', 'error' in result
               and host.command('document.inspect', measure=False) == before)
+
+with Headless() as host:
+    path = package('techsquid-bearings')
+    approval = host.command('plugin.inspect', path=path)['approval']
+    # All envelope dimensions changed, inner removed, outer added; then a
+    # reference-free counterpart. Independently check cylindrical radii and slot vertices.
+    for size in ('CSK8P', 'Custom'):
+        params = {'size':size, 'bore':9, 'diameter':25, 'width':12,
+                  'inner_keyway':'None', 'outer_keyway':'Enabled',
+                  'outer_keyway_width':2, 'outer_keyway_depth':0.7}
+        result = host.command('plugin.run', path=path, approval=approval, entry='make-csk', params=params)
+        result = result.get('result', result)
+        component = next(c for c in host.command('component.list')['components']
+                         if c['name'] == result['component']['component'])
+        body = component['bodies'][0]
+        faces = host.command('model.faces', body=body)['faces']
+        radii = sorted({f['cylinder']['radius'] for f in faces if 'cylinder' in f})
+        check(size + ': custom bore and OD', len(radii) == 2 and all(math.isclose(a,b,abs_tol=1e-6) for a,b in zip(radii,[4.5,12.5])), str(radii))
+        edges = host.command('model.edges', body=body)['edges']
+        vertices = [p for e in edges for p in (e['start'],e['end']) if p is not None]
+        check(size + ': added outer slot follows custom envelope', all(
+            any(all(math.isclose(a,b,abs_tol=1e-6) for a,b in zip(p,target)) for p in vertices)
+            for target in [(-1,11.8,-6),(1,11.8,-6),(-1,11.8,6),(1,11.8,6)]))
+        record = host.command('component.metadata', component=component['id'])['metadata']
+        spec = record['org.techsquid.specification']
+        check(size + ': removed inner keyway is recorded', spec['geometry']['inner_keyway'] is None)
+        check(size + ': reference remains truthful',
+              spec['reference'] is None if size == 'Custom' else
+              spec['reference']['baseline']['bore'] == 8 and spec['reference']['customized'])
+        saved = str(Path(TMP) / ('csk-' + size + '.sc'))
+        host.command('file.save_as', path=saved)
+        host.command('doc.open', path=saved)
+        again = host.command('plugin.run', path=path, approval=approval, entry='make-csk', params=params)
+        again = again.get('result',again)
+        check(size + ': full customization survives reopen and reuses', again['component']['reused']
+              and host.command('component.metadata', component=component['id'])['metadata'] == record)
 
 finish()

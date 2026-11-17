@@ -5,9 +5,9 @@
 require the plugin. Rebuilding it requires the built Bearings package and the
 [documented host API](../docs/parts-library.md#host-requirements).
 
-![Five CSK mounting envelopes, ordered as described below](../plugins/techsquid-bearings/csk-clutches.png)
+![Eight CSK mounting envelopes, ordered as described below](../plugins/techsquid-bearings/csk-clutches.png)
 
-From left to right:
+The lower row, from left to right:
 
 | Position | Designation | Envelope, bore × OD × width (mm) | Keyways, width × depth (mm) |
 |---|---|---|---|
@@ -28,15 +28,35 @@ keyway depth. The corresponding workflow parameters are:
 }
 ```
 
-The bore, OD and width stay fixed by the designation. Only existing keyways can
-be overridden: P has an inner slot, PP has both slots, and plain CSK has neither.
+The upper row adds CSK8PP (8 × 22 × 9), CSK10PP (10 × 30 × 9), and a fully
+custom 13 × 34 × 12 mm envelope with only a 3 × 1 mm outer keyway.
+
+Bore, OD, width and either keyway can be changed. P starts with an inner slot,
+PP with both, and plain CSK with neither. Set a keyway to Enabled and supply width
+and depth to add it, or set it to None and clear overrides to remove it.
+For the final part, use:
+
+```json
+{
+  "size": "Custom",
+  "bore": 13,
+  "diameter": 34,
+  "width": 12,
+  "outer_keyway": "Enabled",
+  "outer_keyway_width": 3,
+  "outer_keyway_depth": 1
+}
+```
+
+Custom mode has no catalog designation or reference. A changed preset keeps its
+baseline and records that it was customized.
 Keyways face local +Y and pass through the full width. Depth is measured from
 the bore or OD apex, not from a mating shaft's keyway. These dimensions do not
 specify a complete fit or tolerance system.
 
 ## Expected BOM
 
-The saved design has five occurrences and four definitions. Its flat BOM has:
+The saved design has eight occurrences and seven definitions. Its flat BOM has:
 
 | Definition | Quantity | BOM part number | Classification |
 |---|---:|---|---|
@@ -44,6 +64,9 @@ The saved design has five occurrences and four definitions. Its flat BOM has:
 | CSK12P custom | 2 | Unassigned | Normal |
 | CSK15PP | 1 | Unassigned | Normal |
 | CSK15P-2RS | 1 | Unassigned | Normal |
+| CSK8PP | 1 | Unassigned | Normal |
+| CSK10PP | 1 | Unassigned | Normal |
+| Custom outer-keyed envelope | 1 | Unassigned | Normal |
 
 The two custom occurrences share a definition and count together. Reference
 drawings do not assign manufacturers or suppliers. The specification metadata
@@ -54,11 +77,11 @@ after creation; `make-csk` has no purchasing or part-number inputs.
 
 ## What the example verifies
 
-The reproducible recipe checks five closed mounting envelopes, their placed
-bounding boxes and volumes, and four definitions. Expected volumes subtract the
+The reproducible recipe checks eight closed mounting envelopes, their placed
+bounding boxes and volumes, and seven definitions. Expected volumes subtract the
 rectangular slot intersections from an annulus using the dimensions above.
 Saved-example checks compare geometry, catalog identities and reference metadata
-against a fresh build. The separate CSK test suite covers all 42 presets, keyway
+against a fresh build. The separate CSK test suite covers all 55 presets, envelope and keyway
 overrides, BOM quantities and rejected inputs.
 
 These envelopes represent mounting geometry. Internal sprags, races and seals

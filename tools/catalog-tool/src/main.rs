@@ -129,12 +129,13 @@ fn run() -> Result<(), String> {
     for csk in bearings::csk::ALL {
         let d = csk.dimensions();
         bearings_table.push_str(&format!(
-            "| {} | Unassigned (Formsprag reference) | — | {} × {} × {} | {} |\n",
+            "| {} | Unassigned | — | {} × {} × {} | {} ([reference]({})) |\n",
             csk.designation(),
             d.bore,
             d.diameter,
             d.width,
-            csk.mounting_description()
+            csk.mounting_description(),
+            csk.source().url
         ));
     }
     let mut wheels_table = String::from("| Part | OpenBuilds SKU | OD × bare width (mm) | Bearings | Internal shim, OD × bore × width (mm) |\n|---|---|---|---|---|\n");
@@ -151,6 +152,11 @@ fn run() -> Result<(), String> {
             shim.thickness()
         ));
     }
+    update_table(
+        &root.join("plugins/techsquid-bearings/README.md"),
+        &bearings_table,
+        write,
+    )?;
     for (plugin, table) in [
         ("techsquid-bearings", bearings_table),
         ("techsquid-v-wheels", wheels_table),
@@ -203,7 +209,7 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                 .as_object_mut()
                 .ok_or("missing CSK size property")?
                 .remove("enum");
-            let options: Vec<_> = bearings::csk::ALL
+            let mut options: Vec<_> = bearings::csk::ALL
                 .into_iter()
                 .map(|csk| {
                     let d = csk.dimensions();
@@ -223,6 +229,8 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                     json!({"const":csk.designation(), "title":title})
                 })
                 .collect();
+            options
+                .push(json!({"const":"Custom", "title":"Custom — enter dimensions and keyways"}));
             property["oneOf"] = json!(options);
         } else {
             property["enum"] = json!(choices);

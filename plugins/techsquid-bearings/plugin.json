@@ -2,7 +2,7 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Place radial bearings and CSK clutches with adjustable keyways and reference dimensions.",
+  "description": "Place radial bearings or create CSK clutches with editable dimensions, keyways and recorded references.",
   "id": "techsquid-bearings",
   "name": "Bearings",
   "runtime": {
@@ -76,29 +76,67 @@
         "input_schema": {
           "additionalProperties": true,
           "properties": {
+            "bore": {
+              "description": "Leave blank to keep the preset value. Required for Custom.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Bore",
+              "type": "number",
+              "unit": "mm"
+            },
+            "diameter": {
+              "description": "Leave blank to keep the preset value. Required for Custom.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Outside diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "inner_keyway": {
+              "default": "Preset",
+              "description": "Keep the preset, add a keyway, or remove it. Added keyways require width and depth.",
+              "enum": [
+                "Preset",
+                "Enabled",
+                "None"
+              ],
+              "title": "Inner keyway",
+              "type": "string"
+            },
             "inner_keyway_depth": {
-              "description": "Leave blank to use the reference depth. P and PP variants only.",
+              "description": "Leave blank to keep an existing keyway value. Required when adding a keyway.",
               "exclusiveMinimum": 0,
               "title": "Inner keyway depth override",
               "type": "number",
               "unit": "mm"
             },
             "inner_keyway_width": {
-              "description": "Leave blank to use the reference width. P and PP variants only.",
+              "description": "Leave blank to keep an existing keyway value. Required when adding a keyway.",
               "exclusiveMinimum": 0,
               "title": "Inner keyway width override",
               "type": "number",
               "unit": "mm"
             },
+            "outer_keyway": {
+              "default": "Preset",
+              "description": "Keep the preset, add a keyway, or remove it. Added keyways require width and depth.",
+              "enum": [
+                "Preset",
+                "Enabled",
+                "None"
+              ],
+              "title": "Outer keyway",
+              "type": "string"
+            },
             "outer_keyway_depth": {
-              "description": "Leave blank to use the reference depth. PP variants only.",
+              "description": "Leave blank to keep an existing keyway value. Required when adding a keyway.",
               "exclusiveMinimum": 0,
               "title": "Outer keyway depth override",
               "type": "number",
               "unit": "mm"
             },
             "outer_keyway_width": {
-              "description": "Leave blank to use the reference width. PP variants only.",
+              "description": "Leave blank to keep an existing keyway value. Required when adding a keyway.",
               "exclusiveMinimum": 0,
               "title": "Outer keyway width override",
               "type": "number",
@@ -106,175 +144,231 @@
             },
             "size": {
               "default": "CSK12P",
-              "description": "Designation fixes bore, outside diameter and width. Optional keyway dimensions below override the reference profile.",
+              "description": "Start from a documented reference preset, or choose Custom and enter bore, outside diameter and width. All dimensions and keyways are editable.",
               "oneOf": [
                 {
                   "const": "CSK8",
-                  "title": "CSK8 \u2014 8 \u00d7 22 \u00d7 9 mm"
+                  "title": "CSK8 — 8 × 22 × 9 mm"
                 },
                 {
-                  "const": "CSK12",
-                  "title": "CSK12 \u2014 12 \u00d7 32 \u00d7 10 mm"
+                  "const": "CSK8P",
+                  "title": "CSK8P — 8 × 22 × 9 mm; inner 3 × 0.5"
                 },
                 {
-                  "const": "CSK15",
-                  "title": "CSK15 \u2014 15 \u00d7 35 \u00d7 11 mm"
-                },
-                {
-                  "const": "CSK17",
-                  "title": "CSK17 \u2014 17 \u00d7 40 \u00d7 12 mm"
-                },
-                {
-                  "const": "CSK20",
-                  "title": "CSK20 \u2014 20 \u00d7 47 \u00d7 14 mm"
-                },
-                {
-                  "const": "CSK25",
-                  "title": "CSK25 \u2014 25 \u00d7 52 \u00d7 15 mm"
-                },
-                {
-                  "const": "CSK30",
-                  "title": "CSK30 \u2014 30 \u00d7 62 \u00d7 16 mm"
-                },
-                {
-                  "const": "CSK35",
-                  "title": "CSK35 \u2014 35 \u00d7 72 \u00d7 17 mm"
-                },
-                {
-                  "const": "CSK40",
-                  "title": "CSK40 \u2014 40 \u00d7 80 \u00d7 22 mm"
+                  "const": "CSK8PP",
+                  "title": "CSK8PP — 8 × 22 × 9 mm; inner 3 × 0.5; outer 2 × 0.5"
                 },
                 {
                   "const": "CSK8-2RS",
-                  "title": "CSK8-2RS \u2014 8 \u00d7 22 \u00d7 9 mm"
+                  "title": "CSK8-2RS — 8 × 22 × 9 mm"
                 },
                 {
-                  "const": "CSK12-2RS",
-                  "title": "CSK12-2RS \u2014 12 \u00d7 32 \u00d7 14 mm"
+                  "const": "CSK8P-2RS",
+                  "title": "CSK8P-2RS — 8 × 22 × 9 mm; inner 3 × 0.5"
                 },
                 {
-                  "const": "CSK15-2RS",
-                  "title": "CSK15-2RS \u2014 15 \u00d7 35 \u00d7 16 mm"
+                  "const": "CSK10",
+                  "title": "CSK10 — 10 × 30 × 9 mm"
                 },
                 {
-                  "const": "CSK17-2RS",
-                  "title": "CSK17-2RS \u2014 17 \u00d7 40 \u00d7 17 mm"
+                  "const": "CSK10P",
+                  "title": "CSK10P — 10 × 30 × 9 mm; inner 3 × 0.6"
                 },
                 {
-                  "const": "CSK20-2RS",
-                  "title": "CSK20-2RS \u2014 20 \u00d7 47 \u00d7 19 mm"
+                  "const": "CSK10PP",
+                  "title": "CSK10PP — 10 × 30 × 9 mm; inner 3 × 0.6; outer 2 × 0.5"
                 },
                 {
-                  "const": "CSK25-2RS",
-                  "title": "CSK25-2RS \u2014 25 \u00d7 52 \u00d7 20 mm"
-                },
-                {
-                  "const": "CSK30-2RS",
-                  "title": "CSK30-2RS \u2014 30 \u00d7 62 \u00d7 21 mm"
-                },
-                {
-                  "const": "CSK35-2RS",
-                  "title": "CSK35-2RS \u2014 35 \u00d7 72 \u00d7 22 mm"
-                },
-                {
-                  "const": "CSK40-2RS",
-                  "title": "CSK40-2RS \u2014 40 \u00d7 80 \u00d7 27 mm"
+                  "const": "CSK12",
+                  "title": "CSK12 — 12 × 32 × 10 mm"
                 },
                 {
                   "const": "CSK12P",
-                  "title": "CSK12P \u2014 12 \u00d7 32 \u00d7 10 mm; inner 4 \u00d7 1.8"
+                  "title": "CSK12P — 12 × 32 × 10 mm; inner 4 × 1.8"
                 },
                 {
-                  "const": "CSK15P",
-                  "title": "CSK15P \u2014 15 \u00d7 35 \u00d7 11 mm; inner 5 \u00d7 1.2"
+                  "const": "CSK12PP",
+                  "title": "CSK12PP — 12 × 32 × 10 mm; inner 4 × 1.2; outer 2 × 0.6"
                 },
                 {
-                  "const": "CSK17P",
-                  "title": "CSK17P \u2014 17 \u00d7 40 \u00d7 12 mm; inner 5 \u00d7 1.2"
-                },
-                {
-                  "const": "CSK20P",
-                  "title": "CSK20P \u2014 20 \u00d7 47 \u00d7 14 mm; inner 6 \u00d7 1.6"
-                },
-                {
-                  "const": "CSK25P",
-                  "title": "CSK25P \u2014 25 \u00d7 52 \u00d7 15 mm; inner 8 \u00d7 2"
-                },
-                {
-                  "const": "CSK30P",
-                  "title": "CSK30P \u2014 30 \u00d7 62 \u00d7 16 mm; inner 8 \u00d7 2"
-                },
-                {
-                  "const": "CSK35P",
-                  "title": "CSK35P \u2014 35 \u00d7 72 \u00d7 17 mm; inner 10 \u00d7 2.4"
-                },
-                {
-                  "const": "CSK40P",
-                  "title": "CSK40P \u2014 40 \u00d7 80 \u00d7 22 mm; inner 12 \u00d7 3.3"
-                },
-                {
-                  "const": "CSK15PP",
-                  "title": "CSK15PP \u2014 15 \u00d7 35 \u00d7 11 mm; inner 5 \u00d7 1.2; outer 2 \u00d7 0.6"
-                },
-                {
-                  "const": "CSK17PP",
-                  "title": "CSK17PP \u2014 17 \u00d7 40 \u00d7 12 mm; inner 5 \u00d7 1.2; outer 2 \u00d7 1"
-                },
-                {
-                  "const": "CSK20PP",
-                  "title": "CSK20PP \u2014 20 \u00d7 47 \u00d7 14 mm; inner 6 \u00d7 1.6; outer 3 \u00d7 1.5"
-                },
-                {
-                  "const": "CSK25PP",
-                  "title": "CSK25PP \u2014 25 \u00d7 52 \u00d7 15 mm; inner 8 \u00d7 2; outer 6 \u00d7 2"
-                },
-                {
-                  "const": "CSK30PP",
-                  "title": "CSK30PP \u2014 30 \u00d7 62 \u00d7 16 mm; inner 8 \u00d7 2; outer 6 \u00d7 2"
-                },
-                {
-                  "const": "CSK35PP",
-                  "title": "CSK35PP \u2014 35 \u00d7 72 \u00d7 17 mm; inner 10 \u00d7 2.4; outer 8 \u00d7 2.5"
-                },
-                {
-                  "const": "CSK40PP",
-                  "title": "CSK40PP \u2014 40 \u00d7 80 \u00d7 22 mm; inner 12 \u00d7 3.3; outer 10 \u00d7 3"
+                  "const": "CSK12-2RS",
+                  "title": "CSK12-2RS — 12 × 32 × 14 mm"
                 },
                 {
                   "const": "CSK12P-2RS",
-                  "title": "CSK12P-2RS \u2014 12 \u00d7 32 \u00d7 14 mm; inner 4 \u00d7 1.8"
+                  "title": "CSK12P-2RS — 12 × 32 × 14 mm; inner 4 × 1.8"
+                },
+                {
+                  "const": "CSK15",
+                  "title": "CSK15 — 15 × 35 × 11 mm"
+                },
+                {
+                  "const": "CSK15P",
+                  "title": "CSK15P — 15 × 35 × 11 mm; inner 5 × 1.2"
+                },
+                {
+                  "const": "CSK15PP",
+                  "title": "CSK15PP — 15 × 35 × 11 mm; inner 5 × 1.2; outer 2 × 0.6"
+                },
+                {
+                  "const": "CSK15-2RS",
+                  "title": "CSK15-2RS — 15 × 35 × 16 mm"
                 },
                 {
                   "const": "CSK15P-2RS",
-                  "title": "CSK15P-2RS \u2014 15 \u00d7 35 \u00d7 16 mm; inner 5 \u00d7 1.2"
+                  "title": "CSK15P-2RS — 15 × 35 × 16 mm; inner 5 × 1.2"
+                },
+                {
+                  "const": "CSK15PP-2RS",
+                  "title": "CSK15PP-2RS — 15 × 35 × 16 mm; inner 5 × 1.2; outer 2 × 0.6"
+                },
+                {
+                  "const": "CSK17",
+                  "title": "CSK17 — 17 × 40 × 12 mm"
+                },
+                {
+                  "const": "CSK17P",
+                  "title": "CSK17P — 17 × 40 × 12 mm; inner 5 × 1.2"
+                },
+                {
+                  "const": "CSK17PP",
+                  "title": "CSK17PP — 17 × 40 × 12 mm; inner 5 × 1.2; outer 2 × 1"
+                },
+                {
+                  "const": "CSK17-2RS",
+                  "title": "CSK17-2RS — 17 × 40 × 17 mm"
                 },
                 {
                   "const": "CSK17P-2RS",
-                  "title": "CSK17P-2RS \u2014 17 \u00d7 40 \u00d7 17 mm; inner 5 \u00d7 1.2"
+                  "title": "CSK17P-2RS — 17 × 40 × 17 mm; inner 5 × 1.2"
+                },
+                {
+                  "const": "CSK17PP-2RS",
+                  "title": "CSK17PP-2RS — 17 × 40 × 17 mm; inner 5 × 1.2; outer 2 × 1"
+                },
+                {
+                  "const": "CSK20",
+                  "title": "CSK20 — 20 × 47 × 14 mm"
+                },
+                {
+                  "const": "CSK20P",
+                  "title": "CSK20P — 20 × 47 × 14 mm; inner 6 × 1.6"
+                },
+                {
+                  "const": "CSK20PP",
+                  "title": "CSK20PP — 20 × 47 × 14 mm; inner 6 × 1.6; outer 3 × 1.5"
+                },
+                {
+                  "const": "CSK20-2RS",
+                  "title": "CSK20-2RS — 20 × 47 × 19 mm"
                 },
                 {
                   "const": "CSK20P-2RS",
-                  "title": "CSK20P-2RS \u2014 20 \u00d7 47 \u00d7 19 mm; inner 6 \u00d7 1.6"
+                  "title": "CSK20P-2RS — 20 × 47 × 19 mm; inner 6 × 1.6"
+                },
+                {
+                  "const": "CSK20PP-2RS",
+                  "title": "CSK20PP-2RS — 20 × 47 × 19 mm; inner 6 × 1.6; outer 3 × 1.5"
+                },
+                {
+                  "const": "CSK25",
+                  "title": "CSK25 — 25 × 52 × 15 mm"
+                },
+                {
+                  "const": "CSK25P",
+                  "title": "CSK25P — 25 × 52 × 15 mm; inner 8 × 2"
+                },
+                {
+                  "const": "CSK25PP",
+                  "title": "CSK25PP — 25 × 52 × 15 mm; inner 8 × 2; outer 6 × 2"
+                },
+                {
+                  "const": "CSK25-2RS",
+                  "title": "CSK25-2RS — 25 × 52 × 20 mm"
                 },
                 {
                   "const": "CSK25P-2RS",
-                  "title": "CSK25P-2RS \u2014 25 \u00d7 52 \u00d7 20 mm; inner 8 \u00d7 2"
+                  "title": "CSK25P-2RS — 25 × 52 × 20 mm; inner 8 × 2"
+                },
+                {
+                  "const": "CSK25PP-2RS",
+                  "title": "CSK25PP-2RS — 25 × 52 × 20 mm; inner 8 × 2; outer 6 × 2"
+                },
+                {
+                  "const": "CSK30",
+                  "title": "CSK30 — 30 × 62 × 16 mm"
+                },
+                {
+                  "const": "CSK30P",
+                  "title": "CSK30P — 30 × 62 × 16 mm; inner 8 × 2"
+                },
+                {
+                  "const": "CSK30PP",
+                  "title": "CSK30PP — 30 × 62 × 16 mm; inner 8 × 2; outer 6 × 2"
+                },
+                {
+                  "const": "CSK30-2RS",
+                  "title": "CSK30-2RS — 30 × 62 × 21 mm"
                 },
                 {
                   "const": "CSK30P-2RS",
-                  "title": "CSK30P-2RS \u2014 30 \u00d7 62 \u00d7 21 mm; inner 8 \u00d7 2"
-                },
-                {
-                  "const": "CSK35P-2RS",
-                  "title": "CSK35P-2RS \u2014 35 \u00d7 72 \u00d7 22 mm; inner 10 \u00d7 2.4"
-                },
-                {
-                  "const": "CSK40P-2RS",
-                  "title": "CSK40P-2RS \u2014 40 \u00d7 80 \u00d7 27 mm; inner 12 \u00d7 3.3"
+                  "title": "CSK30P-2RS — 30 × 62 × 21 mm; inner 8 × 2"
                 },
                 {
                   "const": "CSK30PP-2RS",
-                  "title": "CSK30PP-2RS \u2014 30 \u00d7 62 \u00d7 21 mm; inner 8 \u00d7 2; outer 6 \u00d7 2"
+                  "title": "CSK30PP-2RS — 30 × 62 × 21 mm; inner 8 × 2; outer 6 × 2"
+                },
+                {
+                  "const": "CSK35",
+                  "title": "CSK35 — 35 × 72 × 17 mm"
+                },
+                {
+                  "const": "CSK35P",
+                  "title": "CSK35P — 35 × 72 × 17 mm; inner 10 × 2.4"
+                },
+                {
+                  "const": "CSK35PP",
+                  "title": "CSK35PP — 35 × 72 × 17 mm; inner 10 × 2.4; outer 8 × 2.5"
+                },
+                {
+                  "const": "CSK35-2RS",
+                  "title": "CSK35-2RS — 35 × 72 × 22 mm"
+                },
+                {
+                  "const": "CSK35P-2RS",
+                  "title": "CSK35P-2RS — 35 × 72 × 22 mm; inner 10 × 2.4"
+                },
+                {
+                  "const": "CSK35PP-2RS",
+                  "title": "CSK35PP-2RS — 35 × 72 × 22 mm; inner 10 × 2.4; outer 8 × 2.5"
+                },
+                {
+                  "const": "CSK40",
+                  "title": "CSK40 — 40 × 80 × 22 mm"
+                },
+                {
+                  "const": "CSK40P",
+                  "title": "CSK40P — 40 × 80 × 22 mm; inner 12 × 3.3"
+                },
+                {
+                  "const": "CSK40PP",
+                  "title": "CSK40PP — 40 × 80 × 22 mm; inner 12 × 3.3; outer 10 × 3"
+                },
+                {
+                  "const": "CSK40-2RS",
+                  "title": "CSK40-2RS — 40 × 80 × 27 mm"
+                },
+                {
+                  "const": "CSK40P-2RS",
+                  "title": "CSK40P-2RS — 40 × 80 × 27 mm; inner 12 × 3.3"
+                },
+                {
+                  "const": "CSK40PP-2RS",
+                  "title": "CSK40PP-2RS — 40 × 80 × 27 mm; inner 12 × 3.3; outer 10 × 3"
+                },
+                {
+                  "const": "Custom",
+                  "title": "Custom — enter dimensions and keyways"
                 }
               ],
               "title": "CSK designation",
@@ -287,6 +381,14 @@
             "sketch_point": {
               "title": "Sketch point",
               "type": "string"
+            },
+            "width": {
+              "description": "Leave blank to keep the preset value. Required for Custom.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Width",
+              "type": "number",
+              "unit": "mm"
             }
           },
           "required": [

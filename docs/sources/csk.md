@@ -1,87 +1,83 @@
-# Formsprag CSK one-way clutch sources
+# CSK geometry references
 
-The nine unkeyed CSK products in the bearing catalog use the metric mounting
-dimensions on page 3 of [Formsprag P-1352-FC (March 2018)](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf).
-The user supplied a four-page PDF copy with SHA-256
-`a125f118c7aafabb5b76097284f9b3b49b3f8dee9566a265037cc52a2be712a1`.
-The [Formsprag CSK product page](https://www.formsprag.com/products/General-Purpose-Clutches/Bearing-Envelope-Design/CSK-Series)
-identifies the sprag clutch family and its distinct unkeyed, P, PP and 2RS
-mounting variants. Standard CSK sizes are 8, 12, 15, 17, 20, 25, 30, 35 and 40.
+CSK is a family designation used by multiple suppliers. The references do not
+establish a universal product standard or geometric interchangeability. DIN 6885
+references concern keyways, not complete clutch specifications. Reference publishers
+are not assigned as manufacturers or sellers by the generator.
 
-The supplied two-page Stieber P-7426-SC-A4 9/17 extract, SHA-256
-`55807df529d39d6d7ee245dadf8fb5a8da0f9ea6aabd82a838b7c2ab69198cb9`,
-documents keyed P and PP variants. These are distinct CSK products: their keyways, mounting requirements and some
-2RS widths differ. The implemented keyway dimensions come from Formsprag.
+## Preset coverage and defaults
 
-The supplied `CSK8.zip`, SHA-256
-`9a48350e6fe7f65b71927b25b03df56186b0f092264aaa82da44baffb24be963`,
-contains `CSK8.stp` (STEP AP214, `FREILAUF_CSK8_CDS_ASM`). Its cylindrical faces
-confirm an 8 mm bore and 22 mm OD, and its axial extent is 9 mm. It is a size-8
-CAD reference only. It does not establish the ring or clutch sections of the other
-eight sizes, so those details are omitted from all CSK representations. The
-generated annulus is a placement and clearance envelope, not a solid mass model.
+The generator contains 55 reference presets. P means an inner keyway; PP means both
+inner and outer keyways. Sealed variants have independently tabulated widths.
 
-| Product | Bore × OD × width (mm) |
-|---|---|
-| CSK8 | 8 × 22 × 9 |
-| CSK12 | 12 × 32 × 10 |
-| CSK15 | 15 × 35 × 11 |
-| CSK17 | 17 × 40 × 12 |
-| CSK20 | 20 × 47 × 14 |
-| CSK25 | 25 × 52 × 15 |
-| CSK30 | 30 × 62 × 16 |
-| CSK35 | 35 × 72 × 17 |
-| CSK40 | 40 × 80 × 22 |
+| Bore (mm) | Plain / P / PP | 2RS / P-2RS / PP-2RS | Plain bore × OD × width (mm) | Sealed width (mm) |
+|---|---|---|---|---|
+| 8 | All three | 2RS and P-2RS | 8 × 22 × 9 | 9 |
+| 10 | All three | No verified preset | 10 × 30 × 9 | — |
+| 12 | All three | 2RS and P-2RS | 12 × 32 × 10 | 14 |
+| 15 | All three | All three | 15 × 35 × 11 | 16 |
+| 17 | All three | All three | 17 × 40 × 12 | 17 |
+| 20 | All three | All three | 20 × 47 × 14 | 19 |
+| 25 | All three | All three | 25 × 52 × 15 | 20 |
+| 30 | All three | All three | 30 × 62 × 16 | 21 |
+| 35 | All three | All three | 35 × 72 × 17 | 22 |
+| 40 | All three | All three | 40 × 80 × 22 | 27 |
 
-The source's torque and load ratings describe the physical product. The plugin
-does not use them for mechanical analysis. Current stock was not checked.
+This matrix describes implemented reference presets, not a claim that omitted
+combinations do not exist. Custom mode and dimensional/keyway overrides can model
+other combinations, including supplier-specific envelopes, without inventing a
+reference or asserting catalog availability. The dropdown, README and reference
+tables are generated from the same compiled preset list.
 
-## Naming and interchangeability
+Default evidence, reviewed November 17, 2026:
 
-CSK is a family designation used by multiple suppliers. No universal CSK product
-standard was established by this research. The referenced DIN 6885 documents define
-keyways, not the complete clutch, its performance or every available variant.
-The chooser uses `CSK…`; Formsprag supplies the default reference dimensions, independently of purchasing
-identity. Keyway overrides save the actual geometry alongside the reference baseline.
-The generator does not assign a manufacturer or seller until the user supplies one.
+- The original 42 presets retain the [Formsprag P-1352-FC](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf)
+  envelope values and [MCC-P-956-FC-EN-US 11/25, pages 28–29](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-956-fc-sections/mcc-p-956-fc-en-us_csk_p_csk_pp.pdf)
+  keyed geometry. This includes CSK30PP-2RS and the 4 × 1.8 mm CSK12P inner slot.
+- [PEAK's catalog](https://www.peakbearings.com/onewaybrg.htm) and
+  [keyway table](https://www.peakbearings.com/keywaysize.htm) establish CSK8P,
+  CSK8PP and CSK12PP. Size 8 uses inner 3 × 0.5 and outer 2 × 0.5 mm;
+  size 12PP uses inner 4 × 1.2 and outer 2 × 0.6 mm.
+- [Yuki's CSK table](https://www.ywsbearing.com/25x52x15mm-internal-and-external-keyway-without-groove-One-way-bearing-CSK25PP-BB25-CSK6205-CSK25P-CSK25-pd46892679.html)
+  supplies the size-10 envelope and inner 3 × 0.6 / outer 2 × 0.5 mm keyways.
+  PEAK independently lists CSK10, CSK10P and CSK10PP at 10 × 30 × 9 mm.
+  The size-10 sealed width is not inferred from an unsealed table.
+- [DKC's catalog, page 3](https://dkc-as.dk/wp-content/uploads/2015/05/DKC-FRIL%C3%98BSLEJER-ENVEJSLEJER-FREEWHEEL-BEARINGS-ONEWAY-CLUTCHES-needle-clutch-brg.pdf)
+  explicitly supplies CSK8P-2RS at 8 × 22 × 9 mm, with a 3 × 0.5 mm inner slot.
+  Its outer-slot values are not substituted for PEAK's unsealed 8PP baseline.
+- [PTI's CSK series sheet](https://static.s123-cdn-static-d.com/uploads/1952747/normal_5eb6121f4e1cf.pdf)
+  documents PP from size 15 upward, sealed widths, and the PP-2RS suffix combination.
+  It supplies the added 15, 17, 20, 25, 35 and 40PP-2RS presets. The
+  [PTI CSK20PP.2RS product listing](https://shop.pti.eu/en/friloebslejer-og-tilbageloebsspaerre/freewheel-bearing-w-dot--keyway-in-inner--and-outer-ring-kk20pp-dot-2rs)
+  also confirms 20 × 47 × 19 mm and both keyways.
 
-The seller table supplied for comparison matches [PEAK's table](https://www.peakbearings.com/WCB6205-2RS.htm)
-and [Konlon's table](https://www.konlonbearing.com/html/en/products/onewaybearing/415.html),
-including WCB6205-2RS. It therefore cannot establish the seller's manufacturer.
-Its CSK2RS mounting dimensions agree with the Formsprag dimensions, but torque
-ratings differ (for example CSK25-2RS: 68 versus 105 N·m in P-1352-FC).
-WCB6205-2RS is 25 × 52 × 15 mm, not the 20 mm-wide CSK25-2RS; it is not an alias
-and is outside this CSK catalog.
+For sizes 15–40, default inner keyways are respectively 5 × 1.2, 5 × 1.2,
+6 × 1.6, 8 × 2, 8 × 2, 10 × 2.4 and 12 × 3.3 mm. Outer keyways are
+2 × 0.6, 2 × 1, 3 × 1.5, 6 × 2, 6 × 2, 8 × 2.5 and 10 × 3 mm.
+These nominal dimensions are editable, including the presence of either slot.
 
-## Keyed and sealed coverage
+## Geometry and evidence limits
 
-The generator offers 42 reference presets: nine plain CSK, nine CSK-2RS,
-eight CSKP (12–40), seven CSKPP (15–40), eight CSKP-2RS (12–40), and CSK30PP-2RS.
-The final combination is explicitly listed on page 28 of the newer
-[Formsprag MCC-P-956-FC-EN-US 11/25 extract](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-956-fc-sections/mcc-p-956-fc-en-us_csk_p_csk_pp.pdf).
-Pages 28–29 establish the keyed size restrictions and keyway dimensions. Unsupported
-combinations are rejected rather than inferred from another vendor's offerings.
+Slots are rectangular, through the full width, at local +Y. Depth is radial from
+the bore/OD apex; width is along X. Rotate the component for alignment. The model
+is a mounting envelope, not a mass model: races, balls, sprags, seal surfaces,
+tolerances and one-way motion are not represented. Torque and load ratings are not
+assigned to generic or modified geometry. Current stock was not checked.
 
-| Bore (mm) | Inner keyway width × depth (mm) | Outer keyway width × depth (mm) |
-|---|---|---|
-| 12 | 4 × 1.8 | Not listed |
-| 15 | 5 × 1.2 | 2 × 0.6 |
-| 17 | 5 × 1.2 | 2 × 1.0 |
-| 20 | 6 × 1.6 | 3 × 1.5 |
-| 25 | 8 × 2.0 | 6 × 2.0 |
-| 30 | 8 × 2.0 | 6 × 2.0 |
-| 35 | 10 × 2.4 | 8 × 2.5 |
-| 40 | 12 × 3.3 | 10 × 3.0 |
+Presets retain their original reference when customized. Custom mode has no preset
+or source reference. Purchasing assignment remains future shared-component work.
 
-P cuts the inner slot; PP cuts both slots. Nominal rectangular slots extend through
-the full bearing width and face local +Y as shown in the reference drawing. Depth
-is measured radially from the bore/OD apex. Slot widths are along local X. Rotate
-the component to align the keyways; placement follows the selected sketch frame.
-Sealed widths are explicitly tabulated: 9, 14, 16, 17, 19, 20, 21, 22, 27 mm for
-sizes 8–40. CSK8-2RS has one lip seal. Seal internals and tolerances are not modeled.
+The seller table supplied earlier matches [PEAK's WCB6205-2RS table](https://www.peakbearings.com/WCB6205-2RS.htm)
+and cannot establish the seller's manufacturer. WCB6205-2RS is 25 × 52 × 15 mm,
+not the 20 mm-wide CSK25-2RS, and is not a catalog alias here.
 
-PEAK's [keyway table](https://www.peakbearings.com/keywaysize.htm) gives CSK12
-an inner keyway of 4 × 1.2 mm and an outer keyway of 2 × 0.6 mm. Formsprag gives
-CSK12P a 4 × 1.8 mm inner keyway and does not list CSK12PP. PEAK also lists keyed
-CSK8. These are concrete reasons to preserve the reference profile rather than
-claim universal geometric interchangeability from the CSK designation alone.
+## Supplied reference files
+
+- Formsprag P-1352-FC, March 2018, four pages: SHA-256
+  `a125f118c7aafabb5b76097284f9b3b49b3f8dee9566a265037cc52a2be712a1`.
+- Stieber P-7426-SC-A4 9/17, two-page keyed extract: SHA-256
+  `55807df529d39d6d7ee245dadf8fb5a8da0f9ea6aabd82a838b7c2ab69198cb9`.
+- CSK8.zip: SHA-256
+  `9a48350e6fe7f65b71927b25b03df56186b0f092264aaa82da44baffb24be963`.
+  Its STEP AP214 model, `FREILAUF_CSK8_CDS_ASM`, confirms 8 mm bore, 22 mm OD
+  and 9 mm axial extent. It does not establish other sizes' internal geometry.

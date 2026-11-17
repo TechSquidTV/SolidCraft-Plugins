@@ -68,7 +68,7 @@ plugin_kit::guest! {
     }, {
         entry: "make-csk", noun: "CSK clutch",
         parse: csk::parse, make: csk::make,
-        describe: |p: &csk::Params| format!("CSK clutch {}", p.geometry.designation.designation()),
+        describe: |p: &csk::Params| format!("CSK clutch {}", p.geometry.designation.map_or("Custom", bearings::csk::Csk::designation)),
     }],
 }
 

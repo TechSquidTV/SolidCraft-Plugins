@@ -24,7 +24,7 @@ Link to the owner instead of restating it. `build.sh` copies each plugin's READM
 
 ## Style
 
-Write in plain, direct sentences like the existing docs: one idea per sentence, active voice, the user's words (Size, Create, Sketch point) for dialog fields and the keys (`size`) in tables. Use a plain `x` in sizes. Don't keep a static file inventory in docs; describe the layout and let readers look.
+Write in plain, direct sentences like the existing docs: one idea per sentence, active voice, the user's words (Size, Create, Placement) for dialog fields and the keys (`size`) in tables. Use a plain `x` in sizes. Don't keep a static file inventory in docs; describe the layout and let readers look.
 
 ## When to update
 

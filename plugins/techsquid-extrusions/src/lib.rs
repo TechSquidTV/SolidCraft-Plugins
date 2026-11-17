@@ -99,24 +99,7 @@ pub fn built_at(p: &Params) -> Site {
     }
 }
 
-/// Counts the commands a build sends, with no host behind it. Every sketch it
-/// creates is sketch 1, which is all a build reads from a reply.
-#[derive(Default)]
-pub(crate) struct CallCount(pub(crate) usize);
-impl Runner for CallCount {
-    fn run(&mut self, _: &str, _: Value) -> Result<Value, String> {
-        self.0 += 1;
-        Ok(json!({"sketch": 1}))
-    }
-    fn site(&mut self, _: [f64; 2]) -> Placement {
-        Placement::on_origin()
-    }
-}
-
-/// What the library spends on a new definition beside its build: naming it, its
-/// metadata and the record that lets a later run reuse it. Through the host a plain
-/// rail took 18 and a tapped rail drilled from two faces took 30.
-const SEAL_CALLS: usize = 48;
+pub(crate) use plugin_kit::component::{CallCount, SEAL_CALLS};
 
 /// The longest build one run has room for. The library stops a run at 248 commands,
 /// and reading the design, one placement and the reply take 20 of them.

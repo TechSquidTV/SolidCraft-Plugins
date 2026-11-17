@@ -113,9 +113,12 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             site: Site::for_thread(p.modeled),
         };
         let number = provider::part_number(p)?;
+        let creation = fasten::creation_calls(def.site, |mut r, site, name| {
+            build_nut(&mut r, p, site, name).map(|_| ())
+        })?;
         let (placed, report) = fasten::insert(
             r,
-            128,
+            creation,
             &places,
             FOLDER,
             |library| {
@@ -868,6 +871,36 @@ mod tests {
             asked: vec![],
             sketch: 0,
         }
+    }
+
+    /// The budget a run reserves for a new part is its counted build, and the largest
+    /// build in the catalog leaves room for the most points a run takes.
+    #[test]
+    fn the_counted_build_is_the_build_the_host_gets() {
+        use plugin_kit::component::{creation_calls, site_at, MAX_PLACEMENTS, SEAL_CALLS};
+        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
+        let sizes = &manifest["runtime"]["entries"][0]["input_schema"]["properties"]["size"];
+        let mut largest = 0;
+        for size in sizes["enum"].as_array().unwrap() {
+            for modeled in [true, false] {
+                let v = json!({"size": size, "thread_modeled": modeled});
+                let p = nut::parse(&v).unwrap();
+                let site = Site::for_thread(p.modeled);
+                let mut rec = Rec {
+                    calls: vec![],
+                    sketch: 0,
+                };
+                build_nut(&mut rec, &p, &site_at(site.of(1)), "Part").unwrap();
+                let counted = creation_calls(site, |mut r, at, name| {
+                    build_nut(&mut r, &p, at, name).map(|_| ())
+                })
+                .unwrap();
+                assert_eq!(counted, rec.calls.len() + SEAL_CALLS, "{v}");
+                largest = largest.max(counted);
+            }
+        }
+        // Reading the design and the reply take 20 commands, each placement three.
+        assert!(largest + 3 * MAX_PLACEMENTS + 28 <= 248, "{largest}");
     }
 
     /// A taken name makes the host number the body, and that number changes on a rebuild.

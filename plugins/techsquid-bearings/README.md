@@ -23,8 +23,8 @@ Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In Solid
 
 Select sketch points or circle centres, then choose a workflow:
 
-- **Bearings > make-bearing** inserts a fixed OpenBuilds or MISUMI radial bearing.
-- **Bearings > make-csk** starts with a CSK designation. Leave dimension fields blank
+- **Plugins > Bearing** (`make-bearing` in scripts) inserts a fixed OpenBuilds or MISUMI radial bearing.
+- **Plugins > CSK clutch** (`make-csk` in scripts) starts with a CSK designation. Leave dimension fields blank
   for reference values, override bore/OD/width, or add, remove, resize and rotate either keyway.
   Closure style can also be changed independently of width.
   Choose Custom to enter all dimensions without a reference preset. For example, CSK12P can use

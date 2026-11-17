@@ -10,7 +10,7 @@ Download `techsquid-v-wheels-0.3.0.zip` from the repository's releases. In Solid
 
 ## Use
 
-Select sketch points or circle centers, then run **V-wheels > make-v-wheel**. Choose a wheel and leave **Include bearings and internal shim** enabled for a wheel core assembly. Disable it for the bare wheel. With no selection, the centre is at the origin. The axle follows the selected sketch's normal.
+Select sketch points or circle centers, then open **Plugins > V-wheel**. Choose a wheel and leave **Include bearings and internal shim** enabled for a wheel core assembly. Disable it for the bare wheel. With no selection, the centre is at the origin. The axle follows the selected sketch's normal.
 
 The list includes Solid, Xtreme Solid, grooved Delrin, Delrin Mini and Xtreme Mini wheels. The black Delrin and clear polycarbonate variants remain different purchases even where they share a profile. These are OpenBuilds product families, not a universal dimensional standard for every wheel advertised as “V-slot compatible.”
 

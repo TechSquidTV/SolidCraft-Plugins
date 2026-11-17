@@ -17,7 +17,7 @@ The lower row, from left to right:
 | 4 | CSK15PP | 15 × 35 × 11 | Inner 5 × 1.2; outer 2 × 0.6 |
 | 5 | CSK15P-2RS | 15 × 35 × 16 | Inner 5 × 1.2 |
 
-Use **Bearings > make-csk**. Blank keyway fields retain the selected preset's
+Use **Plugins > CSK clutch**. Blank keyway fields retain the selected preset's
 reference values. For positions 2–3, select `CSK12P` and enter `1.2` for inner
 keyway depth. The corresponding workflow parameters are:
 

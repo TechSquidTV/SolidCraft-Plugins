@@ -255,56 +255,85 @@ impl Geometry {
         }
     }
 
-    pub fn validate(&self) -> Result<(), String> {
+    pub fn validate(&self) -> Result<(), Invalid> {
         let d = self.dimensions();
-        for value in [d.bore, d.diameter, d.width] {
+        for (part, name, value) in [
+            (Part::Bore, "bore", d.bore),
+            (Part::Diameter, "outside diameter", d.diameter),
+            (Part::Width, "width", d.width),
+        ] {
             if !value.is_finite() || value <= 0.0 || value > 1000.0 {
-                return Err(
-                    "bore, outside diameter and width must be finite, positive and at most 1000 mm"
-                        .into(),
-                );
+                return Err(Invalid::new(
+                    part,
+                    format!("{name} must be finite, positive and at most 1000 mm"),
+                ));
             }
         }
         if d.bore >= d.diameter {
-            return Err("bore must be smaller than the outside diameter".into());
+            return Err(Invalid::new(
+                Part::Bore,
+                "bore must be smaller than the outside diameter",
+            ));
         }
-        for key in [self.inner_keyway, self.outer_keyway].into_iter().flatten() {
+        for (part, key) in [
+            (Part::InnerKeyway, self.inner_keyway),
+            (Part::OuterKeyway, self.outer_keyway),
+        ] {
+            let Some(key) = key else { continue };
             if !key.angle_degrees.is_finite() || !(0.0..360.0).contains(&key.angle_degrees) {
-                return Err(
-                    "keyway angles must be finite and normalized to [0, 360) degrees".into(),
-                );
+                return Err(Invalid::new(
+                    part,
+                    "keyway angles must be finite and normalized to [0, 360) degrees",
+                ));
             }
             if !key.width.is_finite()
                 || !key.depth.is_finite()
                 || key.width <= 0.0
                 || key.depth <= 0.0
             {
-                return Err("keyway dimensions must be finite and positive".into());
+                return Err(Invalid::new(
+                    part,
+                    "keyway dimensions must be finite and positive",
+                ));
             }
         }
         if let Some(key) = self.inner_keyway {
             if key.width >= d.bore
                 || (d.bore / 2.0 + key.depth).hypot(key.width / 2.0) >= d.diameter / 2.0
             {
-                return Err(
-                    "inner keyway must stay inside the outside diameter and narrower than the bore"
-                        .into(),
-                );
+                return Err(Invalid::new(
+                    Part::InnerKeyway,
+                    "inner keyway must stay inside the outside diameter and narrower than the bore",
+                ));
             }
         }
         if let Some(key) = self.outer_keyway {
             let floor = d.diameter / 2.0 - key.depth;
             if floor <= d.bore / 2.0 || floor.hypot(key.width / 2.0) >= d.diameter / 2.0 {
-                return Err("outer keyway must leave material around the bore and intersect the outside diameter".into());
+                return Err(Invalid::new(
+                    Part::OuterKeyway,
+                    "outer keyway must leave material around the bore and intersect the outside diameter",
+                ));
             }
             if self
                 .inner_keyway
                 .is_some_and(|inner| d.bore / 2.0 + inner.depth >= floor)
             {
-                return Err("inner and outer keyways must not meet".into());
+                return Err(Invalid::new(
+                    Part::OuterKeyway,
+                    "inner and outer keyways must not meet",
+                ));
             }
         }
-        exterior::resolve(self)?;
+        // Only keyways leave the rings too little room; without one it is the envelope.
+        let crowded = if self.outer_keyway.is_some() {
+            Part::OuterKeyway
+        } else if self.inner_keyway.is_some() {
+            Part::InnerKeyway
+        } else {
+            Part::Diameter
+        };
+        exterior::resolve(self).map_err(|reason| Invalid::new(crowded, reason))?;
         Ok(())
     }
 
@@ -399,6 +428,38 @@ impl Geometry {
 }
 
 /// Source-neutral design identity. Reference evidence is stored separately.
+/// The part of a clutch a refused geometry is wrong in.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Part {
+    Bore,
+    Diameter,
+    Width,
+    InnerKeyway,
+    OuterKeyway,
+}
+
+/// Why a geometry cannot be built, and the part of it to change.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Invalid {
+    pub part: Part,
+    pub reason: String,
+}
+
+impl Invalid {
+    fn new(part: Part, reason: impl Into<String>) -> Self {
+        Self {
+            part,
+            reason: reason.into(),
+        }
+    }
+}
+
+impl From<Invalid> for String {
+    fn from(invalid: Invalid) -> String {
+        invalid.reason
+    }
+}
+
 pub fn representation(geometry: &Geometry) -> parts::Representation<Geometry> {
     parts::Representation {
         product: parts::Product {

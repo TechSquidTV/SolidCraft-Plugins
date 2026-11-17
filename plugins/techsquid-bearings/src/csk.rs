@@ -97,9 +97,16 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             None
         };
     }
-    geometry
-        .validate()
-        .map_err(|e| FieldError::new("geometry", e))?;
+    geometry.validate().map_err(|e| {
+        let field = match e.part {
+            csk::Part::Bore => "bore",
+            csk::Part::Diameter => "diameter",
+            csk::Part::Width => "width",
+            csk::Part::InnerKeyway => "inner_keyway",
+            csk::Part::OuterKeyway => "outer_keyway",
+        };
+        FieldError::new(field, e.reason)
+    })?;
     parts::catalog::validate_selection(
         v,
         crate::provider::REVISION,
@@ -202,6 +209,32 @@ mod tests {
             csk::representation(&csk::Csk::Csk15P.geometry()).identity()
         );
     }
+    /// A refused geometry is shown against the field to change.
+    #[test]
+    fn a_refused_geometry_names_a_dialog_field() {
+        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
+        let fields = manifest["runtime"]["entries"][1]["input_schema"]["properties"]
+            .as_object()
+            .unwrap();
+        for (v, field) in [
+            (json!({"size":"CSK8P", "bore":30}), "bore"),
+            (
+                json!({"size":"CSK8P", "inner_keyway":"Enabled", "inner_keyway_width":9,
+                    "inner_keyway_depth":1}),
+                "inner_keyway",
+            ),
+            (
+                json!({"size":"CSK8P", "outer_keyway":"Enabled", "outer_keyway_width":2,
+                    "outer_keyway_depth":20}),
+                "outer_keyway",
+            ),
+        ] {
+            let err = parse(&v).err().unwrap();
+            assert_eq!(err.field, field, "{}", err.reason);
+            assert!(fields.contains_key(field));
+        }
+    }
+
     #[test]
     fn keyway_angles_normalize_for_reuse() {
         let preset = parse(&json!({"size":"CSK15PP"})).unwrap().geometry;

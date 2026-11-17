@@ -84,6 +84,39 @@ fn body_paths<R: Runner>(r: &mut R, bodies: &[&WorldBody]) -> Result<Selection, 
 #[derive(Deserialize)]
 pub struct Faces {
     pub faces: Vec<Face>,
+    /// The placed body these are the faces of, as `model.faces` was asked for it.
+    #[serde(skip)]
+    pub body: String,
+    /// The body's edges, once [`Faces::read_edges`] has asked for them.
+    #[serde(skip)]
+    pub edges: Vec<Edge>,
+}
+
+/// One edge of a body: the host names it `<face A>|<face B>` from the faces it joins,
+/// with `~k` after it when several edges join the same two.
+#[derive(Deserialize)]
+pub struct Edge {
+    pub name: Option<String>,
+    pub mid: [f64; 3],
+}
+
+impl Edge {
+    /// Whether `face` is one of the two faces this edge joins.
+    pub fn borders(&self, face: &str) -> bool {
+        self.name.as_deref().is_some_and(|name| {
+            let name = match name.rsplit_once('~') {
+                Some((joined, k)) if !k.is_empty() && k.bytes().all(|b| b.is_ascii_digit()) => {
+                    joined
+                }
+                _ => name,
+            };
+            name.strip_prefix(face)
+                .is_some_and(|rest| rest.starts_with('|'))
+                || name
+                    .strip_suffix(face)
+                    .is_some_and(|rest| rest.ends_with('|'))
+        })
+    }
 }
 
 #[derive(Deserialize)]
@@ -217,8 +250,9 @@ impl Faces {
                         format!("selection.get did not resolve seat body {}", body.name)
                     })?;
                 let reply = r.run("model.faces", json!({"body": body.name}))?;
-                let faces = serde_json::from_value(reply)
+                let mut faces: Faces = serde_json::from_value(reply)
                     .map_err(|e| format!("model.faces: cannot read fastener seat faces: {e}"))?;
+                faces.body = body.name.clone();
                 Ok((
                     Body {
                         definition: body.definition.clone(),
@@ -228,6 +262,33 @@ impl Faces {
                 ))
             })
             .collect()
+    }
+}
+
+impl Faces {
+    /// Ask the host for the body's edges. A seat needs them only to tell apart faces
+    /// that lie in one plane, such as the two sides of a grooved top.
+    pub fn read_edges<R: Runner>(&mut self, r: &mut R) -> Result<(), String> {
+        #[derive(Deserialize)]
+        struct Edges {
+            edges: Vec<Edge>,
+        }
+        let reply = r.run("model.edges", json!({"body": self.body}))?;
+        let read: Edges = serde_json::from_value(reply)
+            .map_err(|e| format!("model.edges: cannot read fastener seat edges: {e}"))?;
+        self.edges = read.edges;
+        Ok(())
+    }
+
+    /// Whether `face` has an edge on the seat plane within `radius` of the hole's axis:
+    /// the rim of the hole at `place`.
+    pub fn rims(&self, face: &Face, place: &Placement, radius: f64) -> bool {
+        self.edges.iter().any(|edge| {
+            let delta: [f64; 3] = std::array::from_fn(|i| edge.mid[i] - place.point[i]);
+            let along = dot(delta, place.normal);
+            let radial = (dot(delta, delta) - along * along).max(0.0).sqrt();
+            near(along, 0.0) && radial < radius + 1e-5 && edge.borders(&face.name)
+        })
     }
 }
 
@@ -301,6 +362,61 @@ impl Seat {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The host names an edge from the two faces it joins, and numbers repeats.
+    #[test]
+    fn an_edge_borders_the_two_faces_in_its_name() {
+        let edge = |name: &str| Edge {
+            name: Some(name.into()),
+            mid: [0.0; 3],
+        };
+        let top = "F1:+z#[F1:-y,F2:-y]";
+        assert!(edge(&format!("{top}|F3:side")).borders(top));
+        assert!(edge(&format!("F3:side|{top}~2")).borders(top));
+        assert!(edge(&format!("F3:side|{top}")).borders("F3:side"));
+        // The other side of the groove is a different face with a longer name.
+        assert!(!edge("F1:+z#[F1:+y,F2:+y]|F3:side").borders(top));
+        assert!(!edge("F3:side|F4:+z").borders("F3"));
+        assert!(!Edge {
+            name: None,
+            mid: [0.0; 3]
+        }
+        .borders(top));
+    }
+
+    /// Of two faces in the seat's plane, the one with the hole's rim is the seat.
+    #[test]
+    fn the_face_with_the_rim_of_the_hole_is_its_seat() {
+        let face = |name: &str, y: f64| Face {
+            name: name.into(),
+            centroid: [20.0, y, 10.0],
+            point: None,
+            plane_normal: Some([0.0, 0.0, 1.0]),
+            cylinder: None,
+        };
+        let faces = Faces {
+            faces: vec![face("near", 8.5), face("far", 31.5)],
+            body: "Plate".into(),
+            edges: vec![
+                Edge {
+                    name: Some("near|bore".into()),
+                    mid: [11.7, 8.0, 10.0],
+                },
+                Edge {
+                    name: Some("far|side".into()),
+                    mid: [20.0, 23.0, 10.0],
+                },
+            ],
+        };
+        let place = Placement {
+            point: [10.0, 8.0, 10.0],
+            ..Placement::on_origin()
+        };
+        assert!(faces.rims(&faces.faces[0], &place, 1.7));
+        assert!(!faces.rims(&faces.faces[1], &place, 1.7));
+        // A wider edge of the right face is not the rim of this hole.
+        assert!(!faces.rims(&faces.faces[0], &place, 1.0));
+    }
 
     struct Host {
         selection: Value,

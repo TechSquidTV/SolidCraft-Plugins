@@ -124,12 +124,26 @@ pub fn find_all<R: Runner>(
         .collect();
     // Axis origins still bind the first placement in the host. Keep copied tapped
     // seats refused instead of finding a copy and attaching to a different one.
-    let faces = Faces::read_all(
+    let mut faces = Faces::read_all(
         r,
         bodies,
         &frames,
         !matches!(hole.kind, HoleKind::Tapped { .. }),
     )?;
+    // A groove or a step leaves several faces in the seat's plane. The edges say
+    // which of them the hole is in; a body with one such face is not asked for them.
+    let flat = matches!(
+        hole.kind,
+        HoleKind::Clearance { .. } | HoleKind::Tapped { .. }
+    );
+    for (_, faces) in faces.iter_mut().filter(|_| flat) {
+        let shared = frames
+            .iter()
+            .any(|frame| faces.faces.iter().filter(|f| f.at_seat(frame)).count() > 1);
+        if shared {
+            faces.read_edges(r)?;
+        }
+    }
     frames
         .iter()
         .enumerate()
@@ -180,7 +194,14 @@ fn find(
                     })
             }
             HoleKind::Counterbore { .. } => f.at_seat(&frame) && same(f.centroid, frame.point),
-            _ => f.at_seat(&frame),
+            _ => {
+                // The hole's rim is no wider than the hole: the clearance bore, or
+                // the thread's crests.
+                let rim = if tapped { Some(major / 2.0) } else { clearance };
+                f.at_seat(&frame)
+                    && (faces.edges.is_empty()
+                        || rim.is_some_and(|radius| faces.rims(f, &frame, radius)))
+            }
         }));
         if let (Some(bore), Some(end)) = (bore, end) {
             if found.is_some() {

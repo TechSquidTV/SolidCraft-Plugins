@@ -2078,9 +2078,10 @@ mod tests {
                         let site = built_at(&p);
                         let mut rec = Rec(vec![]);
                         build_screw(&mut rec, &p, &site_at(site.of(1)), "Part").unwrap();
-                        let counted =
-                            creation_calls(site, |mut r, at, name| build_screw(&mut r, &p, at, name))
-                                .unwrap();
+                        let counted = creation_calls(site, |mut r, at, name| {
+                            build_screw(&mut r, &p, at, name)
+                        })
+                        .unwrap();
                         assert_eq!(counted, rec.0.len() + SEAL_CALLS, "{v}");
                         largest = largest.max(counted);
                     }

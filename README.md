@@ -17,7 +17,7 @@ Saved example designs open without the plugins.
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | CNC Kitchen metric and UN inserts and their mounting holes |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | ISO 4032 nuts, with optional pockets and bolt holes |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | Fixed-length or sketch-driven T-slot and V-slot rails, tapped ends, screw holes and slot nuts |
-| [Bearings](plugins/techsquid-bearings/README.md) | Six OpenBuilds and MISUMI radial bearings with sourced detail, plus 42 Formsprag CSK clutch variants with modeled keyways |
+| [Bearings](plugins/techsquid-bearings/README.md) | Six OpenBuilds and MISUMI radial bearings with sourced detail, plus 42 customizable CSK presets with separate references and purchasing information |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | Five OpenBuilds wheel products, bare or assembled with two bearings and an internal shim |
 
 Place parts on one or more sketch points, choose your dimensions, and run the plugin. Fixed-length hardware is organized into reusable components, and cuts remain with the part they modify. For sketch-driven extrusions, select straight sketch lines to create independent rails that follow later path edits. Choose modeled threads for detail or cosmetic threads for faster rebuilds.

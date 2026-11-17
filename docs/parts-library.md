@@ -164,3 +164,19 @@ loading Wasm; skipped runs provide no runtime evidence.
 The native inspection fixture used by Rust geometry-command recorders is deliberately
 a fixed cylinder, not a CAD emulator. Those unit tests assert builder commands;
 the native suites above establish actual reuse and edited-content behavior.
+
+## Design specifications before purchasing
+
+The CSK generator uses `parts::specification::Specification<Geometry>` to separate
+resolved geometry, a user BOM number and optional `Purchasing` fields. Drawing
+sources are reference evidence, saved outside the canonical definition identity.
+A default CSK is a `design_specification`; overriding its keyway dimensions makes
+it `custom`. Neither implies a supplier purchase or a universal CSK standard.
+
+Geometry and purchasing have independent canonical identities. Definition reuse
+combines the geometry and BOM assignments so separately sourced occurrences cannot
+overwrite one another's metadata. Identical unassigned specifications still reuse
+and count in the BOM. The persistent `org.techsquid.specification` record stores the
+geometry, reference baseline, customization status, purchasing values and the two
+identities. Existing supplier-product workflows remain valid for explicitly chosen
+catalog products; using a reference drawing alone must not create that identity.

@@ -4,7 +4,7 @@
 //! are solid envelopes; closures are annular faces at the measured recess. Hidden
 //! seal thickness and cages are deliberately not inferred. Open B626 includes
 //! its exposed, sourced raceways and balls; closed bearings omit hidden balls.
-//! Formsprag CSK clutches use catalog mounting envelopes without inferred internals.
+//! CSK reference presets and customizable design specifications live in `csk`.
 
 use plugin_kit::{
     name::part,
@@ -31,31 +31,22 @@ pub enum Bearing {
     MisumiB626ddu,
     #[serde(rename = "misumi-b608zz")]
     MisumiB608zz,
-    #[serde(rename = "formsprag-csk")]
-    FormspragCsk(csk::Csk),
 }
 
-pub const ALL: [Bearing; 6 + csk::ALL.len()] = {
-    let mut all = [Bearing::OpenBuilds6252rs; 6 + csk::ALL.len()];
-    all[1] = Bearing::OpenBuilds105zz;
-    all[2] = Bearing::MisumiB626;
-    all[3] = Bearing::MisumiB626zz;
-    all[4] = Bearing::MisumiB626ddu;
-    all[5] = Bearing::MisumiB608zz;
-    let mut i = 0;
-    while i < csk::ALL.len() {
-        all[i + 6] = Bearing::FormspragCsk(csk::ALL[i]);
-        i += 1;
-    }
-    all
-};
+pub const ALL: [Bearing; 6] = [
+    Bearing::OpenBuilds6252rs,
+    Bearing::OpenBuilds105zz,
+    Bearing::MisumiB626,
+    Bearing::MisumiB626zz,
+    Bearing::MisumiB626ddu,
+    Bearing::MisumiB608zz,
+];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Closure {
     Open,
     RubberSeals,
     MetalShields,
-    Unmodeled,
 }
 
 /// Stable catalog namespace kept separate from the supplier's display name.
@@ -99,12 +90,7 @@ impl Bearing {
                 members: vec![],
             },
             revision: if self == Self::MisumiB626 { "2" } else { "1" }.into(),
-            detail: if self.is_csk() {
-                "envelope"
-            } else {
-                "exterior"
-            }
-            .into(),
+            detail: "exterior".into(),
             dependencies: vec![],
         }
     }
@@ -151,10 +137,6 @@ impl Bearing {
                     name: "MISUMI",
                 }
             }
-            Self::FormspragCsk(_) => Supplier {
-                catalog: "formsprag",
-                name: "Formsprag",
-            },
         }
     }
 
@@ -175,9 +157,6 @@ impl Bearing {
             Self::MisumiB608zz => {
                 "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B608ZZ"
             }
-            Self::FormspragCsk(_) => {
-                "https://www.formsprag.com/products/General-Purpose-Clutches/Bearing-Envelope-Design/CSK-Series"
-            }
         }
     }
 
@@ -190,7 +169,6 @@ impl Bearing {
             Self::MisumiB626zz => "B626ZZ",
             Self::MisumiB626ddu => "B626DDU",
             Self::MisumiB608zz => "B608ZZ",
-            Self::FormspragCsk(csk) => csk.designation(),
         }
     }
 
@@ -201,12 +179,7 @@ impl Bearing {
             Self::MisumiB626 => Closure::Open,
             Self::MisumiB626zz | Self::MisumiB608zz => Closure::MetalShields,
             Self::MisumiB626ddu => Closure::RubberSeals,
-            Self::FormspragCsk(_) => Closure::Unmodeled,
         }
-    }
-
-    pub fn is_csk(self) -> bool {
-        matches!(self, Self::FormspragCsk(_))
     }
 
     fn open_race(self) -> Option<OpenRace> {
@@ -220,7 +193,6 @@ impl Bearing {
 
     pub fn dimensions(self) -> Dimensions {
         // OpenBuilds and MISUMI ring sections are measured from their exact STEP files.
-        // CSK mounting envelopes are from Formsprag P-1352-FC; no internal section is inferred.
         let (bore, diameter, width, section) = match self {
             Self::OpenBuilds6252rs => (5.0, 16.0, 5.0, Some((4.3, 6.8, Some(0.3), 0.0))),
             Self::OpenBuilds105zz => (5.0, 10.0, 4.0, Some((3.1, 4.6, Some(0.3), 0.0))),
@@ -228,10 +200,6 @@ impl Bearing {
             Self::MisumiB626zz => (6.0, 19.0, 6.0, Some((4.75, 8.15, Some(0.5), 0.3))),
             Self::MisumiB626ddu => (6.0, 19.0, 6.0, Some((4.215, 8.1775, Some(0.11), 0.3))),
             Self::MisumiB608zz => (8.0, 22.0, 7.0, Some((6.1, 9.65, Some(0.6), 0.3))),
-            Self::FormspragCsk(csk) => {
-                let d = csk.dimensions();
-                (d.bore, d.diameter, d.width, None)
-            }
         };
         Dimensions {
             bore,
@@ -253,30 +221,7 @@ impl Bearing {
     pub fn build(self, r: &mut impl Runner, base: &str, frame: &Placement) -> Result<(), String> {
         let d = self.dimensions();
         let half = d.width / 2.0;
-        let Some(section) = d.section else {
-            let name = format!("{base} Mounting envelope");
-            let feature = part(base, "Mounting envelope");
-            revolve::build(
-                r,
-                frame,
-                &part(&feature, "Section"),
-                Section::Solid(&[
-                    [d.bore / 2.0, -half],
-                    [d.diameter / 2.0, -half],
-                    [d.diameter / 2.0, half],
-                    [d.bore / 2.0, half],
-                ]),
-                json!({"name": feature, "body_name": name}),
-            )?;
-            if let Self::FormspragCsk(csk) = self {
-                csk.cut_keyways(r, base, &name, frame)?;
-            }
-            r.run(
-                "appearance.assign",
-                json!({"bodies": [name], "color": [160,160,160]}),
-            )?;
-            return Ok(());
-        };
+        let section = d.section.ok_or("bearing has no ring section")?;
         let mut steel = Vec::new();
         for (label, inner, outer, outer_ring) in [
             ("Inner ring", d.bore / 2.0, section.inner_ring_radius, false),
@@ -330,7 +275,6 @@ impl Bearing {
             Closure::Open => return Ok(()),
             Closure::RubberSeals => ("Seal", [64, 64, 64]),
             Closure::MetalShields => ("Shield", [160, 160, 160]),
-            Closure::Unmodeled => return Err("CSK envelope unexpectedly has a ring section".into()),
         };
         let recess = section
             .closure_recess
@@ -500,28 +444,5 @@ mod tests {
             .into_iter()
             .filter(|b| *b != Bearing::MisumiB626)
             .all(|b| b.open_race().is_none()));
-    }
-
-    #[test]
-    fn csk_mounting_envelopes_match_formsprag_catalog() {
-        // Independently transcribed metric dimensions from P-1352-FC, page 3.
-        for (bearing, dimensions) in [
-            (Bearing::FormspragCsk(csk::Csk::Csk8), [8.0, 22.0, 9.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk12), [12.0, 32.0, 10.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk15), [15.0, 35.0, 11.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk17), [17.0, 40.0, 12.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk20), [20.0, 47.0, 14.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk25), [25.0, 52.0, 15.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk30), [30.0, 62.0, 16.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk35), [35.0, 72.0, 17.0]),
-            (Bearing::FormspragCsk(csk::Csk::Csk40), [40.0, 80.0, 22.0]),
-        ] {
-            let d = bearing.dimensions();
-            assert_eq!([d.bore, d.diameter, d.width], dimensions);
-            assert!(d.section.is_none());
-            assert_eq!(bearing.closure(), Closure::Unmodeled);
-            assert_eq!(bearing.representation().detail, "envelope");
-            assert_eq!(bearing.representation().product.catalog, "formsprag");
-        }
     }
 }

@@ -2,7 +2,8 @@
 """CSK mounting envelopes against the independent Formsprag catalog dimensions."""
 import math
 
-from harness import check, finish, package
+from harness import TMP, check, finish, package
+from pathlib import Path
 from headless import Headless
 
 
@@ -43,9 +44,9 @@ with Headless() as host:
     approval = host.command('plugin.inspect', path=path)['approval']
     for sku, bore, od, width, keyed, outer in CASES:
         result = host.command('plugin.run', path=path, approval=approval,
-                              entry='make-bearing', params={'size': sku})
+                              entry='make-csk', params={'size': sku})
         result = result.get('result', result)
-        name = f'Bearing {sku} Mounting envelope'
+        name = f'CSK clutch {sku} Mounting envelope'
         bodies = {body['name']: body for body in
                   host.command('inspect.measure', summary=True)['bodies']}
         body = bodies[name]
@@ -73,16 +74,78 @@ with Headless() as host:
                     any(all(math.isclose(a, b, abs_tol=1e-6) for a, b in zip(p, target))
                         for p in vertices) for target in expected))
         check(f'{sku}: one body per part',
-              sum(body_name.startswith(f'Bearing {sku} ') for body_name in bodies) == 1
+              sum(body_name.startswith(f'CSK clutch {sku} ') for body_name in bodies) == 1
               and not result['component']['reused'])
     rows = host.command('assembly.bom')['rows']
-    check('CSK: 42 distinct purchases', len(rows) == len(CASES) and
-          {row['part_number'] for row in rows} ==
-          {'Formsprag ' + sku for sku, *_ in CASES})
+    check('CSK: 42 distinct unsourced specifications', len(rows) == len(CASES) and
+          all(not row.get('part_number') and row['count'] == 1 for row in rows))
 
     for invalid in ['CSK8P', 'CSK12PP', 'CSK20PP-2RS']:
         rejected = host.command('plugin.run', path=path, approval=approval,
-                                entry='make-bearing', params={'size': invalid}, allow_error=True)
+                                entry='make-csk', params={'size': invalid}, allow_error=True)
         check(invalid + ': unsourced combination rejected', 'error' in rejected)
+
+with Headless() as host:
+    path = package('techsquid-bearings')
+    approval = host.command('plugin.inspect', path=path)['approval']
+    def insert(**params):
+        result = host.command('plugin.run', path=path, approval=approval,
+                              entry='make-csk', params={'size': 'CSK12P', **params})
+        return result.get('result', result)
+    def definition(result):
+        return next(c for c in host.command('component.list')['components']
+                    if c['name'] == result['component']['component'])
+    default = insert()
+    custom = insert(inner_keyway_depth=1.2)
+    repeated = insert(inner_keyway_depth=1.2)
+    component = definition(custom)
+    record = host.command('component.metadata', component=component['id'])['metadata']
+    spec = record['org.techsquid.specification']
+    check('custom: geometry differs from reference without assigning supplier',
+          spec['geometry']['inner_keyway'] == {'width': 4.0, 'depth': 1.2}
+          and [spec['geometry'][k] for k in ('bore','diameter','width')] == [12,32,10]
+          and spec['reference']['baseline']['inner_keyway']['depth'] == 1.8
+          and spec['reference']['customized'] and 'Formsprag' in spec['reference']['title']
+          and all(v is None for v in spec['purchasing'].values()) and not record.get('part_number'))
+    check('custom: reference vendor is absent from canonical design identity',
+          'formsprag' not in record['org.techsquid.parts']['product'].lower())
+    check('custom: identical overrides reuse; different geometry stays distinct',
+          repeated['component']['reused'] and
+          default['component']['component'] != custom['component']['component'])
+    body = component['bodies'][0]
+    # component.list returns body names; compare the native slot floor directly.
+    edges = host.command('model.edges', body=body)['edges']
+    vertices = [p for edge in edges for p in (edge['start'], edge['end']) if p is not None]
+    check('custom: native slot is 1.2 mm deep through the 10 mm width', all(
+        any(all(math.isclose(a, b, abs_tol=1e-6) for a, b in zip(p, target)) for p in vertices)
+        for target in [(-2,7.2,-5),(2,7.2,-5),(-2,7.2,5),(2,7.2,5)]))
+    purchased = insert(inner_keyway_depth=1.2, part_number='CL-12', purchase_supplier='My seller',
+                       purchase_sku='LISTING-123', purchase_url='https://example.com/clutch')
+    bought = definition(purchased)
+    purchased_meta = host.command('component.metadata', component=bought['id'])['metadata']
+    check('custom: explicit purchasing choice has its own BOM definition',
+          bought['id'] != component['id'] and purchased_meta['part_number'] == 'CL-12'
+          and purchased_meta['org.techsquid.specification']['purchasing']['supplier'] == 'My seller'
+          and purchased_meta['org.techsquid.specification']['geometry'] == spec['geometry']
+          and purchased_meta['org.techsquid.specification']['geometry_identity'] == spec['geometry_identity']
+          and spec['purchasing_identity'] is None
+          and purchased_meta['org.techsquid.specification']['purchasing_identity'] is not None)
+    rows = host.command('assembly.bom')['rows']
+    check('custom: unsourced and sourced designs all count in BOM',
+          len(rows) == 3 and sorted(row['count'] for row in rows) == [1,1,2]
+          and sum(row['count'] for row in rows if row.get('part_number') == 'CL-12') == 1)
+    saved = str(Path(TMP) / 'custom-csk.sc')
+    host.command('file.save_as', path=saved)
+    host.command('doc.open', path=saved)
+    reopened = insert(inner_keyway_depth=1.2)
+    check('custom: source, purchasing separation and reuse survive reopen',
+          reopened['component']['reused'] and definition(reopened)['id'] == component['id']
+          and host.command('component.metadata', component=component['id'])['metadata'] == record)
+    before = host.command('document.inspect', measure=False)
+    for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1}]:
+        result = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
+                              params={'size': 'CSK12P', **params}, allow_error=True)
+        check('custom: invalid keyway fails without edits', 'error' in result
+              and host.command('document.inspect', measure=False) == before)
 
 finish()

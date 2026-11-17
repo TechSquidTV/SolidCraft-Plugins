@@ -1,6 +1,6 @@
 # Bearings
 
-Place fixed OpenBuilds and MISUMI bearing products or Formsprag CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). The radial bearings have separate steel rings and sourced closures. CSK products provide mounting envelopes. Choose a catalog designation instead of entering arbitrary dimensions.
+Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). The radial bearings have separate steel rings and sourced closures. CSK presets provide mounting geometry with editable keyways and optional purchasing information.
 
 ![Six sourced bearings with open, sealed and shielded variants](bearings.png)
 
@@ -10,7 +10,20 @@ Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In Solid
 
 ## Use
 
-Select sketch points or circle centers, then run **Bearings > make-bearing**. Choose a listed supplier product: OpenBuilds, MISUMI, or a Formsprag CSK8–CSK40 clutch in a listed plain, sealed or keyed variant. With nothing selected, the part sits at the origin. Its centre plane sits on the point and its axle follows the sketch normal. Optional **Sketch** and **Sketch point** fields address points by name.
+Select sketch points or circle centres, then choose a workflow:
+
+- **Bearings > make-bearing** inserts a fixed OpenBuilds or MISUMI radial bearing.
+- **Bearings > make-csk** starts with a CSK designation. Leave keyway fields blank
+  for the reference dimensions, or enter overrides. For example, CSK12P can use
+  a 4 × 1.2 mm inner keyway while keeping its 12 × 32 × 10 mm envelope.
+
+CSK purchasing fields start empty. You can optionally supply your own BOM part
+number, manufacturer, seller, supplier SKU and purchase URL. The drawing source
+stays recorded separately. Custom and unsourced parts still count in the BOM.
+
+With nothing selected, the part sits at the origin. Its centre plane sits on the
+point and its axle follows the sketch normal. Optional **Sketch** and **Sketch
+point** fields address points by name.
 
 The rings and any closure faces belong to one purchased component. Later insertions reuse an unchanged definition, including bearings already inside V-wheel assemblies. Edited definitions are preserved; a new insertion builds a clean replacement. New occurrences remain free to move or join to your assembly.
 

@@ -1,23 +1,87 @@
 # Bearings reference
 
-`make-bearing` inserts a fixed catalog product. It is the package’s only entry;
-product dimensions, sources and placement conventions are documented below.
+The package offers two insertion workflows:
 
-## Parameters
+- `make-bearing`: fixed OpenBuilds and MISUMI radial bearing products.
+- `make-csk`: CSK design specifications with editable keyways and optional purchasing information.
+
+## CSK workflow
+
+Choose a designation, then leave keyway overrides blank to use the documented
+Formsprag reference profile. Overrides change actual through-cut geometry. For
+example, `CSK12P` with `inner_keyway_depth: 1.2` retains its 12 × 32 × 10 mm envelope
+and 4 mm-wide keyway, with a 1.2 mm depth instead of the reference 1.8 mm.
+The resulting part does not claim to be a Formsprag purchase.
 
 | Field | Default | Meaning |
 |---|---|---|
-| `size` | `625 2RS` | Bearing designation from the catalog |
-| `sketch` | empty | Named sketch; otherwise use current selection |
-| `sketch_point` | empty | Point or circle-center IDs, separated by commas |
+| `size` | `CSK12P` | Preset designation; fixes bore, OD, width and which keyways exist |
+| `inner_keyway_width` / `inner_keyway_depth` | Reference value | Optional positive millimetres; P and PP only |
+| `outer_keyway_width` / `outer_keyway_depth` | Reference value | Optional positive millimetres; PP only |
+| `part_number` | Empty | Your BOM identifier |
+| `purchase_manufacturer` | Empty | Optional purchasing information |
+| `purchase_supplier` | Empty | Optional supplier or marketplace seller |
+| `purchase_sku` | Empty | Optional supplier SKU |
+| `purchase_url` | Empty | Optional HTTP(S) listing URL |
+| `sketch` / `sketch_point` | Empty | Placement, as described below |
 
-No diameter, width or seal overrides are accepted. With no point selection, insert
-at the origin. The local origin is the centre plane, with Z along the axle.
-The internal descriptor defines `axle-centre`, `negative-seat` and `positive-seat` frames.
-Choose up to 32 points; creation or inspection of a complex document can require a
-smaller batch to stay within the host command limit.
+Keyways face local +Y; widths are measured along X, depths radially from the
+bore/OD apex. Slots pass through the full bearing width. Invalid dimensions,
+slots that reach the opposite surface, and inner/outer slots that meet are rejected
+before editing the model. A designation without an outer slot rejects outer-slot
+overrides. Choose the appropriate P or PP preset first.
 
-## Sizes
+The preset list reflects the documented references, not every product sold under
+CSK names. Exact envelope overrides and arbitrary new combinations are outside
+this workflow. Internal sprags, races, balls and seal surfaces are not modeled;
+2RS presets use their individually tabulated mounting widths. Geometry does not
+simulate one-way motion or predict mass.
+
+## Definition, reference and purchasing records
+
+A CSK part saves three distinct records:
+
+1. Resolved geometry, including the selected designation and actual keyway values.
+2. Reference evidence, including the original profile and whether it was customized.
+3. Optional user-supplied purchasing information and BOM part number.
+
+Reference sources never populate purchasing fields. An unassigned CSK design
+still appears in the BOM and repeated placements count as occurrences of one
+definition. Different keyway values create distinct definitions. An explicit
+override equal to the reference value reuses the default definition.
+
+`org.techsquid.specification` metadata stores these records with schema version 1,
+an independent geometry identity and an optional purchasing identity. Geometry
+identity is unaffected by purchasing choices. Component reuse also includes BOM
+assignments so different sellers or user part numbers do not overwrite each other.
+Save/reopen preserves all records. A future purchasing interface can consume them
+without inferring a manufacturer from a drawing source. Purchasing information is
+user-supplied, not independently verified.
+
+## Radial bearing workflow
+
+`make-bearing` accepts `size` (default `625 2RS`), `sketch` and `sketch_point`.
+It inserts fixed supplier products and rejects dimensional overrides. OpenBuilds
+and MISUMI purchasing identities remain explicit for these catalog products.
+Their separate rings and source-measured seals, shields or exposed raceways are
+unchanged. Closed variants omit hidden balls; open B626 includes eight sourced
+balls. Cages and closure thickness are not inferred.
+
+## Placement and reuse
+
+With no point selection, insert at the origin. The centre plane sits on the point,
+with local Z along the sketch normal. Select sketch points or circle centres, or
+address them with `sketch` and comma-separated `sketch_point` IDs. Up to 32 placements
+are accepted; complex documents may require a smaller batch.
+
+CSK components are named `CSK clutch <designation>` with `custom` appended when
+keyway dimensions differ from the reference. Their single body ends in
+`Mounting envelope`. Radial components use `Bearing <designation>`. Both workflows
+place occurrences under the `Bearings` folder. Renamed definitions remain reusable;
+edited geometry or metadata is preserved and a new insertion builds a clean
+replacement. See [verified reuse](../../docs/parts-library.md).
+
+## Presets and reference dimensions
 
 <!-- catalog-table:start -->
 
@@ -29,124 +93,66 @@ smaller batch to stay within the host command limit.
 | B626ZZ | MISUMI | B626ZZ | 6 × 19 × 6 | Metal shields, both sides |
 | B626DDU | MISUMI | B626DDU | 6 × 19 × 6 | Rubber seals, both sides |
 | B608ZZ | MISUMI | B608ZZ | 8 × 22 × 7 | Metal shields, both sides |
-| CSK8 | Formsprag | CSK8 | 8 × 22 × 9 | Unkeyed |
-| CSK12 | Formsprag | CSK12 | 12 × 32 × 10 | Unkeyed |
-| CSK15 | Formsprag | CSK15 | 15 × 35 × 11 | Unkeyed |
-| CSK17 | Formsprag | CSK17 | 17 × 40 × 12 | Unkeyed |
-| CSK20 | Formsprag | CSK20 | 20 × 47 × 14 | Unkeyed |
-| CSK25 | Formsprag | CSK25 | 25 × 52 × 15 | Unkeyed |
-| CSK30 | Formsprag | CSK30 | 30 × 62 × 16 | Unkeyed |
-| CSK35 | Formsprag | CSK35 | 35 × 72 × 17 | Unkeyed |
-| CSK40 | Formsprag | CSK40 | 40 × 80 × 22 | Unkeyed |
-| CSK8-2RS | Formsprag | CSK8-2RS | 8 × 22 × 9 | Unkeyed; one lip seal |
-| CSK12-2RS | Formsprag | CSK12-2RS | 12 × 32 × 14 | Unkeyed; 2RS |
-| CSK15-2RS | Formsprag | CSK15-2RS | 15 × 35 × 16 | Unkeyed; 2RS |
-| CSK17-2RS | Formsprag | CSK17-2RS | 17 × 40 × 17 | Unkeyed; 2RS |
-| CSK20-2RS | Formsprag | CSK20-2RS | 20 × 47 × 19 | Unkeyed; 2RS |
-| CSK25-2RS | Formsprag | CSK25-2RS | 25 × 52 × 20 | Unkeyed; 2RS |
-| CSK30-2RS | Formsprag | CSK30-2RS | 30 × 62 × 21 | Unkeyed; 2RS |
-| CSK35-2RS | Formsprag | CSK35-2RS | 35 × 72 × 22 | Unkeyed; 2RS |
-| CSK40-2RS | Formsprag | CSK40-2RS | 40 × 80 × 27 | Unkeyed; 2RS |
-| CSK12P | Formsprag | CSK12P | 12 × 32 × 10 | Inner keyway |
-| CSK15P | Formsprag | CSK15P | 15 × 35 × 11 | Inner keyway |
-| CSK17P | Formsprag | CSK17P | 17 × 40 × 12 | Inner keyway |
-| CSK20P | Formsprag | CSK20P | 20 × 47 × 14 | Inner keyway |
-| CSK25P | Formsprag | CSK25P | 25 × 52 × 15 | Inner keyway |
-| CSK30P | Formsprag | CSK30P | 30 × 62 × 16 | Inner keyway |
-| CSK35P | Formsprag | CSK35P | 35 × 72 × 17 | Inner keyway |
-| CSK40P | Formsprag | CSK40P | 40 × 80 × 22 | Inner keyway |
-| CSK15PP | Formsprag | CSK15PP | 15 × 35 × 11 | Inner and outer keyways |
-| CSK17PP | Formsprag | CSK17PP | 17 × 40 × 12 | Inner and outer keyways |
-| CSK20PP | Formsprag | CSK20PP | 20 × 47 × 14 | Inner and outer keyways |
-| CSK25PP | Formsprag | CSK25PP | 25 × 52 × 15 | Inner and outer keyways |
-| CSK30PP | Formsprag | CSK30PP | 30 × 62 × 16 | Inner and outer keyways |
-| CSK35PP | Formsprag | CSK35PP | 35 × 72 × 17 | Inner and outer keyways |
-| CSK40PP | Formsprag | CSK40PP | 40 × 80 × 22 | Inner and outer keyways |
-| CSK12P-2RS | Formsprag | CSK12P-2RS | 12 × 32 × 14 | Inner keyway; 2RS |
-| CSK15P-2RS | Formsprag | CSK15P-2RS | 15 × 35 × 16 | Inner keyway; 2RS |
-| CSK17P-2RS | Formsprag | CSK17P-2RS | 17 × 40 × 17 | Inner keyway; 2RS |
-| CSK20P-2RS | Formsprag | CSK20P-2RS | 20 × 47 × 19 | Inner keyway; 2RS |
-| CSK25P-2RS | Formsprag | CSK25P-2RS | 25 × 52 × 20 | Inner keyway; 2RS |
-| CSK30P-2RS | Formsprag | CSK30P-2RS | 30 × 62 × 21 | Inner keyway; 2RS |
-| CSK35P-2RS | Formsprag | CSK35P-2RS | 35 × 72 × 22 | Inner keyway; 2RS |
-| CSK40P-2RS | Formsprag | CSK40P-2RS | 40 × 80 × 27 | Inner keyway; 2RS |
-| CSK30PP-2RS | Formsprag | CSK30PP-2RS | 30 × 62 × 21 | Inner and outer keyways; 2RS |
+| CSK8 | Unassigned (Formsprag reference) | — | 8 × 22 × 9 | Unkeyed |
+| CSK12 | Unassigned (Formsprag reference) | — | 12 × 32 × 10 | Unkeyed |
+| CSK15 | Unassigned (Formsprag reference) | — | 15 × 35 × 11 | Unkeyed |
+| CSK17 | Unassigned (Formsprag reference) | — | 17 × 40 × 12 | Unkeyed |
+| CSK20 | Unassigned (Formsprag reference) | — | 20 × 47 × 14 | Unkeyed |
+| CSK25 | Unassigned (Formsprag reference) | — | 25 × 52 × 15 | Unkeyed |
+| CSK30 | Unassigned (Formsprag reference) | — | 30 × 62 × 16 | Unkeyed |
+| CSK35 | Unassigned (Formsprag reference) | — | 35 × 72 × 17 | Unkeyed |
+| CSK40 | Unassigned (Formsprag reference) | — | 40 × 80 × 22 | Unkeyed |
+| CSK8-2RS | Unassigned (Formsprag reference) | — | 8 × 22 × 9 | Unkeyed; one lip seal |
+| CSK12-2RS | Unassigned (Formsprag reference) | — | 12 × 32 × 14 | Unkeyed; 2RS |
+| CSK15-2RS | Unassigned (Formsprag reference) | — | 15 × 35 × 16 | Unkeyed; 2RS |
+| CSK17-2RS | Unassigned (Formsprag reference) | — | 17 × 40 × 17 | Unkeyed; 2RS |
+| CSK20-2RS | Unassigned (Formsprag reference) | — | 20 × 47 × 19 | Unkeyed; 2RS |
+| CSK25-2RS | Unassigned (Formsprag reference) | — | 25 × 52 × 20 | Unkeyed; 2RS |
+| CSK30-2RS | Unassigned (Formsprag reference) | — | 30 × 62 × 21 | Unkeyed; 2RS |
+| CSK35-2RS | Unassigned (Formsprag reference) | — | 35 × 72 × 22 | Unkeyed; 2RS |
+| CSK40-2RS | Unassigned (Formsprag reference) | — | 40 × 80 × 27 | Unkeyed; 2RS |
+| CSK12P | Unassigned (Formsprag reference) | — | 12 × 32 × 10 | Inner keyway |
+| CSK15P | Unassigned (Formsprag reference) | — | 15 × 35 × 11 | Inner keyway |
+| CSK17P | Unassigned (Formsprag reference) | — | 17 × 40 × 12 | Inner keyway |
+| CSK20P | Unassigned (Formsprag reference) | — | 20 × 47 × 14 | Inner keyway |
+| CSK25P | Unassigned (Formsprag reference) | — | 25 × 52 × 15 | Inner keyway |
+| CSK30P | Unassigned (Formsprag reference) | — | 30 × 62 × 16 | Inner keyway |
+| CSK35P | Unassigned (Formsprag reference) | — | 35 × 72 × 17 | Inner keyway |
+| CSK40P | Unassigned (Formsprag reference) | — | 40 × 80 × 22 | Inner keyway |
+| CSK15PP | Unassigned (Formsprag reference) | — | 15 × 35 × 11 | Inner and outer keyways |
+| CSK17PP | Unassigned (Formsprag reference) | — | 17 × 40 × 12 | Inner and outer keyways |
+| CSK20PP | Unassigned (Formsprag reference) | — | 20 × 47 × 14 | Inner and outer keyways |
+| CSK25PP | Unassigned (Formsprag reference) | — | 25 × 52 × 15 | Inner and outer keyways |
+| CSK30PP | Unassigned (Formsprag reference) | — | 30 × 62 × 16 | Inner and outer keyways |
+| CSK35PP | Unassigned (Formsprag reference) | — | 35 × 72 × 17 | Inner and outer keyways |
+| CSK40PP | Unassigned (Formsprag reference) | — | 40 × 80 × 22 | Inner and outer keyways |
+| CSK12P-2RS | Unassigned (Formsprag reference) | — | 12 × 32 × 14 | Inner keyway; 2RS |
+| CSK15P-2RS | Unassigned (Formsprag reference) | — | 15 × 35 × 16 | Inner keyway; 2RS |
+| CSK17P-2RS | Unassigned (Formsprag reference) | — | 17 × 40 × 17 | Inner keyway; 2RS |
+| CSK20P-2RS | Unassigned (Formsprag reference) | — | 20 × 47 × 19 | Inner keyway; 2RS |
+| CSK25P-2RS | Unassigned (Formsprag reference) | — | 25 × 52 × 20 | Inner keyway; 2RS |
+| CSK30P-2RS | Unassigned (Formsprag reference) | — | 30 × 62 × 21 | Inner keyway; 2RS |
+| CSK35P-2RS | Unassigned (Formsprag reference) | — | 35 × 72 × 22 | Inner keyway; 2RS |
+| CSK40P-2RS | Unassigned (Formsprag reference) | — | 40 × 80 × 27 | Inner keyway; 2RS |
+| CSK30PP-2RS | Unassigned (Formsprag reference) | — | 30 × 62 × 21 | Inner and outer keyways; 2RS |
 
 <!-- catalog-table:end -->
 
-OpenBuilds and MISUMI are the identified suppliers for the radial bearings.
-Formsprag supplies the CSK one-way clutches. The 42 CSK choices cover plain, 2RS, P, PP and P-2RS variants, plus CSK30PP-2RS.
-Only combinations documented by the source are offered. P has an inner keyway;
-PP has inner and outer keyways. Both slots face local +Y and pass through the full
-width. Sealed variants use their individually tabulated widths.
-An underlying manufacturer is not inferred from the OpenBuilds or MISUMI names.
-The designation and dimensions do not establish a tolerance class, load rating,
-seal compound or current stock availability. These are exterior CAD representations.
+## Sources
 
-The [coverage checklist](../../docs/bearing-coverage.md) compares the radial bearings with
-the main app's thirteen nominal sizes and records the exact references still needed.
+The [CSK ledger](../../docs/sources/csk.md) records all dimensions and vendor
+comparisons. For example, Formsprag lists a CSK12P inner keyway of 4 × 1.8 mm;
+PEAK lists 4 × 1.2 mm. CSK is a common family designation, not proof of complete
+interchangeability. Enter the actual purchased part's keyway measurements when needed.
 
-## Geometry and sources
+The [MISUMI ledger](../../docs/sources/misumi.md) records the supplied radial bearing
+profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
+105ZZ width correction to 4 mm. Source STEP files are not required at runtime.
 
-Each radial bearing contains separate inner/outer rings. Closed variants have two annular
-surface bodies at the source's measured recess; rubber seals are dark and metal
-shields are gray. Closures have zero thickness because the source does not establish
-an internal cross-section. MISUMI profiles retain their 0.3 mm rounded edges; open
-B626 includes the exposed raceway grooves and eight sourced balls, with no closures.
-Closed bearings omit hidden balls and internals. Cages are not modeled. Volumes and masses therefore do not represent a
-complete physical bearing; closure surfaces are intentionally not watertight solids.
+## Breaking changes
 
-CSK products are mounting envelopes with catalog bore, OD, width and actual
-rectangular keyway cuts. Inner and outer slot widths and depths appear in the
-[CSK source ledger](../../docs/sources/csk.md). Internal rings, sprags, balls, dust protection and directional clutch
-behavior are not represented. The envelope is useful for placement and clearance,
-not mass prediction or motion simulation. The supplied CSK8 STEP corroborates its
-8 × 22 × 9 mm envelope; its internal geometry is not generalized to other sizes.
-The [CSK source ledger](../../docs/sources/csk.md) records the supplied files and
-the primary Formsprag catalog.
-
-The [MISUMI source ledger](../../docs/sources/misumi.md) records the supplied B626,
-B626ZZ, B626DDU and B608ZZ profiles. The 626 variants share their standard envelope
-but have different ring boundaries and closure recesses; they are distinct products.
-
-The old OpenBuilds mini bearing STEP is 4.2 mm wide. An OpenBuilds staff correction
-specifies 4 mm; the catalog uses 4 mm while retaining the measured radial section
-and recess. The [source ledger](../../docs/sources/openbuilds.md) records this correction,
-original file hashes and the independently measured geometry. No source STEP is
-required or distributed in the plugin.
-
-| Data | Source | Validation |
-|---|---|---|
-| Exterior ring sections and recesses | OpenBuilds GrabCAD bearing STEP references in the source ledger | `bearings::tests::exterior_dimensions_match_source_and_mini_correction`; native `wheel_geometry_test.py` |
-| MISUMI rounded profiles, closures and exposed B626 races | Exact supplied STEP revisions in the MISUMI source ledger | `bearings::tests::misumi_sections_match_supplied_source_revisions`; native `bearing_geometry_test.py` |
-| 105ZZ width correction | OpenBuilds staff, 27 February 2016, linked in the source ledger | Nominal width and closure bounds in `wheel_geometry_test.py` |
-| Supplier SKUs 30 and 800 | OpenBuilds Sphinx build BOM, linked in the source ledger | `bearings::tests::supplier_variants_do_not_conflate_closure_or_identity` |
-
-## Names and bill of materials
-
-A component is named `Bearing <designation>`, for example `Bearing B626ZZ`. Radial bearing
-bodies end in `Inner ring`, `Outer ring`, `Seal front/back`, `Shield front/back`, or
-`Ball 1`–`Ball 8`. A CSK body ends in `Mounting envelope`.
-Standalone placements go in the phantom `Bearings` folder. The BOM counts one
-purchase per bearing occurrence, using the supplier and exact part number (such as
-`OpenBuilds 30`, `MISUMI B626ZZ` or `Formsprag CSK8`), regardless of body count. Wheel assemblies and direct insertion share the same radial bearing
-definitions; the Bearings plugin need not be installed to build a wheel assembly.
-
-Renaming a component preserves reuse. Geometry, appearance, material, purchasing
-metadata or child edits invalidate its saved content check. The edited component
-remains intact and subsequent insertions use a clean definition. See
-[verified reuse](../../docs/parts-library.md).
-
-## Older field names
-
-This is a new workflow. Unknown fields are rejected.
-
-The CSK catalog uses the Formsprag reference profile. CSK is a common family name,
-but vendor keyways can differ: Formsprag CSK12P uses 4 × 1.8 mm, while PEAK lists
-4 × 1.2 mm. Check the purchased part's drawing. The chooser labels remain `CSK…`;
-the supplier in the BOM identifies the modeled reference product.
-
-**Breaking change:** catalog revision 4 requires refreshing saved resolved selections.
-CSK configurations now store the exact variant under the `formsprag-csk` family;
-previous serialized CSK configurations are rejected without aliases. Existing
-model geometry is preserved, while new insertions use the current identity.
+CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
+there is no old-route alias. Catalog revision 5 requires refreshing saved resolved
+selections. Previous supplier-identified CSK definitions are not reused as the new
+source-neutral specifications. Their existing geometry is preserved. Ring details
+in the Rust `Dimensions` API live under `section`.

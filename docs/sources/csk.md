@@ -41,9 +41,9 @@ does not use them for mechanical analysis. Current stock was not checked.
 CSK is a family designation used by multiple suppliers. No universal CSK product
 standard was established by this research. The referenced DIN 6885 documents define
 keyways, not the complete clutch, its performance or every available variant.
-The chooser uses `CSK…`; Formsprag remains the identity/provenance for the specific
-catalog geometry implemented here, just as the other sourced bearings retain their
-supplier identity. This does not identify an unrelated marketplace purchase.
+The chooser uses `CSK…`; Formsprag supplies the default reference dimensions, independently of purchasing
+identity. Keyway overrides save the actual geometry alongside the reference baseline.
+The generator does not assign a manufacturer or seller until the user supplies one.
 
 The seller table supplied for comparison matches [PEAK's table](https://www.peakbearings.com/WCB6205-2RS.htm)
 and [Konlon's table](https://www.konlonbearing.com/html/en/products/onewaybearing/415.html),
@@ -55,7 +55,7 @@ and is outside this CSK catalog.
 
 ## Keyed and sealed coverage
 
-The catalog now includes 42 sourced combinations: nine plain CSK, nine CSK-2RS,
+The generator offers 42 reference presets: nine plain CSK, nine CSK-2RS,
 eight CSKP (12–40), seven CSKPP (15–40), eight CSKP-2RS (12–40), and CSK30PP-2RS.
 The final combination is explicitly listed on page 28 of the newer
 [Formsprag MCC-P-956-FC-EN-US 11/25 extract](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-956-fc-sections/mcc-p-956-fc-en-us_csk_p_csk_pp.pdf).

@@ -1,6 +1,11 @@
 //! Formsprag CSK mounting dimensions and keyways. See docs/sources/csk.md.
 use super::Dimensions;
-use plugin_kit::{host::sketch_id, name::part, Placement, Runner};
+use plugin_kit::{
+    host::sketch_id,
+    name::part,
+    revolve::{self, Section},
+    Placement, Runner,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -24,7 +29,8 @@ enum Mounting {
 }
 
 /// Nominal rectangular keyway: depth is measured radially from the bore/OD apex.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Keyway {
     pub width: f64,
     pub depth: f64,
@@ -147,16 +153,131 @@ impl Csk {
             }),
         )
     }
+    pub fn geometry(self) -> Geometry {
+        let (inner_keyway, outer_keyway) = self.keyways();
+        let d = self.dimensions();
+        Geometry {
+            designation: self,
+            bore: d.bore,
+            diameter: d.diameter,
+            width: d.width,
+            inner_keyway,
+            outer_keyway,
+        }
+    }
+}
+
+/// Resolved dimensions, including explicit overrides. No supplier identity.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct Geometry {
+    pub designation: Csk,
+    pub bore: f64,
+    pub diameter: f64,
+    pub width: f64,
+    pub inner_keyway: Option<Keyway>,
+    pub outer_keyway: Option<Keyway>,
+}
+
+pub type Design = parts::specification::Specification<Geometry>;
+
+impl Geometry {
+    pub fn customized(&self) -> bool {
+        *self != self.designation.geometry()
+    }
+
+    pub fn dimensions(&self) -> Dimensions {
+        Dimensions {
+            bore: self.bore,
+            diameter: self.diameter,
+            width: self.width,
+            section: None,
+        }
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        let reference = self.designation.dimensions();
+        if [self.bore, self.diameter, self.width]
+            != [reference.bore, reference.diameter, reference.width]
+        {
+            return Err("mounting envelope must match the selected CSK designation".into());
+        }
+        let d = self.dimensions();
+        let (inner, outer) = self.designation.keyways();
+        if self.inner_keyway.is_some() != inner.is_some()
+            || self.outer_keyway.is_some() != outer.is_some()
+        {
+            return Err("keyways must match the selected P/PP designation".into());
+        }
+        for key in [self.inner_keyway, self.outer_keyway].into_iter().flatten() {
+            if !key.width.is_finite()
+                || !key.depth.is_finite()
+                || key.width <= 0.0
+                || key.depth <= 0.0
+            {
+                return Err("keyway dimensions must be finite and positive".into());
+            }
+        }
+        if let Some(key) = self.inner_keyway {
+            if key.width >= d.bore
+                || (d.bore / 2.0 + key.depth).hypot(key.width / 2.0) >= d.diameter / 2.0
+            {
+                return Err(
+                    "inner keyway must stay inside the outside diameter and narrower than the bore"
+                        .into(),
+                );
+            }
+        }
+        if let Some(key) = self.outer_keyway {
+            let floor = d.diameter / 2.0 - key.depth;
+            if floor <= d.bore / 2.0 || floor.hypot(key.width / 2.0) >= d.diameter / 2.0 {
+                return Err("outer keyway must leave material around the bore and intersect the outside diameter".into());
+            }
+            if self
+                .inner_keyway
+                .is_some_and(|inner| d.bore / 2.0 + inner.depth >= floor)
+            {
+                return Err("inner and outer keyways must not meet".into());
+            }
+        }
+        Ok(())
+    }
+
+    pub fn build(&self, r: &mut impl Runner, base: &str, frame: &Placement) -> Result<(), String> {
+        self.validate()?;
+        let d = self.dimensions();
+        let h = d.width / 2.0;
+        let name = format!("{base} Mounting envelope");
+        let feature = part(base, "Mounting envelope");
+        revolve::build(
+            r,
+            frame,
+            &part(&feature, "Section"),
+            Section::Solid(&[
+                [d.bore / 2.0, -h],
+                [d.diameter / 2.0, -h],
+                [d.diameter / 2.0, h],
+                [d.bore / 2.0, h],
+            ]),
+            json!({"name":feature,"body_name":name}),
+        )?;
+        self.cut_keyways(r, base, &name, frame)?;
+        r.run(
+            "appearance.assign",
+            json!({"bodies":[name],"color":[160,160,160]}),
+        )?;
+        Ok(())
+    }
     /// Both slots face local +Y, extend through the full width, and rotate with the placement.
-    pub(crate) fn cut_keyways(
-        self,
+    fn cut_keyways(
+        &self,
         r: &mut impl Runner,
         base: &str,
         body: &str,
         frame: &Placement,
     ) -> Result<(), String> {
         let d = self.dimensions();
-        let (inner, outer) = self.keyways();
+        let (inner, outer) = (self.inner_keyway, self.outer_keyway);
         for (label, key, is_outer) in [
             ("Inner keyway", inner, false),
             ("Outer keyway", outer, true),
@@ -181,4 +302,69 @@ impl Csk {
         }
         Ok(())
     }
+}
+
+/// The geometry identity is source-neutral. Purchasing choices stay explicit and
+/// participate in definition reuse so one component never mixes BOM assignments.
+pub fn representation(design: &Design) -> parts::Representation<Design> {
+    parts::Representation {
+        product: parts::Product {
+            catalog: "techsquid-specifications".into(),
+            part: "csk".into(),
+            kind: if design.geometry.customized() {
+                parts::ProductKind::Custom
+            } else {
+                parts::ProductKind::DesignSpecification
+            },
+            configuration: design.clone(),
+            members: vec![],
+        },
+        revision: "1".into(),
+        detail: "mounting-geometry".into(),
+        dependencies: vec![],
+    }
+}
+
+pub fn ensure<R: Runner>(
+    design: &Design,
+    library: &mut plugin_kit::component::Library<'_, R>,
+    creator: &str,
+) -> Result<plugin_kit::component::Handle, String> {
+    design.geometry.validate()?;
+    let designation = design.geometry.designation.designation();
+    let name = format!(
+        "CSK clutch {designation}{}",
+        if design.geometry.customized() {
+            " custom"
+        } else {
+            ""
+        }
+    );
+    library.ensure(&plugin_kit::component::Definition {
+        plugin: creator, base: &name, description: designation,
+        bom_type: if design.purchasing == parts::specification::Purchasing::default() { "normal" } else { "purchased" },
+        site: plugin_kit::component::Site::Origin,
+    }, design.part_number.as_deref().unwrap_or(""), &representation(design), |library, name, frame| {
+        library.geometry(name, |mut r| {
+            design.geometry.build(&mut r, name, frame)?;
+            r.run("component.metadata.set", json!({"component":name,"values": {
+                "org.techsquid.specification": {
+                    "version":1, "geometry":design.geometry, "part_number":design.part_number,
+                    "geometry_identity":design.geometry_identity().map_err(|e| e.to_string())?,
+                    "purchasing_identity":design.purchasing.identity().map_err(|e| e.to_string())?,
+                    "purchasing":design.purchasing,
+                    "reference": {
+                        "title":"Formsprag CSK catalog dimensions",
+                        "sources":[
+                            {"title":"Formsprag P-1352-FC 3/18", "url":"https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf"},
+                            {"title":"Formsprag MCC-P-956-FC-EN-US 11/25, CSKP/PP", "url":"https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-956-fc-sections/mcc-p-956-fc-en-us_csk_p_csk_pp.pdf"}
+                        ],
+                        "baseline":design.geometry.designation.geometry(),
+                        "customized":design.geometry.customized()
+                    }
+                }
+            }}))?;
+            Ok(())
+        })
+    })
 }

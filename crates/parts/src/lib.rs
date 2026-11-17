@@ -6,6 +6,7 @@
 pub mod catalog;
 pub mod detail;
 pub mod identity;
+pub mod specification;
 
 pub use catalog::{Catalog, CatalogError, CatalogRequest, CatalogResponse};
 pub use identity::{CanonicalIdentity, Product, ProductKind, Representation};

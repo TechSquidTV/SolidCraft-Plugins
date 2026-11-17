@@ -69,10 +69,14 @@ host capability is exported by the packages.
 
 Product identity is catalog authority, stable part/family ID, classification,
 typed engineering configuration and any purchasing members. Classifications are
-`supplier_product`, `standard_configuration`, `custom`, and `assembly`. A screw
+`supplier_product`, `standard_configuration`, `design_specification`, `custom`, and `assembly`. A screw
 with nominal standard dimensions and arbitrary length is a dimensional
 configuration; no grade, finish, supplier availability or certification is implied.
-Explicit dimension overrides are custom even if they happen to equal table values.
+Fastener override workflows explicitly classify custom inputs. CSK specifications
+normalize resolved dimensions: an override equal to the preset reuses its identity.
+A CSK `design_specification` records a source-neutral mounting design with optional
+purchasing assignments; changed keyway dimensions classify it as `custom`.
+Reference evidence remains separate from both geometry and purchasing identities.
 
 Representation identity adds the geometry/default-appearance revision, detail
 mode and resolved child representation identities. Cosmetic and modeled threads

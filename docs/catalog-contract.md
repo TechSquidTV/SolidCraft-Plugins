@@ -75,7 +75,8 @@ configuration; no grade, finish, supplier availability or certification is impli
 Fastener override workflows explicitly classify custom inputs. CSK specifications
 normalize resolved dimensions: an override equal to the preset reuses its identity.
 A CSK `design_specification` records a source-neutral mounting design with separately
-stored drawing references; changed keyway dimensions classify it as `custom`.
+stored drawing references; changed dimensions, closure style or keyway configuration
+classify it as `custom`.
 Reference evidence remains outside the design identity. Purchasing assignment is
 [future work for a shared component workflow](parts-library.md#future-component-purchasing-workflow)
 after creation, outside the CSK generator.

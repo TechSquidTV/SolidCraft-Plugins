@@ -8,7 +8,7 @@ Rust workspace of SolidCraft plugins. Each plugin is a WebAssembly component (`c
 - `DEVELOPMENT.md` owns build/test instructions, architecture and example rendering commands.
 - `plugins/<id>/README.md` is a short user guide with a native CAD preview, installation and common use. `REFERENCE.md` beside it owns full parameter tables, standards and sources, naming, limitations and retired-field migration. `build.sh` packages both with their pictures and the shared docs.
 - `docs/catalog-contract.md` owns the internal descriptor contract; `docs/parts-library.md` owns shared reuse and BOM rules. Package guides link to these instead of restating them.
-- `docs/sources/` contains source evidence and independent measurements, not runtime dimension tables. Domain crates own the compiled data; `catalog-tool` generates catalog-owned form choices and bearing/wheel reference tables from it.
+- `docs/sources/` contains source evidence and independent measurements. Domain crates own the compiled data; CSK exterior profiles compile the measured source ledger directly to avoid duplicating its dimensions; `catalog-tool` generates catalog-owned form choices and bearing/wheel reference tables from it.
 - Every saved design in `examples/` has a matching `.steps.json` recipe checked by `tests/examples_test.py`. Previews are native captures; keep their rendering commands in `DEVELOPMENT.md`.
 
 A new plugin gets both guides, an example and preview, and a row in the root Plugins table.

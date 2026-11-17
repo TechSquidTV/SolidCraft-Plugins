@@ -216,7 +216,7 @@ Nine standalone examples show the plugins’ parts and editing modes. Each plugi
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
 | `bearings` | `techsquid-bearings` | Six sourced radial bearings: open, sealed and shielded | `bearings.png` |
-| `csk-clutches` | `techsquid-bearings` | Six CSK envelopes: reference, repeated custom keyways, optional purchasing, PP and P-2RS | `csk-clutches.png` |
+| `csk-clutches` | `techsquid-bearings` | Five CSK envelopes: reference, repeated custom keyways, PP and P-2RS | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line
@@ -247,7 +247,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 
 ```sh
 solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 550 --camera '{"target":[1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":110}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 500 --camera '{"target":[23.25,0,0],"yaw":0.05,"pitch":0.9,"distance":135}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 500 --camera '{"target":[0.75,0,0],"yaw":0.05,"pitch":0.9,"distance":115}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
 
@@ -310,10 +310,10 @@ section vertices and eight spheres, and purchase/reuse
 behavior through the installed workflow.
 
 The CSK suite checks all 42 reference envelopes and their keyways, custom-keyway
-geometry, separate reference and purchasing metadata, BOM quantities, definition
+geometry, separate geometry and reference metadata, BOM quantities, definition
 reuse, invalid-input rollback and save/reopen. It uses the built Bearings package;
 run `./build.sh` first. The [CSK walkthrough](examples/csk-clutches.md) explains the
-example’s five BOM rows and independent volume expectations. Rebuild and check it
+example’s four BOM rows and independent volume expectations. Rebuild and check it
 with:
 
 ```bash

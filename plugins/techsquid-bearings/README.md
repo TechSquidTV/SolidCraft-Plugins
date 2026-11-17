@@ -1,6 +1,6 @@
 # Bearings
 
-Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). The radial bearings have separate steel rings and sourced closures. CSK presets provide mounting geometry with editable keyways and optional purchasing information.
+Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). The radial bearings have separate steel rings and sourced closures. CSK presets provide mounting geometry with editable keyways and recorded references.
 
 ![Six sourced bearings with open, sealed and shielded variants](bearings.png)
 
@@ -17,9 +17,9 @@ Select sketch points or circle centres, then choose a workflow:
   for the reference dimensions, or enter overrides. For example, CSK12P can use
   a 4 × 1.2 mm inner keyway while keeping its 12 × 32 × 10 mm envelope.
 
-CSK purchasing fields start empty. You can optionally supply your own BOM part
-number, manufacturer, seller, supplier SKU and purchase URL. The drawing source
-stays recorded separately. Custom and unsourced parts still count in the BOM.
+CSK parts have no assigned manufacturer, supplier or BOM part number. Drawing
+references remain separate from geometry. Custom and unsourced parts still count
+in the BOM. Purchasing assignments are a separate feature.
 
 With nothing selected, the part sits at the origin. Its centre plane sits on the
 point and its axle follows the sketch normal. Optional **Sketch** and **Sketch
@@ -33,6 +33,6 @@ See the [reference](REFERENCE.md) for dimensions, part numbers, placement fields
 
 ## CSK example
 
-![Six CSK mounting envelopes comparing reference and custom inner keyways, an outer keyway and a wider sealed variant](csk-clutches.png)
+![Five CSK mounting envelopes comparing reference and custom inner keyways, an outer keyway and a wider sealed variant](csk-clutches.png)
 
-The [CSK walkthrough and saved design](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/csk-clutches.md) show a reference CSK12P, two copies with a 1.2 mm-deep inner keyway, the same custom shape with an illustrative purchasing assignment, CSK15PP and CSK15P-2RS. The repeated custom part counts twice in the BOM; its purchasing fields remain unassigned.
+The [CSK walkthrough and saved design](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/csk-clutches.md) show a reference CSK12P, two copies with a 1.2 mm-deep inner keyway, CSK15PP and CSK15P-2RS. The repeated custom part counts twice in the BOM; no supplier is inferred from its reference drawing.

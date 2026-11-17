@@ -179,8 +179,6 @@ pub struct Geometry {
     pub outer_keyway: Option<Keyway>,
 }
 
-pub type Design = parts::specification::Specification<Geometry>;
-
 impl Geometry {
     pub fn customized(&self) -> bool {
         *self != self.designation.geometry()
@@ -304,19 +302,18 @@ impl Geometry {
     }
 }
 
-/// The geometry identity is source-neutral. Purchasing choices stay explicit and
-/// participate in definition reuse so one component never mixes BOM assignments.
-pub fn representation(design: &Design) -> parts::Representation<Design> {
+/// Source-neutral design identity. Reference evidence is stored separately.
+pub fn representation(geometry: &Geometry) -> parts::Representation<Geometry> {
     parts::Representation {
         product: parts::Product {
             catalog: "techsquid-specifications".into(),
             part: "csk".into(),
-            kind: if design.geometry.customized() {
+            kind: if geometry.customized() {
                 parts::ProductKind::Custom
             } else {
                 parts::ProductKind::DesignSpecification
             },
-            configuration: design.clone(),
+            configuration: geometry.clone(),
             members: vec![],
         },
         revision: "1".into(),
@@ -326,41 +323,35 @@ pub fn representation(design: &Design) -> parts::Representation<Design> {
 }
 
 pub fn ensure<R: Runner>(
-    design: &Design,
+    geometry: &Geometry,
     library: &mut plugin_kit::component::Library<'_, R>,
     creator: &str,
 ) -> Result<plugin_kit::component::Handle, String> {
-    design.geometry.validate()?;
-    let designation = design.geometry.designation.designation();
+    geometry.validate()?;
+    let designation = geometry.designation.designation();
     let name = format!(
         "CSK clutch {designation}{}",
-        if design.geometry.customized() {
-            " custom"
-        } else {
-            ""
-        }
+        if geometry.customized() { " custom" } else { "" }
     );
     library.ensure(&plugin_kit::component::Definition {
         plugin: creator, base: &name, description: designation,
-        bom_type: if design.purchasing == parts::specification::Purchasing::default() { "normal" } else { "purchased" },
+        bom_type: "normal",
         site: plugin_kit::component::Site::Origin,
-    }, design.part_number.as_deref().unwrap_or(""), &representation(design), |library, name, frame| {
+    }, "", &representation(geometry), |library, name, frame| {
         library.geometry(name, |mut r| {
-            design.geometry.build(&mut r, name, frame)?;
+            geometry.build(&mut r, name, frame)?;
             r.run("component.metadata.set", json!({"component":name,"values": {
                 "org.techsquid.specification": {
-                    "version":1, "geometry":design.geometry, "part_number":design.part_number,
-                    "geometry_identity":design.geometry_identity().map_err(|e| e.to_string())?,
-                    "purchasing_identity":design.purchasing.identity().map_err(|e| e.to_string())?,
-                    "purchasing":design.purchasing,
+                    "version":2, "geometry":geometry,
+                    "geometry_identity":representation(geometry).product.identity().map_err(|e| e.to_string())?,
                     "reference": {
                         "title":"Formsprag CSK catalog dimensions",
                         "sources":[
                             {"title":"Formsprag P-1352-FC 3/18", "url":"https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf"},
                             {"title":"Formsprag MCC-P-956-FC-EN-US 11/25, CSKP/PP", "url":"https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-956-fc-sections/mcc-p-956-fc-en-us_csk_p_csk_pp.pdf"}
                         ],
-                        "baseline":design.geometry.designation.geometry(),
-                        "customized":design.geometry.customized()
+                        "baseline":geometry.designation.geometry(),
+                        "customized":geometry.customized()
                     }
                 }
             }}))?;

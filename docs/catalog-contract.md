@@ -74,9 +74,10 @@ with nominal standard dimensions and arbitrary length is a dimensional
 configuration; no grade, finish, supplier availability or certification is implied.
 Fastener override workflows explicitly classify custom inputs. CSK specifications
 normalize resolved dimensions: an override equal to the preset reuses its identity.
-A CSK `design_specification` records a source-neutral mounting design with optional
-purchasing assignments; changed keyway dimensions classify it as `custom`.
-Reference evidence remains separate from both geometry and purchasing identities.
+A CSK `design_specification` records a source-neutral mounting design with separately
+stored drawing references; changed keyway dimensions classify it as `custom`.
+Reference evidence remains outside the design identity. Purchasing assignments
+are outside the CSK generator.
 
 Representation identity adds the geometry/default-appearance revision, detail
 mode and resolved child representation identities. Cosmetic and modeled threads

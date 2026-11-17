@@ -106,7 +106,8 @@ with Headless() as host:
           and [spec['geometry'][k] for k in ('bore','diameter','width')] == [12,32,10]
           and spec['reference']['baseline']['inner_keyway']['depth'] == 1.8
           and spec['reference']['customized'] and 'Formsprag' in spec['reference']['title']
-          and all(v is None for v in spec['purchasing'].values()) and not record.get('part_number'))
+          and 'purchasing' not in spec and 'purchasing_identity' not in spec
+          and not record.get('part_number'))
     check('custom: reference vendor is absent from canonical design identity',
           'formsprag' not in record['org.techsquid.parts']['product'].lower())
     check('custom: identical overrides reuse; different geometry stays distinct',
@@ -119,30 +120,20 @@ with Headless() as host:
     check('custom: native slot is 1.2 mm deep through the 10 mm width', all(
         any(all(math.isclose(a, b, abs_tol=1e-6) for a, b in zip(p, target)) for p in vertices)
         for target in [(-2,7.2,-5),(2,7.2,-5),(-2,7.2,5),(2,7.2,5)]))
-    purchased = insert(inner_keyway_depth=1.2, part_number='CL-12', purchase_supplier='My seller',
-                       purchase_sku='LISTING-123', purchase_url='https://example.com/clutch')
-    bought = definition(purchased)
-    purchased_meta = host.command('component.metadata', component=bought['id'])['metadata']
-    check('custom: explicit purchasing choice has its own BOM definition',
-          bought['id'] != component['id'] and purchased_meta['part_number'] == 'CL-12'
-          and purchased_meta['org.techsquid.specification']['purchasing']['supplier'] == 'My seller'
-          and purchased_meta['org.techsquid.specification']['geometry'] == spec['geometry']
-          and purchased_meta['org.techsquid.specification']['geometry_identity'] == spec['geometry_identity']
-          and spec['purchasing_identity'] is None
-          and purchased_meta['org.techsquid.specification']['purchasing_identity'] is not None)
     rows = host.command('assembly.bom')['rows']
-    check('custom: unsourced and sourced designs all count in BOM',
-          len(rows) == 3 and sorted(row['count'] for row in rows) == [1,1,2]
-          and sum(row['count'] for row in rows if row.get('part_number') == 'CL-12') == 1)
+    check('custom: unsourced specifications count separately in BOM',
+          len(rows) == 2 and sorted(row['count'] for row in rows) == [1,2]
+          and all(not row.get('part_number') for row in rows))
     saved = str(Path(TMP) / 'custom-csk.sc')
     host.command('file.save_as', path=saved)
     host.command('doc.open', path=saved)
     reopened = insert(inner_keyway_depth=1.2)
-    check('custom: source, purchasing separation and reuse survive reopen',
+    check('custom: geometry, references and reuse survive reopen',
           reopened['component']['reused'] and definition(reopened)['id'] == component['id']
           and host.command('component.metadata', component=component['id'])['metadata'] == record)
     before = host.command('document.inspect', measure=False)
-    for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1}]:
+    for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1},
+                   {'part_number': 'CL-12'}, {'purchase_supplier': 'Seller'}]:
         result = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
                               params={'size': 'CSK12P', **params}, allow_error=True)
         check('custom: invalid keyway fails without edits', 'error' in result

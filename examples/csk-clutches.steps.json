@@ -1,8 +1,8 @@
 {
-  "description": "CSK reference geometry, a 1.2 mm custom inner keyway reused twice, the same shape with a fictional purchasing assignment, and PP / P-2RS variants. Purchasing examples are illustrative only. Expected volumes are annular envelopes minus independently calculated rectangular keyway intersections.",
+  "description": "CSK reference geometry, a 1.2 mm custom inner keyway reused twice, and PP / P-2RS variants. Expected volumes are annular envelopes minus independently calculated rectangular keyway intersections.",
   "steps": [
     {
-      "caption": "Lay out six clutch centres",
+      "caption": "Lay out five clutch centres",
       "command": "sketch.create",
       "params": {
         "name": "CSK centres",
@@ -43,22 +43,11 @@
       }
     },
     {
-      "caption": "Centre 4",
-      "command": "sketch.point",
-      "params": {
-        "point": [
-          45,
-          0
-        ],
-        "id": "p3"
-      }
-    },
-    {
       "caption": "Centre 5",
       "command": "sketch.point",
       "params": {
         "point": [
-          90,
+          45,
           0
         ],
         "id": "p4"
@@ -69,7 +58,7 @@
       "command": "sketch.point",
       "params": {
         "point": [
-          135,
+          90,
           0
         ],
         "id": "p5"
@@ -125,25 +114,6 @@
       }
     },
     {
-      "caption": "Custom CSK12P with fictional purchasing assignment",
-      "command": "plugin.run",
-      "params": {
-        "path": "dist/techsquid-bearings",
-        "approval": "@approval",
-        "entry": "make-csk",
-        "params": {
-          "size": "CSK12P",
-          "inner_keyway_depth": 1.2,
-          "part_number": "EXAMPLE-CSK12P",
-          "purchase_supplier": "Example supplier",
-          "purchase_sku": "DEMO-12",
-          "purchase_url": "https://example.com/clutch",
-          "sketch": "CSK centres",
-          "sketch_point": "p3"
-        }
-      }
-    },
-    {
       "caption": "CSK15PP with both keyways",
       "command": "plugin.run",
       "params": {
@@ -173,7 +143,7 @@
     }
   ],
   "expect": {
-    "bodies": 6,
+    "bodies": 5,
     "bbox": {
       "min": [
         -106,
@@ -181,7 +151,7 @@
         -8
       ],
       "max": [
-        152.5,
+        107.5,
         17.5,
         8
       ]
@@ -236,31 +206,15 @@
         "volume_mm3": 6858.982210290877
       },
       {
-        "label": "Custom CSK12P with fictional purchasing assignment",
-        "bbox": {
-          "min": [
-            29.0,
-            -16.0,
-            -5.0
-          ],
-          "max": [
-            61.0,
-            16.0,
-            5.0
-          ]
-        },
-        "volume_mm3": 6858.982210290877
-      },
-      {
         "label": "CSK15PP with both keyways",
         "bbox": {
           "min": [
-            72.5,
+            27.5,
             -17.5,
             -5.5
           ],
           "max": [
-            107.5,
+            62.5,
             17.471405209656147,
             5.5
           ]
@@ -271,12 +225,12 @@
         "label": "Wider CSK15P-2RS envelope",
         "bbox": {
           "min": [
-            117.5,
+            72.5,
             -17.5,
             -8.0
           ],
           "max": [
-            152.5,
+            107.5,
             17.5,
             8.0
           ]
@@ -285,7 +239,7 @@
       }
     ],
     "catalog_definitions": {
-      "techsquid-bearings": 5
+      "techsquid-bearings": 4
     }
   }
 }

@@ -3,7 +3,7 @@
 The package offers two insertion workflows:
 
 - `make-bearing`: fixed OpenBuilds and MISUMI radial bearing products.
-- `make-csk`: CSK design specifications with editable keyways and optional purchasing information.
+- `make-csk`: CSK design specifications with editable keyways and recorded references.
 
 ## CSK workflow
 
@@ -20,11 +20,6 @@ for a saved design, reproducible commands and expected BOM rows.
 | `size` | `CSK12P` | Preset designation; fixes bore, OD, width and which keyways exist |
 | `inner_keyway_width` / `inner_keyway_depth` | Reference value | Optional positive millimetres; P and PP only |
 | `outer_keyway_width` / `outer_keyway_depth` | Reference value | Optional positive millimetres; PP only |
-| `part_number` | Empty | Your BOM identifier |
-| `purchase_manufacturer` | Empty | Optional purchasing information |
-| `purchase_supplier` | Empty | Optional supplier or marketplace seller |
-| `purchase_sku` | Empty | Optional supplier SKU |
-| `purchase_url` | Empty | Optional HTTP(S) listing URL |
 | `sketch` / `sketch_point` | Empty | Placement, as described below |
 
 Keyways face local +Y; widths are measured along X, depths radially from the
@@ -39,26 +34,19 @@ this workflow. Internal sprags, races, balls and seal surfaces are not modeled;
 2RS presets use their individually tabulated mounting widths. Geometry does not
 simulate one-way motion or predict mass.
 
-## Definition, reference and purchasing records
+## Geometry and reference records
 
-A CSK part saves three distinct records:
+A CSK part saves its resolved geometry, including the selected designation and
+actual keyway values, separately from reference evidence and the original profile.
+No manufacturer, supplier or BOM part number is assigned by this workflow.
 
-1. Resolved geometry, including the selected designation and actual keyway values.
-2. Reference evidence, including the original profile and whether it was customized.
-3. Optional user-supplied purchasing information and BOM part number.
+An unassigned CSK design still appears in the BOM. Repeated placements count as
+occurrences of one definition. Different keyway values create distinct definitions;
+an explicit override equal to the reference value reuses the default definition.
 
-Reference sources never populate purchasing fields. An unassigned CSK design
-still appears in the BOM and repeated placements count as occurrences of one
-definition. Different keyway values create distinct definitions. An explicit
-override equal to the reference value reuses the default definition.
-
-`org.techsquid.specification` metadata stores these records with schema version 1,
-an independent geometry identity and an optional purchasing identity. Geometry
-identity is unaffected by purchasing choices. Component reuse also includes BOM
-assignments so different sellers or user part numbers do not overwrite each other.
-Save/reopen preserves all records. A future purchasing interface can consume them
-without inferring a manufacturer from a drawing source. Purchasing information is
-user-supplied, not independently verified.
+`org.techsquid.specification` metadata stores geometry, its source-neutral identity,
+and reference evidence with schema version 2. Save/reopen preserves these records.
+Purchasing assignments are a separate feature, outside this generator's inputs.
 
 ## Radial bearing workflow
 
@@ -154,7 +142,11 @@ profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
 ## Breaking changes
 
 CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
-there is no old-route alias. Catalog revision 5 requires refreshing saved resolved
+there is no old-route alias. Catalog revision 6 requires refreshing saved resolved
 selections. Previous supplier-identified CSK definitions are not reused as the new
 source-neutral specifications. Their existing geometry is preserved. Ring details
 in the Rust `Dimensions` API live under `section`.
+
+Earlier PR revisions accepted `part_number` and `purchase_*` fields in `make-csk`.
+These inputs are now rejected without aliases. Purchasing moves to a separate PR;
+old saved definitions remain intact but are not adopted as current definitions.

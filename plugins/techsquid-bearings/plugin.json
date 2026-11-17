@@ -2,7 +2,7 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Place radial bearings and CSK clutches with adjustable keyways and optional purchasing details.",
+  "description": "Place radial bearings and CSK clutches with adjustable keyways and reference dimensions.",
   "id": "techsquid-bearings",
   "name": "Bearings",
   "runtime": {
@@ -103,31 +103,6 @@
               "title": "Outer keyway width override",
               "type": "number",
               "unit": "mm"
-            },
-            "part_number": {
-              "description": "Optional user-assigned identifier; no manufacturer number is inferred.",
-              "title": "Your BOM part number",
-              "type": "string"
-            },
-            "purchase_manufacturer": {
-              "description": "Optional purchasing choice, not the drawing source.",
-              "title": "Manufacturer",
-              "type": "string"
-            },
-            "purchase_sku": {
-              "description": "Optional supplier SKU.",
-              "title": "Supplier part number",
-              "type": "string"
-            },
-            "purchase_supplier": {
-              "description": "Optional purchasing choice.",
-              "title": "Supplier / seller",
-              "type": "string"
-            },
-            "purchase_url": {
-              "description": "Optional http:// or https:// listing URL.",
-              "title": "Purchase URL",
-              "type": "string"
             },
             "size": {
               "default": "CSK12P",

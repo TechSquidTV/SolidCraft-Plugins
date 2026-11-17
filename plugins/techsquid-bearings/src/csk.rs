@@ -67,7 +67,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
                     .rem_euclid(360.0),
             ),
         };
-        let angle = angle.map(|a| if a == 0.0 { 0.0 } else { a });
+        // A tiny negative angle rounds up to exactly 360, and -0 prints as a different name.
+        let angle = angle.map(|a| if a == 0.0 || a >= 360.0 { 0.0 } else { a });
         let enabled = match input::choice(v, &field, "Preset")? {
             "Preset" => key.is_some(),
             "Enabled" => true,

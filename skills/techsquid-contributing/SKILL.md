@@ -29,7 +29,7 @@ cargo test --workspace --locked
 python3 tests/skills_test.py
 ```
 
-CI (`.github/workflows/ci.yml`) runs the same, except the host tests. Run the host tests yourself when you change what a plugin builds, and list the results in the PR: see `skills/techsquid-tests/SKILL.md`.
+CI (`.github/workflows/ci.yml`) runs the cargo checks and `./build.sh`. Run the host tests yourself when you change what a plugin builds, and list the results in the PR: see `skills/techsquid-tests/SKILL.md`.
 
 ## The PR description
 

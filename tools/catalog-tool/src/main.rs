@@ -40,14 +40,24 @@ fn run() -> Result<(), String> {
         ),
         (
             "techsquid-bearings",
-            vec![(
-                "make-bearing",
-                "size",
-                bearings::ALL
-                    .into_iter()
-                    .map(|b| b.designation().to_string())
-                    .collect(),
-            )],
+            vec![
+                (
+                    "make-bearing",
+                    "size",
+                    bearings::ALL
+                        .into_iter()
+                        .map(|b| b.designation().to_string())
+                        .collect(),
+                ),
+                (
+                    "make-csk",
+                    "size",
+                    bearings::csk::ALL
+                        .into_iter()
+                        .map(|c| c.designation().to_string())
+                        .collect(),
+                ),
+            ],
         ),
         (
             "techsquid-v-wheels",
@@ -97,7 +107,7 @@ fn run() -> Result<(), String> {
         )?;
     }
     let mut bearings_table = String::from(
-        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure |\n|---|---|---|---|---|\n",
+        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure / mounting |\n|---|---|---|---|---|\n",
     );
     for bearing in bearings::ALL {
         let d = bearing.dimensions();
@@ -114,6 +124,17 @@ fn run() -> Result<(), String> {
             d.bore,
             d.diameter,
             d.width
+        ));
+    }
+    for csk in bearings::csk::ALL {
+        let d = csk.dimensions();
+        bearings_table.push_str(&format!(
+            "| {} | Unassigned (Formsprag reference) | — | {} × {} × {} | {} |\n",
+            csk.designation(),
+            d.bore,
+            d.diameter,
+            d.width,
+            csk.mounting_description()
         ));
     }
     let mut wheels_table = String::from("| Part | OpenBuilds SKU | OD × bare width (mm) | Bearings | Internal shim, OD × bore × width (mm) |\n|---|---|---|---|---|\n");
@@ -176,7 +197,36 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
             .iter_mut()
             .find(|e| e["name"] == entry)
             .ok_or("manifest has no insertion workflow")?;
-        workflow["input_schema"]["properties"][field]["enum"] = json!(choices);
+        let property = &mut workflow["input_schema"]["properties"][field];
+        if entry == "make-csk" && field == "size" {
+            property
+                .as_object_mut()
+                .ok_or("missing CSK size property")?
+                .remove("enum");
+            let options: Vec<_> = bearings::csk::ALL
+                .into_iter()
+                .map(|csk| {
+                    let d = csk.dimensions();
+                    let mut title = format!(
+                        "{} — {} × {} × {} mm",
+                        csk.designation(),
+                        d.bore,
+                        d.diameter,
+                        d.width
+                    );
+                    let (inner, outer) = csk.keyways();
+                    for (label, key) in [("inner", inner), ("outer", outer)] {
+                        if let Some(key) = key {
+                            title.push_str(&format!("; {label} {} × {}", key.width, key.depth));
+                        }
+                    }
+                    json!({"const":csk.designation(), "title":title})
+                })
+                .collect();
+            property["oneOf"] = json!(options);
+        } else {
+            property["enum"] = json!(choices);
+        }
     }
     let mut commands: std::collections::BTreeSet<String> =
         serde_json::from_value(manifest["runtime"]["commands"].clone())

@@ -19,7 +19,9 @@ Select sketch points or circle centres, then choose a workflow:
 
 CSK parts have no assigned manufacturer, supplier or BOM part number. Drawing
 references remain separate from geometry. Custom and unsourced parts still count
-in the BOM. Purchasing assignments are a separate feature.
+in the BOM. Purchasing assignment is
+[future work for a shared component workflow](../../docs/parts-library.md#future-component-purchasing-workflow)
+after creation.
 
 With nothing selected, the part sits at the origin. Its centre plane sits on the
 point and its axle follows the sketch normal. Optional **Sketch** and **Sketch

@@ -97,7 +97,7 @@ fn run() -> Result<(), String> {
         )?;
     }
     let mut bearings_table = String::from(
-        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure |\n|---|---|---|---|---|\n",
+        "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure / mounting |\n|---|---|---|---|---|\n",
     );
     for bearing in bearings::ALL {
         let d = bearing.dimensions();
@@ -105,7 +105,10 @@ fn run() -> Result<(), String> {
             bearings::Closure::Open => "Open, visible balls",
             bearings::Closure::RubberSeals => "Rubber seals, both sides",
             bearings::Closure::MetalShields => "Metal shields, both sides",
-            bearings::Closure::Unmodeled => "Mounting envelope only",
+            bearings::Closure::Unmodeled => match bearing {
+                bearings::Bearing::FormspragCsk(csk) => csk.mounting_description(),
+                _ => unreachable!("only CSK has unmodeled closures"),
+            },
         };
         bearings_table.push_str(&format!(
             "| {} | {} | {} | {} × {} × {} | {closure} |\n",

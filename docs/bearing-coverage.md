@@ -68,5 +68,5 @@ omit hidden balls. Cages remain outside this representation. Never fill an open
 bearing with an invented closure.
 
 The [Formsprag CSK series](sources/csk.md) is a separate one-way clutch family.
-Its nine standard sizes are cataloged as mounting envelopes and do not count toward
+Its 42 sourced combinations are cataloged as mounting envelopes with keyways and do not count toward
 the radial-bearing parity table above.

@@ -10,7 +10,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub struct Bearings;
-pub const REVISION: &str = "3";
+pub const REVISION: &str = "4";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -64,6 +64,15 @@ impl Catalog for Bearings {
                 dimensions.push(Dimension::mm("closure_recess", recess));
             }
         }
+        if let Bearing::FormspragCsk(csk) = bearing {
+            let (inner, outer) = csk.keyways();
+            for (prefix, keyway) in [("inner_keyway", inner), ("outer_keyway", outer)] {
+                if let Some(keyway) = keyway {
+                    dimensions.push(Dimension::mm(&format!("{prefix}_width"), keyway.width));
+                    dimensions.push(Dimension::mm(&format!("{prefix}_depth"), keyway.depth));
+                }
+            }
+        }
         let mut sources = vec![Source {
             title: format!(
                 "{} {} product reference",
@@ -100,7 +109,7 @@ impl Catalog for Bearings {
                 entry: "make-bearing".into(),
             },
             notes: if bearing.is_csk() {
-                vec!["CSK is a one-way sprag clutch. Geometry is a mounting envelope only; internal rings, sprags, balls and dust protection are not represented. The single solid is unsuitable for mass prediction or motion simulation.".into()]
+                vec!["CSK is a one-way sprag clutch. Geometry includes the mounting envelope and catalog keyways, both facing local +Y. Internal rings, sprags, balls and closure surfaces are not represented; 2RS variants use their catalog widths. The single solid is unsuitable for mass prediction or motion simulation.".into()]
             } else {
                 vec!["Separate inner/outer rings and sourced closure surfaces; open B626 includes sourced exposed raceways and eight visible balls, without a cage. Hidden internals and closure thickness are not inferred; unsuitable for mass prediction.".into(),
                     "Supplier product identity does not establish a bearing manufacturer, material grade, clearance or precision class.".into()]

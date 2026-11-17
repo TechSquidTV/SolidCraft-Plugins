@@ -14,6 +14,7 @@ use plugin_kit::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+pub mod csk;
 mod profile;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
@@ -30,43 +31,24 @@ pub enum Bearing {
     MisumiB626ddu,
     #[serde(rename = "misumi-b608zz")]
     MisumiB608zz,
-    #[serde(rename = "formsprag-csk8")]
-    FormspragCsk8,
-    #[serde(rename = "formsprag-csk12")]
-    FormspragCsk12,
-    #[serde(rename = "formsprag-csk15")]
-    FormspragCsk15,
-    #[serde(rename = "formsprag-csk17")]
-    FormspragCsk17,
-    #[serde(rename = "formsprag-csk20")]
-    FormspragCsk20,
-    #[serde(rename = "formsprag-csk25")]
-    FormspragCsk25,
-    #[serde(rename = "formsprag-csk30")]
-    FormspragCsk30,
-    #[serde(rename = "formsprag-csk35")]
-    FormspragCsk35,
-    #[serde(rename = "formsprag-csk40")]
-    FormspragCsk40,
+    #[serde(rename = "formsprag-csk")]
+    FormspragCsk(csk::Csk),
 }
 
-pub const ALL: [Bearing; 15] = [
-    Bearing::OpenBuilds6252rs,
-    Bearing::OpenBuilds105zz,
-    Bearing::MisumiB626,
-    Bearing::MisumiB626zz,
-    Bearing::MisumiB626ddu,
-    Bearing::MisumiB608zz,
-    Bearing::FormspragCsk8,
-    Bearing::FormspragCsk12,
-    Bearing::FormspragCsk15,
-    Bearing::FormspragCsk17,
-    Bearing::FormspragCsk20,
-    Bearing::FormspragCsk25,
-    Bearing::FormspragCsk30,
-    Bearing::FormspragCsk35,
-    Bearing::FormspragCsk40,
-];
+pub const ALL: [Bearing; 6 + csk::ALL.len()] = {
+    let mut all = [Bearing::OpenBuilds6252rs; 6 + csk::ALL.len()];
+    all[1] = Bearing::OpenBuilds105zz;
+    all[2] = Bearing::MisumiB626;
+    all[3] = Bearing::MisumiB626zz;
+    all[4] = Bearing::MisumiB626ddu;
+    all[5] = Bearing::MisumiB608zz;
+    let mut i = 0;
+    while i < csk::ALL.len() {
+        all[i + 6] = Bearing::FormspragCsk(csk::ALL[i]);
+        i += 1;
+    }
+    all
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Closure {
@@ -169,15 +151,7 @@ impl Bearing {
                     name: "MISUMI",
                 }
             }
-            Self::FormspragCsk8
-            | Self::FormspragCsk12
-            | Self::FormspragCsk15
-            | Self::FormspragCsk17
-            | Self::FormspragCsk20
-            | Self::FormspragCsk25
-            | Self::FormspragCsk30
-            | Self::FormspragCsk35
-            | Self::FormspragCsk40 => Supplier {
+            Self::FormspragCsk(_) => Supplier {
                 catalog: "formsprag",
                 name: "Formsprag",
             },
@@ -201,9 +175,7 @@ impl Bearing {
             Self::MisumiB608zz => {
                 "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B608ZZ"
             }
-            Self::FormspragCsk8 | Self::FormspragCsk12 | Self::FormspragCsk15
-            | Self::FormspragCsk17 | Self::FormspragCsk20 | Self::FormspragCsk25
-            | Self::FormspragCsk30 | Self::FormspragCsk35 | Self::FormspragCsk40 => {
+            Self::FormspragCsk(_) => {
                 "https://www.formsprag.com/products/General-Purpose-Clutches/Bearing-Envelope-Design/CSK-Series"
             }
         }
@@ -218,15 +190,7 @@ impl Bearing {
             Self::MisumiB626zz => "B626ZZ",
             Self::MisumiB626ddu => "B626DDU",
             Self::MisumiB608zz => "B608ZZ",
-            Self::FormspragCsk8 => "CSK8",
-            Self::FormspragCsk12 => "CSK12",
-            Self::FormspragCsk15 => "CSK15",
-            Self::FormspragCsk17 => "CSK17",
-            Self::FormspragCsk20 => "CSK20",
-            Self::FormspragCsk25 => "CSK25",
-            Self::FormspragCsk30 => "CSK30",
-            Self::FormspragCsk35 => "CSK35",
-            Self::FormspragCsk40 => "CSK40",
+            Self::FormspragCsk(csk) => csk.designation(),
         }
     }
 
@@ -237,20 +201,12 @@ impl Bearing {
             Self::MisumiB626 => Closure::Open,
             Self::MisumiB626zz | Self::MisumiB608zz => Closure::MetalShields,
             Self::MisumiB626ddu => Closure::RubberSeals,
-            Self::FormspragCsk8
-            | Self::FormspragCsk12
-            | Self::FormspragCsk15
-            | Self::FormspragCsk17
-            | Self::FormspragCsk20
-            | Self::FormspragCsk25
-            | Self::FormspragCsk30
-            | Self::FormspragCsk35
-            | Self::FormspragCsk40 => Closure::Unmodeled,
+            Self::FormspragCsk(_) => Closure::Unmodeled,
         }
     }
 
     pub fn is_csk(self) -> bool {
-        matches!(self.closure(), Closure::Unmodeled)
+        matches!(self, Self::FormspragCsk(_))
     }
 
     fn open_race(self) -> Option<OpenRace> {
@@ -272,15 +228,10 @@ impl Bearing {
             Self::MisumiB626zz => (6.0, 19.0, 6.0, Some((4.75, 8.15, Some(0.5), 0.3))),
             Self::MisumiB626ddu => (6.0, 19.0, 6.0, Some((4.215, 8.1775, Some(0.11), 0.3))),
             Self::MisumiB608zz => (8.0, 22.0, 7.0, Some((6.1, 9.65, Some(0.6), 0.3))),
-            Self::FormspragCsk8 => (8.0, 22.0, 9.0, None),
-            Self::FormspragCsk12 => (12.0, 32.0, 10.0, None),
-            Self::FormspragCsk15 => (15.0, 35.0, 11.0, None),
-            Self::FormspragCsk17 => (17.0, 40.0, 12.0, None),
-            Self::FormspragCsk20 => (20.0, 47.0, 14.0, None),
-            Self::FormspragCsk25 => (25.0, 52.0, 15.0, None),
-            Self::FormspragCsk30 => (30.0, 62.0, 16.0, None),
-            Self::FormspragCsk35 => (35.0, 72.0, 17.0, None),
-            Self::FormspragCsk40 => (40.0, 80.0, 22.0, None),
+            Self::FormspragCsk(csk) => {
+                let d = csk.dimensions();
+                (d.bore, d.diameter, d.width, None)
+            }
         };
         Dimensions {
             bore,
@@ -317,6 +268,9 @@ impl Bearing {
                 ]),
                 json!({"name": feature, "body_name": name}),
             )?;
+            if let Self::FormspragCsk(csk) = self {
+                csk.cut_keyways(r, base, &name, frame)?;
+            }
             r.run(
                 "appearance.assign",
                 json!({"bodies": [name], "color": [160,160,160]}),
@@ -552,15 +506,15 @@ mod tests {
     fn csk_mounting_envelopes_match_formsprag_catalog() {
         // Independently transcribed metric dimensions from P-1352-FC, page 3.
         for (bearing, dimensions) in [
-            (Bearing::FormspragCsk8, [8.0, 22.0, 9.0]),
-            (Bearing::FormspragCsk12, [12.0, 32.0, 10.0]),
-            (Bearing::FormspragCsk15, [15.0, 35.0, 11.0]),
-            (Bearing::FormspragCsk17, [17.0, 40.0, 12.0]),
-            (Bearing::FormspragCsk20, [20.0, 47.0, 14.0]),
-            (Bearing::FormspragCsk25, [25.0, 52.0, 15.0]),
-            (Bearing::FormspragCsk30, [30.0, 62.0, 16.0]),
-            (Bearing::FormspragCsk35, [35.0, 72.0, 17.0]),
-            (Bearing::FormspragCsk40, [40.0, 80.0, 22.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk8), [8.0, 22.0, 9.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk12), [12.0, 32.0, 10.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk15), [15.0, 35.0, 11.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk17), [17.0, 40.0, 12.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk20), [20.0, 47.0, 14.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk25), [25.0, 52.0, 15.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk30), [30.0, 62.0, 16.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk35), [35.0, 72.0, 17.0]),
+            (Bearing::FormspragCsk(csk::Csk::Csk40), [40.0, 80.0, 22.0]),
         ] {
             let d = bearing.dimensions();
             assert_eq!([d.bore, d.diameter, d.width], dimensions);

@@ -1,0 +1,13 @@
+[package]
+name = "bearings"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Verified purchasable bearings and their exterior representations"
+
+[dependencies]
+plugin-kit.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+parts.workspace = true

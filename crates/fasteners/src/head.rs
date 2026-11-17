@@ -25,6 +25,7 @@
 //! is the width across the flats.
 
 use super::metric::same_mm;
+use plugin_kit::revolve::Segment;
 
 /// Which standard head to look up.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -240,7 +241,8 @@ pub fn standard_head(kind: HeadKind, nominal: f64) -> Option<StandardHead> {
 }
 
 /// The top of a round head. Dimensions are millimetres.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum Crown {
     /// A plain cylinder.
     Flat,
@@ -317,18 +319,6 @@ pub fn crown(kind: HeadKind, nominal: f64) -> Crown {
         HeadKind::Pan => pick(PAN_CROWN).map_or(Crown::Flat, |radius| Crown::Rounded { radius }),
         _ => Crown::Flat,
     }
-}
-
-/// One piece of a head's half profile, in the plane through the axis: x is the radius
-/// and y is the height above the bearing face.
-#[derive(Clone, Debug, PartialEq)]
-pub enum Segment {
-    Line(Vec<[f64; 2]>),
-    Arc {
-        start: [f64; 2],
-        through: [f64; 2],
-        end: [f64; 2],
-    },
 }
 
 /// The closed half profile of a crowned head, to revolve about the axis. It starts

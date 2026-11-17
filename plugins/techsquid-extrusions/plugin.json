@@ -1,128 +1,170 @@
 {
-  "id": "techsquid-extrusions",
-  "name": "Extrusions",
-  "version": "0.2.0",
-  "description": "MISUMI 5 series T-slot and OpenBuilds V-slot rails, with slot nuts. Place fixed-length components on points, or build independent rails along straight sketch lines.",
   "capabilities": [
     "commands@0.1"
   ],
+  "description": "MISUMI 5 series T-slot and OpenBuilds V-slot rails, with slot nuts. Place fixed-length components on points, or build independent rails along straight sketch lines.",
+  "id": "techsquid-extrusions",
+  "name": "Extrusions",
   "runtime": {
-    "module": "plugin.wasm",
+    "commands": [
+      "appearance.list",
+      "browser.visibility",
+      "component.activate",
+      "component.create",
+      "component.list",
+      "component.metadata",
+      "component.metadata.set",
+      "component.properties",
+      "construct.plane.along_path",
+      "construct.plane.axis_point",
+      "document.inspect",
+      "document.metadata.set",
+      "inspect.measure",
+      "joint.list",
+      "material.list",
+      "model.body_features",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent",
+      "parameters.list",
+      "parameters.users",
+      "selection.get",
+      "sketch.arc.three_point",
+      "sketch.circle.center",
+      "sketch.constraint.coincident",
+      "sketch.constraint.fix",
+      "sketch.create",
+      "sketch.dimension",
+      "sketch.finish",
+      "sketch.inspect",
+      "sketch.line",
+      "sketch.point",
+      "sketch.project",
+      "sketch.replace",
+      "solid.cylinder",
+      "solid.extrude",
+      "solid.hole",
+      "solid.move",
+      "solid.sphere",
+      "solid.sweep",
+      "timeline.group",
+      "timeline.inspect"
+    ],
     "entries": [
       {
-        "name": "make-extrusion",
         "effect": "edit",
         "input_schema": {
-          "type": "object",
-          "required": [
-            "slot",
-            "size"
-          ],
           "properties": {
+            "end_taps": {
+              "default": "None",
+              "description": "Tap every bore of the chosen end M5, 12 mm deep. Start is the placement point for fixed-length rails, or the source line’s start for sketch-driven rails.",
+              "enum": [
+                "None",
+                "Start",
+                "End",
+                "Both"
+              ],
+              "title": "Tapped ends",
+              "type": "string"
+            },
+            "hole_face": {
+              "default": "+Y",
+              "description": "The face the screws go in from, for the holes that name none: +Y and -Y are the two ends of the section's height, +X and -X of its width. A face with two slots gets a hole in each.",
+              "enum": [
+                "+Y",
+                "-Y",
+                "+X",
+                "-X"
+              ],
+              "title": "Holes from",
+              "type": "string"
+            },
+            "holes": {
+              "description": "Optional M5 screw-hole distances in mm, such as 10, 290. Measured from Start, or the chosen endpoint in Sketch driven mode. Each cuts a 9.5 mm access hole and a 5.5 mm clearance hole. A face name applies to following distances: +X 10, 290 -Y 150.",
+              "title": "Screw holes",
+              "type": "string"
+            },
+            "holes_from": {
+              "default": "Start",
+              "description": "Sketch driven only: measure screw-hole distances from this end of each path line. The offsets follow later length changes.",
+              "enum": [
+                "Start",
+                "End"
+              ],
+              "title": "Hole distances from",
+              "type": "string"
+            },
+            "length": {
+              "default": 500,
+              "description": "Fixed length only. Sketch-driven rails take their lengths from the path lines.",
+              "exclusiveMinimum": 0,
+              "maximum": 6000,
+              "title": "Length",
+              "type": "number",
+              "unit": "mm"
+            },
             "mode": {
-              "type": "string",
-              "title": "Mode",
+              "default": "Fixed length",
+              "description": "Fixed length places shared components on points. Sketch driven creates an independent rail on each chosen straight sketch line; edit the path to change the rails.",
               "enum": [
                 "Fixed length",
                 "Sketch driven"
               ],
-              "default": "Fixed length",
-              "description": "Fixed length places shared components on points. Sketch driven creates an independent rail on each chosen straight sketch line; edit the path to change the rails."
+              "title": "Mode",
+              "type": "string"
             },
-            "slot": {
-              "type": "string",
-              "title": "Slot",
-              "description": "T-slot is the MISUMI 5 series rail (HFS5, NFS5) with a 6 mm slot. V-slot is the OpenBuilds rail, whose slot faces are chamfered for wheels.",
-              "default": "T-slot",
-              "enum": [
-                "T-slot",
-                "V-slot"
-              ]
+            "path_lines": {
+              "description": "Sketch driven only: comma-separated line ids, such as l1, l2. With a named sketch and no ids, uses all its drawn straight lines. Otherwise select lines in one sketch. Up to 16 rails per run; machining may require smaller batches.",
+              "title": "Path lines",
+              "type": "string"
             },
             "size": {
-              "type": "string",
-              "title": "Size",
-              "description": "Width and height in tens of millimetres: 2040 is 20 mm along the sketch X and 40 mm along Y. A V-slot comes as 2020 to 2080.",
               "default": "2020",
+              "description": "Width and height in tens of millimetres: 2040 is 20 mm along the sketch X and 40 mm along Y. A V-slot comes as 2020 to 2080.",
               "enum": [
                 "2020",
                 "2040",
                 "2060",
                 "2080",
                 "4040"
-              ]
-            },
-            "length": {
-              "type": "number",
-              "title": "Length",
-              "description": "Fixed length only. Sketch-driven rails take their lengths from the path lines.",
-              "default": 500,
-              "exclusiveMinimum": 0,
-              "maximum": 6000,
-              "unit": "mm"
-            },
-            "end_taps": {
-              "type": "string",
-              "title": "Tapped ends",
-              "description": "Tap every bore of the chosen end M5, 12 mm deep. Start is the placement point for fixed-length rails, or the source line\u2019s start for sketch-driven rails.",
-              "default": "None",
-              "enum": [
-                "None",
-                "Start",
-                "End",
-                "Both"
-              ]
-            },
-            "thread_modeled": {
-              "type": "boolean",
-              "title": "Modeled thread",
-              "description": "Cut actual threads instead of cosmetic threads. Sketch-driven runs allow at most four modeled taps across all rails.",
-              "default": true
-            },
-            "holes": {
-              "type": "string",
-              "title": "Screw holes",
-              "description": "Optional M5 screw-hole distances in mm, such as 10, 290. Measured from Start, or the chosen endpoint in Sketch driven mode. Each cuts a 9.5 mm access hole and a 5.5 mm clearance hole. A face name applies to following distances: +X 10, 290 -Y 150."
-            },
-            "hole_face": {
-              "type": "string",
-              "title": "Holes from",
-              "description": "The face the screws go in from, for the holes that name none: +Y and -Y are the two ends of the section's height, +X and -X of its width. A face with two slots gets a hole in each.",
-              "default": "+Y",
-              "enum": [
-                "+Y",
-                "-Y",
-                "+X",
-                "-X"
-              ]
+              ],
+              "title": "Size",
+              "type": "string"
             },
             "sketch": {
-              "type": "string",
+              "description": "Fixed length: placement sketch. Sketch driven: the sketch containing the path lines; leave empty to use selected straight lines from one sketch.",
               "title": "Sketch",
-              "description": "Fixed length: placement sketch. Sketch driven: the sketch containing the path lines; leave empty to use selected straight lines from one sketch."
+              "type": "string"
             },
             "sketch_point": {
-              "type": "string",
+              "description": "Fixed length only. Point or circle ids in the placement sketch, such as c1 or c1.center. Leave empty to use the selection. Leave empty in Sketch driven mode.",
               "title": "Sketch point",
-              "description": "Fixed length only. Point or circle ids in the placement sketch, such as c1 or c1.center. Leave empty to use the selection. Leave empty in Sketch driven mode."
+              "type": "string"
             },
-            "path_lines": {
-              "type": "string",
-              "title": "Path lines",
-              "description": "Sketch driven only: comma-separated line ids, such as l1, l2. With a named sketch and no ids, uses all its drawn straight lines. Otherwise select lines in one sketch. Up to 16 rails per run; machining may require smaller batches."
-            },
-            "holes_from": {
-              "type": "string",
-              "title": "Hole distances from",
-              "default": "Start",
+            "slot": {
+              "default": "T-slot",
+              "description": "T-slot is the MISUMI 5 series rail (HFS5, NFS5) with a 6 mm slot. V-slot is the OpenBuilds rail, whose slot faces are chamfered for wheels.",
               "enum": [
-                "Start",
-                "End"
+                "T-slot",
+                "V-slot"
               ],
-              "description": "Sketch driven only: measure screw-hole distances from this end of each path line. The offsets follow later length changes."
+              "title": "Slot",
+              "type": "string"
+            },
+            "thread_modeled": {
+              "default": true,
+              "description": "Cut actual threads instead of cosmetic threads. Sketch-driven runs allow at most four modeled taps across all rails.",
+              "title": "Modeled thread",
+              "type": "boolean"
             }
-          }
+          },
+          "required": [
+            "slot",
+            "size"
+          ],
+          "type": "object"
         },
+        "name": "make-extrusion",
         "slots": [
           {
             "kind": "menu",
@@ -131,74 +173,74 @@
         ]
       },
       {
-        "name": "make-t-nut",
         "effect": "edit",
         "input_schema": {
-          "type": "object",
+          "properties": {
+            "along": {
+              "default": "Sketch X",
+              "description": "The sketch axis the rail runs along, so the nut lies along the slot.",
+              "enum": [
+                "Sketch X",
+                "Sketch Y"
+              ],
+              "title": "Rail runs along",
+              "type": "string"
+            },
+            "size": {
+              "default": "M5",
+              "description": "The thread the nut is tapped with.",
+              "enum": [
+                "M5"
+              ],
+              "title": "Size",
+              "type": "string"
+            },
+            "sketch": {
+              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point.",
+              "title": "Sketch",
+              "type": "string"
+            },
+            "sketch_point": {
+              "description": "Optional. The id of a point or circle in that sketch, on the rail's face in the middle of a slot, such as c1 or c1.center. Leave empty to use the selection.",
+              "title": "Sketch point",
+              "type": "string"
+            },
+            "slot": {
+              "default": "T-slot",
+              "description": "The rail the nut sits in. The nut hangs under the lips, 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot.",
+              "enum": [
+                "T-slot",
+                "V-slot"
+              ],
+              "title": "Slot",
+              "type": "string"
+            },
+            "thread_modeled": {
+              "default": true,
+              "description": "On cuts the thread into the hole. Off drills the tap hole and lists the thread.",
+              "title": "Modeled thread",
+              "type": "boolean"
+            },
+            "type": {
+              "default": "Pre-assembly",
+              "description": "Pre-assembly is MISUMI HNTT5, 10 mm long, which slides in from the end of the rail. Post-assembly is MISUMI HNTP5, 17 mm long, which goes in through the slot and has a spring ball under it.",
+              "enum": [
+                "Pre-assembly",
+                "Post-assembly"
+              ],
+              "title": "Type",
+              "type": "string"
+            }
+          },
           "required": [
             "type",
             "size",
             "slot",
             "along"
           ],
-          "properties": {
-            "type": {
-              "type": "string",
-              "title": "Type",
-              "description": "Pre-assembly is MISUMI HNTT5, 10 mm long, which slides in from the end of the rail. Post-assembly is MISUMI HNTP5, 17 mm long, which goes in through the slot and has a spring ball under it.",
-              "default": "Pre-assembly",
-              "enum": [
-                "Pre-assembly",
-                "Post-assembly"
-              ]
-            },
-            "size": {
-              "type": "string",
-              "title": "Size",
-              "description": "The thread the nut is tapped with.",
-              "default": "M5",
-              "enum": [
-                "M5"
-              ]
-            },
-            "slot": {
-              "type": "string",
-              "title": "Slot",
-              "description": "The rail the nut sits in. The nut hangs under the lips, 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot.",
-              "default": "T-slot",
-              "enum": [
-                "T-slot",
-                "V-slot"
-              ]
-            },
-            "along": {
-              "type": "string",
-              "title": "Rail runs along",
-              "description": "The sketch axis the rail runs along, so the nut lies along the slot.",
-              "default": "Sketch X",
-              "enum": [
-                "Sketch X",
-                "Sketch Y"
-              ]
-            },
-            "thread_modeled": {
-              "type": "boolean",
-              "title": "Modeled thread",
-              "description": "On cuts the thread into the hole. Off drills the tap hole and lists the thread.",
-              "default": true
-            },
-            "sketch": {
-              "type": "string",
-              "title": "Sketch",
-              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point."
-            },
-            "sketch_point": {
-              "type": "string",
-              "title": "Sketch point",
-              "description": "Optional. The id of a point or circle in that sketch, on the rail's face in the middle of a slot, such as c1 or c1.center. Leave empty to use the selection."
-            }
-          }
+          "type": "object"
         },
+        "name": "make-t-nut",
         "slots": [
           {
             "kind": "menu",
@@ -207,44 +249,12 @@
         ]
       }
     ],
-    "commands": [
-      "selection.get",
-      "inspect.measure",
-      "sketch.inspect",
-      "sketch.create",
-      "sketch.line",
-      "sketch.arc.three_point",
-      "sketch.circle.center",
-      "sketch.finish",
-      "browser.visibility",
-      "solid.extrude",
-      "solid.hole",
-      "solid.move",
-      "solid.cylinder",
-      "solid.sphere",
-      "component.list",
-      "component.create",
-      "component.metadata",
-      "component.metadata.set",
-      "component.activate",
-      "occurrence.copy",
-      "occurrence.move",
-      "occurrence.reparent",
-      "timeline.group",
-      "solid.sweep",
-      "construct.plane.along_path",
-      "construct.plane.axis_point",
-      "sketch.point",
-      "sketch.constraint.fix",
-      "sketch.constraint.coincident",
-      "sketch.dimension",
-      "sketch.project",
-      "sketch.replace"
-    ],
     "limits": {
+      "deadline_ms": 30000,
       "fuel": 1000000000,
-      "memory_mib": 64,
-      "deadline_ms": 30000
-    }
-  }
+      "memory_mib": 64
+    },
+    "module": "plugin.wasm"
+  },
+  "version": "0.3.0"
 }

@@ -10,6 +10,7 @@
 pub mod catalog;
 pub mod insert;
 pub mod knurl;
+pub mod provider;
 
 use fasteners::FOLDER;
 use insert::{HoleCut, HoleShape, Params};
@@ -28,8 +29,10 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         // a run that would make nothing but a hole is refused.
         let skipped = insert::CREATE.nothing_selected(p.create)?;
         let places = [Placement::on_origin()];
-        let placed = place_inserts(r, p, &places)?;
-        return Ok(summary(p, &places, &[], skipped, Some(&placed)));
+        let (placed, report) = place_inserts(r, p, &places)?;
+        let mut reply = summary(p, &places, &[], skipped, Some(&placed));
+        reply["library"] = report;
+        return Ok(reply);
     }
     // The holes go first: the insert would otherwise be a body under the point too.
     let mut drilled: Vec<String> = Vec::new();
@@ -45,33 +48,57 @@ pub fn make_insert<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         }
     }
     let places: Vec<Placement> = spots.iter().map(|spot| spot.place).collect();
-    let placed = if p.create.part() {
-        Some(place_inserts(r, p, &places)?)
+    let (placed, report) = if p.create.part() {
+        let (placed, report) = place_inserts(r, p, &places)?;
+        (Some(placed), report)
     } else {
-        None
+        (None, Value::Null)
     };
-    Ok(summary(p, &places, &drilled, false, placed.as_ref()))
+    let mut reply = summary(p, &places, &drilled, false, placed.as_ref());
+    reply["library"] = report;
+    Ok(reply)
 }
 
 /// The plugin id, which an insert component's metadata names.
 pub const PLUGIN: &str = "techsquid-inserts";
 
 /// One insert component, built once and placed on every point.
-fn place_inserts<R: Runner>(r: &mut R, p: &Params, places: &[Placement]) -> Result<Placed, String> {
+fn place_inserts<R: Runner>(
+    r: &mut R,
+    p: &Params,
+    places: &[Placement],
+) -> Result<(Placed, Value), String> {
     let base = body_base(p);
-    let description = format!("CNC Kitchen heat-set insert {}", p.size);
+    let representation = provider::representation(p);
+    let custom = representation.product.kind == parts::ProductKind::Custom;
+    let description = format!(
+        "{} heat-set insert {}",
+        if custom { "Custom" } else { "CNC Kitchen" },
+        p.size
+    );
     let def = Definition {
         plugin: PLUGIN,
         base: &base,
         description: &description,
-        folder: FOLDER,
-        bom_type: "purchased",
+        bom_type: if custom { "normal" } else { "purchased" },
         // `#2-56` has no tap name here, so its bore is plain and has no thread to cut.
         site: Site::for_thread(p.modeled && p.plain_bore.is_none()),
     };
-    fasten::place_all(r, &def, places, |mut r, name, site| {
-        build_insert(&mut r, p, site, name)
-    })
+    let mut library = fasten::Library::new(
+        r,
+        fasten::Budget {
+            creation_calls: 128,
+            placements: places.len(),
+        },
+    )?;
+    let handle = library.ensure(
+        &def,
+        &provider::part_number(p)?,
+        &representation,
+        |library, name, site| library.geometry(name, |mut r| build_insert(&mut r, p, site, name)),
+    )?;
+    let placed = library.place_all(&handle, places, FOLDER)?;
+    Ok((placed, library.finish()?))
 }
 
 /// The body name before any number: `Insert M3 x 5.7`. The thread and the length are
@@ -266,30 +293,19 @@ fn revolve<R: Runner>(
     r: &mut R,
     place: &Placement,
     section: &[[f64; 2]],
-    mut feature: Value,
+    feature: Value,
 ) -> Result<Value, String> {
     let name = feature["name"].as_str().unwrap_or("Insert").to_string();
-    let sketch = r.run(
-        "sketch.create",
-        json!({
-            "name": format!("{name} section"),
-            "plane": {
-                "origin": place.point,
-                "x_dir": place.x_dir,
-                "y_dir": opposite(place.normal),
-            },
-        }),
-    )?;
-    let sketch_id = sketch_id(&sketch)?;
-    r.run(
-        "sketch.line",
-        json!({"sketch": sketch_id, "closed": true, "points": section}),
-    )?;
-    r.run("sketch.finish", json!({}))?;
-    feature["sketch"] = json!(sketch_id);
-    // The sketch's y axis is the insert's axis.
-    feature["axis"] = json!("y");
-    r.run("solid.revolve", feature)
+    plugin_kit::revolve::build(
+        r,
+        &Placement {
+            normal: opposite(place.normal),
+            ..*place
+        },
+        &format!("{name} section"),
+        plugin_kit::revolve::Section::Solid(section),
+        feature,
+    )
 }
 
 /// One helical band of the knurl.
@@ -721,7 +737,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
-                        "plane": {
+                        "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
                             "y_dir": [0.0, 1.0, 0.0]
@@ -755,8 +771,8 @@ mod tests {
     }
 
     #[test]
-    fn a_modeled_unified_thread_builds_a_cosmetic_bore() {
-        let (summary, calls) = commands(json!({"size": "1/4-20 × 12.7", "thread_modeled": true}));
+    fn a_cosmetic_unified_thread_builds_a_cosmetic_bore() {
+        let (summary, calls) = commands(json!({"size": "1/4-20 × 12.7", "thread_modeled": false}));
         let hole = last(&calls, "solid.hole");
         assert_eq!(hole["thread"], "1/4-20 UNC");
         assert_eq!(hole["modeled"], false);
@@ -782,7 +798,7 @@ mod tests {
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
                 ]}),
                 "sketch.inspect" => json!({
-                    "plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
                         {"id": "c2.center", "world": [30.0, 10.0, 10.0]}
@@ -1014,31 +1030,32 @@ mod tests {
                 "thread_modeled"
             ]
         );
-        assert_eq!(
-            manifest["runtime"]["commands"],
-            json!([
-                "selection.get",
-                "inspect.measure",
-                "sketch.inspect",
-                "sketch.create",
-                "sketch.line",
-                "sketch.finish",
-                "solid.revolve",
-                "solid.sweep",
-                "browser.visibility",
-                "solid.hole",
-                "solid.move",
-                "component.list",
-                "component.create",
-                "component.metadata",
-                "component.metadata.set",
-                "component.activate",
-                "occurrence.copy",
-                "occurrence.move",
-                "occurrence.reparent",
-                "timeline.group"
-            ])
-        );
+        let expected: std::collections::BTreeSet<_> = [
+            "selection.get",
+            "inspect.measure",
+            "sketch.inspect",
+            "sketch.create",
+            "sketch.line",
+            "sketch.finish",
+            "solid.revolve",
+            "solid.sweep",
+            "browser.visibility",
+            "solid.hole",
+            "solid.move",
+            "component.list",
+            "component.create",
+            "component.metadata",
+            "component.metadata.set",
+            "component.activate",
+            "occurrence.copy",
+            "occurrence.move",
+            "occurrence.reparent",
+            "timeline.group",
+        ]
+        .into_iter()
+        .chain(fasten::commands())
+        .collect();
+        assert_eq!(manifest["runtime"]["commands"], json!(expected));
     }
 
     /// A design that already holds bodies. It records the body name each new body asks for.
@@ -1053,8 +1070,16 @@ mod tests {
         }
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
-            // Placing the fastener is checked on its own; these check the build.
-            if let Some(reply) = plugin_kit::component::stand_in(command) {
+            // Include the pre-existing bodies in the same inventory the library reads.
+            if command == "component.list" {
+                let mut reply = fasten::stand_in(command).unwrap();
+                reply["components"].as_array_mut().unwrap().push(json!({
+                    "id":0,"name":"Design","bodies":self.names,"features":[],
+                    "sketches":[],"construction":[],"children":[],"occurrences":[]
+                }));
+                return Ok(reply);
+            }
+            if let Some(reply) = fasten::stand_in(command) {
                 return Ok(reply);
             }
             Ok(match command {
@@ -1065,7 +1090,7 @@ mod tests {
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
                 "sketch.inspect" => json!({
-                    "plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "a", "world": [10.0, 0.0, 5.0]},
                         {"id": "b", "world": [20.0, 0.0, 5.0]},
@@ -1085,10 +1110,6 @@ mod tests {
                 }
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             })
-        }
-
-        fn body_names(&mut self) -> Vec<String> {
-            self.names.clone()
         }
     }
 
@@ -1150,13 +1171,14 @@ mod tests {
 }
 
 plugin_kit::guest! {
-    entry: "make-insert",
-    noun: "insert",
     manifest: include_str!("../plugin.json"),
-    parse: crate::insert::parse,
-    make: crate::make_insert,
-    describe: |p: &crate::insert::Params| {
-        format!("{}: {} insert, {} mm", insert::CREATE.label(p.create), p.thread, p.length)
-    },
-    aliases: &[],
+    entries: [{
+        entry: "make-insert",
+        noun: "insert",
+        parse: crate::insert::parse,
+        make: crate::make_insert,
+        describe: |p: &crate::insert::Params| {
+            format!("{}: {} insert, {} mm", insert::CREATE.label(p.create), p.thread, p.length)
+        },
+    }],
 }

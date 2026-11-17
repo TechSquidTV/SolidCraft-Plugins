@@ -1,14 +1,46 @@
 {
-  "format": "solidcraft/56",
+  "format": "solidcraft/57",
   "format_pending": [
-    "cell-grid-feature",
-    "frame-member-locate",
-    "frame-standard-sizes",
-    "occurrence-move-expressions",
-    "pattern-names-by-source"
+    "extrude-to-object-keeps-picked-placements",
+    "linked-cosmetic-threads",
+    "plane-at-angle-follows-named-axis"
   ],
   "name": "rails",
   "units": "mm",
+  "metadata": {
+    "org.techsquid.parts.index": {
+      "definitions": {
+        "2f08b815a598ca88a505fb80de0152d9d31894e6601a77f70c5f7cabb8afa514": [
+          39
+        ],
+        "47434a91fc18d2bc2b6490123122cb9eec22e1b22a7091c94951b7d9fa800bb3": [
+          14
+        ],
+        "4aaff955cc1296a902cbdc2d811b9b4815e9688bfd9e2a8a1ac73e0537df950a": [
+          29
+        ],
+        "7ea60f759b80d183b616aafa5ec6c78295c4e85a2eb95b7758f2da6fac1d39db": [
+          34
+        ],
+        "7ef06c0b147b750cdef847e1fe1d53ca1a23ce4307ef31ef9477ad49a001ef63": [
+          24
+        ],
+        "9c8aca5a9774fd860d15da065c82f8806a05d0f133a13e3e845046f3c1be9c12": [
+          2
+        ],
+        "c50d2a9e9dfccb2022f5c9feba2b487c83b402b8b798f96eb8b26c9831622b29": [
+          44
+        ],
+        "d26b5a653d64ccfa384ac52a5136efb3a3d8730946771cd81213f49689faa7ea": [
+          19
+        ],
+        "fa2bd2b7936cbb31a22ddc6ff0b6bf9a9f44f3fe86f88466850e08ea40ddcc9f": [
+          9
+        ]
+      },
+      "version": 1
+    }
+  },
   "params": [],
   "features": [
     {
@@ -109,10 +141,10 @@
       }
     },
     {
-      "id": 6,
+      "id": 4,
       "name": "T-slot 2020 x 40: Section",
       "suppressed": false,
-      "component": 4,
+      "component": 2,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -1763,7 +1795,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 5,
       "name": "T-slot 2020 x 40: Rail",
       "suppressed": false,
       "body_names": [
@@ -1772,9 +1804,9 @@
       "param_names": [
         "d1"
       ],
-      "component": 4,
+      "component": 2,
       "type": "extrude",
-      "sketch": 6,
+      "sketch": 4,
       "profiles": {
         "type": "curves",
         "loops": [
@@ -25983,6 +26015,32 @@
     {
       "id": 2,
       "identification_color_index": 0,
+      "name": "T-slot 2020 x 40",
+      "parent": 7,
+      "metadata": {
+        "bom_type": "normal",
+        "description": "20 x 20 mm T-slot aluminium extrusion, 40 mm long",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2020\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "1d3637f61bd0053a84b515b00d0d8b038084f7711bf865dbf79bb30c24e5abb7",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "Custom nfs5-2020 [e4a4e1c5a481c5588d1f09030ff775e2e32dce4745b2ca30b948b46e9ce23395]"
+      }
+    },
+    {
+      "id": 7,
+      "identification_color_index": 1,
       "name": "Extrusions",
       "parent": 0,
       "metadata": {
@@ -25990,183 +26048,211 @@
       }
     },
     {
-      "id": 4,
-      "identification_color_index": 1,
-      "name": "T-slot 2020 x 40",
-      "parent": 2,
-      "metadata": {
-        "bom_type": "purchased",
-        "description": "20 x 20 mm T-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "86da8d95d62b52a2",
-          "plugin": "techsquid-extrusions",
-          "site": [
-            0.0,
-            0.0,
-            0.0
-          ]
-        },
-        "part_number": "T-slot 2020 x 40"
-      }
-    },
-    {
       "id": 9,
       "identification_color_index": 2,
       "name": "T-slot 2040 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 40 mm T-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "e36cac607b1c62fd",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2040\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2040\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "9e245c7d30085c654086419f7ecd39208ec797e78f7ec7f40ee3162f02032d83",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "T-slot 2040 x 40"
+        "part_number": "Custom nfs5-2040 [ab029ee94a83bf506d3f98e238d6b5b2275c4d3b894af3421cb19043c941ec70]"
       }
     },
     {
       "id": 14,
       "identification_color_index": 3,
       "name": "T-slot 2060 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 60 mm T-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "c02e3cbbec959fda",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2060\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2060\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "e27f5e0627ebf7d97552147be08abf2d6b61e0e8580457e28900a93e9a32335a",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "T-slot 2060 x 40"
+        "part_number": "Custom nfs5-2060 [65b234af694a78fde9fa9713ecd9220b9985728f691e8147ac69b5691a6c1c1a]"
       }
     },
     {
       "id": 19,
       "identification_color_index": 4,
       "name": "T-slot 2080 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 80 mm T-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "4b13e6ef5248ca88",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2080\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-2080\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "0d311301b36a04746950e7e14abc914f966270a1536e335913bf5f380c00df95",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "T-slot 2080 x 40"
+        "part_number": "Custom nfs5-2080 [87e9438a72eb8fec902849675ef3e03caf77d8f42b049a8af02178f657cb730f]"
       }
     },
     {
       "id": 24,
       "identification_color_index": 5,
       "name": "T-slot 4040 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "40 x 40 mm T-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "5bb17d39f26cfe9b",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-4040\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"misumi-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"nfs5-4040\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "7b68874f41675560d0397dce8becbe03e994d81b13cd1163c8eb640eb4a20fb2",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "T-slot 4040 x 40"
+        "part_number": "Custom nfs5-4040 [a0eeb005478abfbb7516a142b9b50befca7f330b855f4e324f0bbd08d5783746]"
       }
     },
     {
       "id": 29,
       "identification_color_index": 6,
       "name": "V-slot 2020 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 20 mm V-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "54025e631cf9660c",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2020\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2020\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "92b71a60c307ae302db1c925efaa710c0a6ff4ea56b937b2f7e3ac08b771df16",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "V-slot 2020 x 40"
+        "part_number": "Custom v-slot-2020 [89318e58f5c22e28083b1ebee7f0f7b22c7b008c8bea5e64535c07d170a34232]"
       }
     },
     {
       "id": 34,
       "identification_color_index": 7,
       "name": "V-slot 2040 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 40 mm V-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "65fffd661660b1bf",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2040\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2040\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "87aaecea0376645b41fa431dec398a34192b2ea966e9fb17f14ea5b13d57a59e",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "V-slot 2040 x 40"
+        "part_number": "Custom v-slot-2040 [20f307616e9f278613d3de60b1d3e2d22c2f825243fe6fad547f00355775ab14]"
       }
     },
     {
       "id": 39,
       "identification_color_index": 8,
       "name": "V-slot 2060 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 60 mm V-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "cda6f867b10c28a7",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2060\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2060\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "2bb88a7737c3d167bdbed74cfe5fd3eeab94c11eea44233b86ffbe7ec69bc0ec",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "V-slot 2060 x 40"
+        "part_number": "Custom v-slot-2060 [522bb9f1e9a9c9b5b9dd65aad4199044e274aedd620be1e4db3a581be66f07f4]"
       }
     },
     {
       "id": 44,
       "identification_color_index": 9,
       "name": "V-slot 2080 x 40",
-      "parent": 2,
+      "parent": 7,
       "metadata": {
-        "bom_type": "purchased",
+        "bom_type": "normal",
         "description": "20 x 80 mm V-slot aluminium extrusion, 40 mm long",
-        "dev.threadcraft": {
-          "geometry": "6eb774885303d52f",
-          "plugin": "techsquid-extrusions",
+        "org.techsquid.parts": {
+          "creator": "techsquid-extrusions",
+          "product": "{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2080\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"plain\",\"product\":{\"catalog\":\"openbuilds-profile\",\"configuration\":{\"end_taps\":\"None\",\"holes\":[],\"kind\":\"rail\",\"length_mm\":40.0},\"kind\":\"custom\",\"members\":[],\"part\":\"v-slot-2080\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
-          ]
+          ],
+          "snapshot": {
+            "sha256": "589a12816ff749c89cf9409b2ee9806eddacee00b197a3dee636b03cdb2fac39",
+            "version": 2
+          },
+          "version": 1
         },
-        "part_number": "V-slot 2080 x 40"
+        "part_number": "Custom v-slot-2080 [6a42f147638b852fa4d2bee6075cd955a76720ac0b0615f69396cd94e1cd3456]"
       }
     }
   ],
@@ -26175,6 +26261,39 @@
     {
       "id": 3,
       "component": 2,
+      "parent": 7,
+      "name": "T-slot 2020 x 40:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          55.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 8,
+      "component": 7,
       "parent": 0,
       "name": "Extrusions:1",
       "transform": [
@@ -26206,42 +26325,9 @@
       "grounded": false
     },
     {
-      "id": 5,
-      "component": 4,
-      "parent": 2,
-      "name": "T-slot 2020 x 40:1",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          0.0,
-          55.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
-    },
-    {
       "id": 10,
       "component": 9,
-      "parent": 2,
+      "parent": 7,
       "name": "T-slot 2040 x 40:1",
       "transform": [
         [
@@ -26274,7 +26360,7 @@
     {
       "id": 15,
       "component": 14,
-      "parent": 2,
+      "parent": 7,
       "name": "T-slot 2060 x 40:1",
       "transform": [
         [
@@ -26307,7 +26393,7 @@
     {
       "id": 20,
       "component": 19,
-      "parent": 2,
+      "parent": 7,
       "name": "T-slot 2080 x 40:1",
       "transform": [
         [
@@ -26340,7 +26426,7 @@
     {
       "id": 25,
       "component": 24,
-      "parent": 2,
+      "parent": 7,
       "name": "T-slot 4040 x 40:1",
       "transform": [
         [
@@ -26373,7 +26459,7 @@
     {
       "id": 30,
       "component": 29,
-      "parent": 2,
+      "parent": 7,
       "name": "V-slot 2020 x 40:1",
       "transform": [
         [
@@ -26406,7 +26492,7 @@
     {
       "id": 35,
       "component": 34,
-      "parent": 2,
+      "parent": 7,
       "name": "V-slot 2040 x 40:1",
       "transform": [
         [
@@ -26439,7 +26525,7 @@
     {
       "id": 40,
       "component": 39,
-      "parent": 2,
+      "parent": 7,
       "name": "V-slot 2060 x 40:1",
       "transform": [
         [
@@ -26472,7 +26558,7 @@
     {
       "id": 45,
       "component": 44,
-      "parent": 2,
+      "parent": 7,
       "name": "V-slot 2080 x 40:1",
       "transform": [
         [
@@ -26505,12 +26591,12 @@
   ],
   "timeline_groups": [
     {
-      "id": 8,
+      "id": 6,
       "name": "T-slot 2020 x 40",
       "parent": null,
       "features": [
-        6,
-        7
+        4,
+        5
       ]
     },
     {

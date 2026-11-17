@@ -13,8 +13,7 @@ use crate::{Placement, Runner};
 pub const COMMAND: &str = "timeline.group";
 
 /// Runs `work`, then folds every sketch and feature it made into one folder named `name`.
-/// The folder is only for reading the timeline, so a host that cannot make one keeps
-/// what `work` made. A `work` that fails makes no folder.
+/// Failure to group propagates to the host transaction, as does a build failure.
 pub fn folded<R, T, F>(r: &mut R, name: &str, work: F) -> Result<T, String>
 where
     R: Runner,
@@ -27,7 +26,7 @@ where
     let out = work(&mut made)?;
     let rows = made.rows;
     if !rows.is_empty() {
-        let _ = r.run(COMMAND, json!({"name": name, "features": rows}));
+        r.run(COMMAND, json!({"name": name, "features": rows}))?;
     }
     Ok(out)
 }
@@ -107,9 +106,9 @@ mod tests {
     }
 
     #[test]
-    fn a_host_without_folders_keeps_the_work() {
+    fn a_grouping_failure_propagates_for_transaction_rollback() {
         let mut host = Timeline(Vec::new(), 0, false);
-        assert_eq!(folded(&mut host, "Nut pockets M6", pocket), Ok(7));
+        assert!(folded(&mut host, "Nut pockets M6", pocket).is_err());
     }
 
     #[test]

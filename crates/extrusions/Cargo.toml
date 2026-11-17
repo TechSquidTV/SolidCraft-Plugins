@@ -7,3 +7,4 @@ publish.workspace = true
 description = "Slotted aluminium extrusion profiles for the TechSquid SolidCraft plugins"
 
 [dependencies]
+serde.workspace = true

@@ -1,6 +1,6 @@
 # Heat-set inserts
 
-A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-insert`. For every sketch point or circle you select, it drills the hole for the insert into the part under that point and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)).
+A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). The `make-insert` workflow drills the hole for every sketch point or circle you select and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)).
 
 ![An M3 x 5.7 heat-set insert: two star-shaped knurls twisting opposite ways with a groove between them, the chamfer under the lower knurl, the smooth pilot at the tip, and the threaded bore](insert.png)
 
@@ -28,7 +28,7 @@ Select a sketch point, or a circle, before you open the dialog. The face end sit
 
 Radii are fractions of the top ring's points: the valley 0.85, the middle ring's points 0.97, the groove 0.83, the neck 0.79 and the pilot 0.875, but never wider than the plastic hole D2. Along the insert, the top ring is 0.29 of the length, the groove 0.11, the neck 0.10 and the pilot 0.135, and the middle ring and its chamfer take the rest. Both knurls run at 50° from the axis. On a long insert the twist stops at 40° so the teeth do not fold through each other. Those proportions are measured off CNC Kitchen's section drawing, and the tooth count and the hand of each knurl off their photographs. On a large insert, or a diameter set close to the thread, the valley, the groove and the neck are lifted so they stay outside the bore.
 
-`solid.hole` bores that body and threads it. The bore targets the new body only, so it does not continue into the part underneath. Metric threads can be cosmetic or modeled. Unified and pipe sizes stay cosmetic, even with Modeled thread on. `#2-56` is a plain bore of about 1.731 mm, because SolidCraft's tap catalogue starts at `#4-40`.
+`solid.hole` bores that body and threads it. The bore targets the new body only, so it does not continue into the part underneath. Metric threads can be cosmetic or modeled. Unified and pipe sizes support cosmetic threads only; requesting modeled threads is rejected. `#2-56` is a plain bore of about 1.731 mm, because SolidCraft's tap catalogue starts at `#4-40`.
 
 The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall beside that hole (`min_wall`), and a minimum blind depth of the insert length plus 1 mm (`blind_depth`). A length you type updates that blind depth, and a diameter you type leaves the hole and wall empty. The reply also lists `hole` (what was drilled), `drilled` (the bodies it went into), `count` and `points`.
 
@@ -46,9 +46,18 @@ The reply gives the plastic hole diameter D2 (`plastic_hole`), the minimum wall 
 | `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas: `c1, c2` |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.revolve` (the smooth core and the middle chamfer), `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package uses the shared [verified component library](../../docs/parts-library.md). Geometry and workflow commands include `selection.get`, `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.finish`, `solid.revolve` (the smooth core and the middle chamfer), `solid.sweep`, `browser.visibility` (to hide the knurl sketches), `solid.move` (an insert whose thread is cut is made on the origin and moved aside before its bore is tapped), `solid.hole`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 `short` and `Voron` mark a second row of the same thread. D1 is the insert diameter, D2 is the plastic hole, and W is the minimum wall beside that hole.
+
+## Product identity
+
+Shared internal definitions retain sourced dimensions and configuration rules.
+The package exposes `make-insert` only; catalog discovery is not available.
+Cosmetic and modeled threads are representations of the same product. Three rows
+absent from the cited dimension guide—M1.6 × 2.5, M6 × 6.8 short, and M8 × 6.8
+short—use custom identity, as do explicit dimension overrides. See the
+[shared part-definition and reuse rules](../../docs/parts-library.md).
 
 ## Metric inserts
 
@@ -114,7 +123,7 @@ A hole keeps its kind and size in its own name because it stays in the part, and
 
 ## Older field names
 
-The plugins share one set of field names. Scripts written for the earlier names still work: `modeled` for `thread_modeled`.
+Breaking change: use `thread_modeled` instead of `modeled`. Retired or unknown input fields are rejected. Explicitly requesting modeled Unified or pipe threads is an error; select cosmetic geometry. The script default is modeled for metric sizes and cosmetic for other sizes.
 
 ## License
 

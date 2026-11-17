@@ -6,6 +6,7 @@
 //! both ends of the bore are countersunk.
 
 pub mod nut;
+pub mod provider;
 mod seat;
 
 use fasteners::hex::{self, Hex};
@@ -13,7 +14,7 @@ use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
-use plugin_kit::host::{add_new, changed_bodies, free_body_name, sketch_id};
+use plugin_kit::host::{add_new, changed_bodies, sketch_id};
 use plugin_kit::name;
 use plugin_kit::place::{self, opposite, Placement};
 use plugin_kit::timeline;
@@ -39,21 +40,30 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         // The pockets go first: a nut would otherwise be cut by the next one's pocket.
         let sink = match &p.pocket {
             Some(pocket) => {
+                let active = fasten::Activation::read(r)?;
                 // A sketch and a cut for every pocket and a bolt hole for every sketch:
                 // one folder in the part's timeline.
                 drilled = timeline::folded(r, &pockets_name(p), |mut r| {
                     let mut drilled: Vec<String> = Vec::new();
+                    let mut names = name::feature_names(&mut r)?;
                     for (sketch, _) in place::by_sketch(&spots) {
-                        let plane = pocket_plane(&mut r, sketch, &p.designation)?;
+                        let plane_name = name::reserve(
+                            &mut names,
+                            &format!("Nut pockets {}: Plane", p.designation),
+                        );
+                        let plane = pocket_plane(&mut r, sketch, &plane_name, &active)?;
                         for spot in spots.iter().filter(|spot| spot.sketch == sketch) {
-                            add_new(&mut drilled, cut_pocket(&mut r, p, pocket, spot, &plane)?);
+                            add_new(
+                                &mut drilled,
+                                cut_pocket(&mut r, p, pocket, spot, &plane, &mut names)?,
+                            );
                         }
                     }
                     for (sketch, points) in place::by_sketch(&spots) {
                         let mut hole = json!({
                             "sketch": sketch,
                             "points": points,
-                            "name": format!("Bolt hole {}", p.designation),
+                            "name": name::reserve(&mut names, &format!("Bolt hole {}", p.designation)),
                         });
                         pocket.clearance.apply(&mut hole);
                         // Through the parts the pockets are in, and nothing beyond them.
@@ -88,34 +98,52 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         Vec::new()
     };
     let end = din::end_chamfer(p.across_flats, p.chamfer_max);
+    let mut library_report = Value::Null;
     let placed = if p.create.part() {
         let base = body_base(p);
         let def = Definition {
             plugin: PLUGIN,
             base: &base,
-            description: "ISO 4032",
-            folder: FOLDER,
-            bom_type: "purchased",
+            description: if p.custom {
+                "Custom hexagon nut"
+            } else {
+                "ISO 4032"
+            },
+            bom_type: if p.custom { "normal" } else { "purchased" },
             site: Site::for_thread(p.modeled),
         };
-        let placed = fasten::place_all(r, &def, &places, |mut r, name, site| {
-            build_nut(&mut r, p, site, name).map(|_| ())
-        })?;
+        let mut library = fasten::Library::new(
+            r,
+            fasten::Budget {
+                creation_calls: 128,
+                placements: places.len(),
+            },
+        )?;
+        let handle = library.ensure(
+            &def,
+            &provider::part_number(p)?,
+            &provider::representation(p),
+            |library, name, site| {
+                library.geometry(name, |mut r| build_nut(&mut r, p, site, name).map(|_| ()))
+            },
+        )?;
+        let placed = library.place_all(&handle, &places, FOLDER)?;
         for ((seat, place), occurrence) in seats.iter().zip(&places).zip(&placed.occurrences) {
-            seat.attach(r, *occurrence, place, &format!("Nut {}", p.designation))?;
+            seat.attach(
+                &mut library.runner(),
+                *occurrence,
+                place,
+                &format!("Nut {}", p.designation),
+            )?;
         }
+        library_report = library.finish()?;
         Some(placed)
     } else {
         None
     };
-    Ok(summary(
-        p,
-        &places,
-        &end,
-        &drilled,
-        skipped,
-        placed.as_ref(),
-    ))
+    let mut reply = summary(p, &places, &end, &drilled, skipped, placed.as_ref());
+    reply["library"] = library_report;
+    Ok(reply)
 }
 
 /// The timeline folder one run's pockets and bolt holes go in: `Nut pockets M6`.
@@ -125,24 +153,12 @@ pub fn pockets_name(p: &Params) -> String {
 
 /// Keep the pocket plane tied to the source sketch's axes. Construction lines do
 /// not split its profiles, and their ends are not standalone hole-placement points.
-fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, designation: &str) -> Result<Value, String> {
-    // Construction planes reject duplicate names, unlike auto-numbered sketches.
-    // A later run (or another source sketch) needs a free name too.
-    let listed = r.run("component.list", json!({}))?;
-    let mut names = listed
-        .get("components")
-        .and_then(Value::as_array)
-        .ok_or("component.list did not return components for the pocket plane name")?
-        .iter()
-        .flat_map(|c| {
-            ["features", "sketches", "construction"]
-                .into_iter()
-                .flat_map(move |key| c.get(key).and_then(Value::as_array).into_iter().flatten())
-        })
-        .filter_map(Value::as_str)
-        .map(str::to_string)
-        .collect();
-    let name = free_body_name(&mut names, &format!("Nut pockets {designation}: Plane"));
+fn pocket_plane<R: Runner>(
+    r: &mut R,
+    sketch: &str,
+    name: &str,
+    active: &fasten::Activation,
+) -> Result<Value, String> {
     r.run("sketch.edit", json!({"sketch": sketch}))?;
     let drawn = r.run(
         "sketch.line",
@@ -162,6 +178,9 @@ fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, designation: &str) -> Result
         .ok_or("sketch.line did not return the two pocket frame lines")?;
     r.run("sketch.constraint.fix", json!({"entities": curves}))?;
     r.run("sketch.finish", json!({}))?;
+    // Editing a face-attached sketch selects its original authoring occurrence.
+    // Subsequent geometry and seat inspection must use the user's selected copy.
+    active.restore(r)?;
     let made = r.run(
         "construct.plane.two_edges",
         json!({
@@ -190,11 +209,12 @@ fn cut_pocket<R: Runner>(
     pocket: &Pocket,
     spot: &place::Spot,
     plane: &Value,
+    names: &mut Vec<String>,
 ) -> Result<Vec<String>, String> {
     let created = r.run(
         "sketch.create",
         json!({
-            "plane": plane, "name": format!("Nut pocket {} profile", p.designation),
+            "plane": plane, "name": name::reserve(names, &format!("Nut pocket {} profile", p.designation)),
         }),
     )?;
     let sketch = sketch_id(&created)?;
@@ -220,7 +240,7 @@ fn cut_pocket<R: Runner>(
         "solid.extrude",
         json!({
             "sketch": sketch, "distance": pocket.depth, "direction": "negative",
-            "operation": "cut", "name": format!("Nut pocket {}", p.designation),
+            "operation": "cut", "name": name::reserve(names, &format!("Nut pocket {}", p.designation)),
         }),
     )?;
     match changed_bodies(&made) {
@@ -613,9 +633,9 @@ mod tests {
     #[test]
     fn an_unlisted_size_has_no_countersink() {
         let (_, calls) = commands(json!({
-            "designation": "M7x1",
+            "size": "M7x1",
             "custom_width": 11.0,
-            "custom_height": 5.5,
+            "custom_thickness": 5.5,
             "thread_modeled": true,
         }));
         assert!(calls.iter().all(|(name, _)| name != "solid.cone"));
@@ -722,7 +742,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
-                        "plane": {
+                        "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
                             "y_dir": [0.0, 1.0, 0.0]
@@ -802,43 +822,45 @@ mod tests {
                 "thread_modeled"
             ]
         );
-        assert_eq!(
-            manifest["runtime"]["commands"],
-            json!([
-                "selection.get",
-                "inspect.measure",
-                "sketch.inspect",
-                "sketch.create",
-                "sketch.edit",
-                "sketch.project",
-                "sketch.constraint.fix",
-                "sketch.constraint.coincident",
-                "construct.plane.two_edges",
-                "browser.visibility",
-                "sketch.polygon.circumscribed",
-                "sketch.dimension",
-                "sketch.constraint.horizontal_vertical",
-                "sketch.line",
-                "sketch.finish",
-                "solid.extrude",
-                "solid.revolve",
-                "solid.hole",
-                "solid.move",
-                "solid.cone",
-                "component.list",
-                "component.create",
-                "component.metadata",
-                "component.metadata.set",
-                "component.activate",
-                "occurrence.copy",
-                "occurrence.move",
-                "occurrence.reparent",
-                "timeline.group",
-                "model.faces",
-                "joint.create",
-                "sketch.circle.center"
-            ])
-        );
+        let expected: std::collections::BTreeSet<_> = [
+            "select.set",
+            "selection.get",
+            "inspect.measure",
+            "sketch.inspect",
+            "sketch.create",
+            "sketch.edit",
+            "sketch.project",
+            "sketch.constraint.fix",
+            "sketch.constraint.coincident",
+            "construct.plane.two_edges",
+            "browser.visibility",
+            "sketch.polygon.circumscribed",
+            "sketch.dimension",
+            "sketch.constraint.horizontal_vertical",
+            "sketch.line",
+            "sketch.finish",
+            "solid.extrude",
+            "solid.revolve",
+            "solid.hole",
+            "solid.move",
+            "solid.cone",
+            "component.list",
+            "component.create",
+            "component.metadata",
+            "component.metadata.set",
+            "component.activate",
+            "occurrence.copy",
+            "occurrence.move",
+            "occurrence.reparent",
+            "timeline.group",
+            "model.faces",
+            "joint.create",
+            "sketch.circle.center",
+        ]
+        .into_iter()
+        .chain(fasten::commands())
+        .collect();
+        assert_eq!(manifest["runtime"]["commands"], json!(expected));
     }
 
     /// A design that already holds bodies. It records the body name each new body asks for.
@@ -853,8 +875,16 @@ mod tests {
         }
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
-            // Placing the fastener is checked on its own; these check the build.
-            if let Some(reply) = plugin_kit::component::stand_in(command) {
+            // Include the pre-existing bodies in the same inventory the library reads.
+            if command == "component.list" {
+                let mut reply = fasten::stand_in(command).unwrap();
+                reply["components"].as_array_mut().unwrap().push(json!({
+                    "id":0,"name":"Design","bodies":self.names,"features":[],
+                    "sketches":[],"construction":[],"children":[],"occurrences":[]
+                }));
+                return Ok(reply);
+            }
+            if let Some(reply) = fasten::stand_in(command) {
                 return Ok(reply);
             }
             Ok(match command {
@@ -865,7 +895,7 @@ mod tests {
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
                 "sketch.inspect" => json!({
-                    "plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "a", "world": [10.0, 0.0, 5.0]},
                         {"id": "b", "world": [20.0, 0.0, 5.0]},
@@ -885,10 +915,6 @@ mod tests {
                 }
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             })
-        }
-
-        fn body_names(&mut self) -> Vec<String> {
-            self.names.clone()
         }
     }
 
@@ -937,6 +963,7 @@ mod tests {
         calls: Vec<(String, Value)>,
         sketch: i64,
         changed: Value,
+        selected: Option<Value>,
     }
     impl Runner for OnPlate {
         fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
@@ -945,6 +972,11 @@ mod tests {
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
+                "select.set" => {
+                    self.selected = Some(args["items"].clone());
+                    Value::Null
+                }
+                "selection.get" if self.selected.is_some() => json!({"items": self.selected}),
                 "selection.get" => json!({"count": 2, "items": [
                     {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
@@ -953,7 +985,7 @@ mod tests {
                     "points": [{"id": "projected_center", "at": [10, 10]}],
                 }),
                 "sketch.inspect" => json!({
-                    "plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
                         {"id": "c2.center", "world": [30.0, 10.0, 10.0]}
@@ -973,6 +1005,8 @@ mod tests {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
+                "inspect.measure" => json!({"bodies": [{"name": "Plate", "definition": "Plate",
+                    "bbox": {"min": [0, 0, 0], "max": [40, 20, 10]}}]}),
                 "model.faces" => json!({"faces": ([10.0, 30.0].into_iter().flat_map(|x| [
                     json!({"name": format!("floor{x}"), "centroid": [x, 10.0, 4.8], "plane_normal": [0, 0, 1]}),
                     json!({"name": format!("wall{x}"), "centroid": [x, 4.8, 7.4], "plane_normal": [0, 1, 0]}),
@@ -1002,6 +1036,7 @@ mod tests {
             calls: vec![],
             sketch: 0,
             changed,
+            selected: None,
         };
         let made = make_nut(&mut rec, &p);
         (made, rec.calls)
@@ -1028,7 +1063,10 @@ mod tests {
             match c.as_str() {
                 "sketch.create" => {
                     sketches += 1;
-                    if args["name"] == "Nut pocket M6 profile" {
+                    if args["name"]
+                        .as_str()
+                        .is_some_and(|name| name.starts_with("Nut pocket M6 profile"))
+                    {
                         rows.push(sketches);
                     }
                 }
@@ -1176,7 +1214,7 @@ mod tests {
             assert_eq!(
                 joint["a"],
                 json!({
-                    "body": "Plate", "circle": format!("bore{x}"),
+                    "body": "Plate", "occurrence": 0, "circle": format!("bore{x}"),
                     "end": format!("floor{x}"), "x": format!("wall{x}"),
                 })
             );
@@ -1235,11 +1273,10 @@ mod tests {
 }
 
 plugin_kit::guest! {
-    entry: "make-nut",
-    noun: "nut",
     manifest: include_str!("../plugin.json"),
-    parse: crate::nut::parse,
-    make: crate::make_nut,
-    describe: |p: &crate::nut::Params| format!("making a {} nut", p.designation),
-    aliases: &[],
+    entries: [{
+        entry: "make-nut", noun: "nut",
+        parse: crate::nut::parse, make: crate::make_nut,
+        describe: |p: &crate::nut::Params| format!("making a {} nut", p.designation),
+    }],
 }

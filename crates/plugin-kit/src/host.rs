@@ -9,6 +9,11 @@ use serde_json::Value;
 pub trait Runner {
     fn run(&mut self, command: &str, args: Value) -> Result<Value, String>;
 
+    /// Commands already sent by this invocation, including placement discovery.
+    fn command_count(&self) -> usize {
+        0
+    }
+
     /// The names of the bodies already in the design. A guest asks the host with
     /// `measured_body_names`. A host that cannot say has none.
     fn body_names(&mut self) -> Vec<String> {
@@ -24,7 +29,7 @@ pub trait Runner {
 }
 
 /// A builder generic over `Runner` runs on a `&mut dyn Runner` too, as
-/// [`crate::fasten::place_all`] hands it one.
+/// [`crate::component::Library::geometry`] hands it one.
 impl Runner for &mut dyn Runner {
     fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
         (**self).run(command, args)
@@ -32,6 +37,10 @@ impl Runner for &mut dyn Runner {
 
     fn body_names(&mut self) -> Vec<String> {
         (**self).body_names()
+    }
+
+    fn command_count(&self) -> usize {
+        (**self).command_count()
     }
 
     fn site(&mut self, at: [f64; 2]) -> crate::Placement {
@@ -57,22 +66,6 @@ pub fn measured_body_names(reply: &Value) -> Vec<String> {
                 .collect()
         })
         .unwrap_or_default()
-}
-
-/// A body name that is not in `taken`: `base`, then `base (2)`, `base (3)` and so on. A
-/// base often ends in a size, so a bare number after it would read as part of the size.
-/// The name joins `taken`. A name that is taken makes the host number the body `BodyN`, and
-/// that number changes when the design is rebuilt, so the features that name the body
-/// fail when the design is reopened.
-pub fn free_body_name(taken: &mut Vec<String>, base: &str) -> String {
-    let mut name = base.to_string();
-    let mut n = 1;
-    while taken.contains(&name) {
-        n += 1;
-        name = format!("{base} ({n})");
-    }
-    taken.push(name.clone());
-    name
 }
 
 /// The id `sketch.create` returned. The host sends a number or a non-empty name.
@@ -179,8 +172,8 @@ pub fn labelled<K: AsRef<str>, L: AsRef<str>>(
 }
 
 /// The wasm guest of a plugin. Every plugin exports the same thing: read the parameters,
-/// build, and turn each failure into the host's error for it. A plugin with one entry
-/// names it at the top. One with several lists them under `entries`.
+/// build, and turn each failure into the host's error for it. Workflows are listed
+/// under `entries`; only these insertion workflows are exported.
 ///
 /// - `manifest`: `include_str!("../plugin.json")`, for the dialog labels.
 /// - `parse`: `fn(&Value) -> Result<Params, FieldError>`.
@@ -188,33 +181,10 @@ pub fn labelled<K: AsRef<str>, L: AsRef<str>>(
 ///   starts with a field key and `": "` is that field's, one that starts with a command
 ///   id is that command's, and anything else is a trap.
 /// - `describe`: `fn(&Params) -> String`, the line logged before building.
-/// - `aliases`: field keys the dialog shows under another field, as `(key, shown as)`.
 #[macro_export]
 macro_rules! guest {
     (
-        entry: $entry:literal,
-        noun: $noun:literal,
         manifest: $manifest:expr,
-        parse: $parse:path,
-        make: $make:path,
-        describe: $describe:expr,
-        aliases: $aliases:expr $(,)?
-    ) => {
-        $crate::guest! {
-            manifest: $manifest,
-            aliases: $aliases,
-            entries: [{
-                entry: $entry,
-                noun: $noun,
-                parse: $parse,
-                make: $make,
-                describe: $describe,
-            }],
-        }
-    };
-    (
-        manifest: $manifest:expr,
-        aliases: $aliases:expr,
         entries: [$({
             entry: $entry:literal,
             noun: $noun:literal,
@@ -234,13 +204,15 @@ macro_rules! guest {
                 types::{CommandFailure, FieldFailure, PluginError},
             };
 
-            struct Host;
+            #[derive(Default)]
+            struct Host { calls: usize }
             impl $crate::Runner for Host {
                 fn run(
                     &mut self,
                     command: &str,
                     args: serde_json::Value,
                 ) -> Result<serde_json::Value, String> {
+                    self.calls += 1;
                     $crate::host::command_reply(
                         command,
                         commands::run(command, &args.to_string()).map_err(words),
@@ -253,6 +225,8 @@ macro_rules! guest {
                         .map(|reply| $crate::host::measured_body_names(&reply))
                         .unwrap_or_default()
                 }
+
+                fn command_count(&self) -> usize { self.calls }
             }
 
             /// A host error in plain words.
@@ -272,14 +246,9 @@ macro_rules! guest {
 
             fn invalid(field: &str, reason: &str) -> PluginError {
                 let labels = $crate::host::manifest_labels($manifest);
-                let aliases: &[(&str, &str)] = $aliases;
-                let shown = aliases
-                    .iter()
-                    .find(|(key, _)| *key == field)
-                    .map_or(field, |(_, shown)| *shown);
                 PluginError::InvalidInput(FieldFailure {
                     field: field.into(),
-                    reason: $crate::host::labelled(&labels, shown, reason),
+                    reason: $crate::host::labelled(&labels, field, reason),
                 })
             }
 
@@ -305,13 +274,13 @@ macro_rules! guest {
                     if entry.is_empty() {
                         let _ = commands::run("inspect.measure", "{}");
                     }
-                    let v: serde_json::Value =
-                        serde_json::from_str(&params).unwrap_or(serde_json::json!({}));
+                    let v: serde_json::Value = serde_json::from_str(&params)
+                        .map_err(|err| invalid("params", &err.to_string()))?;
                     $(
                         if entry == $entry {
                             let p = $parse(&v).map_err(|err| invalid(&err.field, &err.reason))?;
                             log::log(log::Level::Info, &($describe)(&p));
-                            let made = $make(&mut Host, &p).map_err(failure)?;
+                            let made = $make(&mut Host::default(), &p).map_err(failure)?;
                             if made["placed"]
                                 .as_str()
                                 .is_some_and(|at| at.contains("origin"))
@@ -376,19 +345,19 @@ mod tests {
             ["Base", "Screw M3 x 12 socket", "Screw M3 x 12 socket (2)"]
         );
         assert_eq!(
-            free_body_name(&mut taken, "Screw M3 x 12 socket"),
+            crate::name::reserve(&mut taken, "Screw M3 x 12 socket"),
             "Screw M3 x 12 socket (3)"
         );
         assert_eq!(
-            free_body_name(&mut taken, "Screw M3 x 12 socket"),
+            crate::name::reserve(&mut taken, "Screw M3 x 12 socket"),
             "Screw M3 x 12 socket (4)"
         );
         assert_eq!(
-            free_body_name(&mut taken, "Insert M3 x 5.7"),
+            crate::name::reserve(&mut taken, "Insert M3 x 5.7"),
             "Insert M3 x 5.7"
         );
         assert_eq!(
-            free_body_name(&mut taken, "Insert M3 x 5.7"),
+            crate::name::reserve(&mut taken, "Insert M3 x 5.7"),
             "Insert M3 x 5.7 (2)"
         );
         assert!(measured_body_names(&json!(null)).is_empty());

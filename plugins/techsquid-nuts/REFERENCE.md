@@ -20,7 +20,7 @@ Create decides whether the part gets a pocket. `Nut only`, the default, builds t
 
 The pocket, bolt hole and pocketed nut follow the same source sketch point. Move that point or change the source sketch's plane and both cuts rebuild and the nut follows them, including after saving and reopening. Each pocket profile projects the source point and constrains the hexagon's center to it. The profile's diameter dimension sets the width across flats. The pocket cuts inward from the source plane, so editing its extrusion depth moves the floor while keeping its opening on that plane; the depth can be an expression over design parameters.
 
-To follow the source plane, each run adds two fixed construction lines to each source sketch it uses and a hidden `Nut pockets M6: Plane` feature linked to those lines. The lines are fixed in sketch coordinates, so they follow its position and orientation without changing its closed profiles. Keep these construction references and the projected point links intact. The generated pocket profiles and plane are in the pocket timeline folder.
+To follow the source plane, each run adds two fixed construction lines to each source sketch it uses and a hidden `Nut pockets M6: Plane` feature linked to those lines. The lines are fixed in sketch coordinates, so they follow its position and orientation without changing its closed profiles. Keep these construction references and the projected point links intact. The generated pocket profiles and plane are in the pocket timeline folder. Face-attached sketches keep the selected copied or nested assembly context after insertion, so the next insertion uses that same copy. The nut’s seat joint records the exact assembly path. Cuts still change the shared part definition and therefore appear in every copy.
 
 **Breaking change to generated pocket history:** new pocket profiles are on the source surface and extrude in the negative direction, replacing fixed profiles on the pocket floor. Existing saved pockets are not upgraded automatically. Existing saved nut placements are not attached automatically. New pocketed nuts are held by rigid seat joints; suppress or remove a seat joint before moving its nut independently. `Nut only` placements still use their initial position.
 
@@ -42,7 +42,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 | `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
 | `thread_modeled` | true | Cut the internal thread. False leaves a cosmetic thread, which rebuilds faster |
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.edit`, `sketch.project`, `sketch.constraint.fix`, `sketch.constraint.coincident`, `construct.plane.two_edges`, `browser.visibility`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.move` (the nut is cut on the origin and moved aside before it is tapped), `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it, plus `model.faces` and `joint.create` to attach a pocketed nut. The hexagon is the same profile a hex-head screw uses.
+The package calls `select.set` and `selection.get` (seat inspection temporarily selects bodies to resolve their assembly paths, then restores the selection), `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.edit`, `sketch.project`, `sketch.constraint.fix`, `sketch.constraint.coincident`, `construct.plane.two_edges`, `browser.visibility`, `sketch.polygon.circumscribed`, `sketch.dimension`, `sketch.constraint.horizontal_vertical`, `sketch.line`, `sketch.finish`, `solid.extrude`, `solid.revolve`, `solid.hole`, `solid.move` (the nut is cut on the origin and moved aside before it is tapped), `solid.cone`, and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it, plus `model.faces` and `joint.create` to attach a pocketed nut. The hexagon is the same profile a hex-head screw uses.
 
 ## Sizes
 
@@ -98,7 +98,7 @@ The body, the hole and every feature say what the part is and its size, so a des
 | Nut body | `Nut M3`, `Nut M8x1` |
 | Nut pocket | `Nut pocket M3` and `Bolt hole M3` |
 | Pocket reference plane | `Nut pockets M3: Plane`, linked to the source sketch; later planes are numbered `(2)`, `(3)`, ... |
-| Pocket profile | `Nut pocket M3 profile`, with a projected source point and a constrained hexagon |
+| Pocket profile | `Nut pocket M3 profile`, with a projected source point and a constrained hexagon; later profiles are numbered `(2)`, `(3)`, ... |
 | Nut seat joint | `Nut M3: Seat <occurrence>`, holding that placement on its pocket floor and bolt-hole axis |
 | Pocket folder | `Nut pockets M3`, holding one run's pockets, their sketches, reference planes and bolt holes, folded |
 | Features and sketches of a nut | the nut's name, then the feature: `Nut M3: Thread` |
@@ -106,9 +106,25 @@ The body, the hole and every feature say what the part is and its size, so a des
 
 A pocket keeps its kind and size in its own name because it stays in the part, and with Pocket only there is no nut body at all.
 
+Pocket planes, profiles, cuts and bolt holes reserve unused feature names across
+the whole design, including other components and names that differ only by letter
+case. Multi-point batches and later runs continue numbering after existing names,
+including after saving and reopening. Existing features are not renamed.
+
+## Catalog and reuse
+
+Shared internal definitions cover 29 ISO 4032 sizes.
+The package exposes insertion workflows only; catalog discovery is not available. Standard coarse-pitch dimensions identify standards-based configurations; fine pitches and explicit width/thickness overrides are custom, even if an override matches a table value.
+
+Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
+representations reuse verified native definitions across runs. Renamed components
+remain reusable; edited components are preserved and new insertions create clean
+replacements. See [the library architecture](../../docs/parts-library.md) for BOM
+rules, inspection limits and migration from legacy metadata.
+
 ## Older field names
 
-The plugins share one set of field names. Scripts written for the earlier names still work: `designation` for `size`, `custom_designation` for `custom_size`, and `custom_height` for `custom_thickness`.
+Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, and `custom_thickness` instead of `custom_height`.
 
 ## License
 

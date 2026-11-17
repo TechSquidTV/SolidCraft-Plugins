@@ -5,6 +5,19 @@ use serde_json::Value;
 /// The longest length the plugin accepts, in millimetres.
 pub const MAX_LENGTH_MM: f64 = 1000.0;
 
+/// Fixed catalog workflows reject dimension overrides and misspelled inputs.
+pub fn only_fields(v: &Value, allowed: &[&str]) -> Result<(), FieldError> {
+    let fields = v
+        .as_object()
+        .ok_or_else(|| FieldError::new("params", "requires an object"))?;
+    for key in fields.keys() {
+        if !allowed.contains(&key.as_str()) {
+            return Err(FieldError::new(key, "unsupported field"));
+        }
+    }
+    Ok(())
+}
+
 /// A parameter the host should show against one field.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FieldError {
@@ -52,10 +65,22 @@ pub fn optional_text<'a>(
     }
 }
 
-/// The value of `key`, or of `old`, the name the field had before the plugins shared
-/// one set of names. A script written for the old names keeps working.
-pub fn field<'a>(v: &'a Value, key: &str, old: &str) -> Option<&'a Value> {
-    v.get(key).or_else(|| v.get(old))
+/// Validate workflow fields against the packaged form, plus the typed catalog
+/// precondition. Retired keys are errors, never silently ignored defaults.
+pub fn workflow_fields(v: &Value, manifest: &str, entry: &str) -> Result<(), FieldError> {
+    let manifest: Value =
+        serde_json::from_str(manifest).map_err(|e| FieldError::new("plugin", e.to_string()))?;
+    let entries = manifest["runtime"]["entries"]
+        .as_array()
+        .ok_or_else(|| FieldError::new("plugin", "manifest has no entries"))?;
+    let properties = entries
+        .iter()
+        .find(|e| e["name"] == entry)
+        .and_then(|e| e["input_schema"]["properties"].as_object())
+        .ok_or_else(|| FieldError::new("plugin", "workflow has no field declaration"))?;
+    let mut allowed: Vec<_> = properties.keys().map(String::as_str).collect();
+    allowed.push("catalog_selection");
+    only_fields(v, &allowed)
 }
 
 /// Read a length, or `default` when the field is absent.

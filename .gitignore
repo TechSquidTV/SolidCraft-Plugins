@@ -3,3 +3,6 @@
 /pkg
 .DS_Store
 /.claude/
+
+# Python host-test caches are generated, never fixtures.
+__pycache__/

@@ -191,7 +191,18 @@ The catalog's areas are a loose check: its 2040 is 0.5% over MISUMI's own model 
 | Timeline folder | the rail's or the nut's name, `T-slot 2040 x 500`, holding every sketch and feature of it, folded |
 | The folder its placements go in | `Extrusions` |
 
-In the bill of materials a rail is `purchased`, its part number is its name, and its description reads `20 x 40 mm T-slot aluminium extrusion, 500 mm long`. A nut is `purchased` too, and its description reads `MISUMI HNTT5-5 pre-assembly insertion nut for a 6 mm slot`.
+In the bill of materials a finished rail is a custom (`normal`) part with a generated model number for its full configuration. Its description reads `20 x 40 mm T-slot aluminium extrusion, 500 mm long`. A slot nut is `purchased`, uses its MISUMI part number and describes its insertion type and slot.
+
+## Catalog and reuse
+
+Shared internal definitions cover nine stock profiles and the verified MISUMI M5 HNTT5-5/HNTP5-5 slot nuts.
+The package exposes insertion workflows only; catalog discovery is not available. A cut or machined rail is a custom finished configuration with stock-profile provenance. Slot-nut mounting orientation is placement, not a different purchase. Sketch-driven rails remain a separate workflow.
+
+Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
+representations reuse verified native definitions across runs. Renamed components
+remain reusable; edited components are preserved and new insertions create clean
+replacements. See [the library architecture](../../docs/parts-library.md) for BOM
+rules, inspection limits and migration from legacy metadata.
 
 ## Older field names
 

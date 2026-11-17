@@ -234,9 +234,9 @@ fn from_inspect(
         .and_then(|point| point.get("world"))
         .ok_or_else(|| format!("sketch_point: no point or circle {point_id} in sketch {sketch}"))?;
     let point = xyz(world).ok_or_else(|| format!("sketch_point: {point_id} has no position"))?;
-    let plane = inspect
-        .get("plane")
-        .ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
+    let plane = inspect.get("world_plane").ok_or_else(|| {
+        "sketch: update SolidCraft to a build exposing sketch.inspect world_plane".to_string()
+    })?;
     let x_dir = xyz(plane.get("x_dir").unwrap_or(&Value::Null))
         .ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
     let y_dir = xyz(plane.get("y_dir").unwrap_or(&Value::Null))
@@ -318,7 +318,7 @@ mod tests {
     #[test]
     fn a_circle_centre_uses_the_sketch_normal() {
         let inspect = json!({
-            "plane": {
+            "world_plane": {
                 "origin": [0.0, 0.0, 8.0],
                 "x_dir": [1.0, 0.0, 0.0],
                 "y_dir": [0.0, 1.0, 0.0]
@@ -341,9 +341,15 @@ mod tests {
 
     #[test]
     fn a_vertical_sketch_points_its_normal_outward() {
-        // XZ plane: sketch x is +X, sketch y is -Z, so the normal is +Y.
+        // The saved XY sketch is rotated through its occurrence into XZ.
+        // World sketch x is +X, sketch y is -Z, so the normal is +Y.
         let inspect = json!({
             "plane": {
+                "origin": [0.0, 0.0, 0.0],
+                "x_dir": [1.0, 0.0, 0.0],
+                "y_dir": [0.0, 1.0, 0.0]
+            },
+            "world_plane": {
                 "origin": [0.0, 0.0, 0.0],
                 "x_dir": [1.0, 0.0, 0.0],
                 "y_dir": [0.0, 0.0, -1.0]
@@ -353,6 +359,20 @@ mod tests {
         let place = from_inspect(&inspect, "Side", "p1", Source::Named).unwrap();
         assert_eq!(place.normal, [0.0, 1.0, 0.0]);
         assert_eq!(place.tip(5.0), [10.0, -5.0, 6.0]);
+    }
+
+    #[test]
+    fn a_host_without_world_plane_is_refused_instead_of_using_local_axes() {
+        let mut inspect = holes_inspect();
+        let plane = inspect
+            .as_object_mut()
+            .unwrap()
+            .remove("world_plane")
+            .unwrap();
+        inspect["plane"] = plane;
+        assert!(from_inspect(&inspect, "Holes", "c1", Source::Named)
+            .unwrap_err()
+            .contains("update SolidCraft"));
     }
 
     struct Rec {
@@ -379,7 +399,7 @@ mod tests {
 
     fn holes_inspect() -> Value {
         json!({
-            "plane": {
+            "world_plane": {
                 "origin": [0.0, 0.0, 8.0],
                 "x_dir": [1.0, 0.0, 0.0],
                 "y_dir": [0.0, 1.0, 0.0]
@@ -450,7 +470,7 @@ mod tests {
                 ]
             }),
             inspect: json!({
-                "plane": {"origin": [0.0, 0.0, 8.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                "world_plane": {"origin": [0.0, 0.0, 8.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                 "points": [
                     {"id": "c1.center", "world": [12.0, 10.0, 8.0]},
                     {"id": "c2.center", "world": [30.0, 10.0, 8.0]}

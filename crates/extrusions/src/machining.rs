@@ -26,7 +26,7 @@ pub const CLEARANCE: f64 = 5.5;
 pub const ACCESS: f64 = 9.5;
 
 /// The side of a rail a screw goes in from.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 pub enum Face {
     XPlus,
     XMinus,

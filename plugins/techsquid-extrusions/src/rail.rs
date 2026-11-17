@@ -25,7 +25,7 @@ pub const MAX_MODELED_TAPS: usize = 4;
 pub const MAX_HOLES: usize = 64;
 
 /// Which ends of a rail are tapped. The start is the end on the sketch point.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 pub enum Taps {
     None,
     Start,
@@ -74,6 +74,7 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
+    input::workflow_fields(v, include_str!("../plugin.json"), "make-extrusion")?;
     let path = crate::path::parse(v)?;
     let slot = match input::choice(v, "slot", DEFAULT_SLOT)? {
         "T-slot" => T5,
@@ -166,7 +167,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             format!("must be one of {}, not {hole_face}", listed.join(", ")),
         )
     })?;
-    Ok(Params {
+    let p = Params {
         slot,
         size: size.to_string(),
         grid,
@@ -181,7 +182,17 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             place::parse_input(v)?
         },
         path,
-    })
+    };
+    if v.get("catalog_selection").is_some() && p.path.is_some() {
+        return Err(FieldError::new("catalog_selection", "catalog rails require a fixed length; sketch-driven rails are independent path features"));
+    }
+    parts::catalog::validate_selection(
+        v,
+        crate::provider::REVISION,
+        &crate::provider::rail_representation(&p),
+    )
+    .map_err(|e| FieldError::new(e.field, e.reason))?;
+    Ok(p)
 }
 
 /// The screw holes: distances from the start of the rail, as text with commas or spaces

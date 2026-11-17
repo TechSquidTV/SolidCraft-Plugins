@@ -20,7 +20,8 @@ use plugin_kit::input::{self, FieldError};
 use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum Head {
     Socket,
     Button,
@@ -33,6 +34,34 @@ pub enum Head {
 }
 
 impl Head {
+    /// The default M3 family designation used by catalog discovery. Actual
+    /// resolution follows the chosen drive, tip and dimensions through the same
+    /// standard lookup as the insertion workflow.
+    pub fn default_standard(self) -> Option<&'static str> {
+        standard_of(self, standard_drive(self, Some(3.0)), Tip::Flat, false)
+    }
+    pub const ALL: [Self; 8] = [
+        Self::Socket,
+        Self::Button,
+        Self::Countersunk,
+        Self::Hex,
+        Self::Pan,
+        Self::Cheese,
+        Self::Set,
+        Self::Rod,
+    ];
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::Socket => "socket",
+            Self::Button => "button",
+            Self::Countersunk => "countersunk",
+            Self::Hex => "hex",
+            Self::Pan => "pan",
+            Self::Cheese => "cheese",
+            Self::Set => "set",
+            Self::Rod => "rod",
+        }
+    }
     pub fn label(self) -> &'static str {
         match self {
             Head::Socket => "Socket head",
@@ -47,7 +76,8 @@ impl Head {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum Drive {
     HexSocket,
     Phillips,
@@ -69,7 +99,8 @@ impl Drive {
 }
 
 /// The end of the shank. Flat is the square end.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum Tip {
     Flat,
     Point,
@@ -87,7 +118,8 @@ impl Tip {
 }
 
 /// Tip after the major diameter is known. A point's length is that diameter.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum ResolvedTip {
     Flat,
     /// ISO 4026 flat point of a set screw: the end is chamfered at 45° down to a flat
@@ -106,7 +138,8 @@ pub enum ResolvedTip {
 }
 
 /// Head size after a standard lookup or an override. Ready for the generator.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub enum ResolvedHead {
     None,
     Round { diameter: f64, height: f64 },
@@ -114,7 +147,8 @@ pub enum ResolvedHead {
     Countersunk { diameter: f64, height: f64 },
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Resolved {
     pub major: Option<f64>,
     pub pitch: Option<f64>,
@@ -177,6 +211,7 @@ pub struct Hole {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Params {
+    pub custom: bool,
     pub create: Create,
     /// The hole to drill in the part. Empty when only the screw is made.
     pub hole: Option<Hole>,
@@ -216,6 +251,7 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
+    input::workflow_fields(v, include_str!("../plugin.json"), "make-screw")?;
     let size_field = designation::size_field(v);
     let at_size = |err: FieldError| err.moved("size", size_field);
     let designation = designation::designation(v, "M3")?;
@@ -223,8 +259,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let head = head(v)?;
     let asked_drive = drive(v)?;
     let tip = tip(v)?;
-    let head_diameter = optional_alias(v, "head_diameter", "custom_head_diameter")?;
-    let head_height = optional_alias(v, "head_height", "custom_head_height")?;
+    let head_diameter = input::optional_length(v, "head_diameter")?;
+    let head_height = input::optional_length(v, "head_height")?;
     let thread_length = input::optional_length(v, "thread_length")?;
     let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
@@ -273,18 +309,46 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         .or_else(|| standard_thread_length(head, drive, &resolved, length, nominal_length));
     // A hole alone has no drive, so a drive that would not fit the screw is no matter.
     let (recess, slot, phillips, hex) = if create.part() {
-        // Drive size is one box for whichever drive is chosen. It fills that drive's
-        // own field, and an error from that field is reported against the box.
-        let (sized, routed) = route_drive_size(v, drive)?;
-        let v = &sized;
-        let to_box = |err: FieldError| match routed {
-            Some(key) if err.field == key => FieldError::new("drive_size", err.reason),
-            _ => err,
+        let text = input::optional_text(
+            v,
+            "drive_size",
+            "must be text, such as T10, PH2, 2.5 or 0.8x0.7",
+        )?;
+        if drive == Drive::None && text.is_some() {
+            return Err(FieldError::new(
+                "drive_size",
+                "this screw has no drive to size; choose a Drive, or leave this empty",
+            ));
+        }
+        let to_box = |err: FieldError| {
+            if matches!(err.field.as_str(), "torx" | "slot" | "phillips" | "hex") {
+                FieldError::new("drive_size", err.reason)
+            } else {
+                err
+            }
         };
-        let requested = torx_socket(v).map_err(to_box)?;
-        let requested_slot = slot_size(v).map_err(to_box)?;
-        let requested_phillips = phillips_size(v).map_err(to_box)?;
-        let requested_hex = hex_size(v).map_err(to_box)?;
+        let requested = if drive == Drive::Torx {
+            text.map(torx::parse_socket).transpose().map_err(to_box)?
+        } else {
+            None
+        };
+        let requested_slot = if drive == Drive::Slotted {
+            text.map(slot::parse_size).transpose().map_err(to_box)?
+        } else {
+            None
+        };
+        let requested_phillips = if drive == Drive::Phillips {
+            text.map(phillips::parse_size).transpose().map_err(to_box)?
+        } else {
+            None
+        };
+        let requested_hex = if drive == Drive::HexSocket {
+            text.map(hexsocket::parse_size)
+                .transpose()
+                .map_err(to_box)?
+        } else {
+            None
+        };
         (
             plan_recess(drive, head, requested, &resolved, length).map_err(to_box)?,
             plan_slot(drive, head, requested_slot, &resolved, length).map_err(to_box)?,
@@ -306,6 +370,18 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         head_diameter.is_some() || head_height.is_some(),
     );
     let mut p = Params {
+        custom: standard.is_none()
+            || tip == Tip::Point
+            || (tip == Tip::Cup && (head, drive) != (Head::Set, Drive::HexSocket))
+            || resolved.major.is_none_or(|major| {
+                metric::parse_metric(&format!("M{}", metric::number(major)))
+                    .ok()
+                    .flatten()
+                    .is_none_or(|coarse| Some(coarse.pitch) != resolved.pitch)
+            })
+            || v.get("thread_length").is_some_and(|v| !v.is_null())
+            || v.get("drive_size")
+                .is_some_and(|v| v.as_str().is_some_and(|s| !s.trim().is_empty())),
         create,
         hole,
         standard,
@@ -336,13 +412,13 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         }
     }
     validate(&p)?;
+    parts::catalog::validate_selection(
+        v,
+        crate::provider::REVISION,
+        &crate::provider::representation(&p),
+    )
+    .map_err(|e| FieldError::new(e.field, e.reason))?;
     Ok(p)
-}
-
-/// An optional length under its shared name, or under the name it had before.
-fn optional_alias(v: &Value, key: &str, old: &str) -> Result<Option<f64>, FieldError> {
-    let name = if v.get(key).is_some() { key } else { old };
-    input::optional_length(v, name).map_err(|err| FieldError::new(key, err.reason))
 }
 
 pub fn validate(p: &Params) -> Result<(), FieldError> {
@@ -612,12 +688,6 @@ const TORX_MIN_DEPTH: f64 = 0.4;
 const SLOT_WALL: f64 = 0.2;
 const SLOT_FLOOR: f64 = 0.3;
 
-fn torx_socket(v: &Value) -> Result<Option<u16>, FieldError> {
-    input::optional_text(v, "torx", "must be a socket such as T10")?
-        .map(torx::parse_socket)
-        .transpose()
-}
-
 /// The recess for a Torx drive. A Torx size on another drive is refused.
 fn plan_recess(
     drive: Drive,
@@ -697,16 +767,6 @@ fn plan_recess(
     }))
 }
 
-fn slot_size(v: &Value) -> Result<Option<Slot>, FieldError> {
-    input::optional_text(
-        v,
-        "slot",
-        "must be a width and a depth in millimetres, such as 0.8x0.7",
-    )?
-    .map(slot::parse_size)
-    .transpose()
-}
-
 /// The slot for a slotted drive. A slot size on another drive is refused.
 fn plan_slot(
     drive: Drive,
@@ -781,16 +841,6 @@ fn plan_slot(
 /// head is 2.4 mm tall for a 1.7 mm recess, so it has room to spare.
 const PHILLIPS_WALL: f64 = 0.2;
 const PHILLIPS_FLOOR: f64 = 0.1;
-
-fn phillips_size(v: &Value) -> Result<Option<phillips::Request>, FieldError> {
-    input::optional_text(
-        v,
-        "phillips",
-        "must be a Type H size, such as PH2 or PH2x2.1",
-    )?
-    .map(phillips::parse_size)
-    .transpose()
-}
 
 fn missing_phillips(head: Head) -> FieldError {
     let example = if head == Head::Set {
@@ -1173,55 +1223,9 @@ fn standard_drive(head: Head, major: Option<f64>) -> Drive {
     }
 }
 
-/// Copy `drive_size` into the field of the chosen drive, unless that field is already
-/// filled. Returns the parameters to read and the field that was filled.
-fn route_drive_size(v: &Value, drive: Drive) -> Result<(Value, Option<&'static str>), FieldError> {
-    let text = match v.get("drive_size") {
-        None | Some(Value::Null) => return Ok((v.clone(), None)),
-        Some(Value::String(text)) if text.trim().is_empty() => return Ok((v.clone(), None)),
-        Some(Value::String(text)) => text.clone(),
-        Some(_) => {
-            return Err(FieldError::new(
-                "drive_size",
-                "must be text, such as T10, PH2, 2.5 or 0.8x0.7",
-            ))
-        }
-    };
-    let key = match drive {
-        Drive::HexSocket => "hex",
-        Drive::Phillips => "phillips",
-        Drive::Slotted => "slot",
-        Drive::Torx => "torx",
-        Drive::None => {
-            return Err(FieldError::new(
-                "drive_size",
-                "this screw has no drive to size; choose a Drive, or leave this empty",
-            ))
-        }
-    };
-    let mut sized = v.clone();
-    let filled = matches!(sized.get(key), Some(Value::String(old)) if !old.trim().is_empty());
-    if !filled {
-        if let Some(map) = sized.as_object_mut() {
-            map.insert(key.to_string(), Value::String(text));
-        }
-    }
-    Ok((sized, Some(key)))
-}
-
 /// Material left beside the socket corners, and under the socket.
 const HEX_WALL: f64 = 0.2;
 const HEX_FLOOR: f64 = 0.3;
-
-fn hex_size(v: &Value) -> Result<Option<hexsocket::Request>, FieldError> {
-    input::optional_text(
-        v,
-        "hex",
-        "must be a key size in millimetres, such as 2.5 or 2.5x1.3",
-    )?
-    .map(hexsocket::parse_size)
-    .transpose()
-}
 
 /// The socket from the product standard for this head. A pan head and a hex head have none.
 fn standard_hex(head: Head, major: f64) -> Option<Socket> {
@@ -1364,20 +1368,10 @@ fn span_at(resolved: &Resolved, depth: f64) -> Option<f64> {
 
 fn head(v: &Value) -> Result<Head, FieldError> {
     let name = input::choice(v, "head", "Socket head")?;
-    match name {
-        "Socket head" => Ok(Head::Socket),
-        "Button head" => Ok(Head::Button),
-        "Countersunk" => Ok(Head::Countersunk),
-        "Hex head" => Ok(Head::Hex),
-        "Pan head" => Ok(Head::Pan),
-        "Cheese head" => Ok(Head::Cheese),
-        "Set screw" => Ok(Head::Set),
-        "Threaded rod" => Ok(Head::Rod),
-        other => Err(FieldError::new(
-            "head",
-            format!("must be a head from the list, not {other}"),
-        )),
-    }
+    Head::ALL
+        .into_iter()
+        .find(|head| head.label() == name)
+        .ok_or_else(|| FieldError::new("head", format!("must be a head from the list, not {name}")))
 }
 
 /// The drive that was asked for. `None` is Standard: the usual drive for the head.
@@ -1445,7 +1439,7 @@ mod tests {
     #[test]
     fn an_m8_hex_screw_uses_the_standard_across_flats() {
         let p = parse(&json!({
-            "designation": "M8x1",
+            "size": "M8x1",
             "length": 30,
             "head": "Hex head",
             "drive": "None",
@@ -1472,7 +1466,7 @@ mod tests {
 
     #[test]
     fn a_fine_pitch_uses_the_nominal_head() {
-        let p = parse(&json!({"designation": "M3x0.35"})).unwrap();
+        let p = parse(&json!({"size": "M3x0.35"})).unwrap();
         assert_eq!(p.resolved.pitch, Some(0.35));
         assert_eq!(
             p.resolved.head,
@@ -1516,17 +1510,15 @@ mod tests {
     fn an_untabulated_size_takes_both_head_overrides() {
         // A bare M3.5 takes its ISO 261 coarse pitch, and still has no standard head.
         assert_eq!(
-            parse(&json!({"designation": "M3.5"})).unwrap_err().field,
+            parse(&json!({"size": "M3.5"})).unwrap_err().field,
             "head_diameter"
         );
         assert_eq!(
-            parse(&json!({"designation": "M3.5x0.6"}))
-                .unwrap_err()
-                .field,
+            parse(&json!({"size": "M3.5x0.6"})).unwrap_err().field,
             "head_diameter"
         );
         let p = parse(&json!({
-            "designation": "M3.5x0.6",
+            "size": "M3.5x0.6",
             "head_diameter": 7,
             "head_height": 2.5,
         }))
@@ -1597,7 +1589,7 @@ mod tests {
     #[test]
     fn one_dimension_on_an_unknown_head_asks_for_both() {
         let err = parse(&json!({
-            "designation": "M12",
+            "size": "M12",
             "head": "Pan head",
             "head_height": 4,
         }))
@@ -1628,15 +1620,13 @@ mod tests {
     #[test]
     fn a_non_metric_size_needs_a_head_size() {
         assert_eq!(
-            parse(&json!({"designation": "1/2-10 ACME"}))
-                .unwrap_err()
-                .field,
+            parse(&json!({"size": "1/2-10 ACME"})).unwrap_err().field,
             "head_diameter"
         );
-        let err = parse(&json!({"designation": "1/2-10 ACME", "head_diameter": 20})).unwrap_err();
+        let err = parse(&json!({"size": "1/2-10 ACME", "head_diameter": 20})).unwrap_err();
         assert_eq!(err.field, "head_height");
         let p = parse(&json!({
-            "designation": "1/2-10 ACME",
+            "size": "1/2-10 ACME",
             "head_diameter": 11,
             "head_height": 4,
         }))
@@ -1701,7 +1691,7 @@ mod tests {
 
     #[test]
     fn a_fine_pitch_uses_the_coarse_cup() {
-        let p = parse(&json!({"designation": "M8x1", "tip": "Cup"})).unwrap();
+        let p = parse(&json!({"size": "M8x1", "tip": "Cup"})).unwrap();
         let ResolvedTip::Cup { diameter, .. } = p.resolved.tip else {
             panic!("cup");
         };
@@ -1751,7 +1741,7 @@ mod tests {
 
     #[test]
     fn rejects_a_blank_designation() {
-        let err = parse(&json!({"designation": "  "})).unwrap_err();
+        let err = parse(&json!({"size": "  "})).unwrap_err();
         assert_eq!(err.field, "size");
     }
 
@@ -1766,7 +1756,7 @@ mod tests {
                 depth: 1.01
             })
         );
-        let named = parse(&json!({"drive": "Torx", "torx": "T20"})).unwrap();
+        let named = parse(&json!({"drive": "Torx", "drive_size": "T20"})).unwrap();
         assert_eq!(named.recess.unwrap().number, 20);
         assert_eq!(named.recess.unwrap().depth, 1.42);
     }
@@ -1788,12 +1778,10 @@ mod tests {
                 } else {
                     format!("M{major}")
                 };
-                if parse(&json!({"designation": &designation, "head": head})).is_err() {
+                if parse(&json!({"size": &designation, "head": head})).is_err() {
                     continue;
                 }
-                let p = match parse(
-                    &json!({"designation": &designation, "head": head, "drive": "Torx"}),
-                ) {
+                let p = match parse(&json!({"size": &designation, "head": head, "drive": "Torx"})) {
                     Ok(p) => p,
                     // Below M3 a countersunk head is the ISO 7046-1 Phillips one; a Torx
                     // countersunk head is sized from ISO 10642, which starts at M3.
@@ -1810,18 +1798,18 @@ mod tests {
 
     #[test]
     fn a_size_without_a_standard_socket_asks_for_one() {
-        let err = parse(&json!({"designation": "M24", "drive": "Torx"})).unwrap_err();
-        assert_eq!(err.field, "torx");
+        let err = parse(&json!({"size": "M24", "drive": "Torx"})).unwrap_err();
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("T10"));
-        let p = parse(&json!({"designation": "M24", "drive": "Torx", "torx": "T60"})).unwrap();
+        let p = parse(&json!({"size": "M24", "drive": "Torx", "drive_size": "T60"})).unwrap();
         assert_eq!(p.recess.unwrap().number, 60);
     }
 
     #[test]
     fn a_torx_number_on_another_drive_is_refused() {
-        let err = parse(&json!({"torx": "T10"})).unwrap_err();
-        assert_eq!(err.field, "torx");
-        assert!(err.reason.contains("Drive"));
+        let err = parse(&json!({"drive_size": "T10"})).unwrap_err();
+        assert_eq!(err.field, "drive_size");
+        assert!(err.reason.contains("key"));
     }
 
     #[test]
@@ -1833,9 +1821,9 @@ mod tests {
     #[test]
     fn an_m3_set_screw_needs_a_smaller_torx_than_t10() {
         let err = parse(&json!({"head": "Set screw", "drive": "Torx"})).unwrap_err();
-        assert_eq!(err.field, "torx");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("smaller"));
-        let p = parse(&json!({"head": "Set screw", "drive": "Torx", "torx": "T6"})).unwrap();
+        let p = parse(&json!({"head": "Set screw", "drive": "Torx", "drive_size": "T6"})).unwrap();
         assert_eq!(
             p.recess,
             Some(torx::Recess {
@@ -1848,14 +1836,14 @@ mod tests {
     #[test]
     fn a_short_head_refuses_the_recess() {
         let err = parse(&json!({"drive": "Torx", "head_height": 0.5})).unwrap_err();
-        assert_eq!(err.field, "torx");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("1.01"));
     }
 
     #[test]
     fn rejects_an_unknown_torx_socket() {
-        let err = parse(&json!({"drive": "Torx", "torx": "T7"})).unwrap_err();
-        assert_eq!(err.field, "torx");
+        let err = parse(&json!({"drive": "Torx", "drive_size": "T7"})).unwrap_err();
+        assert_eq!(err.field, "drive_size");
     }
 
     #[test]
@@ -1886,8 +1874,7 @@ mod tests {
 
     #[test]
     fn a_fine_pitch_uses_the_coarse_slot() {
-        let p =
-            parse(&json!({"designation": "M8x1", "head": "Pan head", "drive": "Slotted"})).unwrap();
+        let p = parse(&json!({"size": "M8x1", "head": "Pan head", "drive": "Slotted"})).unwrap();
         assert_eq!(
             p.slot,
             Some(Slot {
@@ -1900,7 +1887,7 @@ mod tests {
     #[test]
     fn a_non_preferred_size_uses_its_slot() {
         let p = parse(&json!({
-            "designation": "M3.5x0.6",
+            "size": "M3.5x0.6",
             "head": "Pan head",
             "drive": "Slotted",
             "head_diameter": 7.0,
@@ -1918,11 +1905,11 @@ mod tests {
 
     #[test]
     fn a_size_without_a_standard_slot_asks_for_one() {
-        let err = parse(&json!({"designation": "M12", "drive": "Slotted"})).unwrap_err();
-        assert_eq!(err.field, "slot");
+        let err = parse(&json!({"size": "M12", "drive": "Slotted"})).unwrap_err();
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("0.8x0.7"));
         let p =
-            parse(&json!({"designation": "M12", "drive": "Slotted", "slot": "1.6x1.4"})).unwrap();
+            parse(&json!({"size": "M12", "drive": "Slotted", "drive_size": "1.6x1.4"})).unwrap();
         assert_eq!(
             p.slot,
             Some(Slot {
@@ -1933,10 +1920,10 @@ mod tests {
     }
 
     #[test]
-    fn a_slot_on_another_drive_is_refused() {
+    fn a_retired_slot_field_is_rejected() {
         let err = parse(&json!({"slot": "0.8x0.7"})).unwrap_err();
         assert_eq!(err.field, "slot");
-        assert!(err.reason.contains("Drive"));
+        assert!(err.reason.contains("unsupported"));
     }
 
     #[test]
@@ -1949,15 +1936,15 @@ mod tests {
     fn a_short_head_refuses_the_slot() {
         let err = parse(&json!({"head": "Pan head", "drive": "Slotted", "head_height": 0.5}))
             .unwrap_err();
-        assert_eq!(err.field, "slot");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("0.7"));
     }
 
     #[test]
     fn a_wide_slot_is_refused() {
-        let err =
-            parse(&json!({"head": "Pan head", "drive": "Slotted", "slot": "5.5x0.5"})).unwrap_err();
-        assert_eq!(err.field, "slot");
+        let err = parse(&json!({"head": "Pan head", "drive": "Slotted", "drive_size": "5.5x0.5"}))
+            .unwrap_err();
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("does not fit"));
     }
 
@@ -1985,13 +1972,12 @@ mod tests {
 
     #[test]
     fn an_m2_pan_and_countersunk_take_their_own_phillips_rows() {
-        let pan =
-            parse(&json!({"designation": "M2", "head": "Pan head", "drive": "Phillips"})).unwrap();
+        let pan = parse(&json!({"size": "M2", "head": "Pan head", "drive": "Phillips"})).unwrap();
         // ISO 7045 and ISO 7046-1 both give an M2 recess 0, gauged at 0.9 mm.
         assert_eq!(pan.phillips.unwrap().number, 0);
         assert_eq!(pan.phillips.unwrap().depth, 0.9);
         let countersunk = parse(&json!({
-            "designation": "M2",
+            "size": "M2",
             "head": "Countersunk",
             "drive": "Phillips",
             "head_diameter": 3.8,
@@ -2004,13 +1990,11 @@ mod tests {
 
     #[test]
     fn an_m4_countersunk_phillips_is_deeper_than_its_pan() {
-        let pan =
-            parse(&json!({"designation": "M4", "head": "Pan head", "drive": "Phillips"})).unwrap();
+        let pan = parse(&json!({"size": "M4", "head": "Pan head", "drive": "Phillips"})).unwrap();
         assert_eq!(pan.phillips.unwrap().number, 2);
         assert_eq!(pan.phillips.unwrap().depth, 1.9);
         let countersunk =
-            parse(&json!({"designation": "M4", "head": "Countersunk", "drive": "Phillips"}))
-                .unwrap();
+            parse(&json!({"size": "M4", "head": "Countersunk", "drive": "Phillips"})).unwrap();
         assert_eq!(countersunk.phillips.unwrap().number, 2);
         assert_eq!(countersunk.phillips.unwrap().depth, 2.1);
     }
@@ -2018,15 +2002,14 @@ mod tests {
     #[test]
     fn a_phillips_number_keeps_the_standard_depth() {
         let p =
-            parse(&json!({"head": "Pan head", "drive": "Phillips", "phillips": "PH2"})).unwrap();
+            parse(&json!({"head": "Pan head", "drive": "Phillips", "drive_size": "PH2"})).unwrap();
         assert_eq!(p.phillips.unwrap().number, 2);
         assert_eq!(p.phillips.unwrap().depth, 1.4);
     }
 
     #[test]
     fn a_fine_pitch_uses_the_coarse_phillips() {
-        let p = parse(&json!({"designation": "M8x1", "head": "Pan head", "drive": "Phillips"}))
-            .unwrap();
+        let p = parse(&json!({"size": "M8x1", "head": "Pan head", "drive": "Phillips"})).unwrap();
         assert_eq!(p.phillips.unwrap().number, 4);
         assert_eq!(p.phillips.unwrap().depth, 4.0);
     }
@@ -2034,7 +2017,7 @@ mod tests {
     #[test]
     fn a_non_preferred_size_uses_its_phillips_row() {
         let p = parse(&json!({
-            "designation": "M3.5x0.6",
+            "size": "M3.5x0.6",
             "head": "Pan head",
             "drive": "Phillips",
             "head_diameter": 7.0,
@@ -2047,11 +2030,11 @@ mod tests {
 
     #[test]
     fn a_size_without_a_standard_phillips_asks_for_one() {
-        let err = parse(&json!({"designation": "M12", "drive": "Phillips"})).unwrap_err();
-        assert_eq!(err.field, "phillips");
+        let err = parse(&json!({"size": "M12", "drive": "Phillips"})).unwrap_err();
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("PH1x1.7"));
-        let p = parse(&json!({"designation": "M12", "drive": "Phillips", "phillips": "PH3x3.0"}))
-            .unwrap();
+        let p =
+            parse(&json!({"size": "M12", "drive": "Phillips", "drive_size": "PH3x3.0"})).unwrap();
         assert_eq!(p.phillips.unwrap().number, 3);
         assert_eq!(p.phillips.unwrap().depth, 3.0);
     }
@@ -2059,9 +2042,9 @@ mod tests {
     #[test]
     fn a_set_screw_asks_for_a_phillips_size() {
         let err = parse(&json!({"head": "Set screw", "drive": "Phillips"})).unwrap_err();
-        assert_eq!(err.field, "phillips");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("PH1x0.8"));
-        let p = parse(&json!({"head": "Set screw", "drive": "Phillips", "phillips": "PH1x0.8"}))
+        let p = parse(&json!({"head": "Set screw", "drive": "Phillips", "drive_size": "PH1x0.8"}))
             .unwrap();
         assert_eq!(p.phillips.unwrap().number, 1);
         assert_eq!(p.phillips.unwrap().depth, 0.8);
@@ -2069,9 +2052,9 @@ mod tests {
 
     #[test]
     fn a_phillips_size_on_another_drive_is_refused() {
-        let err = parse(&json!({"phillips": "PH2"})).unwrap_err();
-        assert_eq!(err.field, "phillips");
-        assert!(err.reason.contains("Drive"));
+        let err = parse(&json!({"drive_size": "PH2"})).unwrap_err();
+        assert_eq!(err.field, "drive_size");
+        assert!(err.reason.contains("key"));
     }
 
     #[test]
@@ -2084,7 +2067,7 @@ mod tests {
     fn a_short_head_refuses_the_phillips() {
         let err = parse(&json!({"head": "Pan head", "drive": "Phillips", "head_height": 1.0}))
             .unwrap_err();
-        assert_eq!(err.field, "phillips");
+        assert_eq!(err.field, "drive_size");
         // The recess reaches 2.07 mm, and 1.07 mm under a 1 mm head it is still wider
         // than the root of the thread.
         assert!(err.reason.contains("2.07"), "{}", err.reason);
@@ -2096,25 +2079,25 @@ mod tests {
         // A set screw has only its own length.
         let set = parse(
             &json!({"head": "Set screw", "drive": "Phillips", "length": 2,
-            "phillips": "PH1x1.7"}),
+            "drive_size": "PH1x1.7"}),
         )
         .unwrap_err();
-        assert_eq!(set.field, "phillips");
+        assert_eq!(set.field, "drive_size");
     }
 
     #[test]
     fn a_shallow_phillips_is_refused() {
-        let err = parse(&json!({"head": "Pan head", "drive": "Phillips", "phillips": "PH1x0.2"}))
+        let err = parse(&json!({"head": "Pan head", "drive": "Phillips", "drive_size": "PH1x0.2"}))
             .unwrap_err();
-        assert_eq!(err.field, "phillips");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("deeper"));
     }
 
     #[test]
     fn a_wide_phillips_is_refused_on_a_pan() {
-        let err = parse(&json!({"head": "Pan head", "drive": "Phillips", "phillips": "PH4x2.2"}))
+        let err = parse(&json!({"head": "Pan head", "drive": "Phillips", "drive_size": "PH4x2.2"}))
             .unwrap_err();
-        assert_eq!(err.field, "phillips");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("does not fit"));
     }
 
@@ -2124,23 +2107,20 @@ mod tests {
         // the PH4 opening clears the 10 mm face, but the cone is narrower than `g`
         // where the point begins.
         let err = parse(&json!({
-            "designation": "M2",
+            "size": "M2",
             "head": "Countersunk",
             "head_diameter": 10,
             "head_height": 4,
             "drive": "Phillips",
-            "phillips": "PH4x2.9"
+            "drive_size": "PH4x2.9"
         }))
         .unwrap_err();
-        assert_eq!(err.field, "phillips");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("does not fit"));
         let opening = phillips::opening_at(4, 2.9).unwrap();
         assert!(opening + 0.4 < 10.0, "{opening}");
         // The standard ISO 10642 cone is 90°, and the same recess sized for it fits.
-        assert!(
-            parse(&json!({"designation": "M8", "head": "Countersunk", "drive": "Phillips"}))
-                .is_ok()
-        );
+        assert!(parse(&json!({"size": "M8", "head": "Countersunk", "drive": "Phillips"})).is_ok());
     }
 
     #[test]
@@ -2169,14 +2149,14 @@ mod tests {
         for size in [
             "M1.6", "M2", "M2.5", "M3", "M3.5x0.6", "M4", "M5", "M6", "M8", "M10",
         ] {
-            let p = parse(&json!({"designation": size, "head": "Cheese head", "length": 20}));
+            let p = parse(&json!({"size": size, "head": "Cheese head", "length": 20}));
             assert!(p.as_ref().is_ok_and(|p| p.slot.is_some()), "{size}: {p:?}");
         }
         // DIN 84 stops at M10, and has no cross recess.
-        let big = parse(&json!({"designation": "M12", "head": "Cheese head"})).unwrap_err();
+        let big = parse(&json!({"size": "M12", "head": "Cheese head"})).unwrap_err();
         assert_eq!(big.field, "head_diameter");
         let cross = parse(&json!({"head": "Cheese head", "drive": "Phillips"})).unwrap_err();
-        assert_eq!(cross.field, "phillips");
+        assert_eq!(cross.field, "drive_size");
         assert!(parse(&json!({"head": "Cheese head", "drive": "Torx"})).is_ok());
     }
 
@@ -2192,7 +2172,7 @@ mod tests {
         assert_eq!(drive("Hex head").drive, Drive::None);
         assert_eq!(drive("Threaded rod").drive, Drive::None);
         // A size the head's standard does not list gets no drive, and no error.
-        let big = parse(&json!({"designation": "M12", "head": "Pan head",
+        let big = parse(&json!({"size": "M12", "head": "Pan head",
             "head_diameter": 24, "head_height": 7}))
         .unwrap();
         assert_eq!(big.drive, Drive::None);
@@ -2234,7 +2214,7 @@ mod tests {
         let mut cut = 0;
         for head in ["Socket head", "Button head", "Countersunk", "Set screw"] {
             for size in sizes {
-                let v = json!({"designation": format!("M{size}"), "head": head,
+                let v = json!({"size": format!("M{size}"), "head": head,
                     "drive": "Hex socket", "length": 100});
                 match parse(&v) {
                     Ok(p) => {
@@ -2258,7 +2238,7 @@ mod tests {
     fn a_hex_socket_that_does_not_fit_is_refused() {
         // Explicit Hex socket on a head with no standard socket asks for a size.
         let err = parse(&json!({"head": "Pan head", "drive": "Hex socket"})).unwrap_err();
-        assert_eq!(err.field, "hex");
+        assert_eq!(err.field, "drive_size");
         assert!(err.reason.contains("pan head"), "{}", err.reason);
         let p = parse(&json!({"head": "Pan head", "drive": "Hex socket", "drive_size": "2x1"}))
             .unwrap();
@@ -2269,7 +2249,7 @@ mod tests {
         let deep = parse(&json!({"drive_size": "2.5x2.9"})).unwrap_err();
         assert_eq!(deep.field, "drive_size");
         let short = parse(&json!({"head": "Set screw", "length": 1.2})).unwrap_err();
-        assert_eq!(short.field, "hex");
+        assert_eq!(short.field, "drive_size");
         let rod = parse(&json!({"head": "Threaded rod", "drive": "Hex socket"})).unwrap_err();
         assert_eq!(rod.field, "drive");
     }
@@ -2303,8 +2283,8 @@ mod tests {
         assert_eq!(none.field, "drive_size");
         let hex_head = parse(&json!({"head": "Hex head", "drive_size": "T10"})).unwrap_err();
         assert_eq!(hex_head.field, "drive_size");
-        // The older single-drive fields still work for scripts.
-        let old = parse(&json!({"drive": "Torx", "torx": "T8"})).unwrap();
+        // The single drive field selects the same sized recess.
+        let old = parse(&json!({"drive": "Torx", "drive_size": "T8"})).unwrap();
         assert_eq!(old.recess.unwrap().number, 8);
     }
 
@@ -2341,7 +2321,7 @@ mod tests {
         for size in [
             "M1.6", "M2", "M2.5", "M3", "M3.5x0.6", "M4", "M5", "M6", "M8", "M10",
         ] {
-            let p = parse(&json!({"designation": size, "head": "Pan head", "length": 20})).unwrap();
+            let p = parse(&json!({"size": size, "head": "Pan head", "length": 20})).unwrap();
             let ResolvedHead::Round { height, .. } = p.resolved.head else {
                 panic!("{size}")
             };
@@ -2406,7 +2386,7 @@ mod tests {
         for size in [
             "M1.6", "M2", "M2.5", "M3", "M3.5x0.6", "M4", "M5", "M6", "M8", "M10",
         ] {
-            let p = parse(&json!({"designation": size, "head": "Countersunk",
+            let p = parse(&json!({"size": size, "head": "Countersunk",
                 "drive": "Phillips", "length": 30}));
             assert!(
                 p.as_ref().is_ok_and(|p| p.phillips.is_some()),
@@ -2416,7 +2396,7 @@ mod tests {
         for size in [
             "M1.6", "M2", "M2.5", "M3", "M3.5x0.6", "M4", "M5", "M6", "M8", "M10",
         ] {
-            let p = parse(&json!({"designation": size, "head": "Countersunk",
+            let p = parse(&json!({"size": size, "head": "Countersunk",
                 "drive": "Slotted", "length": 30}));
             assert!(p.as_ref().is_ok_and(|p| p.slot.is_some()), "{size}: {p:?}");
         }
@@ -2429,14 +2409,11 @@ mod tests {
         assert_eq!(len(json!({"length": 12})), None);
         assert_eq!(len(json!({"length": 20})), None);
         assert_eq!(len(json!({"length": 25})), Some(18.0));
-        assert_eq!(len(json!({"designation": "M6", "length": 30})), None);
-        assert_eq!(len(json!({"designation": "M6", "length": 35})), Some(24.0));
+        assert_eq!(len(json!({"size": "M6", "length": 30})), None);
+        assert_eq!(len(json!({"size": "M6", "length": 35})), Some(24.0));
         // A fine pitch has a shorter run-out, so the shank starts sooner.
-        assert_eq!(
-            len(json!({"designation": "M8x1", "length": 37})),
-            Some(28.0)
-        );
-        assert_eq!(len(json!({"designation": "M8", "length": 37})), None);
+        assert_eq!(len(json!({"size": "M8x1", "length": 37})), Some(28.0));
+        assert_eq!(len(json!({"size": "M8", "length": 37})), None);
         // Each head follows the line its own standard draws.
         let at = |head: &str, drive: &str, size: &str, length: f64| {
             len(json!({"head": head, "drive": drive, "size": size, "length": length}))
@@ -2693,7 +2670,7 @@ mod tests {
     #[test]
     fn a_hole_alone_does_not_need_a_standard_head() {
         let p = parse(&json!({
-            "designation": "M12", "head": "Pan head", "create": "Hole only",
+            "size": "M12", "head": "Pan head", "create": "Hole only",
             "hole_type": CLEARANCE,
         }))
         .unwrap();
@@ -2706,7 +2683,7 @@ mod tests {
         .unwrap();
         // A recessed hole still needs the head it recesses.
         let err = parse(&json!({
-            "designation": "M12", "head": "Pan head", "create": "Hole only",
+            "size": "M12", "head": "Pan head", "create": "Hole only",
             "hole_type": RECESSED,
         }))
         .unwrap_err();
@@ -2715,11 +2692,11 @@ mod tests {
 
     #[test]
     fn a_small_countersunk_screw_takes_the_phillips_head_by_default() {
-        let p = parse(&json!({"designation": "M2", "head": "Countersunk"})).unwrap();
+        let p = parse(&json!({"size": "M2", "head": "Countersunk"})).unwrap();
         assert_eq!(p.drive, Drive::Phillips);
         assert_eq!(p.standard, Some("ISO 7046-1"));
         assert!(p.phillips.is_some());
-        let m3 = parse(&json!({"designation": "M3", "head": "Countersunk"})).unwrap();
+        let m3 = parse(&json!({"size": "M3", "head": "Countersunk"})).unwrap();
         assert_eq!(m3.drive, Drive::HexSocket);
     }
 

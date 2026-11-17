@@ -1,0 +1,84 @@
+{
+  "capabilities": [
+    "commands@0.1"
+  ],
+  "description": "Insert fixed catalog parts as reusable native components.",
+  "id": "techsquid-v-wheels",
+  "name": "V-wheels",
+  "runtime": {
+    "commands": [
+      "appearance.assign",
+      "appearance.list",
+      "component.activate",
+      "component.create",
+      "component.list",
+      "component.metadata",
+      "component.metadata.set",
+      "component.properties",
+      "document.inspect",
+      "document.metadata.set",
+      "inspect.measure",
+      "joint.list",
+      "material.list",
+      "model.body_features",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent",
+      "parameters.list",
+      "parameters.users",
+      "selection.get",
+      "sketch.create",
+      "sketch.finish",
+      "sketch.inspect",
+      "sketch.line",
+      "solid.revolve",
+      "surface.revolve",
+      "timeline.group",
+      "timeline.inspect"
+    ],
+    "entries": [
+      {
+        "effect": "edit",
+        "input_schema": {
+          "additionalProperties": true,
+          "properties": {
+            "assembled": {
+              "default": true,
+              "title": "Include bearings and internal shim",
+              "type": "boolean"
+            },
+            "size": {
+              "default": "Solid V Wheel",
+              "enum": [
+                "Solid V Wheel",
+                "Xtreme Solid V Wheel",
+                "Delrin V Wheel",
+                "Delrin Mini V Wheel",
+                "Xtreme Mini V Wheel"
+              ],
+              "title": "Part",
+              "type": "string"
+            },
+            "sketch": {
+              "title": "Sketch",
+              "type": "string"
+            },
+            "sketch_point": {
+              "title": "Sketch point",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "name": "make-v-wheel"
+      }
+    ],
+    "limits": {
+      "deadline_ms": 30000,
+      "fuel": 200000000,
+      "memory_mib": 64
+    },
+    "module": "plugin.wasm"
+  },
+  "version": "0.3.0"
+}

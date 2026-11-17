@@ -1,5 +1,7 @@
 # Screws
 
+Check the [host requirements](../../docs/parts-library.md#host-requirements) before installing version 0.3.
+
 Add the right screw to your [SolidCraft](https://github.com/tangency-labs/solidcraft) design in a few clicks—from socket heads and countersunk screws to set screws and threaded rod. Create matching holes at the same time, ready for your assembly.
 
 ![A selection of screw heads, drives and tips](screws.png)
@@ -40,3 +42,5 @@ For all options, supported standards, dimensions and placement details, see the 
 ## License
 
 [MIT](../../LICENSE)
+
+The package exposes its insertion tools only. [Shared part-definition and reuse rules](../../docs/parts-library.md) explain product identity, modified-part preservation and BOM grouping.

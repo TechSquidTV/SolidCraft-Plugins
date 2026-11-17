@@ -11,8 +11,10 @@ because the approval changes with every build.
 
 `expect` says what the finished design must measure:
 
-    bodies     how many bodies, all of them closed
+    bodies     total bodies; all closed unless surface_bodies is specified
+    surface_bodies  intentional zero-volume surface body count (bearing closures)
     bbox       {min, max} of the whole design
+    catalog_definitions  {creator_plugin: count} when an example must cover specific packages
     corners    [[x, y], ...] where the fasteners stand
     parts      [{body, bbox}] the named bodies and their boxes
     holes      [{label, body, radius, floor_z}] one such hole on every corner: a
@@ -34,7 +36,8 @@ Only `bodies` and `bbox` are required.
 The saved design must also reopen with the same bodies. Each example also keeps the
 design it builds next to it, `examples/<name>.json`, which is what opens in SolidCraft:
 the steps file is not a design. That design must match a fresh build, body for body,
-with the same names and volumes. `--update` writes it from the fresh build instead,
+with the same names, volumes and catalog purchasing/representation records.
+`--update` writes it from the fresh build instead,
 after a plugin or an example changes.
 
 On the signed macOS build of
@@ -42,6 +45,7 @@ SolidCraft 0.41.0 a plugin run kills the CLI with SIGKILL; that example is repor
 skipped.
 """
 import glob, json, os, shutil, sys
+from collections import Counter
 
 from harness import ROOT, TMP, check, finish, inspect, killed, package, run, skip
 
@@ -61,9 +65,20 @@ def same_bodies(a, b):
     kept = {body["name"]: body for body in a}
     fresh = {body["name"]: body for body in b}
     return sorted(kept) == sorted(fresh) and all(
-        kept[n].get("closed") and fresh[n].get("closed")
-        and abs(kept[n]["volume_mm3"] - fresh[n]["volume_mm3"]) <= 1e-6 * max(1.0, abs(fresh[n]["volume_mm3"]))
+        kept[n].get("closed") == fresh[n].get("closed")
+        and all(abs(kept[n][key] - fresh[n][key]) <= 1e-6 * max(1.0, abs(fresh[n][key]))
+                for key in (["volume_mm3", "area_mm2"] if fresh[n].get("closed") else ["area_mm2"]))
         and box_is(kept[n]["bbox"], fresh[n]["bbox"]) for n in fresh)
+
+
+def catalog_records(design):
+    """Compare purchasing and representation state independently of document-local IDs."""
+    return sorted((metadata.get("part_number"), metadata.get("bom_type"),
+                   record["product"], record["representation"], record["snapshot"]["version"])
+                  for component in design.get("components", [])
+                  for metadata in [component.get("metadata", {})]
+                  for record in [metadata.get("org.techsquid.parts")]
+                  if record is not None)
 
 
 def whole(bodies):
@@ -159,7 +174,10 @@ def example(path):
                     for side in ("a", "b")) for j in joints) == 1)
 
     check(f"{name}: {expect['bodies']} bodies", len(bodies) == expect["bodies"], f"got {len(bodies)}")
-    check(f"{name}: every body is closed", all(b.get("closed") for b in bodies))
+    surfaces = expect.get("surface_bodies", 0)
+    check(f"{name}: {surfaces} intentional surface bodies, remaining bodies closed",
+          sum(not b.get("closed") for b in bodies) == surfaces
+          and all(b.get("volume_mm3") is None for b in bodies if not b.get("closed")))
     check(f"{name}: overall box", box_is(whole(bodies), expect["bbox"]), json.dumps(whole(bodies)))
     for part in expect.get("parts", []):
         body = by_name.get(part["body"])
@@ -168,6 +186,11 @@ def example(path):
             body is not None and box_is(body["bbox"], part["bbox"]),
             json.dumps(body["bbox"]) if body else "no such body",
         )
+        for key in ("volume_mm3", "area_mm2"):
+            if key in part:
+                check(f"{name}: {part['body']} {key}", body is not None
+                      and body.get(key) is not None
+                      and abs(body[key] - part[key]) <= 1e-4 * max(1.0, part[key]))
 
     corners = expect.get("corners", [])
     for hole in expect.get("holes", []):
@@ -218,10 +241,24 @@ def example(path):
         text[-800:] or f"got {len(reopened)}",
     )
 
+    with open(saved) as f:
+        built_design = json.load(f)
+    check(f"{name}: no legacy catalog records", all("dev.threadcraft" not in c.get("metadata", {})
+          for c in built_design.get("components", [])))
+    if "catalog_definitions" in expect:
+        creators = Counter(c["metadata"]["org.techsquid.parts"]["creator"]
+                           for c in built_design.get("components", [])
+                           if "org.techsquid.parts" in c.get("metadata", {}))
+        check(f"{name}: catalog definition counts", creators == expect["catalog_definitions"], str(dict(creators)))
     if UPDATE:
         shutil.copyfile(saved, design)
         print(f"wrote {os.path.relpath(design, ROOT)}")
         return
+    with open(design) as f:
+        kept_design = json.load(f)
+    check(f"{name}: saved catalog identities and BOM numbers match a fresh build",
+          catalog_records(kept_design) == catalog_records(built_design),
+          "regenerate with --update after catalog or snapshot changes")
     code, text, results = run([{"command": "inspect.measure", "params": {}}], inp=design)
     kept = results[0]["bodies"] if code == 0 and results else None
     same = kept is not None and len(kept) == len(reopened) and same_bodies(kept, reopened)

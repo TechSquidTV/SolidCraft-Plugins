@@ -1,5 +1,7 @@
 # Heat-set inserts
 
+Check the [host requirements](../../docs/parts-library.md#host-requirements) before installing version 0.3.
+
 Add reusable threaded connections to your printed parts. This [SolidCraft](https://github.com/tangency-labs/solidcraft) plugin places CNC Kitchen heat-set inserts and prepares their holes in one step.
 
 ![An M3 heat-set insert with knurled exterior and threaded bore](insert.png)
@@ -20,3 +22,5 @@ For the size catalog, hole dimensions, custom options and placement details, see
 ## License
 
 [MIT](../../LICENSE)
+
+Shared internal definitions retain insert rows and source status. Custom overrides and the three unsourced rows are custom models. See [catalog and reuse rules](../../docs/parts-library.md).

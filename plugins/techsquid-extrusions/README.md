@@ -1,5 +1,7 @@
 # Extrusions
 
+Check the [host requirements](../../docs/parts-library.md#host-requirements) before installing version 0.3.
+
 Go from a sketch to a frame with configurable T-slot and V-slot rails for [SolidCraft](https://github.com/tangency-labs/solidcraft). Cut rails to length, prepare their joints and add slot nuts without modeling each profile by hand.
 
 ![T-slot and V-slot rail profiles](rails.png)
@@ -70,3 +72,5 @@ For joint dimensions, tapping limits, slot nut placement and all options, see th
 ## License
 
 [MIT](../../LICENSE)
+
+The package exposes its insertion tools only. [Shared part-definition and reuse rules](../../docs/parts-library.md) explain product identity, modified-part preservation and BOM grouping.

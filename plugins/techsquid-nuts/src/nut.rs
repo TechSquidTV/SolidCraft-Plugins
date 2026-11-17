@@ -48,6 +48,8 @@ pub struct Pocket {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Params {
+    /// Explicit dimension overrides and non-ISO pitches are custom configurations.
+    pub custom: bool,
     pub create: Create,
     /// The pocket to cut in the part. Empty when only the nut is made.
     pub pocket: Option<Pocket>,
@@ -69,22 +71,18 @@ pub struct Params {
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
+    input::workflow_fields(v, include_str!("../plugin.json"), "make-nut")?;
     let designation = designation::designation(v, DEFAULT_DESIGNATION)?;
     let size_field = designation::size_field(v);
     let across_flats = input::optional_length(v, "custom_width")?;
-    let height = input::optional_length(
-        v,
-        if v.get("custom_thickness").is_some() {
-            "custom_thickness"
-        } else {
-            "custom_height"
-        },
-    )
-    .map_err(|err| FieldError::new("custom_thickness", err.reason))?;
+    let height = input::optional_length(v, "custom_thickness")?;
     let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
     let (size, thread, listed) =
         resolve_size(&designation).map_err(|e| e.moved("size", size_field))?;
+    let custom = across_flats.is_some()
+        || height.is_some()
+        || listed.is_none_or(|row| row.pitch != size.pitch);
     let (across_flats, height, countersink, chamfer_max) =
         resolve_body(listed, across_flats, height)?;
     let create = CREATE.parse(v)?;
@@ -117,6 +115,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         None
     };
     let p = Params {
+        custom,
         create,
         pocket,
         designation,
@@ -131,6 +130,12 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         place,
     };
     validate(&p)?;
+    parts::catalog::validate_selection(
+        v,
+        crate::provider::REVISION,
+        &crate::provider::representation(&p),
+    )
+    .map_err(|e| FieldError::new(e.field, e.reason))?;
     Ok(p)
 }
 
@@ -274,7 +279,7 @@ mod tests {
 
     #[test]
     fn a_fine_pitch_keeps_the_m8_nut() {
-        let p = parse(&json!({"designation": "M8x1"})).unwrap();
+        let p = parse(&json!({"size": "M8x1"})).unwrap();
         assert_eq!(p.thread, "M8x1");
         assert_eq!(p.across_flats, 13.0);
         assert_eq!(p.height, 6.8);
@@ -283,7 +288,7 @@ mod tests {
 
     #[test]
     fn a_bare_m3_5_takes_the_table_pitch() {
-        let p = parse(&json!({"designation": "M3.5"})).unwrap();
+        let p = parse(&json!({"size": "M3.5"})).unwrap();
         assert_eq!(p.thread, "M3.5");
         assert_eq!(p.across_flats, 6.0);
         assert_eq!(p.height, 2.8);
@@ -295,19 +300,19 @@ mod tests {
         let wider = parse(&json!({"size": "M6", "custom_width": 11.0})).unwrap();
         assert_eq!(wider.across_flats, 11.0);
         assert_eq!(wider.height, 5.2);
-        let taller = parse(&json!({"size": "M6", "custom_height": 6.0})).unwrap();
+        let taller = parse(&json!({"size": "M6", "custom_thickness": 6.0})).unwrap();
         assert_eq!(taller.across_flats, 10.0);
         assert_eq!(taller.height, 6.0);
     }
 
     #[test]
     fn an_unlisted_size_needs_both_dimensions() {
-        let err = parse(&json!({"designation": "M7x1"})).unwrap_err();
+        let err = parse(&json!({"size": "M7x1"})).unwrap_err();
         assert_eq!(err.field, "custom_width");
         let p = parse(&json!({
-            "designation": "M7x1",
+            "size": "M7x1",
             "custom_width": 11.0,
-            "custom_height": 5.5,
+            "custom_thickness": 5.5,
         }))
         .unwrap();
         assert_eq!(p.thread, "M7x1");
@@ -324,15 +329,15 @@ mod tests {
 
     #[test]
     fn a_nut_shorter_than_its_chamfers_is_refused() {
-        let err = parse(&json!({"size": "M6", "custom_height": 0.5})).unwrap_err();
+        let err = parse(&json!({"size": "M6", "custom_thickness": 0.5})).unwrap_err();
         assert_eq!(err.field, "custom_thickness");
     }
 
     #[test]
     fn a_countersink_must_fit_the_overridden_body() {
-        let narrow = parse(&json!({"designation": "M64", "custom_width": 65.0})).unwrap_err();
+        let narrow = parse(&json!({"size": "M64", "custom_width": 65.0})).unwrap_err();
         assert_eq!(narrow.field, "custom_width");
-        let short = parse(&json!({"designation": "M64", "custom_height": 2.5})).unwrap_err();
+        let short = parse(&json!({"size": "M64", "custom_thickness": 2.5})).unwrap_err();
         assert_eq!(short.field, "custom_thickness");
     }
 
@@ -340,7 +345,7 @@ mod tests {
     fn every_standard_size_parses() {
         for nut in fasteners::nut::sizes() {
             let designation = format!("M{}", metric::number(nut.nominal));
-            let p = parse(&json!({"designation": designation})).unwrap();
+            let p = parse(&json!({"size": designation})).unwrap();
             assert_eq!(p.across_flats, nut.across_flats, "{designation}");
             assert_eq!(p.height, nut.height, "{designation}");
         }
@@ -348,7 +353,7 @@ mod tests {
 
     #[test]
     fn a_custom_size_replaces_the_listed_one() {
-        let p = parse(&json!({"designation": "M6", "custom_designation": "M8x1"})).unwrap();
+        let p = parse(&json!({"size": "M6", "custom_size": "M8x1"})).unwrap();
         assert_eq!(p.thread, "M8x1");
         assert_eq!(p.across_flats, 13.0);
     }
@@ -360,14 +365,14 @@ mod tests {
             &manifest["runtime"]["entries"][0]["input_schema"]["properties"]["size"]["enum"];
         for size in sizes.as_array().unwrap() {
             let size = size.as_str().unwrap();
-            let p = parse(&json!({"designation": size})).unwrap();
+            let p = parse(&json!({"size": size})).unwrap();
             assert!(p.countersink.is_some(), "{size}");
         }
     }
 
     #[test]
     fn an_inch_size_is_not_a_metric_nut() {
-        let err = parse(&json!({"designation": "1/4-20 UNC"})).unwrap_err();
+        let err = parse(&json!({"size": "1/4-20 UNC"})).unwrap_err();
         assert_eq!(err.field, "size");
     }
 

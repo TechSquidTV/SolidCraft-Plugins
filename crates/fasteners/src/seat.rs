@@ -3,6 +3,83 @@
 use plugin_kit::{Placement, Runner};
 use serde::Deserialize;
 use serde_json::{json, Value};
+use std::collections::BTreeMap;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Body {
+    pub definition: String,
+    pub path: Vec<u64>,
+}
+
+#[derive(Deserialize)]
+struct BodyList<T> {
+    bodies: Vec<T>,
+}
+
+#[derive(Deserialize)]
+struct WorldBody {
+    name: String,
+    definition: String,
+}
+
+#[derive(Deserialize)]
+struct MeasuredBody {
+    name: String,
+    bbox: Bounds,
+}
+
+#[derive(Deserialize)]
+struct Bounds {
+    min: [f64; 3],
+    max: [f64; 3],
+}
+
+impl Bounds {
+    fn contains(&self, point: [f64; 3]) -> bool {
+        (0..3).all(|i| {
+            (point[i] >= self.min[i] || near(point[i], self.min[i]))
+                && (point[i] <= self.max[i] || near(point[i], self.max[i]))
+        })
+    }
+}
+
+#[derive(Deserialize)]
+struct Selection {
+    items: Vec<SelectedBody>,
+}
+
+#[derive(Deserialize)]
+struct SelectedBody {
+    name: String,
+    // The host omits the occurrence path for root bodies.
+    #[serde(default)]
+    occurrence_path: Vec<u64>,
+}
+
+// Select/get is the host's structured world-body → occurrence-path resolver.
+// Preserve the user's selection, including on inspection errors. Never parse the
+// formatted world-body labels: names may themselves contain occurrence syntax.
+fn body_paths<R: Runner>(r: &mut R, bodies: &[&WorldBody]) -> Result<Selection, String> {
+    let saved = r.run("selection.get", json!({"detail": false}))?;
+    let items = saved
+        .get("items")
+        .and_then(Value::as_array)
+        .ok_or("selection.get did not return the selection to restore")?;
+    r.run(
+        "select.set",
+        json!({"items": bodies.iter().map(|body|
+        json!({"type": "body", "name": body.name})).collect::<Vec<_>>()}),
+    )?;
+    let inspected = r.run("selection.get", json!({"detail": true}));
+    let restored = r.run("select.set", json!({"items": items}));
+    restored?;
+    let reply = inspected?;
+    if reply.get("detail_limit").is_some() {
+        return Err("too many fastener seat placements to inspect".into());
+    }
+    serde_json::from_value(reply)
+        .map_err(|e| format!("selection.get: cannot read seat placements: {e}"))
+}
 
 #[derive(Deserialize)]
 pub struct Faces {
@@ -66,18 +143,89 @@ impl Face {
 }
 
 impl Faces {
-    /// Read each modified body once, before any hardware can obscure the seat.
+    /// Cuts return definition names. Bound candidate copies by the actual seating
+    /// points before inspecting faces or resolving paths. Keep all overlapping
+    /// candidates so the caller can still reject ambiguous seats.
+    /// Axis-based attachments retain first-placement inspection: the host's axis
+    /// joint origin does not honor an exact nested path like a named hole does.
     pub fn read_all<R: Runner>(
         r: &mut R,
         bodies: &[String],
-    ) -> Result<Vec<(String, Self)>, String> {
-        bodies
+        places: &[Placement],
+        include_copies: bool,
+    ) -> Result<Vec<(Body, Self)>, String> {
+        if bodies.is_empty() || places.is_empty() {
+            return Ok(Vec::new());
+        }
+        let world: BodyList<WorldBody> =
+            serde_json::from_value(r.run("inspect.measure", plugin_kit::host::body_names_query())?)
+                .map_err(|e| {
+                    format!("inspect.measure: cannot read fastener seat body placements: {e}")
+                })?;
+        for body in bodies {
+            if !world
+                .bodies
+                .iter()
+                .any(|placed| &placed.definition == body || &placed.name == body)
+            {
+                return Err(format!("fastener seat body {body} has no placed geometry"));
+            }
+        }
+        let placed: Vec<_> = world
+            .bodies
             .iter()
+            .filter(|placed| bodies.contains(&placed.definition) || bodies.contains(&placed.name))
+            .filter(|placed| include_copies || placed.name == placed.definition)
+            .collect();
+        if placed.is_empty() {
+            return Ok(Vec::new());
+        }
+        // One batched measurement, not one host call per copy. Only measure the
+        // cut definitions; unrelated hardware need not be measured at all.
+        let measured: BodyList<MeasuredBody> = serde_json::from_value(r.run(
+            "inspect.measure",
+            json!({"bodies": placed.iter().map(|body| &body.name).collect::<Vec<_>>()}),
+        )?)
+        .map_err(|e| format!("inspect.measure: cannot read fastener seat bounds: {e}"))?;
+        let bounds: BTreeMap<_, _> = measured
+            .bodies
+            .into_iter()
+            .map(|body| (body.name, body.bbox))
+            .collect();
+        let mut candidates = Vec::new();
+        for body in placed {
+            let bounds = bounds.get(&body.name).ok_or_else(|| {
+                format!("inspect.measure did not return bounds for {}", body.name)
+            })?;
+            if places.iter().any(|place| bounds.contains(place.point)) {
+                candidates.push(body);
+            }
+        }
+        if candidates.is_empty() {
+            return Ok(Vec::new());
+        }
+        let placed = candidates;
+        let paths = body_paths(r, &placed)?;
+        placed
+            .into_iter()
             .map(|body| {
-                let reply = r.run("model.faces", json!({"body": body}))?;
+                let selected = paths
+                    .items
+                    .iter()
+                    .find(|item| item.name == body.name)
+                    .ok_or_else(|| {
+                        format!("selection.get did not resolve seat body {}", body.name)
+                    })?;
+                let reply = r.run("model.faces", json!({"body": body.name}))?;
                 let faces = serde_json::from_value(reply)
                     .map_err(|e| format!("model.faces: cannot read fastener seat faces: {e}"))?;
-                Ok((body.clone(), faces))
+                Ok((
+                    Body {
+                        definition: body.definition.clone(),
+                        path: selected.occurrence_path.clone(),
+                    },
+                    faces,
+                ))
             })
             .collect()
     }
@@ -85,7 +233,7 @@ impl Faces {
 
 pub enum Seat {
     Hole {
-        body: String,
+        body: Body,
         bore: String,
         end: String,
         /// A pocket wall keeps a hex nut's turn tied to its pocket.
@@ -110,10 +258,17 @@ impl Seat {
                 bore,
                 end,
                 turn,
-            } => json!({
-                "body": body, "circle": bore, "end": end,
-                "x": turn.as_ref().map_or_else(|| json!(place.y_dir), |face| json!(face)),
-            }),
+            } => {
+                let mut origin = json!({
+                    "body": body.definition, "circle": bore, "end": end,
+                    "occurrence": body.path.last().copied().unwrap_or(0),
+                    "x": turn.as_ref().map_or_else(|| json!(place.y_dir), |face| json!(face)),
+                });
+                if !body.path.is_empty() {
+                    origin["path"] = json!(body.path);
+                }
+                origin
+            }
             Self::Axis { name } => json!({"axis": name, "x": place.y_dir}),
         };
         let reply = r.run(
@@ -147,6 +302,198 @@ impl Seat {
 mod tests {
     use super::*;
 
+    struct Host {
+        selection: Value,
+        inspected: Option<Result<Value, String>>,
+        bodies: Vec<Value>,
+        calls: Vec<(String, Value)>,
+    }
+    impl Host {
+        fn new(bodies: Vec<Value>) -> Self {
+            Self {
+                selection: json!([{"type": "external_sketch_point", "sketch": 42, "id": "p"}]),
+                inspected: None,
+                bodies,
+                calls: Vec::new(),
+            }
+        }
+    }
+    impl Runner for Host {
+        fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            self.calls.push((command.into(), args.clone()));
+            match command {
+                "inspect.measure" => Ok(json!({"bodies": self.bodies.iter().filter(|body| {
+                        args["bodies"].as_array().is_none_or(|names| names.contains(&body["name"]))
+                    }).collect::<Vec<_>>()})),
+                "select.set" => {
+                    self.selection = args["items"].clone();
+                    Ok(Value::Null)
+                }
+                "selection.get" if args["detail"] == false => Ok(json!({"items": self.selection})),
+                "selection.get" => self.inspected.clone().unwrap_or_else(|| {
+                    Ok(json!({
+                        "items": self.selection.as_array().unwrap().iter().map(|item| {
+                            self.bodies.iter().find(|body| body["name"] == item["name"]).unwrap()
+                        }).collect::<Vec<_>>()
+                    }))
+                }),
+                "model.faces" => Ok(json!({"faces": []})),
+                "joint.create" => Ok(json!({"joint": 7, "errors": [], "conflicts": []})),
+                _ => panic!("unexpected command: {command}"),
+            }
+        }
+    }
+
+    fn body(name: &str, definition: &str, path: &[u64], x: f64) -> Value {
+        json!({"name": name, "definition": definition, "occurrence_path": path,
+               "bbox": {"min": [x, -10, 0], "max": [x + 10.0, 10, 12]}})
+    }
+
+    #[test]
+    fn placed_seats_keep_definition_identity_paths_and_selection() {
+        let original = json!([{"type": "external_sketch_point", "sketch": 42, "id": "p"}]);
+        for inspected in [
+            Ok(json!({"items": [
+                {"name": "Plate (original)"},
+                {"name": "A label, not a path", "occurrence_path": [9, 12]},
+            ]})),
+            Err("cannot inspect selection".into()),
+            Ok(json!({"items": [], "detail_limit": 500})),
+            Ok(json!({"items": []})),
+        ] {
+            let success = inspected
+                .as_ref()
+                .is_ok_and(|v| v["items"].as_array().unwrap().len() == 2);
+            let mut host = Host::new(vec![
+                body("Plate (original)", "Plate (original)", &[], 0.0),
+                body("A label, not a path", "Plate (original)", &[9, 12], 0.0),
+                body("Unrelated", "Unrelated", &[], 0.0),
+            ]);
+            host.inspected = Some(inspected);
+            let places = [Placement::on_origin()];
+            let result = Faces::read_all(&mut host, &["Plate (original)".into()], &places, true);
+            assert_eq!(result.is_ok(), success);
+            assert_eq!(host.selection, original);
+            if let Ok(bodies) = result {
+                assert_eq!(bodies.len(), 2);
+                assert_eq!(bodies[1].0.definition, "Plate (original)");
+                assert_eq!(bodies[1].0.path, [9, 12]);
+                for (body, _) in bodies {
+                    let path = body.path.clone();
+                    Seat::Hole {
+                        body,
+                        bore: "bore".into(),
+                        end: "floor".into(),
+                        turn: None,
+                    }
+                    .attach(&mut host, 13, &Placement::on_origin(), "Nut")
+                    .unwrap();
+                    let origin = &host.calls.last().unwrap().1["a"];
+                    assert_eq!(origin["body"], "Plate (original)");
+                    assert_eq!(origin["occurrence"], path.last().copied().unwrap_or(0));
+                    assert_eq!(
+                        origin.get("path"),
+                        (!path.is_empty()).then(|| json!(path)).as_ref()
+                    );
+                }
+                assert_eq!(
+                    host.calls
+                        .iter()
+                        .filter(|(c, _)| c == "model.faces")
+                        .count(),
+                    2
+                );
+                host.calls.clear();
+                let first =
+                    Faces::read_all(&mut host, &["Plate (original)".into()], &places, false)
+                        .unwrap();
+                assert_eq!(first.len(), 1);
+                assert!(first[0].0.path.is_empty());
+                assert_eq!(
+                    host.calls
+                        .iter()
+                        .filter(|(c, _)| c == "model.faces")
+                        .count(),
+                    1
+                );
+                assert_eq!(host.selection, original);
+            }
+        }
+    }
+
+    #[test]
+    fn distant_copies_do_not_add_face_reads_or_exceed_selection_limits() {
+        for copies in [1, 600] {
+            let mut host = Host::new(
+                (0..=copies)
+                    .map(|i| {
+                        body(
+                            &format!("Plate {i}"),
+                            "Plate",
+                            &[1000 + i, 12],
+                            100.0 * i as f64,
+                        )
+                    })
+                    .collect(),
+            );
+            let selection = host.selection.clone();
+            // Two requested copies, including points on a box edge and just
+            // within the face-matching tolerance of the top boundary.
+            let places =
+                [[0.0, 0.0, 0.0], [100.0 * copies as f64, 0.0, 12.0 + 1e-6]].map(|point| {
+                    Placement {
+                        point,
+                        ..Placement::on_origin()
+                    }
+                });
+            let found = Faces::read_all(&mut host, &["Plate".into()], &places, true).unwrap();
+            assert_eq!(found.len(), 2);
+            assert_eq!(found[0].0.path, [1000, 12]);
+            assert_eq!(found[1].0.path, [1000 + copies, 12]);
+            assert_eq!(host.selection, selection);
+            assert_eq!(host.calls.len(), 8);
+            assert_eq!(
+                host.calls
+                    .iter()
+                    .filter(|(c, _)| c == "model.faces")
+                    .count(),
+                2
+            );
+            assert_eq!(
+                host.calls
+                    .iter()
+                    .find(|(c, _)| c == "select.set")
+                    .unwrap()
+                    .1["items"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                2
+            );
+        }
+    }
+
+    #[test]
+    fn absent_seats_skip_selection_and_uninspectable_bounds_are_refused() {
+        let mut host = Host::new(vec![body("Plate", "Plate", &[], 0.0)]);
+        let selection = host.selection.clone();
+        let places = [Placement {
+            point: [0.0, 0.0, 13.0],
+            ..Placement::on_origin()
+        }];
+        assert!(Faces::read_all(&mut host, &["Plate".into()], &places, true)
+            .unwrap()
+            .is_empty());
+        assert_eq!(host.calls.len(), 2);
+        assert_eq!(host.selection, selection);
+        host.bodies[0].as_object_mut().unwrap().remove("bbox");
+        assert!(Faces::read_all(&mut host, &["Plate".into()], &places, true)
+            .err()
+            .unwrap()
+            .contains("bounds"));
+        assert_eq!(host.selection, selection);
+    }
+
     #[test]
     fn attachment_reports_its_solve_failure_without_blame_for_unrelated_joints() {
         struct Host(Value);
@@ -156,7 +503,10 @@ mod tests {
             }
         }
         let seat = Seat::Hole {
-            body: "Plate".into(),
+            body: Body {
+                definition: "Plate".into(),
+                path: vec![],
+            },
             bore: "bore".into(),
             end: "floor".into(),
             turn: None,

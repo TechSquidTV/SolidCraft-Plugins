@@ -1,21 +1,29 @@
 {
-  "format": "solidcraft/56",
+  "format": "solidcraft/57",
   "format_pending": [
-    "cell-grid-feature",
-    "frame-member-locate",
-    "frame-standard-sizes",
-    "occurrence-move-expressions",
-    "pattern-names-by-source"
+    "extrude-to-object-keeps-picked-placements",
+    "linked-cosmetic-threads",
+    "plane-at-angle-follows-named-axis"
   ],
   "name": "insert",
   "units": "mm",
+  "metadata": {
+    "org.techsquid.parts.index": {
+      "definitions": {
+        "85b2dc480a15ca6a14ac8e70935bab8cf23e2dc866172a102bd21bb724ba24f9": [
+          1
+        ]
+      },
+      "version": 1
+    }
+  },
   "params": [],
   "features": [
     {
-      "id": 5,
+      "id": 3,
       "name": "Insert M3 x 5.7: Core section",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -200,7 +208,7 @@
       }
     },
     {
-      "id": 6,
+      "id": 4,
       "name": "Insert M3 x 5.7: Core",
       "suppressed": false,
       "body_names": [
@@ -209,9 +217,9 @@
       "param_names": [
         "d1"
       ],
-      "component": 3,
+      "component": 1,
       "type": "revolve",
-      "sketch": 5,
+      "sketch": 3,
       "profiles": {
         "type": "all"
       },
@@ -219,15 +227,15 @@
         "type": "sketch_axis",
         "axis": "y"
       },
-      "angle": "360 deg",
+      "angle": "360",
       "operation": "new_body",
       "convention": "sketch_normal"
     },
     {
-      "id": 7,
+      "id": 5,
       "name": "Insert M3 x 5.7: Upper knurl profile",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -629,10 +637,10 @@
       }
     },
     {
-      "id": 8,
+      "id": 6,
       "name": "Insert M3 x 5.7: Upper knurl path",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -705,19 +713,19 @@
       }
     },
     {
-      "id": 9,
+      "id": 7,
       "name": "Insert M3 x 5.7: Upper knurl",
       "suppressed": false,
       "param_names": [
         "d2"
       ],
-      "component": 3,
+      "component": 1,
       "type": "sweep",
-      "sketch": 7,
+      "sketch": 5,
       "profiles": {
         "type": "all"
       },
-      "path_sketch": 8,
+      "path_sketch": 6,
       "path": [
         "l1"
       ],
@@ -728,10 +736,10 @@
       ]
     },
     {
-      "id": 10,
+      "id": 8,
       "name": "Insert M3 x 5.7: Middle knurl profile",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -1133,10 +1141,10 @@
       }
     },
     {
-      "id": 11,
+      "id": 9,
       "name": "Insert M3 x 5.7: Middle knurl path",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -1209,19 +1217,19 @@
       }
     },
     {
-      "id": 12,
+      "id": 10,
       "name": "Insert M3 x 5.7: Middle knurl",
       "suppressed": false,
       "param_names": [
         "d3"
       ],
-      "component": 3,
+      "component": 1,
       "type": "sweep",
-      "sketch": 10,
+      "sketch": 8,
       "profiles": {
         "type": "all"
       },
-      "path_sketch": 11,
+      "path_sketch": 9,
       "path": [
         "l1"
       ],
@@ -1232,10 +1240,10 @@
       ]
     },
     {
-      "id": 13,
+      "id": 11,
       "name": "Insert M3 x 5.7: Middle chamfer section",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -1322,15 +1330,15 @@
       }
     },
     {
-      "id": 14,
+      "id": 12,
       "name": "Insert M3 x 5.7: Middle chamfer",
       "suppressed": false,
       "param_names": [
         "d4"
       ],
-      "component": 3,
+      "component": 1,
       "type": "revolve",
-      "sketch": 13,
+      "sketch": 11,
       "profiles": {
         "type": "all"
       },
@@ -1338,7 +1346,7 @@
         "type": "sketch_axis",
         "axis": "y"
       },
-      "angle": "360 deg",
+      "angle": "360",
       "operation": "cut",
       "targets": [
         "Insert M3 x 5.7"
@@ -1346,7 +1354,7 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 15,
+      "id": 13,
       "name": "Insert M3 x 5.7: Move to site",
       "suppressed": false,
       "param_names": [
@@ -1354,35 +1362,35 @@
         "d6",
         "d7"
       ],
-      "component": 3,
+      "component": 1,
       "type": "move",
       "bodies": [
         "Insert M3 x 5.7"
       ],
       "translate": [
-        "-165",
+        "-125",
         "-105",
         "0"
       ]
     },
     {
-      "id": 16,
+      "id": 14,
       "name": "Insert M3 x 5.7: Bore",
       "suppressed": false,
       "param_names": [
         "d8",
         "d9"
       ],
-      "component": 3,
+      "component": 1,
       "face_names": [
-        "F6:side:l1"
+        "F4:side:l1"
       ],
       "participants": [
         "Insert M3 x 5.7"
       ],
       "type": "hole",
       "position": [
-        -165.0,
+        -125.0,
         -105.0,
         0.0
       ],
@@ -1405,30 +1413,36 @@
     {
       "id": 1,
       "identification_color_index": 0,
+      "name": "Insert M3 x 5.7",
+      "parent": 16,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "CNC Kitchen heat-set insert M3 × 5.7",
+        "org.techsquid.parts": {
+          "creator": "techsquid-inserts",
+          "product": "{\"catalog\":\"cnc-kitchen\",\"configuration\":{\"diameter_mm\":4.6,\"length_mm\":5.7,\"thread\":\"M3\"},\"kind\":\"supplier_product\",\"members\":[],\"part\":\"m3-5.7\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"cnc-kitchen\",\"configuration\":{\"diameter_mm\":4.6,\"length_mm\":5.7,\"thread\":\"M3\"},\"kind\":\"supplier_product\",\"members\":[],\"part\":\"m3-5.7\"},\"revision\":\"1\"}",
+          "site": [
+            -125.0,
+            -105.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "19ca550ec0b7770fc619cd00225a480446b29b2b6bd234a419100182603e9664",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "CNC Kitchen insert M3 × 5.7"
+      }
+    },
+    {
+      "id": 16,
+      "identification_color_index": 1,
       "name": "Fasteners",
       "parent": 0,
       "metadata": {
         "bom_type": "phantom"
-      }
-    },
-    {
-      "id": 3,
-      "identification_color_index": 1,
-      "name": "Insert M3 x 5.7",
-      "parent": 1,
-      "metadata": {
-        "bom_type": "purchased",
-        "description": "CNC Kitchen heat-set insert M3 × 5.7",
-        "dev.threadcraft": {
-          "geometry": "cc67bb22c848787e",
-          "plugin": "techsquid-inserts",
-          "site": [
-            -165.0,
-            -105.0,
-            0.0
-          ]
-        },
-        "part_number": "Insert M3 x 5.7"
       }
     }
   ],
@@ -1437,6 +1451,39 @@
     {
       "id": 2,
       "component": 1,
+      "parent": 16,
+      "name": "Insert M3 x 5.7:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          125.0,
+          105.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 17,
+      "component": 16,
       "parent": 0,
       "name": "Fasteners:1",
       "transform": [
@@ -1466,47 +1513,16 @@
         ]
       ],
       "grounded": false
-    },
-    {
-      "id": 4,
-      "component": 3,
-      "parent": 1,
-      "name": "Insert M3 x 5.7:1",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          165.0,
-          105.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
     }
   ],
   "timeline_groups": [
     {
-      "id": 17,
+      "id": 15,
       "name": "Insert M3 x 5.7",
       "parent": null,
       "features": [
+        3,
+        4,
         5,
         6,
         7,
@@ -1516,9 +1532,7 @@
         11,
         12,
         13,
-        14,
-        15,
-        16
+        14
       ]
     }
   ]

@@ -12,6 +12,7 @@
 //! cone cut into the end face. `solid.thread` starts at the tip of the cylinder, which is
 //! the shoulder when the end comes to a point.
 
+pub mod provider;
 pub mod screw;
 mod seat;
 
@@ -103,27 +104,48 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     } else {
         Vec::new()
     };
+    let mut library_report = Value::Null;
     let placed = if p.create.part() {
         let base = body_base(p);
         let def = Definition {
             plugin: PLUGIN,
             base: &base,
-            description: p.standard.unwrap_or(""),
-            folder: FOLDER,
-            bom_type: "purchased",
+            description: if p.custom {
+                "Custom screw geometry"
+            } else {
+                p.standard.unwrap_or("")
+            },
+            bom_type: if p.custom { "normal" } else { "purchased" },
             site: built_at(p),
         };
-        let placed = fasten::place_all(r, &def, &places, |mut r, name, site| {
-            build_screw(&mut r, p, site, name)
-        })?;
+        let representation = provider::representation(p);
+        let mut library = fasten::Library::new(
+            r,
+            fasten::Budget {
+                creation_calls: 160,
+                placements: places.len(),
+            },
+        )?;
+        let handle = library.ensure(
+            &def,
+            &provider::part_number(p)?,
+            &representation,
+            |library, name, site| {
+                library.geometry(name, |mut r| build_screw(&mut r, p, site, name))
+            },
+        )?;
+        let placed = library.place_all(&handle, &places, FOLDER)?;
         for (seat, occurrence) in seats.iter().zip(&placed.occurrences) {
-            seat.attach(r, *occurrence, &base)?;
+            seat.attach(&mut library.runner(), *occurrence, &base)?;
         }
+        library_report = library.finish()?;
         Some(placed)
     } else {
         None
     };
-    Ok(summary(p, &places, &drilled, skipped, placed.as_ref()))
+    let mut reply = summary(p, &places, &drilled, skipped, placed.as_ref());
+    reply["library"] = library_report;
+    Ok(reply)
 }
 
 /// The body name before any number: what the screw is, its size, then its head, as a
@@ -379,7 +401,7 @@ fn revolve_head<R: Runner>(
     place: &Placement,
     body: &str,
     part: &str,
-    profile: &[head::Segment],
+    profile: &[plugin_kit::revolve::Segment],
 ) -> Result<(), String> {
     let created = r.run(
         "sketch.create",
@@ -393,23 +415,7 @@ fn revolve_head<R: Runner>(
         }),
     )?;
     let sketch = sketch_id(&created)?;
-    for segment in profile {
-        match segment {
-            head::Segment::Line(points) => {
-                r.run("sketch.line", json!({"sketch": sketch, "points": points}))?;
-            }
-            head::Segment::Arc {
-                start,
-                through,
-                end,
-            } => {
-                r.run(
-                    "sketch.arc.three_point",
-                    json!({"sketch": sketch, "start": start, "through": through, "end": end}),
-                )?;
-            }
-        }
-    }
+    plugin_kit::revolve::draw(r, &sketch, profile)?;
     r.run("sketch.finish", json!({}))?;
     r.run(
         "solid.revolve",
@@ -452,29 +458,16 @@ fn revolve_cut<R: Runner>(
     triangle: &[[f64; 2]; 3],
     name: &str,
 ) -> Result<(), String> {
-    let created = r.run(
-        "sketch.create",
+    plugin_kit::revolve::build(
+        r,
+        &Placement {
+            point: place.along(along),
+            normal: opposite(place.normal),
+            ..*place
+        },
+        &format!("{name} profile"),
+        plugin_kit::revolve::Section::Solid(triangle),
         json!({
-            "plane": {
-                "origin": place.along(along),
-                "x_dir": place.x_dir,
-                "y_dir": opposite(place.normal),
-            },
-            "name": format!("{name} profile"),
-        }),
-    )?;
-    let sketch = sketch_id(&created)?;
-    r.run(
-        "sketch.line",
-        json!({"sketch": sketch, "closed": true, "points": triangle}),
-    )?;
-    r.run("sketch.finish", json!({}))?;
-    r.run(
-        "solid.revolve",
-        json!({
-            "sketch": sketch,
-            "axis": {"origin": place.point, "dir": place.normal},
-            "angle": 360,
             "operation": "cut",
             "targets": [body],
             "name": name,
@@ -1104,7 +1097,7 @@ mod tests {
     #[test]
     fn a_hex_head_is_a_six_sided_sketch() {
         let (_, calls) = commands(json!({
-            "designation": "M8x1",
+            "size": "M8x1",
             "length": 30,
             "head": "Hex head",
             "thread_length": 16,
@@ -1210,8 +1203,9 @@ mod tests {
 
     #[test]
     fn a_set_screw_torx_is_cut_into_the_end() {
-        let (_, calls) =
-            commands(json!({"head": "Set screw", "drive": "Torx", "torx": "T6", "length": 10}));
+        let (_, calls) = commands(
+            json!({"head": "Set screw", "drive": "Torx", "drive_size": "T6", "length": 10}),
+        );
         assert_eq!(
             calls
                 .iter()
@@ -1556,7 +1550,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
-                        "plane": {
+                        "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
                             "y_dir": [0.0, 1.0, 0.0]
@@ -1732,7 +1726,7 @@ mod tests {
         let sizes = props["size"]["enum"].as_array().unwrap();
         assert!(sizes.contains(&props["size"]["default"]));
         for size in sizes {
-            let p = screw::parse(&json!({"designation": size})).unwrap();
+            let p = screw::parse(&json!({"size": size})).unwrap();
             assert!(p.resolved.major.is_some(), "{size}");
         }
         // The dialog lists optional fields by key, so a sketch comes before its point.
@@ -1788,6 +1782,7 @@ mod tests {
     struct OnPlate {
         calls: Vec<(String, Value)>,
         changed: Value,
+        selected: Option<Value>,
     }
     impl Runner for OnPlate {
         fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
@@ -1796,12 +1791,17 @@ mod tests {
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
+                "select.set" => {
+                    self.selected = Some(args["items"].clone());
+                    Value::Null
+                }
+                "selection.get" if self.selected.is_some() => json!({"items": self.selected}),
                 "selection.get" => json!({"count": 2, "items": [
                     {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
                 ]}),
                 "sketch.inspect" => json!({
-                    "plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
                         {"id": "c2.center", "world": [30.0, 10.0, 10.0]}
@@ -1813,6 +1813,11 @@ mod tests {
                     json!({"created_bodies": [args["body_name"]]})
                 }
                 "solid.hole" => json!({"changed_bodies": self.changed}),
+                "inspect.measure" => {
+                    json!({"bodies": self.changed.as_array().into_iter().flatten().map(|name|
+                    json!({"name": name, "definition": name,
+                        "bbox": {"min": [0, 0, 0], "max": [40, 20, 10]}})).collect::<Vec<_>>()})
+                }
                 "model.faces" => {
                     let recessed = self
                         .calls
@@ -1851,6 +1856,7 @@ mod tests {
         let mut rec = OnPlate {
             calls: vec![],
             changed,
+            selected: None,
         };
         let made = make_screw(&mut rec, &p);
         (made, rec.calls)
@@ -2024,8 +2030,8 @@ mod tests {
     #[test]
     fn a_custom_size_replaces_the_listed_one() {
         let (summary, calls) = commands(json!({
-            "designation": "M4",
-            "custom_designation": "M8x1",
+            "size": "M4",
+            "custom_size": "M8x1",
             "length": 20,
         }));
         assert_eq!(args(&calls, "solid.thread")["designation"], "M8x1");
@@ -2039,7 +2045,7 @@ mod tests {
     #[test]
     fn a_size_without_a_diameter_builds_nothing() {
         let p = screw::parse(&json!({
-            "designation": "1/2-10 ACME",
+            "size": "1/2-10 ACME",
             "head_diameter": 22,
             "head_height": 8,
         }))
@@ -2062,8 +2068,16 @@ mod tests {
         }
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
-            // Placing the fastener is checked on its own; these check the build.
-            if let Some(reply) = plugin_kit::component::stand_in(command) {
+            // Include the pre-existing bodies in the same inventory the library reads.
+            if command == "component.list" {
+                let mut reply = fasten::stand_in(command).unwrap();
+                reply["components"].as_array_mut().unwrap().push(json!({
+                    "id":0,"name":"Design","bodies":self.names,"features":[],
+                    "sketches":[],"construction":[],"children":[],"occurrences":[]
+                }));
+                return Ok(reply);
+            }
+            if let Some(reply) = fasten::stand_in(command) {
                 return Ok(reply);
             }
             Ok(match command {
@@ -2074,7 +2088,7 @@ mod tests {
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
                 "sketch.inspect" => json!({
-                    "plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
+                    "world_plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "a", "world": [10.0, 0.0, 5.0]},
                         {"id": "b", "world": [20.0, 0.0, 5.0]},
@@ -2094,10 +2108,6 @@ mod tests {
                 }
                 _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
             })
-        }
-
-        fn body_names(&mut self) -> Vec<String> {
-            self.names.clone()
         }
     }
 
@@ -2127,7 +2137,7 @@ mod tests {
         let base = |v: Value| body_base(&screw::parse(&v).unwrap());
         assert_eq!(base(json!({})), "Screw M3 x 12 socket");
         assert_eq!(
-            base(json!({"designation": "M5", "length": 20, "head": "Button head"})),
+            base(json!({"size": "M5", "length": 20, "head": "Button head"})),
             "Screw M5 x 20 button"
         );
         assert_eq!(
@@ -2143,7 +2153,7 @@ mod tests {
             "Set screw M3 x 6"
         );
         assert_eq!(
-            base(json!({"designation": "M8", "head": "Threaded rod", "length": 100})),
+            base(json!({"size": "M8", "head": "Threaded rod", "length": 100})),
             "Threaded rod M8 x 100"
         );
     }
@@ -2173,23 +2183,16 @@ mod tests {
         assert_eq!(named_hole(hole(screw::TAPPED)), "Tapped hole M3");
         let mut sunk = hole(screw::RECESSED);
         sunk["head"] = json!("Countersunk");
-        sunk["designation"] = json!("M4");
+        sunk["size"] = json!("M4");
         assert_eq!(named_hole(sunk), "Countersink M4");
     }
 }
 
 plugin_kit::guest! {
-    entry: "make-screw",
-    noun: "screw",
     manifest: include_str!("../plugin.json"),
-    parse: crate::screw::parse,
-    make: crate::make_screw,
-    describe: |p: &crate::screw::Params| format!("making a {} screw, {} mm", p.designation, p.nominal_length),
-    // The dialog sizes every drive in the one Drive size box.
-    aliases: &[
-        ("hex", "drive_size"),
-        ("phillips", "drive_size"),
-        ("slot", "drive_size"),
-        ("torx", "drive_size"),
-    ],
+    entries: [{
+        entry: "make-screw", noun: "screw",
+        parse: crate::screw::parse, make: crate::make_screw,
+        describe: |p: &crate::screw::Params| format!("making a {} screw, {} mm", p.designation, p.nominal_length),
+    }],
 }

@@ -8,7 +8,7 @@ needs a case in CASES, so a new plugin cannot be left out unnoticed. Needs a
 solidcraft-cli with the plugin host (SolidCraft 0.41 or newer).
 
 plugin.inspect must accept each package and list its entries. Each run must build
-one closed body of the measured size: an M3 x 12 socket head screw 5.5 across and
+the expected solid/surface bodies and overall size: an M3 x 12 socket head screw 5.5 across and
 15 tall, an M3 x 5.7 insert 4.6 across and 5.7 long, an M6 nut 10 across the flats
 and 5.2 high, a V-slot 2040 rail 20 across and 120 long. On the signed macOS build of SolidCraft 0.41.0, loading a component
 kills the CLI with SIGKILL (hardened runtime, no JIT entitlement), and that case is
@@ -20,6 +20,12 @@ TOL = 1e-3
 
 # Plugin id: (entry, params, what the run builds, its size as (across, height)).
 CASES = {
+    "techsquid-bearings": (
+        "make-bearing", {"size": "625 2RS"}, "builds a sealed 625 bearing", (16.0, 5.0),
+    ),
+    "techsquid-v-wheels": (
+        "make-v-wheel", {"size": "Solid V Wheel", "assembled": False}, "builds a bare Solid V wheel", (23.9, 10.2),
+    ),
     "techsquid-screws": (
         "make-screw",
         {"size": "M3", "length": 12, "head": "Socket head", "drive": "Hex socket"},
@@ -49,6 +55,9 @@ CASES = {
 
 # The entries a plugin lists beside the one its case runs.
 OTHER_ENTRIES = {"techsquid-extrusions": ["make-t-nut"]}
+
+# Bearings have two solid ring envelopes and two annular closure surfaces.
+BODY_COUNTS = {"techsquid-bearings": (2, 2)}
 
 
 def size_of(bbox):
@@ -94,12 +103,16 @@ for plugin_id in PLUGINS:
         skip(f"{plugin_id}: {label}", f"plugin.run killed solidcraft-cli (exit {code})")
         continue
     bodies = results[1]["bodies"] if results else []
-    got = size_of(bodies[0]["bbox"]) if len(bodies) == 1 else None
+    got = size_of({
+        "min": [min(b["bbox"]["min"][i] for b in bodies) for i in range(3)],
+        "max": [max(b["bbox"]["max"][i] for b in bodies) for i in range(3)],
+    }) if bodies else None
+    counts = (sum(b.get("closed") is True for b in bodies), sum(b.get("closed") is False for b in bodies))
     check(
         f"{plugin_id}: {label}",
         code == 0
         and got is not None
-        and bodies[0].get("closed")
+        and counts == BODY_COUNTS.get(plugin_id, (1, 0))
         and abs(got[0] - across) < TOL
         and abs(got[1] - height) < TOL,
         f"measured {got}, expected {(across, height)}" if code == 0 else text[-800:],

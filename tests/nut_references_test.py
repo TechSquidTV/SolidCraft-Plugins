@@ -6,6 +6,7 @@ import math
 import os
 
 from harness import TMP, check, finish, inspect, killed, package, run, skip
+from headless import Headless
 
 
 def cmd(command, **params):
@@ -14,6 +15,149 @@ def cmd(command, **params):
 
 def near(a, b):
     return abs(a - b) < 1e-4
+
+
+def test_pocket_names():
+    """Batches and later runs avoid names in every component, even after reopening."""
+    code, text, info = inspect("techsquid-nuts")
+    if code or not info:
+        raise SystemExit(f"Build the packages first: {text}")
+    saved = os.path.join(TMP, "nut-pocket-names.json")
+    setup = [
+        cmd("sketch.create", plane="XY", name="NUT POCKET M6 PROFILE"),
+        cmd("sketch.point", point=[0, 0]),
+        cmd("sketch.finish"),
+        cmd("construct.plane.offset", base="XY", offset=80, name="Nut pocket M6 profile (2)"),
+        cmd("construct.plane.offset", base="XY", offset=90, name="Nut pocket M6"),
+        cmd("construct.plane.offset", base="XY", offset=100, name="NUT POCKETS M6: PLANE"),
+        cmd("component.create", name="Carrier", activate=True),
+        cmd("solid.box", length=100, width=40, height=12, corner=[-50, -20, 0], body_name="Plate"),
+    ]
+    for name, xs in [("First layout", [-30, -10]), ("Second layout", [10, 30])]:
+        setup += [cmd("sketch.create", plane="XY", offset=12, name=name),
+                  cmd("sketch.point", point=[xs[0], 0], id="a"),
+                  cmd("sketch.point", point=[xs[1], 0], id="b"), cmd("sketch.finish")]
+    for index, layout in enumerate(["First layout", "Second layout"]):
+        steps = setup if index == 0 else []
+        steps += [cmd("plugin.run", path=package("techsquid-nuts"), approval=info["approval"],
+                      entry="make-nut", params={"size": "M6", "create": "Pocket only",
+                                               "sketch": layout, "sketch_point": "a,b"})]
+        code, text, _ = run(steps, inp=saved if index else None, save=saved)
+        if killed(code):
+            skip("nut pocket name reservations", "host killed while loading plugin")
+            return
+        check(f"pocket names: batch {index + 1} builds beside existing names", code == 0, text[-1000:])
+        if code:
+            return
+        with open(saved) as f:
+            features = json.load(f)["features"]
+        profiles = [f for f in features if f["type"] == "sketch"
+                    and f["name"].startswith("Nut pocket M6 profile")]
+        count = 2 * (index + 1)
+        check(f"pocket names: batch {index + 1} skips case variants and reserved suffixes",
+              [f["name"] for f in profiles] == [f"Nut pocket M6 profile ({i})" for i in range(3, 3 + count)])
+        cuts = [f for f in features if f["type"] == "extrude" and f["operation"] == "cut"]
+        check(f"pocket names: batch {index + 1} keeps cuts linked to distinct profiles",
+              [f["name"] for f in cuts] == [f"Nut pocket M6 ({i})" for i in range(2, 2 + count)]
+              and len({f["sketch"] for f in cuts}) == count
+              and {f["sketch"] for f in cuts} == {f["id"] for f in profiles})
+        check(f"pocket names: batch {index + 1} has no duplicate feature names",
+              len({f["name"].lower() for f in features}) == len(features))
+
+
+def test_face_attached_copies(nested, with_nuts, copies=1):
+    label = f'{copies} ' + ('nested' if nested else 'copied') + (' pocketed nuts' if with_nuts else ' pockets only')
+    with Headless() as host:
+        parent = host.command('component.create', name='Assembly', activate=True, grounded=False) if nested else None
+        carrier = host.command('component.create', name='Carrier', parent=parent['component'] if parent else 0,
+                               activate=True, grounded=False)
+        host.command('solid.box', length=60, width=60, height=12, corner=[-30, -30, 0], body_name='Plate')
+        sketch = host.command('sketch.create', name='Face mounts', plane={'face': [0, 0, 12]})['sketch']
+        for point, xy in [('a', [-12, 0]), ('b', [12, 0]), ('outside', [100, 100])]:
+            host.command('sketch.circle.center', id=point, center=xy, radius=1)
+        host.command('sketch.finish')
+        if nested:
+            host.command('occurrence.move', occurrence=carrier['occurrence'], translate=[5, 0, 0])
+        for index in range(1, copies + 1):
+            offset = 100 * index
+            copied = host.command('occurrence.copy', component=parent['component'] if nested else carrier['component'],
+                                  parent=0, translate=[offset, 0, 0])['occurrence']
+            if nested:
+                host.command('occurrence.move', occurrence=copied,
+                             to_matrix=[[0, 0, 1, offset], [0, 1, 0, 50], [-1, 0, 0, 30]])
+        if nested:
+            path, normal, points = [copied, carrier['occurrence']], [1, 0, 0], [[offset + 12, 50, 37], [offset + 12, 50, 13]]
+        else:
+            path, normal, points = [copied], [0, 0, 1], [[offset - 12, 0, 12], [offset + 12, 0, 12]]
+        host.command('component.activate', component=carrier['component'], occurrence=path[-1], path=path)
+        approval = host.command('plugin.inspect', path=package('techsquid-nuts'))['approval']
+
+        def insert(point):
+            result = host.command('plugin.run', path=package('techsquid-nuts'), approval=approval,
+                                  entry='make-nut', allow_error=True, params={
+                                      'size': 'M6', 'create': 'Nut and pocket' if with_nuts else 'Pocket only',
+                                      'sketch': str(sketch), 'sketch_point': point, 'thread_modeled': False})
+            return result.get('result', result)
+
+        def mounts():
+            return host.command('sketch.inspect', sketch=sketch)
+
+        def same(a, b):
+            return all(near(x, y) for x, y in zip(a, b))
+
+        host.command('select.set', items=[{'type': 'external_sketch_point', 'sketch': sketch, 'id': 'a.center'}])
+        before = mounts()
+        check(label + ': fixture uses the intended copy', all(
+            same(next(p['world'] for p in before['points'] if p['id'] == point + '.center'), expected)
+            for point, expected in zip(['a', 'b'], points)))
+        definition, calls = None, []
+        for index, point in enumerate(['a', 'b']):
+            result = insert(point)
+            check(label + f': insertion {index + 1} succeeds', 'error' not in result, result.get('error', ''))
+            listed, after = host.command('component.list'), mounts()
+            if with_nuts:
+                # Reopening a source sketch may clear selection; seat inspection
+                # must never leak the temporary body selection into the UI.
+                check(label + f': insertion {index + 1} leaves no temporary body selection',
+                      all(item['type'] != 'body' for item in host.command('selection.get', detail=False)['items']))
+            check(label + f': insertion {index + 1} preserves full activation and mounting coordinates',
+                  listed['active'] == carrier['component'] and listed['active_path'] == path
+                  and after['world_plane'] == before['world_plane']
+                  and all(same(next(p['world'] for p in after['points'] if p['id'] == point + '.center'), expected)
+                          for point, expected in zip(['a', 'b'], points)))
+            if 'error' in result:
+                return
+            floor = [v - 5.2 * n for v, n in zip(points[index], normal)]
+            check(label + f': insertion {index + 1} reports the selected pocket floor',
+                  same(result['at'], floor) and same(result['normal'], normal))
+            if with_nuts:
+                calls.append(result['library']['host_calls'])
+                name = result['component']['component']
+                check(label + f': insertion {index + 1} creates then reuses one definition',
+                      result['component']['reused'] == (index == 1) and (definition is None or definition == name))
+                definition = name
+                joints = host.command('joint.inspect')['joints']
+                check(label + f': insertion {index + 1} has healthy seats on the selected copy',
+                      len(joints) == index + 1 and all(not j['errors'] and not j['conflicts'] for j in joints)
+                      and any(all(same(j[side]['frame']['origin'], floor) and same(j[side]['frame']['z'], normal)
+                                  for side in ['a', 'b']) for j in joints))
+                bodies = host.command('inspect.measure', summary=True)['bodies']
+                center = [v + 2.6 * n for v, n in zip(floor, normal)]
+                check(label + f': insertion {index + 1} places actual nut geometry at the seat', any(
+                    b['closed'] and b['name'].startswith(name) and same(
+                        [(lo + hi) / 2 for lo, hi in zip(b['bbox']['min'], b['bbox']['max'])], center) for b in bodies))
+        before_doc, before_components = host.command('document.inspect', measure=False), host.command('component.list')
+        failed = insert('outside')
+        check(label + ': failed pocket rolls back geometry and full authoring context',
+              'no part under the point' in failed.get('error', '')
+              and host.command('document.inspect', measure=False) == before_doc
+              and host.command('component.list') == before_components)
+        saved = os.path.join(TMP, label + '.sc')
+        measure = host.command('inspect.measure', summary=True)
+        host.command('file.save_as', path=saved)
+        host.command('doc.open', path=saved)
+        check(label + ': saved geometry reopens unchanged', host.command('inspect.measure', summary=True) == measure)
+        return calls
 
 
 def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
@@ -201,6 +345,13 @@ def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
 
 
 if __name__ == "__main__":
+    test_pocket_names()
+    for nested in [False, True]:
+        test_face_attached_copies(nested, False)
+        baseline = test_face_attached_copies(nested, True)
+        many = test_face_attached_copies(nested, True, copies=100)
+        check(('nested' if nested else 'copied') + ': 100 copies use the same insertion budget as one',
+              baseline is not None and many == baseline, f'{baseline} vs {many}')
     test()
     test(with_nuts=True)
     test(with_nuts=True, modeled=True, reuse=True)

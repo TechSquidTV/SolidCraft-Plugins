@@ -1,14 +1,22 @@
 {
-  "format": "solidcraft/56",
+  "format": "solidcraft/57",
   "format_pending": [
-    "cell-grid-feature",
-    "frame-member-locate",
-    "frame-standard-sizes",
-    "occurrence-move-expressions",
-    "pattern-names-by-source"
+    "extrude-to-object-keeps-picked-placements",
+    "linked-cosmetic-threads",
+    "plane-at-angle-follows-named-axis"
   ],
   "name": "nut",
   "units": "mm",
+  "metadata": {
+    "org.techsquid.parts.index": {
+      "definitions": {
+        "e87724d91712454ace3b14db3d90a04eef47bee80a01cb795b6869e2070463c5": [
+          1
+        ]
+      },
+      "version": 1
+    }
+  },
   "params": [
     {
       "name": "d1",
@@ -19,10 +27,10 @@
   ],
   "features": [
     {
-      "id": 5,
+      "id": 3,
       "name": "Nut M3: Hex profile",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -290,7 +298,7 @@
       }
     },
     {
-      "id": 6,
+      "id": 4,
       "name": "Nut M3: Hex",
       "suppressed": false,
       "body_names": [
@@ -299,9 +307,9 @@
       "param_names": [
         "d2"
       ],
-      "component": 3,
+      "component": 1,
       "type": "extrude",
-      "sketch": 5,
+      "sketch": 3,
       "profiles": {
         "type": "all"
       },
@@ -313,10 +321,10 @@
       "operation": "new_body"
     },
     {
-      "id": 7,
+      "id": 5,
       "name": "Nut M3: Bearing chamfer profile",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -403,15 +411,15 @@
       }
     },
     {
-      "id": 8,
+      "id": 6,
       "name": "Nut M3: Bearing chamfer",
       "suppressed": false,
       "param_names": [
         "d3"
       ],
-      "component": 3,
+      "component": 1,
       "type": "revolve",
-      "sketch": 7,
+      "sketch": 5,
       "profiles": {
         "type": "all"
       },
@@ -436,10 +444,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 9,
+      "id": 7,
       "name": "Nut M3: Outer chamfer profile",
       "suppressed": false,
-      "component": 3,
+      "component": 1,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -526,15 +534,15 @@
       }
     },
     {
-      "id": 10,
+      "id": 8,
       "name": "Nut M3: Outer chamfer",
       "suppressed": false,
       "param_names": [
         "d4"
       ],
-      "component": 3,
+      "component": 1,
       "type": "revolve",
-      "sketch": 9,
+      "sketch": 7,
       "profiles": {
         "type": "all"
       },
@@ -559,7 +567,7 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 11,
+      "id": 9,
       "name": "Nut M3: Move to site",
       "suppressed": false,
       "param_names": [
@@ -567,35 +575,35 @@
         "d6",
         "d7"
       ],
-      "component": 3,
+      "component": 1,
       "type": "move",
       "bodies": [
         "Nut M3"
       ],
       "translate": [
-        "-165",
+        "-125",
         "-105",
         "0"
       ]
     },
     {
-      "id": 12,
+      "id": 10,
       "name": "Nut M3: Thread",
       "suppressed": false,
       "param_names": [
         "d8",
         "d9"
       ],
-      "component": 3,
+      "component": 1,
       "face_names": [
-        "F6:start"
+        "F4:start"
       ],
       "participants": [
         "Nut M3"
       ],
       "type": "hole",
       "position": [
-        -165.0,
+        -125.0,
         -105.0,
         0.0
       ],
@@ -613,7 +621,7 @@
       "modeled": true
     },
     {
-      "id": 13,
+      "id": 11,
       "name": "Nut M3: Bearing countersink",
       "suppressed": false,
       "param_names": [
@@ -621,13 +629,13 @@
         "d11",
         "d12"
       ],
-      "component": 3,
+      "component": 1,
       "participants": [
         "Nut M3"
       ],
       "type": "cone",
       "base": [
-        -165.0,
+        -125.0,
         -105.0,
         0.0
       ],
@@ -642,7 +650,7 @@
       "operation": "cut"
     },
     {
-      "id": 14,
+      "id": 12,
       "name": "Nut M3: Outer countersink",
       "suppressed": false,
       "param_names": [
@@ -650,13 +658,13 @@
         "d14",
         "d15"
       ],
-      "component": 3,
+      "component": 1,
       "participants": [
         "Nut M3"
       ],
       "type": "cone",
       "base": [
-        -165.0,
+        -125.0,
         -105.0,
         2.4
       ],
@@ -676,30 +684,36 @@
     {
       "id": 1,
       "identification_color_index": 0,
+      "name": "Nut M3",
+      "parent": 14,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4032",
+        "org.techsquid.parts": {
+          "creator": "techsquid-nuts",
+          "product": "{\"catalog\":\"iso\",\"configuration\":{\"across_flats_mm\":5.5,\"chamfer_max_mm\":0.4,\"countersink_mm\":3.45,\"height_mm\":2.4,\"major_mm\":3.0,\"pitch_mm\":0.5},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"4032\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"iso\",\"configuration\":{\"across_flats_mm\":5.5,\"chamfer_max_mm\":0.4,\"countersink_mm\":3.45,\"height_mm\":2.4,\"major_mm\":3.0,\"pitch_mm\":0.5},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"4032\"},\"revision\":\"1\"}",
+          "site": [
+            -125.0,
+            -105.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "cd41457ae06f1364f8ad5c00fa7ed6a92b992de7518ac0759dc1be1dce4269a8",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "ISO 4032 M3"
+      }
+    },
+    {
+      "id": 14,
+      "identification_color_index": 1,
       "name": "Fasteners",
       "parent": 0,
       "metadata": {
         "bom_type": "phantom"
-      }
-    },
-    {
-      "id": 3,
-      "identification_color_index": 1,
-      "name": "Nut M3",
-      "parent": 1,
-      "metadata": {
-        "bom_type": "purchased",
-        "description": "ISO 4032",
-        "dev.threadcraft": {
-          "geometry": "af35c41d5619fee9",
-          "plugin": "techsquid-nuts",
-          "site": [
-            -165.0,
-            -105.0,
-            0.0
-          ]
-        },
-        "part_number": "Nut M3"
       }
     }
   ],
@@ -708,6 +722,39 @@
     {
       "id": 2,
       "component": 1,
+      "parent": 14,
+      "name": "Nut M3:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          125.0,
+          105.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 15,
+      "component": 14,
       "parent": 0,
       "name": "Fasteners:1",
       "transform": [
@@ -737,47 +784,16 @@
         ]
       ],
       "grounded": false
-    },
-    {
-      "id": 4,
-      "component": 3,
-      "parent": 1,
-      "name": "Nut M3:1",
-      "transform": [
-        [
-          1.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          1.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ],
-        [
-          165.0,
-          105.0,
-          0.0,
-          1.0
-        ]
-      ],
-      "grounded": false
     }
   ],
   "timeline_groups": [
     {
-      "id": 15,
+      "id": 13,
       "name": "Nut M3",
       "parent": null,
       "features": [
+        3,
+        4,
         5,
         6,
         7,
@@ -785,9 +801,7 @@
         9,
         10,
         11,
-        12,
-        13,
-        14
+        12
       ]
     }
   ]

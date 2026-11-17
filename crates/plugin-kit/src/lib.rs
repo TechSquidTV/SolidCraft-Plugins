@@ -5,11 +5,13 @@
 //! and the names given to bodies and features.
 
 pub mod component;
+pub mod content;
 pub mod create;
 pub mod host;
 pub mod input;
 pub mod name;
 pub mod place;
+pub mod revolve;
 pub mod timeline;
 
 pub use host::Runner;

@@ -7,4 +7,7 @@ publish.workspace = true
 description = "Host runner, dialog input, placement and naming shared by the TechSquid SolidCraft plugins"
 
 [dependencies]
+parts.workspace = true
+serde.workspace = true
 serde_json.workspace = true
+sha2.workspace = true

@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
 # Every folder under crates/ and plugins/ is a member, so a new plugin needs no entry here.
-members = ["crates/*", "plugins/*"]
+members = ["crates/*", "plugins/*", "tools/catalog-tool"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 publish = false
@@ -12,9 +12,13 @@ publish = false
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+sha2 = "0.10"
+bearings = { path = "crates/bearings" }
+wheels = { path = "crates/wheels" }
 extrusions = { path = "crates/extrusions" }
 fasteners = { path = "crates/fasteners" }
 plugin-kit = { path = "crates/plugin-kit" }
+parts = { path = "crates/parts" }
 wit-bindgen = "0.46"
 
 [profile.release]

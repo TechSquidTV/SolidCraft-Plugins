@@ -16,6 +16,8 @@
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Row {
+    /// Permanent catalog key; independent of the label shown in the dialog.
+    pub id: &'static str,
     pub size: &'static str,
     pub thread: &'static str,
     pub length: f64,
@@ -37,22 +39,113 @@ pub const DEFAULT_SIZE: &str = "M3 × 5.7";
 const BORE_2_56: f64 = 0.086 * 25.4 - 25.4 / 56.0;
 
 const ROWS: &[Row] = &[
-    row("M1.6 × 2.5", "M1.6", 2.5, 2.5, 2.2, 1.3, 1.6, None),
-    row("M2 × 3", "M2", 3.0, 3.6, 3.2, 1.3, 2.0, None),
-    row("M2.5 × 4", "M2.5", 4.0, 4.6, 4.0, 1.6, 2.5, None),
-    row("M3 × 5.7", "M3", 5.7, 4.6, 4.0, 1.6, 3.0, None),
-    row("M3 × 3 short", "M3", 3.0, 4.6, 4.0, 1.6, 3.0, None),
-    row("M3 × 4 Voron", "M3", 4.0, 5.0, 4.4, 1.6, 3.0, None),
-    row("M4 × 8.1", "M4", 8.1, 6.3, 5.7, 2.1, 4.0, None),
-    row("M4 × 4 short", "M4", 4.0, 6.3, 5.7, 2.1, 4.0, None),
-    row("M5 × 9.5", "M5", 9.5, 7.1, 6.5, 2.6, 5.0, None),
-    row("M5 × 5.8 short", "M5", 5.8, 7.1, 6.5, 2.6, 5.0, None),
-    row("M6 × 12.7", "M6", 12.7, 8.7, 8.1, 3.3, 6.0, None),
-    row("M6 × 6.8 short", "M6", 6.8, 8.7, 8.1, 3.3, 6.0, None),
-    row("M8 × 12.7", "M8", 12.7, 10.2, 9.7, 4.5, 8.0, None),
-    row("M8 × 6.8 short", "M8", 6.8, 10.2, 9.7, 4.5, 8.0, None),
-    row("M10 × 12.7", "M10", 12.7, 12.6, 12.0, 6.0, 10.0, None),
     row(
+        "m1.6-2.5",
+        "M1.6 × 2.5",
+        "M1.6",
+        2.5,
+        2.5,
+        2.2,
+        1.3,
+        1.6,
+        None,
+    ),
+    row("m2-3", "M2 × 3", "M2", 3.0, 3.6, 3.2, 1.3, 2.0, None),
+    row("m2.5-4", "M2.5 × 4", "M2.5", 4.0, 4.6, 4.0, 1.6, 2.5, None),
+    row("m3-5.7", "M3 × 5.7", "M3", 5.7, 4.6, 4.0, 1.6, 3.0, None),
+    row(
+        "m3-3-short",
+        "M3 × 3 short",
+        "M3",
+        3.0,
+        4.6,
+        4.0,
+        1.6,
+        3.0,
+        None,
+    ),
+    row(
+        "m3-4-voron",
+        "M3 × 4 Voron",
+        "M3",
+        4.0,
+        5.0,
+        4.4,
+        1.6,
+        3.0,
+        None,
+    ),
+    row("m4-8.1", "M4 × 8.1", "M4", 8.1, 6.3, 5.7, 2.1, 4.0, None),
+    row(
+        "m4-4-short",
+        "M4 × 4 short",
+        "M4",
+        4.0,
+        6.3,
+        5.7,
+        2.1,
+        4.0,
+        None,
+    ),
+    row("m5-9.5", "M5 × 9.5", "M5", 9.5, 7.1, 6.5, 2.6, 5.0, None),
+    row(
+        "m5-5.8-short",
+        "M5 × 5.8 short",
+        "M5",
+        5.8,
+        7.1,
+        6.5,
+        2.6,
+        5.0,
+        None,
+    ),
+    row("m6-12.7", "M6 × 12.7", "M6", 12.7, 8.7, 8.1, 3.3, 6.0, None),
+    row(
+        "m6-6.8-short",
+        "M6 × 6.8 short",
+        "M6",
+        6.8,
+        8.7,
+        8.1,
+        3.3,
+        6.0,
+        None,
+    ),
+    row(
+        "m8-12.7",
+        "M8 × 12.7",
+        "M8",
+        12.7,
+        10.2,
+        9.7,
+        4.5,
+        8.0,
+        None,
+    ),
+    row(
+        "m8-6.8-short",
+        "M8 × 6.8 short",
+        "M8",
+        6.8,
+        10.2,
+        9.7,
+        4.5,
+        8.0,
+        None,
+    ),
+    row(
+        "m10-12.7",
+        "M10 × 12.7",
+        "M10",
+        12.7,
+        12.6,
+        12.0,
+        6.0,
+        10.0,
+        None,
+    ),
+    row(
+        "no-2-56-3.2",
         "#2-56 × 3.2",
         "#2-56 UNC",
         3.2,
@@ -63,6 +156,7 @@ const ROWS: &[Row] = &[
         Some(BORE_2_56),
     ),
     row(
+        "no-4-40-5.7",
         "#4-40 × 5.7",
         "#4-40 UNC",
         5.7,
@@ -73,6 +167,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-4-40-3.6-short",
         "#4-40 × 3.6 short",
         "#4-40 UNC",
         3.6,
@@ -83,6 +178,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-6-32-7.1",
         "#6-32 × 7.1",
         "#6-32 UNC",
         7.1,
@@ -93,6 +189,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-6-32-3.8-short",
         "#6-32 × 3.8 short",
         "#6-32 UNC",
         3.8,
@@ -103,6 +200,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-8-32-8.2",
         "#8-32 × 8.2",
         "#8-32 UNC",
         8.2,
@@ -113,6 +211,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-8-32-4.7-short",
         "#8-32 × 4.7 short",
         "#8-32 UNC",
         4.7,
@@ -123,6 +222,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-10-24-9.5",
         "#10-24 × 9.5",
         "#10-24 UNC",
         9.5,
@@ -133,6 +233,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "no-10-32-9.5",
         "#10-32 × 9.5",
         "#10-32 UNF",
         9.5,
@@ -143,6 +244,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "1_4-20-12.7",
         "1/4-20 × 12.7",
         "1/4-20 UNC",
         12.7,
@@ -153,6 +255,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "1_4-20-6.4-short",
         "1/4-20 × 6.4 short",
         "1/4-20 UNC",
         6.4,
@@ -163,6 +266,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "5_16-18-12.7",
         "5/16-18 × 12.7",
         "5/16-18 UNC",
         12.7,
@@ -173,6 +277,7 @@ const ROWS: &[Row] = &[
         None,
     ),
     row(
+        "3_8-16-12.7",
         "3/8-16 × 12.7",
         "3/8-16 UNC",
         12.7,
@@ -182,12 +287,23 @@ const ROWS: &[Row] = &[
         9.525,
         None,
     ),
-    row("G1/8 × 12.7", "G 1/8", 12.7, 12.5, 12.0, 6.0, 9.728, None),
+    row(
+        "g1_8-12.7",
+        "G1/8 × 12.7",
+        "G 1/8",
+        12.7,
+        12.5,
+        12.0,
+        6.0,
+        9.728,
+        None,
+    ),
 ];
 
 // One argument per field of `Row`, so each catalog entry reads as a table line.
 #[allow(clippy::too_many_arguments)]
 const fn row(
+    id: &'static str,
     size: &'static str,
     thread: &'static str,
     length: f64,
@@ -198,6 +314,7 @@ const fn row(
     plain_bore: Option<f64>,
 ) -> Row {
     Row {
+        id,
         size,
         thread,
         length,
@@ -291,6 +408,10 @@ fn compact(text: &str) -> String {
 
 pub fn labels() -> impl Iterator<Item = &'static str> {
     ROWS.iter().map(|row| row.size)
+}
+
+pub fn rows() -> impl Iterator<Item = &'static Row> {
+    ROWS.iter()
 }
 
 pub fn metric(thread: &str) -> bool {

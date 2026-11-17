@@ -1,5 +1,7 @@
 # Hexagon nuts
 
+Check the [host requirements](../../docs/parts-library.md#host-requirements) before installing version 0.3.
+
 Add ISO 4032 hex nuts to your [SolidCraft](https://github.com/tangency-labs/solidcraft) assemblies, complete with optional pockets and bolt holes. Place several at once and keep them organized as reusable components.
 
 ![An M3 hexagon nut with a threaded bore](nut.png)
@@ -22,3 +24,5 @@ See the [pocketed-nut example](https://github.com/TechSquidTV/SolidCraft-Plugins
 ## License
 
 [MIT](../../LICENSE)
+
+The package exposes its insertion tools only. [Shared part-definition and reuse rules](../../docs/parts-library.md) explain product identity, modified-part preservation and BOM grouping.

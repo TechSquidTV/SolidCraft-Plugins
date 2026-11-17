@@ -1,0 +1,30 @@
+[
+  {
+    "file": "B608ZZ.stp",
+    "archive": "B608ZZ_STEP.zip",
+    "sha256": "45986dfe92681d0b06a9124a642e90bcd120306f30f5becabe500a73f5c50c52",
+    "bytes": 28868,
+    "product_url": "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B608ZZ"
+  },
+  {
+    "file": "B626.stp",
+    "archive": "B626_STEP.zip",
+    "sha256": "decdf07ffda202ed3a7cac456a02d55bd3ec2575b81bf413ad855f36cb6a92f9",
+    "bytes": 175573,
+    "product_url": "https://us.misumi-ec.com/vona2/detail/110302273540/?HissuCode=B626"
+  },
+  {
+    "file": "B626DDU.stp",
+    "archive": "B626DDU_STEP.zip",
+    "sha256": "d38e92c8d04ac9a2583647f446be088840f8846e6f29be97ee371a70e604c2a5",
+    "bytes": 28561,
+    "product_url": "https://us.misumi-ec.com/vona2/detail/110302273630/?HissuCode=B626DDU"
+  },
+  {
+    "file": "B626ZZ.stp",
+    "archive": "B626ZZ_STEP.zip",
+    "sha256": "dd62db1f4158bd605aa202d9786beef0c7c0d6da9ec3dc75267e6708bd08e219",
+    "bytes": 28844,
+    "product_url": "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B626ZZ"
+  }
+]

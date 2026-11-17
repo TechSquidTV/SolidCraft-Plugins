@@ -1,34 +1,152 @@
 {
-  "id": "techsquid-screws",
-  "name": "Screws",
-  "version": "0.2.0",
-  "description": "Based on the ISO metric screw standards. Select sketch points or circles: each gets a screw, and its hole if you want one. With nothing selected, one screw sits on the origin.",
   "capabilities": [
     "commands@0.1"
   ],
+  "description": "Based on the ISO metric screw standards. Select sketch points or circles: each gets a screw, and its hole if you want one. With nothing selected, one screw sits on the origin.",
+  "id": "techsquid-screws",
+  "name": "Screws",
   "runtime": {
-    "module": "plugin.wasm",
+    "commands": [
+      "appearance.list",
+      "component.activate",
+      "component.create",
+      "component.list",
+      "component.metadata",
+      "component.metadata.set",
+      "component.properties",
+      "construct.axis.normal_to_face",
+      "document.inspect",
+      "document.metadata.set",
+      "inspect.measure",
+      "joint.create",
+      "joint.list",
+      "material.list",
+      "model.body_features",
+      "model.faces",
+      "occurrence.copy",
+      "occurrence.move",
+      "occurrence.reparent",
+      "parameters.list",
+      "parameters.users",
+      "select.set",
+      "selection.get",
+      "sketch.arc.three_point",
+      "sketch.constraint.horizontal_vertical",
+      "sketch.create",
+      "sketch.dimension",
+      "sketch.finish",
+      "sketch.inspect",
+      "sketch.line",
+      "sketch.polygon.circumscribed",
+      "sketch.rectangle.center",
+      "solid.chamfer",
+      "solid.combine",
+      "solid.cone",
+      "solid.cylinder",
+      "solid.extrude",
+      "solid.hole",
+      "solid.move",
+      "solid.revolve",
+      "solid.thread",
+      "timeline.group",
+      "timeline.inspect",
+      "timeline.roll_to"
+    ],
     "entries": [
       {
-        "name": "make-screw",
         "effect": "edit",
         "input_schema": {
-          "type": "object",
-          "required": [
-            "size",
-            "length",
-            "head",
-            "drive",
-            "tip",
-            "create",
-            "hole_type"
-          ],
           "properties": {
+            "create": {
+              "default": "Screw only",
+              "description": "Screw only builds the screw, on the origin when nothing is selected. Screw and hole also drills the part under each selected point, and Hole only drills without a screw.",
+              "enum": [
+                "Screw only",
+                "Screw and hole",
+                "Hole only"
+              ],
+              "title": "Create",
+              "type": "string"
+            },
+            "custom_size": {
+              "description": "Optional. A metric size that replaces Size, such as M8x1 or M3.5x0.6. If the chosen Head has no standard for this size, fill in both Custom head diameter and Custom head height.",
+              "title": "Custom size",
+              "type": "string"
+            },
+            "drive": {
+              "default": "Standard",
+              "description": "Standard cuts the usual drive for the Head: a hex socket in a socket, button or countersunk head and in a set screw, Phillips in a pan head and in a countersunk head below M3, a slot in a cheese head, none in a hex head. Every drive is sized from its standard unless Drive size is filled.",
+              "enum": [
+                "Standard",
+                "Hex socket",
+                "Phillips",
+                "Slotted",
+                "Torx",
+                "None"
+              ],
+              "title": "Drive",
+              "type": "string"
+            },
+            "drive_size": {
+              "description": "Optional. Leave empty for the standard size of the chosen Drive. Hex socket: key size, or key size and depth, such as 2.5 or 2.5x1.3. Torx: T10. Phillips: PH2 or PH2x2.1. Slotted: width and depth, such as 0.8x0.7. A Torx recess in a head too low for its standard depth is cut shallower, leaving 0.3 mm under it; the reply gives the depth cut.",
+              "title": "Drive size",
+              "type": "string"
+            },
+            "head": {
+              "default": "Socket head",
+              "description": "The head is sized from the standard for the chosen Size and Drive: a slotted or Phillips pan or countersunk head is not the same size as a hex socket one. Set screw and Threaded rod have no head. Where a head has no standard for a size, set both custom head dimensions.",
+              "enum": [
+                "Socket head",
+                "Button head",
+                "Countersunk",
+                "Hex head",
+                "Pan head",
+                "Cheese head",
+                "Set screw",
+                "Threaded rod"
+              ],
+              "title": "Head",
+              "type": "string"
+            },
+            "head_diameter": {
+              "description": "Optional. Leave empty for the standard head. On a hex head, the width across the flats. Filled alone, it keeps the standard height. A countersunk head, or a size with no standard head, needs Custom head height too.",
+              "maximum": 1000,
+              "minimum": 0.1,
+              "title": "Custom head diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "head_height": {
+              "description": "Optional. Leave empty for the standard head. Filled alone, it keeps the standard diameter. A countersunk head, or a size with no standard head, needs Custom head diameter too.",
+              "maximum": 1000,
+              "minimum": 0.1,
+              "title": "Custom head height",
+              "type": "number",
+              "unit": "mm"
+            },
+            "hole_type": {
+              "default": "Clearance",
+              "description": "Used when Create drills a hole. Clearance is the ISO 273 through hole for the Size. Head recessed adds a counterbore, or a countersink for a countersunk head, and sinks the screw so its head ends flush. Tapped cuts the screw's own thread. Each is as deep as the screw reaches.",
+              "enum": [
+                "Clearance",
+                "Clearance, head recessed",
+                "Tapped"
+              ],
+              "title": "Hole type",
+              "type": "string"
+            },
+            "length": {
+              "default": 12,
+              "description": "Length as the standard lists it: under the head, overall for a countersunk head (ISO 10642, ISO 2009 and ISO 7046-1 count the head), and overall for a set screw or a threaded rod.",
+              "maximum": 1000,
+              "minimum": 0.1,
+              "title": "Length",
+              "type": "number",
+              "unit": "mm"
+            },
             "size": {
-              "type": "string",
-              "title": "Size",
-              "description": "Common machine screw sizes with the coarse thread. For any other metric size, such as a fine pitch, fill in Custom size.",
               "default": "M3",
+              "description": "Common machine screw sizes with the coarse thread. For any other metric size, such as a fine pitch, fill in Custom size.",
               "enum": [
                 "M1.6",
                 "M2",
@@ -42,132 +160,58 @@
                 "M12",
                 "M16",
                 "M20"
-              ]
+              ],
+              "title": "Size",
+              "type": "string"
             },
-            "custom_size": {
-              "type": "string",
-              "title": "Custom size",
-              "description": "Optional. A metric size that replaces Size, such as M8x1 or M3.5x0.6. If the chosen Head has no standard for this size, fill in both Custom head diameter and Custom head height."
+            "sketch": {
+              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point.",
+              "title": "Sketch",
+              "type": "string"
             },
-            "length": {
-              "type": "number",
-              "title": "Length",
-              "description": "Length as the standard lists it: under the head, overall for a countersunk head (ISO 10642, ISO 2009 and ISO 7046-1 count the head), and overall for a set screw or a threaded rod.",
-              "default": 12,
-              "minimum": 0.1,
+            "sketch_point": {
+              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection.",
+              "title": "Sketch point",
+              "type": "string"
+            },
+            "thread_length": {
+              "description": "Optional. Threaded length from the tip. A point is not included. Leave empty for the standard: the whole shank on a short screw, and the standard thread length on one long enough to have a plain shank. Type the full length to thread it all.",
               "maximum": 1000,
+              "minimum": 0.1,
+              "title": "Thread length",
+              "type": "number",
               "unit": "mm"
             },
-            "head": {
-              "type": "string",
-              "title": "Head",
-              "description": "The head is sized from the standard for the chosen Size and Drive: a slotted or Phillips pan or countersunk head is not the same size as a hex socket one. Set screw and Threaded rod have no head. Where a head has no standard for a size, set both custom head dimensions.",
-              "default": "Socket head",
-              "enum": [
-                "Socket head",
-                "Button head",
-                "Countersunk",
-                "Hex head",
-                "Pan head",
-                "Cheese head",
-                "Set screw",
-                "Threaded rod"
-              ]
-            },
-            "drive": {
-              "type": "string",
-              "title": "Drive",
-              "description": "Standard cuts the usual drive for the Head: a hex socket in a socket, button or countersunk head and in a set screw, Phillips in a pan head and in a countersunk head below M3, a slot in a cheese head, none in a hex head. Every drive is sized from its standard unless Drive size is filled.",
-              "default": "Standard",
-              "enum": [
-                "Standard",
-                "Hex socket",
-                "Phillips",
-                "Slotted",
-                "Torx",
-                "None"
-              ]
+            "thread_modeled": {
+              "default": true,
+              "description": "Cut the thread profile into the shank. Off leaves a cosmetic thread, which rebuilds faster.",
+              "title": "Modeled thread",
+              "type": "boolean"
             },
             "tip": {
-              "type": "string",
-              "title": "Tip",
-              "description": "Flat is a square end, and on a set screw the ISO 4026 flat point: a 45° chamfer down to a smaller flat. Point is a self-tapping gimlet and counts as part of the length. Cup is a 120° recess in the end, and on a set screw the ISO 4029 cup point, chamfered outside down to the rim.",
               "default": "Flat",
+              "description": "Flat is a square end, and on a set screw the ISO 4026 flat point: a 45° chamfer down to a smaller flat. Point is a self-tapping gimlet and counts as part of the length. Cup is a 120° recess in the end, and on a set screw the ISO 4029 cup point, chamfered outside down to the rim.",
               "enum": [
                 "Flat",
                 "Point",
                 "Cup"
-              ]
-            },
-            "create": {
-              "type": "string",
-              "title": "Create",
-              "description": "Screw only builds the screw, on the origin when nothing is selected. Screw and hole also drills the part under each selected point, and Hole only drills without a screw.",
-              "default": "Screw only",
-              "enum": [
-                "Screw only",
-                "Screw and hole",
-                "Hole only"
-              ]
-            },
-            "hole_type": {
-              "type": "string",
-              "title": "Hole type",
-              "description": "Used when Create drills a hole. Clearance is the ISO 273 through hole for the Size. Head recessed adds a counterbore, or a countersink for a countersunk head, and sinks the screw so its head ends flush. Tapped cuts the screw's own thread. Each is as deep as the screw reaches.",
-              "default": "Clearance",
-              "enum": [
-                "Clearance",
-                "Clearance, head recessed",
-                "Tapped"
-              ]
-            },
-            "sketch": {
-              "type": "string",
-              "title": "Sketch",
-              "description": "Optional. Leave empty to use the point or circle you selected before opening this. To place by name instead, type the sketch name here and fill in Sketch point."
-            },
-            "sketch_point": {
-              "type": "string",
-              "title": "Sketch point",
-              "description": "Optional. The id of a point or circle in that sketch, such as c1 or c1.center. Leave empty to use the selection."
-            },
-            "drive_size": {
-              "type": "string",
-              "title": "Drive size",
-              "description": "Optional. Leave empty for the standard size of the chosen Drive. Hex socket: key size, or key size and depth, such as 2.5 or 2.5x1.3. Torx: T10. Phillips: PH2 or PH2x2.1. Slotted: width and depth, such as 0.8x0.7. A Torx recess in a head too low for its standard depth is cut shallower, leaving 0.3 mm under it; the reply gives the depth cut."
-            },
-            "head_diameter": {
-              "type": "number",
-              "title": "Custom head diameter",
-              "description": "Optional. Leave empty for the standard head. On a hex head, the width across the flats. Filled alone, it keeps the standard height. A countersunk head, or a size with no standard head, needs Custom head height too.",
-              "minimum": 0.1,
-              "maximum": 1000,
-              "unit": "mm"
-            },
-            "head_height": {
-              "type": "number",
-              "title": "Custom head height",
-              "description": "Optional. Leave empty for the standard head. Filled alone, it keeps the standard diameter. A countersunk head, or a size with no standard head, needs Custom head diameter too.",
-              "minimum": 0.1,
-              "maximum": 1000,
-              "unit": "mm"
-            },
-            "thread_length": {
-              "type": "number",
-              "title": "Thread length",
-              "description": "Optional. Threaded length from the tip. A point is not included. Leave empty for the standard: the whole shank on a short screw, and the standard thread length on one long enough to have a plain shank. Type the full length to thread it all.",
-              "minimum": 0.1,
-              "maximum": 1000,
-              "unit": "mm"
-            },
-            "thread_modeled": {
-              "type": "boolean",
-              "title": "Modeled thread",
-              "description": "Cut the thread profile into the shank. Off leaves a cosmetic thread, which rebuilds faster.",
-              "default": true
+              ],
+              "title": "Tip",
+              "type": "string"
             }
-          }
+          },
+          "required": [
+            "size",
+            "length",
+            "head",
+            "drive",
+            "tip",
+            "create",
+            "hole_type"
+          ],
+          "type": "object"
         },
+        "name": "make-screw",
         "slots": [
           {
             "kind": "menu",
@@ -176,47 +220,12 @@
         ]
       }
     ],
-    "commands": [
-      "selection.get",
-      "inspect.measure",
-      "sketch.inspect",
-      "solid.cylinder",
-      "solid.cone",
-      "sketch.create",
-      "sketch.polygon.circumscribed",
-      "sketch.dimension",
-      "sketch.constraint.horizontal_vertical",
-      "sketch.finish",
-      "sketch.arc.three_point",
-      "sketch.rectangle.center",
-      "sketch.line",
-      "solid.extrude",
-      "solid.combine",
-      "solid.revolve",
-      "solid.thread",
-      "solid.move",
-      "solid.hole",
-      "solid.chamfer",
-      "model.faces",
-      "joint.create",
-      "construct.axis.normal_to_face",
-      "document.inspect",
-      "timeline.roll_to",
-      "timeline.inspect",
-      "component.list",
-      "component.create",
-      "component.metadata",
-      "component.metadata.set",
-      "component.activate",
-      "occurrence.copy",
-      "occurrence.move",
-      "occurrence.reparent",
-      "timeline.group"
-    ],
     "limits": {
+      "deadline_ms": 30000,
       "fuel": 200000000,
-      "memory_mib": 64,
-      "deadline_ms": 30000
-    }
-  }
+      "memory_mib": 64
+    },
+    "module": "plugin.wasm"
+  },
+  "version": "0.3.0"
 }

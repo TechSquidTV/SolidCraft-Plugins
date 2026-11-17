@@ -214,7 +214,9 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
             .iter_mut()
             .find(|e| e["name"] == entry)
             .ok_or("manifest has no insertion workflow")?;
-        let property = &mut workflow["input_schema"]["properties"][field];
+        let property = workflow["input_schema"]["properties"]
+            .get_mut(field)
+            .ok_or_else(|| format!("{entry} has no {field} field"))?;
         if entry == "make-csk" && field == "size" {
             property
                 .as_object_mut()

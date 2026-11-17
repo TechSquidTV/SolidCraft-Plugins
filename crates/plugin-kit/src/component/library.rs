@@ -72,6 +72,12 @@ impl<R: Runner> Runner for Counted<'_, R> {
         self.calls += 1;
         self.host.run(command, args)
     }
+    fn command_count(&self) -> usize {
+        self.host.command_count()
+    }
+    fn body_names(&mut self) -> Vec<String> {
+        self.host.body_names()
+    }
     fn site(&mut self, at: [f64; 2]) -> Placement {
         self.host.site(at)
     }

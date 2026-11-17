@@ -70,7 +70,13 @@
           },
           "type": "object"
         },
-        "name": "make-v-wheel"
+        "name": "make-v-wheel",
+        "slots": [
+          {
+            "kind": "menu",
+            "name": "V-wheel"
+          }
+        ]
       }
     ],
     "limits": {

@@ -248,9 +248,22 @@ fn holes(v: &Value, length: f64, face: Face) -> Result<Vec<(Face, f64)>, FieldEr
     }
     let order = |face: &Face| FACES.iter().position(|f| f == face).unwrap_or(0);
     out.sort_by(|a, b| order(&a.0).cmp(&order(&b.0)).then(a.1.total_cmp(&b.1)));
-    // Holes from two faces meet in the core, so their screws would too.
+    // Holes from two faces meet in the core, so their screws would too. Two on one
+    // face would run their access holes together into one slot.
     for (i, a) in out.iter().enumerate() {
         for b in &out[i + 1..] {
+            if a.0 == b.0 && (a.1 - b.1).abs() < machining::ACCESS {
+                return Err(FieldError::new(
+                    "holes",
+                    format!(
+                        "the holes at {} and {} on {} would run into each other; keep holes {} mm apart",
+                        a.1,
+                        b.1,
+                        a.0.name(),
+                        machining::ACCESS
+                    ),
+                ));
+            }
             if a.0 != b.0 && (a.1 - b.1).abs() < machining::ACCESS {
                 return Err(FieldError::new(
                     "holes",
@@ -383,6 +396,13 @@ mod tests {
             assert!(err.reason.contains("would meet"), "{}", err.reason);
         }
         assert!(parse(&json!({"length": 300, "holes": "+Y 50 +X 60"})).is_ok());
+        // Two on one face would overlap their access holes.
+        for holes in ["50 55", "+X 50 59"] {
+            let err = parse(&json!({"length": 300, "holes": holes})).unwrap_err();
+            assert_eq!(err.field, "holes");
+            assert!(err.reason.contains("run into each other"), "{}", err.reason);
+        }
+        assert!(parse(&json!({"length": 300, "holes": "50 59.5"})).is_ok());
     }
 
     #[test]

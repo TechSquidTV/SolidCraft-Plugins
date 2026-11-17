@@ -69,7 +69,13 @@
           },
           "type": "object"
         },
-        "name": "make-bearing"
+        "name": "make-bearing",
+        "slots": [
+          {
+            "kind": "menu",
+            "name": "Bearing"
+          }
+        ]
       },
       {
         "effect": "edit",
@@ -420,7 +426,13 @@
           ],
           "type": "object"
         },
-        "name": "make-csk"
+        "name": "make-csk",
+        "slots": [
+          {
+            "kind": "menu",
+            "name": "CSK clutch"
+          }
+        ]
       }
     ],
     "limits": {

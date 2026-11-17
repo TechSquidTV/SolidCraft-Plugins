@@ -54,7 +54,10 @@ CASES = {
 
 
 # The entries a plugin lists beside the one its case runs.
-OTHER_ENTRIES = {"techsquid-extrusions": ["make-t-nut"]}
+OTHER_ENTRIES = {
+    "techsquid-bearings": ["make-csk"],
+    "techsquid-extrusions": ["make-t-nut"],
+}
 
 # Bearings have two solid ring envelopes and two annular closure surfaces.
 BODY_COUNTS = {"techsquid-bearings": (2, 2)}

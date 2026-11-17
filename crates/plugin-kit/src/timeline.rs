@@ -55,6 +55,10 @@ impl<R: Runner> Runner for Made<'_, R> {
         Ok(reply)
     }
 
+    fn command_count(&self) -> usize {
+        self.host.command_count()
+    }
+
     fn body_names(&mut self) -> Vec<String> {
         self.host.body_names()
     }

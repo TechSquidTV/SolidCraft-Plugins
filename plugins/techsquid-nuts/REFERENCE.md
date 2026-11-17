@@ -10,7 +10,7 @@ The sizes below are the ISO 4032 table, preferred and second-choice. ISO 4032 re
 
 ## Use
 
-All sizes are millimetres. The form opens on an M3 nut, the size the screw form opens on. Size lists the common sizes, M1.6 to M24, with the coarse thread. For any other metric size, such as `M8x1` or `M3.5`, type it in Custom size, which replaces Size.
+All sizes are millimetres. The form opens on an M3 nut, the size the screw form opens on. Size lists the ISO 4032 sizes, M1.6 to M64, with the coarse thread. For any other metric size, such as `M8x1` or `M3.5`, type it in Custom size, which replaces Size.
 
 Select a sketch point, or a circle, before you open the dialog. Leave Sketch and Sketch point empty. The bearing face sits on that point and the nut stands on the outer side of the sketch. On a face sketch the normal already points out of the material, so the nut stands off the face. With nothing selected, the nut sits on the origin: the bearing face is on the XY plane and the nut runs along +Z. The reply says which of these happened in `placed`. Select several points or circles and each one gets a nut, as one undo step; `count` and `points` in the reply list them. By name, Sketch point takes several ids with commas, such as `c1, c2`.
 
@@ -32,7 +32,7 @@ The chamfer on each end is 30° from the face, the steep side of the drawing's 1
 
 | Parameter | Default | Meaning |
 |---|---|---|
-| `size` | `M3` | Shown as Size. A common size, `M1.6` to `M24` |
+| `size` | `M3` | Shown as Size. A listed size, `M1.6` to `M64` |
 | `create` | `Nut only` | `Nut only`, `Nut and pocket` or `Pocket only`. A pocket needs selected points on a part; with none, `Nut and pocket` makes the nut alone |
 | `pocket_adjust` | 0.2 | Gap between each flat of the nut and its pocket, mm, 0 to 1 |
 | `custom_size` | empty | Shown as Custom size. Any metric size, such as `M8x1` or `M3.5`. Replaces Size when filled |

@@ -10,7 +10,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on selected sketch points, and optionally a hexagonal pocket with a bolt hole |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
-| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings | Six sourced OpenBuilds and MISUMI products with visible ring and closure detail |
+| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings and clutches | Six sourced OpenBuilds and MISUMI radial bearings, plus nine Formsprag CSK mounting envelopes |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | `techsquid-v-wheels` | Wheels | Five OpenBuilds products, bare or composed with bearings and an internal shim |
 
 Each plugin's README links to its detailed reference for dialog fields, standards and naming. Each release has one zip per plugin.
@@ -215,7 +215,7 @@ Eight standalone examples show the plugins’ parts and editing modes. Each plug
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
-| `bearings` | `techsquid-bearings` | Six sourced bearings: open, sealed and shielded variants | `bearings.png` |
+| `bearings` | `techsquid-bearings` | Six sourced radial bearings and nine CSK clutch envelopes | `bearings.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line

@@ -105,6 +105,7 @@ fn run() -> Result<(), String> {
             bearings::Closure::Open => "Open, visible balls",
             bearings::Closure::RubberSeals => "Rubber seals, both sides",
             bearings::Closure::MetalShields => "Metal shields, both sides",
+            bearings::Closure::Unmodeled => "Mounting envelope only",
         };
         bearings_table.push_str(&format!(
             "| {} | {} | {} | {} × {} × {} | {closure} |\n",

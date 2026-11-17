@@ -52,7 +52,16 @@
                 "B626",
                 "B626ZZ",
                 "B626DDU",
-                "B608ZZ"
+                "B608ZZ",
+                "CSK8",
+                "CSK12",
+                "CSK15",
+                "CSK17",
+                "CSK20",
+                "CSK25",
+                "CSK30",
+                "CSK35",
+                "CSK40"
               ],
               "title": "Part",
               "type": "string"

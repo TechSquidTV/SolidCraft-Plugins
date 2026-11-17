@@ -10,7 +10,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub struct Bearings;
-pub const REVISION: &str = "2";
+pub const REVISION: &str = "3";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -27,7 +27,12 @@ fn summary(bearing: Bearing) -> PartSummary {
     PartSummary {
         id: bearing.sku().into(),
         name: format!("Bearing {}", bearing.designation()),
-        family: "radial-ball-bearings".into(),
+        family: if bearing.is_csk() {
+            "one-way-clutches"
+        } else {
+            "radial-ball-bearings"
+        }
+        .into(),
         kind: ProductKind::SupplierProduct,
         designation: bearing.designation().into(),
     }
@@ -52,10 +57,12 @@ impl Catalog for Bearings {
             Dimension::mm("bore", d.bore),
             Dimension::mm("outside_diameter", d.diameter),
             Dimension::mm("width", d.width),
-            Dimension::mm("edge_radius", d.edge_radius),
         ];
-        if let Some(recess) = d.closure_recess {
-            dimensions.push(Dimension::mm("closure_recess", recess));
+        if let Some(section) = d.section {
+            dimensions.push(Dimension::mm("edge_radius", section.edge_radius));
+            if let Some(recess) = section.closure_recess {
+                dimensions.push(Dimension::mm("closure_recess", recess));
+            }
         }
         let mut sources = vec![Source {
             title: format!(
@@ -73,16 +80,31 @@ impl Catalog for Bearings {
             });
         }
         Ok(PartDescription {
-            part: summary(bearing), dimensions, sources,
-            provenance: Provenance { supplier: Some(bearing.supplier().name.into()),
-                supplier_part_number: Some(bearing.sku().into()), ..Provenance::default() },
+            part: summary(bearing),
+            dimensions,
+            sources,
+            provenance: Provenance {
+                supplier: Some(bearing.supplier().name.into()),
+                supplier_part_number: Some(bearing.sku().into()),
+                ..Provenance::default()
+            },
             configuration_schema: json!({"type":"object","additionalProperties":false,"properties":{}}),
-            details: vec!["exterior".into()],
-            attachments: vec![Frame::axial("axle-centre", 0.0), Frame::axial("negative-seat", -d.width/2.0),
-                Frame::axial("positive-seat", d.width/2.0)],
-            insertion: Route { plugin: crate::PLUGIN.into(), entry: "make-bearing".into() },
-            notes: vec!["Separate inner/outer rings and sourced closure surfaces; open B626 includes sourced exposed raceways and eight visible balls, without a cage. Hidden internals and closure thickness are not inferred; unsuitable for mass prediction.".into(),
-                "Supplier product identity does not establish a bearing manufacturer, material grade, clearance or precision class.".into()],
+            details: vec![bearing.representation().detail],
+            attachments: vec![
+                Frame::axial("axle-centre", 0.0),
+                Frame::axial("negative-seat", -d.width / 2.0),
+                Frame::axial("positive-seat", d.width / 2.0),
+            ],
+            insertion: Route {
+                plugin: crate::PLUGIN.into(),
+                entry: "make-bearing".into(),
+            },
+            notes: if bearing.is_csk() {
+                vec!["CSK is a one-way sprag clutch. Geometry is a mounting envelope only; internal rings, sprags, balls and dust protection are not represented. The single solid is unsuitable for mass prediction or motion simulation.".into()]
+            } else {
+                vec!["Separate inner/outer rings and sourced closure surfaces; open B626 includes sourced exposed raceways and eight visible balls, without a cage. Hidden internals and closure thickness are not inferred; unsuitable for mass prediction.".into(),
+                    "Supplier product identity does not establish a bearing manufacturer, material grade, clearance or precision class.".into()]
+            },
         })
     }
     fn resolve(&self, id: &str, value: &Value) -> Result<ResolvedPart<Bearing>, CatalogError> {

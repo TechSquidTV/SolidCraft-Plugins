@@ -111,8 +111,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK12P",
-          "sketch": "CSK centres",
-          "sketch_point": "p0"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p0"
+            }
+          ]
         }
       }
     },
@@ -126,8 +131,13 @@
         "params": {
           "size": "CSK12P",
           "inner_keyway_depth": 1.2,
-          "sketch": "CSK centres",
-          "sketch_point": "p1"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p1"
+            }
+          ]
         }
       }
     },
@@ -141,8 +151,13 @@
         "params": {
           "size": "CSK12P",
           "inner_keyway_depth": 1.2,
-          "sketch": "CSK centres",
-          "sketch_point": "p2"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p2"
+            }
+          ]
         }
       }
     },
@@ -155,8 +170,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK15PP",
-          "sketch": "CSK centres",
-          "sketch_point": "p4"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p4"
+            }
+          ]
         }
       }
     },
@@ -169,8 +189,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK15P-2RS",
-          "sketch": "CSK centres",
-          "sketch_point": "p5"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p5"
+            }
+          ]
         }
       }
     },
@@ -183,8 +208,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK8PP",
-          "sketch": "CSK centres",
-          "sketch_point": "p6"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p6"
+            }
+          ]
         }
       }
     },
@@ -197,8 +227,13 @@
         "entry": "make-csk",
         "params": {
           "size": "CSK10PP",
-          "sketch": "CSK centres",
-          "sketch_point": "p7"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p7"
+            }
+          ]
         }
       }
     },
@@ -217,8 +252,13 @@
           "outer_keyway": "Enabled",
           "outer_keyway_width": 3,
           "outer_keyway_depth": 1,
-          "sketch": "CSK centres",
-          "sketch_point": "p8"
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "CSK centres",
+              "id": "p8"
+            }
+          ]
         }
       }
     }

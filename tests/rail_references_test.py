@@ -5,7 +5,7 @@ Run after ./build.sh with SOLIDCRAFT_CLI pointing to an unsigned host build.
 """
 import os
 
-from harness import TMP, check, finish, inspect, killed, package, run, skip
+from harness import TMP, check, finish, inspect, killed, package, picks, run, skip
 
 PLUGIN = "techsquid-extrusions"
 
@@ -34,7 +34,7 @@ def case(face, slot="T-slot", size="2020", rotated=False, tapped=False):
             "origin": [100, 200, 300], "x_dir": [0, 1, 0], "y_dir": [0, 0, 1]}),
             cmd("sketch.point", id="a", point=[0, 0]),
             cmd("sketch.point", id="b", point=[60, 0]), cmd("sketch.finish")]
-        params.update(sketch="Places", sketch_point="a,b")
+        params.update(placement=picks("Places", "a,b"))
     name = f"{slot} {size} x 100" + (" taps start" if tapped else "") + f" holes {face} 25 75"
     sketch = name + f": Hole references {face}"
     saved = os.path.join(TMP, "rail.json")

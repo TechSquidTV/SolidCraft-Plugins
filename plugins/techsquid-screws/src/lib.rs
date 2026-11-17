@@ -914,7 +914,6 @@ mod tests {
                 return Ok(reply);
             }
             let reply = match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => json!({"sketch": 7, "name": "Head profile"}),
                 "solid.cylinder" | "solid.cone" | "solid.extrude"
                     if args.get("operation").and_then(Value::as_str) == Some("new")
@@ -994,7 +993,6 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "solid.cylinder",
                 "sketch.create",
@@ -1005,17 +1003,17 @@ mod tests {
             ]
         );
         // DIN 912: a 2.5 mm key, 1.3 mm deep, cut from just outside the 3 mm head.
-        let profile = &calls[3].1;
+        let profile = &calls[2].1;
         assert_eq!(profile["name"], "Screw M3 x 12 socket: Hex socket profile");
         assert_eq!(
             profile["plane"]["origin"],
             json!([0.0, 0.0, 3.0 + TIP_OVERLAP])
         );
-        let corners = calls[4].1["points"].as_array().unwrap();
+        let corners = calls[3].1["points"].as_array().unwrap();
         assert_eq!(corners.len(), 6);
         assert!((corners[0][0].as_f64().unwrap() - 2.5 / 3.0_f64.sqrt()).abs() < 1e-12);
-        assert_eq!(calls[4].1["closed"], true);
-        let socket = &calls[6].1;
+        assert_eq!(calls[3].1["closed"], true);
+        let socket = &calls[5].1;
         assert_eq!(socket["name"], "Screw M3 x 12 socket: Hex socket");
         assert_eq!(socket["operation"], "cut");
         assert_eq!(socket["direction"], "negative");
@@ -1023,20 +1021,20 @@ mod tests {
         assert_eq!(socket["targets"], json!(["Screw M3 x 12 socket"]));
         assert_eq!(summary["hex"], 2.5);
         assert_eq!(summary["hex_depth"], 1.3);
-        let shank = &calls[1].1;
+        let shank = &calls[0].1;
         assert_eq!(shank["diameter"], 3.0);
         assert_eq!(shank["height"], 12.0);
         assert_eq!(shank["base"], json!([0.0, 0.0, -12.0]));
         assert_eq!(shank["axis"], json!([0.0, 0.0, 1.0]));
         assert_eq!(shank["operation"], "new");
         assert_eq!(shank["body_name"], "Screw M3 x 12 socket");
-        let head = &calls[2].1;
+        let head = &calls[1].1;
         assert_eq!(head["diameter"], 5.5);
         assert_eq!(head["height"], 3.0);
         assert_eq!(head["base"], json!([0.0, 0.0, 0.0]));
         assert_eq!(head["operation"], "join");
         assert_eq!(head["targets"], json!(["Screw M3 x 12 socket"]));
-        let thread = &calls[7].1;
+        let thread = &calls[6].1;
         assert_eq!(thread["designation"], "M3");
         assert_eq!(thread["modeled"], true);
         assert_eq!(thread["face"], json!([1.5, 0.0, -10.0]));
@@ -1063,7 +1061,6 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "sketch.create",
                 "sketch.polygon.circumscribed",
@@ -1104,8 +1101,8 @@ mod tests {
     #[test]
     fn a_countersunk_head_is_a_truncated_cone() {
         let (_, calls) = commands(json!({"head": "Countersunk"}));
-        assert_eq!(calls[2].0, "solid.cone");
-        let cone = &calls[2].1;
+        assert_eq!(calls[1].0, "solid.cone");
+        let cone = &calls[1].1;
         assert_eq!(cone["diameter"], 3.0);
         // ISO 10642: 6.72 mm is 3 + 2 × 1.86, the sharp edge of a 90° cone.
         assert_eq!(cone["top_diameter"], 6.72);
@@ -1126,7 +1123,6 @@ mod tests {
         assert_eq!(
             names,
             [
-                "selection.get",
                 "solid.cylinder",
                 "solid.cylinder",
                 "sketch.create",
@@ -1170,7 +1166,6 @@ mod tests {
                 .filter(|c| *c != "sketch.arc.three_point")
                 .collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "solid.chamfer",
                 "sketch.create",
@@ -1195,7 +1190,6 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "sketch.create",
                 "sketch.line",
@@ -1247,7 +1241,6 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "solid.chamfer",
                 "sketch.create",
@@ -1291,7 +1284,6 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "sketch.create",
                 "sketch.line",
@@ -1395,23 +1387,18 @@ mod tests {
             commands(json!({"head": "Set screw", "length": 10, "drive": "None"}));
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
-            [
-                "selection.get",
-                "solid.cylinder",
-                "solid.chamfer",
-                "solid.thread"
-            ]
+            ["solid.cylinder", "solid.chamfer", "solid.thread"]
         );
-        assert_eq!(calls[1].1["height"], 10.0);
-        assert_eq!(calls[1].1["base"], json!([0.0, 0.0, -10.0]));
+        assert_eq!(calls[0].1["height"], 10.0);
+        assert_eq!(calls[0].1["base"], json!([0.0, 0.0, -10.0]));
         // ISO 4026 flat point: the tip edge is chamfered 0.5 mm, from 3 mm down to 2.
-        let chamfer = &calls[2].1;
+        let chamfer = &calls[1].1;
         assert_eq!(chamfer["name"], "Set screw M3 x 10: Point chamfer");
         assert_eq!(chamfer["distance"], 0.5);
         assert_eq!(chamfer["edges"], json!([[1.5, 0.0, -10.0]]));
         assert_eq!(chamfer["body"], "Set screw M3 x 10");
         // The thread is picked a sixth of the way up the cylinder above the chamfer.
-        let thread = &calls[3].1;
+        let thread = &calls[2].1;
         assert!((thread["face"][2].as_f64().unwrap() - (-10.0 + 0.5 + 9.5 / 6.0)).abs() < 1e-9);
         assert_eq!(summary["head_diameter"], Value::Null);
         assert_eq!(summary["head_height"], Value::Null);
@@ -1424,16 +1411,15 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "solid.cone",
                 "solid.cylinder",
                 "solid.thread"
             ]
         );
-        assert_eq!(calls[1].1["height"], 9.0);
-        assert_eq!(calls[1].1["base"], json!([0.0, 0.0, -9.0]));
-        let cone = &calls[2].1;
+        assert_eq!(calls[0].1["height"], 9.0);
+        assert_eq!(calls[0].1["base"], json!([0.0, 0.0, -9.0]));
+        let cone = &calls[1].1;
         assert_eq!(cone["diameter"], 3.0);
         assert_eq!(cone["top_diameter"], 0.0);
         assert_eq!(cone["height"], 3.0 + TIP_OVERLAP);
@@ -1442,9 +1428,9 @@ mod tests {
         assert_eq!(cone["operation"], "join");
         assert_eq!(cone["targets"], json!(["Screw M3 x 12 socket"]));
         assert_eq!(cone["name"], "Screw M3 x 12 socket: Point");
-        assert_eq!(calls[3].1["name"], "Screw M3 x 12 socket: Head");
-        assert_eq!(calls[4].1["face"], json!([1.5, 0.0, -7.5]));
-        assert!(calls[4].1.get("tip").is_none());
+        assert_eq!(calls[2].1["name"], "Screw M3 x 12 socket: Head");
+        assert_eq!(calls[3].1["face"], json!([1.5, 0.0, -7.5]));
+        assert!(calls[3].1.get("tip").is_none());
         assert_eq!(summary["tip"], "Point");
     }
 
@@ -1459,24 +1445,23 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "solid.cylinder",
                 "solid.chamfer",
                 "solid.cone",
                 "solid.thread"
             ]
         );
-        assert_eq!(calls[1].1["height"], 10.0);
-        assert_eq!(calls[1].1["base"], json!([0.0, 0.0, -10.0]));
+        assert_eq!(calls[0].1["height"], 10.0);
+        assert_eq!(calls[0].1["base"], json!([0.0, 0.0, -10.0]));
         // ISO 4029: the outside is chamfered at 45° from 3 mm down to the 1.4 mm mouth,
         // before the cup is cut, so the rim between them is sharp.
-        let chamfer = &calls[2].1;
+        let chamfer = &calls[1].1;
         assert_eq!(chamfer["name"], "Set screw M3 x 10: Point chamfer");
         assert!((chamfer["distance"].as_f64().unwrap() - 0.8).abs() < 1e-12);
         assert_eq!(chamfer["edges"], json!([[1.5, 0.0, -10.0]]));
         let depth = 1.4 / (2.0 * 3.0_f64.sqrt());
         let reach = depth + TIP_OVERLAP;
-        let cone = &calls[3].1;
+        let cone = &calls[2].1;
         assert_eq!(cone["diameter"], 1.4 * reach / depth);
         assert_eq!(cone["top_diameter"], 0.0);
         assert_eq!(cone["height"], reach);
@@ -1487,7 +1472,7 @@ mod tests {
         assert_eq!(cone["name"], "Set screw M3 x 10: Cup");
         // The thread is picked on the cylinder above the chamfer.
         let along = 0.8 + (10.0 - 0.8) / 6.0;
-        assert!((calls[4].1["face"][2].as_f64().unwrap() - (-10.0 + along)).abs() < 1e-9);
+        assert!((calls[3].1["face"][2].as_f64().unwrap() - (-10.0 + along)).abs() < 1e-9);
         assert_eq!(summary["tip"], "Cup");
         assert_eq!(summary["head_diameter"], Value::Null);
     }
@@ -1507,6 +1492,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
+                        "name": "Holes",
                         "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
@@ -1526,8 +1512,10 @@ mod tests {
                 Ok(reply)
             }
         }
-        let p = screw::parse(&json!({"sketch": "Holes", "sketch_point": "c1", "drive": "None"}))
-            .unwrap();
+        let p = screw::parse(&json!({"drive": "None", "placement": [
+            {"type": "external_sketch_curve", "sketch": "Holes", "id": "c1"}
+        ]}))
+        .unwrap();
         let mut rec = Named(vec![]);
         let summary = make_screw(&mut rec, &p).unwrap();
         assert_eq!(
@@ -1564,7 +1552,6 @@ mod tests {
                     return Ok(reply);
                 }
                 let reply = match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "solid.cylinder"
                         if args.get("operation").and_then(Value::as_str) == Some("new") =>
                     {
@@ -1579,7 +1566,7 @@ mod tests {
         let p = screw::parse(&json!({"drive": "None"})).unwrap();
         let mut rec = Renamed(vec![]);
         make_screw(&mut rec, &p).unwrap();
-        assert_eq!(rec.0[2].1["targets"], json!(["Body1"]));
+        assert_eq!(rec.0[1].1["targets"], json!(["Body1"]));
     }
 
     #[test]
@@ -1596,17 +1583,14 @@ mod tests {
                     return Ok(reply);
                 }
                 self.0.push(command.to_string());
-                Ok(match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
-                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
-                })
+                Ok(plugin_kit::component::stand_in(command).unwrap_or(Value::Null))
             }
         }
         let p = screw::parse(&json!({})).unwrap();
         let mut rec = Mute(vec![]);
         let err = make_screw(&mut rec, &p).unwrap_err();
         assert_eq!(err, "solid.cylinder did not name the shank body");
-        assert_eq!(rec.0, ["selection.get", "solid.cylinder"]);
+        assert_eq!(rec.0, ["solid.cylinder"]);
     }
 
     #[test]
@@ -1623,17 +1607,14 @@ mod tests {
                     return Ok(reply);
                 }
                 self.0.push(command.to_string());
-                Ok(match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
-                    _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
-                })
+                Ok(plugin_kit::component::stand_in(command).unwrap_or(Value::Null))
             }
         }
         let p = screw::parse(&json!({"tip": "Point", "drive": "None"})).unwrap();
         let mut rec = Mute(vec![]);
         let err = make_screw(&mut rec, &p).unwrap_err();
         assert_eq!(err, "solid.cylinder did not name the shank body");
-        assert_eq!(rec.0, ["selection.get", "solid.cylinder"]);
+        assert_eq!(rec.0, ["solid.cylinder"]);
     }
 
     #[test]
@@ -1650,7 +1631,6 @@ mod tests {
                     return Ok(reply);
                 }
                 let reply = match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "solid.cylinder"
                         if args.get("operation").and_then(Value::as_str) == Some("new") =>
                     {
@@ -1665,9 +1645,9 @@ mod tests {
         let p = screw::parse(&json!({"tip": "Point", "drive": "None"})).unwrap();
         let mut rec = Renamed(vec![]);
         make_screw(&mut rec, &p).unwrap();
+        assert_eq!(rec.0[1].1["targets"], json!(["Body1"]));
+        assert_eq!(rec.0[1].1["name"], "Screw M3 x 12 socket: Point");
         assert_eq!(rec.0[2].1["targets"], json!(["Body1"]));
-        assert_eq!(rec.0[2].1["name"], "Screw M3 x 12 socket: Point");
-        assert_eq!(rec.0[3].1["targets"], json!(["Body1"]));
     }
 
     #[test]
@@ -1688,7 +1668,7 @@ mod tests {
         }
         // The dialog lists optional fields by key, so a sketch comes before its point.
         assert!(props.get("point").is_none());
-        assert!(props.get("sketch_point").is_some());
+        assert!(props.get("placement").is_some());
         assert!(props.get("custom_size").is_some());
         // One box sizes whichever drive is chosen, and it sorts next to Custom size.
         assert!(props.get("drive_size").is_some());
@@ -1753,11 +1733,9 @@ mod tests {
                     Value::Null
                 }
                 "selection.get" if self.selected.is_some() => json!({"items": self.selected}),
-                "selection.get" => json!({"count": 2, "items": [
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
-                ]}),
+                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.inspect" => json!({
+                    "name": "Holes",
                     "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
@@ -1808,7 +1786,11 @@ mod tests {
             .collect()
     }
 
-    fn on_plate(v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
+    fn on_plate(mut v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
+        v["placement"] = json!([
+            {"type": "external_sketch_curve", "sketch": 4, "id": "c1"},
+            {"type": "external_sketch_curve", "sketch": 4, "id": "c2"}
+        ]);
         let p = screw::parse(&v).unwrap();
         let mut rec = OnPlate {
             calls: vec![],
@@ -1847,8 +1829,8 @@ mod tests {
             json!(["Plate"]),
         );
         let summary = summary.unwrap();
-        assert_eq!(calls[2].0, "solid.hole");
-        let hole = &calls[2].1;
+        assert_eq!(calls[1].0, "solid.hole");
+        let hole = &calls[1].1;
         assert_eq!(hole["sketch"], "Holes");
         assert_eq!(hole["points"], json!(["c1.center", "c2.center"]));
         assert_eq!(hole["clearance"], "M3");
@@ -1878,7 +1860,7 @@ mod tests {
             json!({"drive": "None", "create": "Screw and hole", "hole_type": screw::RECESSED}),
             json!(["Plate"]),
         );
-        let hole = &calls[2].1;
+        let hole = &calls[1].1;
         assert_eq!(hole["type"], "counterbore");
         assert_eq!(hole["cb_diameter"], 6.5);
         assert_eq!(hole["cb_depth"], 3.0);
@@ -1893,11 +1875,11 @@ mod tests {
                 "hole_type": screw::RECESSED}),
             json!(["Plate"]),
         );
-        let hole = &calls[2].1;
+        let hole = &calls[1].1;
         assert_eq!(hole["type"], "countersink");
         assert_eq!(hole["cs_diameter"], 6.72);
         assert_eq!(hole["cs_angle"], 90);
-        assert_eq!(calls.len(), 3);
+        assert_eq!(calls.len(), 2);
     }
 
     #[test]
@@ -1907,7 +1889,7 @@ mod tests {
                 "hole_type": screw::TAPPED, "thread_modeled": true}),
             json!(["Plate"]),
         );
-        let hole = &calls[2].1;
+        let hole = &calls[1].1;
         assert_eq!(hole["thread"], "M8x1");
         assert_eq!(hole["modeled"], true);
         assert_eq!(hole["depth"], 20.0);
@@ -1926,7 +1908,7 @@ mod tests {
         assert_eq!(summary["note"], screw::CREATE.skipped());
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
         assert_eq!(summary["at"], json!([0.0, 0.0, 0.0]));
         let (summary, _) = commands(json!({}));
@@ -1939,14 +1921,12 @@ mod tests {
         let mut rec = Rec(vec![]);
         let err = make_screw(&mut rec, &p).unwrap_err();
         assert!(
-            err.starts_with("sketch_point: select the sketch points"),
+            err.starts_with("placement: pick the sketch points"),
             "{err}"
         );
         assert!(err.contains("Screw only"), "{err}");
         let (made, _) = on_plate(json!({"create": "Hole only"}), json!([]));
-        assert!(made
-            .unwrap_err()
-            .starts_with("sketch_point: there is no part"));
+        assert!(made.unwrap_err().starts_with("placement: there is no part"));
     }
 
     #[test]
@@ -1995,7 +1975,7 @@ mod tests {
         assert_eq!(summary["major"], 8.0);
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
     }
 
@@ -2038,13 +2018,13 @@ mod tests {
                 return Ok(reply);
             }
             Ok(match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
                 "sketch.inspect" => json!({
+                    "name": "Points",
                     "world_plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "a", "world": [10.0, 0.0, 5.0]},

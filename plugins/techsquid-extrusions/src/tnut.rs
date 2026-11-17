@@ -288,7 +288,6 @@ mod tests {
                 return Ok(reply);
             }
             let reply = match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => json!({"sketch": 1}),
                 _ => Value::Null,
             };
@@ -401,7 +400,7 @@ mod tests {
         assert_eq!(summary["component"]["component"], "T-nut M5 pre-assembly");
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
     }
 

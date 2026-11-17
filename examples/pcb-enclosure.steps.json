@@ -24,7 +24,7 @@
   {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "-(depth / 2 - corner_r)"], "id": "i3"}},
   {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "-(depth / 2 - corner_r)"], "id": "i4"}},
   {"caption": "", "command": "sketch.finish", "params": {}},
-  {"caption": "Inserts: four M3 heat-set inserts, holes and all", "command": "plugin.run", "params": {"path": "dist/techsquid-inserts", "approval": "@approval", "entry": "make-insert", "params": {"size": "M3 × 5.7", "create": "Hole and insert", "hole_type": "Heat-set (straight)", "hole_depth": "Blind", "hole_adjust": 0, "sketch": "Insert points", "sketch_point": "i1, i2, i3, i4"}}},
+  {"caption": "Inserts: four M3 heat-set inserts, holes and all", "command": "plugin.run", "params": {"path": "dist/techsquid-inserts", "approval": "@approval", "entry": "make-insert", "params": {"size": "M3 × 5.7", "create": "Hole and insert", "hole_type": "Heat-set (straight)", "hole_depth": "Blind", "hole_adjust": 0, "placement": [{"type": "external_sketch_point", "sketch": "Insert points", "id": "i1"}, {"type": "external_sketch_point", "sketch": "Insert points", "id": "i2"}, {"type": "external_sketch_point", "sketch": "Insert points", "id": "i3"}, {"type": "external_sketch_point", "sketch": "Insert points", "id": "i4"}]}}},
   {"caption": "The lid: a plate on the rim", "command": "solid.box", "params": {"length": "width", "width": "depth", "height": "lid_t", "center": [0, 0, "height + lid_t / 2"], "operation": "new", "name": "Lid plate", "body_name": "Lid"}},
   {"caption": "", "command": "solid.fillet", "params": {"edges": [[40, 30, 27.5], [-40, 30, 27.5], [-40, -30, 27.5], [40, -30, 27.5]], "radius": "corner_r", "body": "Lid", "name": "Lid corners"}},
   {"caption": "Sketch on the lid: one point per screw", "command": "sketch.create", "params": {"plane": "XY", "offset": "height + lid_t", "name": "Screw points"}},
@@ -33,7 +33,7 @@
   {"caption": "", "command": "sketch.point", "params": {"point": ["-(width / 2 - corner_r)", "-(depth / 2 - corner_r)"], "id": "s3"}},
   {"caption": "", "command": "sketch.point", "params": {"point": ["width / 2 - corner_r", "-(depth / 2 - corner_r)"], "id": "s4"}},
   {"caption": "", "command": "sketch.finish", "params": {}},
-  {"caption": "Screws: four M3 x 6 socket head screws, each with its clearance hole and a recess for the head", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "create": "Screw and hole", "hole_type": "Clearance, head recessed", "sketch": "Screw points", "sketch_point": "s1, s2, s3, s4"}}}
+  {"caption": "Screws: four M3 x 6 socket head screws, each with its clearance hole and a recess for the head", "command": "plugin.run", "params": {"path": "dist/techsquid-screws", "approval": "@approval", "entry": "make-screw", "params": {"size": "M3", "length": 6, "head": "Socket head", "drive": "Standard", "tip": "Flat", "create": "Screw and hole", "hole_type": "Clearance, head recessed", "placement": [{"type": "external_sketch_point", "sketch": "Screw points", "id": "s1"}, {"type": "external_sketch_point", "sketch": "Screw points", "id": "s2"}, {"type": "external_sketch_point", "sketch": "Screw points", "id": "s3"}, {"type": "external_sketch_point", "sketch": "Screw points", "id": "s4"}]}}}
  ],
  "expect": {
   "bodies": 10,

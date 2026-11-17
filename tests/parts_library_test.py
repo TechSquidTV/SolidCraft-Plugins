@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import shutil
 
-from harness import TMP, check, finish, package
+from harness import TMP, check, finish, package, picks
 from headless import Headless
 
 BEARINGS = 'techsquid-bearings'
@@ -66,7 +66,7 @@ def activation_case(plugin, nested):
                         if p['id'] == 'mount.center')
 
         entry = 'make-bearing' if plugin == BEARINGS else 'make-v-wheel'
-        params = {'sketch':'Mount', 'sketch_point':'mount.center'}
+        params = {'placement': picks('Mount', 'mount.center')}
         if plugin == BEARINGS:
             params['size'] = 'B626'
         check(label+': fixture selects the intended world point', same_point(mount_world(), point))
@@ -118,8 +118,8 @@ with Headless() as host:
     host.command('sketch.finish')
     before = host.command('document.inspect',measure=False)
     direct = insert(BEARINGS)
-    wheel = insert(WHEELS,sketch='Mounts',sketch_point='a.center')
-    repeated = insert(WHEELS,sketch='Mounts',sketch_point='b.center')
+    wheel = insert(WHEELS,placement=picks('Mounts','a.center'))
+    repeated = insert(WHEELS,placement=picks('Mounts','b.center'))
     another = insert(BEARINGS)
     listed = host.command('component.list')
     after = host.command('document.inspect',measure=False)
@@ -148,7 +148,7 @@ with Headless() as host:
     saved = os.path.join(TMP,'library.sc')
     host.command('file.save_as',path=saved)
     host.command('doc.open',path=saved)
-    reopened = insert(WHEELS,sketch='Mounts',sketch_point='a.center')
+    reopened = insert(WHEELS,placement=picks('Mounts','a.center'))
     check('shared assembly remains reusable after save/reopen',reopened['component']['reused'])
     host.command('component.rename',component=bearing['id'],name='My bearing')
     renamed = insert(BEARINGS)
@@ -171,7 +171,7 @@ with Headless() as host:
     new_list = host.command('component.list')
     fresh = definition(new_list,changed['component']['component'])
     check('original assembly still references the edited original',all(c['component'] != fresh['id'] for c in definition(new_list,'Solid V Wheel assembly')['children']))
-    new_assembly = insert(WHEELS,sketch='Mounts',sketch_point='a.center')
+    new_assembly = insert(WHEELS,placement=picks('Mounts','a.center'))
     check('edited child prevents reuse of the old assembly',not new_assembly['component']['reused']
           and len(new_assembly['library']['preserved_modified_definitions']) == 1)
     new_list = host.command('component.list')
@@ -204,16 +204,16 @@ with Headless() as host:
     for i in range(32):
         host.command('sketch.circle.center',center=[30*i,100],radius=1,id=f'p{i}')
     host.command('sketch.finish')
-    batch = {'size':'Xtreme Mini V Wheel','sketch':'Batch points','sketch_point':','.join(f'p{i}.center' for i in range(32))}
+    batch = {'size':'Xtreme Mini V Wheel','placement':picks('Batch points',[f'p{i}.center' for i in range(32)])}
     before_doc = host.command('document.inspect',measure=False)
     refused = host.command('plugin.run',allow_error=True,path=package(WHEELS),approval=approvals[WHEELS],entry='make-v-wheel',params=batch)
     check('oversized creation batch is refused by preflight','more commands than one run allows' in str(refused.get('error')))
     check('preflight refusal preserves the complete design',host.command('document.inspect',measure=False) == before_doc)
-    batch['sketch_point'] = ','.join(f'p{i}.center' for i in range(24))
+    batch['placement'] = picks('Batch points',[f'p{i}.center' for i in range(24)])
     placed = insert(WHEELS,**batch)
     check('large accepted batch creates one assembly definition',placed['count'] == 24 and not placed['component']['reused']
           and placed['library']['host_calls'] < 248,str(placed['library']['host_calls']))
-    batch['sketch_point'] = ','.join(f'p{i}.center' for i in range(32))
+    batch['placement'] = picks('Batch points',[f'p{i}.center' for i in range(32)])
     placed = insert(WHEELS,**batch)
     check('existing assembly allows the full 32-placement batch',placed['count'] == 32 and placed['component']['reused']
           and placed['library']['host_calls'] < 160,str(placed['library']['host_calls']))

@@ -418,12 +418,22 @@
           "mode": "Sketch driven",
           "slot": "T-slot",
           "size": "2020",
-          "sketch": "Rail paths",
-          "path_lines": "l1,l2",
           "end_taps": "Both",
           "thread_modeled": true,
           "holes": "+X 25 -Y 55",
-          "holes_from": "End"
+          "holes_from": "End",
+          "placement": [
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Rail paths",
+              "id": "l1"
+            },
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Rail paths",
+              "id": "l2"
+            }
+          ]
         }
       }
     },
@@ -438,12 +448,22 @@
           "mode": "Sketch driven",
           "slot": "T-slot",
           "size": "4040",
-          "sketch": "Rail paths",
-          "path_lines": "l3,l4",
           "end_taps": "Both",
           "thread_modeled": false,
           "holes": "+X 25 -Y 55",
-          "holes_from": "End"
+          "holes_from": "End",
+          "placement": [
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Rail paths",
+              "id": "l3"
+            },
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Rail paths",
+              "id": "l4"
+            }
+          ]
         }
       }
     },
@@ -458,12 +478,22 @@
           "mode": "Sketch driven",
           "slot": "V-slot",
           "size": "2080",
-          "sketch": "Rail paths",
-          "path_lines": "l5,l6",
           "end_taps": "Both",
           "thread_modeled": false,
           "holes": "+X 25 -Y 55",
-          "holes_from": "End"
+          "holes_from": "End",
+          "placement": [
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Rail paths",
+              "id": "l5"
+            },
+            {
+              "type": "external_sketch_curve",
+              "sketch": "Rail paths",
+              "id": "l6"
+            }
+          ]
         }
       }
     }

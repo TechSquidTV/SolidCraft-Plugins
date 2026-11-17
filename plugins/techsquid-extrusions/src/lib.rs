@@ -446,7 +446,6 @@ mod tests {
                 return Ok(reply);
             }
             let reply = match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
                     json!({"sketch": self.calls.iter().filter(|(c, _)| c == "sketch.create").count() + 1})
                 }
@@ -583,8 +582,8 @@ mod tests {
                 assert!(listed.contains(&json!(command)), "{command}");
             }
         }
-        // Placing on a point reads the selection and the sketch.
-        for command in ["selection.get", "sketch.inspect", "inspect.measure"] {
+        // Placing on a picked point reads its sketch.
+        for command in ["sketch.inspect", "inspect.measure"] {
             assert!(listed.contains(&json!(command)), "{command}");
         }
     }
@@ -611,7 +610,7 @@ mod tests {
         assert_eq!(summary["count"], 1);
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
         assert_eq!(summary["component"]["component"], "T-slot 2020 x 250");
     }
@@ -896,7 +895,6 @@ mod tests {
             fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
                 self.0.push((command.to_string(), args));
                 Ok(component::stand_in(command).unwrap_or(match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => json!({"sketch": 1}),
                     _ => Value::Null,
                 }))

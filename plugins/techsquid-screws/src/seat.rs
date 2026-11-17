@@ -109,7 +109,7 @@ pub fn find_all<R: Runner>(
     // above its origin. Use the same frames for bounds filtering and face matching.
     let shift = if matches!(hole.kind, HoleKind::Countersink { .. }) {
         fasteners::clearance::medium(major)
-            .ok_or("sketch_point: the countersink has no clearance size")?
+            .ok_or("placement: the countersink has no clearance size")?
             / 2.0
             - major / 2.0
     } else {
@@ -184,7 +184,7 @@ fn find(
         }));
         if let (Some(bore), Some(end)) = (bore, end) {
             if found.is_some() {
-                return Err("sketch_point: more than one part has this screw seat".into());
+                return Err("placement: more than one part has this screw seat".into());
             }
             found = Some(Attachment {
                 seat: if tapped {
@@ -203,7 +203,7 @@ fn find(
             });
         }
     }
-    found.ok_or_else(|| "sketch_point: the screw needs a complete hole and seating face to stay attached; move the point clear of edges or overlapping cuts".into())
+    found.ok_or_else(|| "placement: the screw needs a complete hole and seating face to stay attached; move the point clear of edges or overlapping cuts".into())
 }
 
 #[cfg(test)]

@@ -68,7 +68,7 @@ impl<R: Runner> Runner for Counted<'_, R> {
     fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
         if self.calls >= MAX_CALLS {
             return Err(
-                "sketch_point: this takes more commands than one run allows; choose fewer points"
+                "placement: this takes more commands than one run allows; choose fewer points"
                     .into(),
             );
         }
@@ -108,7 +108,7 @@ pub struct Library<'a, R: Runner> {
 impl<'a, R: Runner> Library<'a, R> {
     pub fn new(host: &'a mut R, budget: Budget) -> Result<Self, String> {
         if budget.placements == 0 || budget.placements > 32 || budget.creation_calls > MAX_CALLS {
-            return Err("sketch_point: choose 1 to 32 points".into());
+            return Err("placement: choose 1 to 32 points".into());
         }
         let calls = host.command_count();
         let mut host = Counted { host, calls };
@@ -270,7 +270,7 @@ impl<'a, R: Runner> Library<'a, R> {
             && self.host.calls + self.budget.creation_calls + self.budget.placements * 3 + 8
                 > MAX_CALLS
         {
-            return Err("sketch_point: a new part on this many points takes more commands than one run allows; choose fewer points, then run again to reuse the part".into());
+            return Err("placement: a new part on this many points takes more commands than one run allows; choose fewer points, then run again to reuse the part".into());
         }
         let mut taken: Vec<_> = self
             .index
@@ -376,7 +376,7 @@ impl<'a, R: Runner> Library<'a, R> {
         folder: &str,
     ) -> Result<Placed, String> {
         if places.is_empty() || places.len() > 32 {
-            return Err("sketch_point: choose 1 to 32 points".into());
+            return Err("placement: choose 1 to 32 points".into());
         }
         let listed = self.host.run("component.list", json!({"compact": true}))?;
         let listed = components(&listed);
@@ -451,9 +451,7 @@ pub fn insert<R: Runner>(
     attach: impl FnOnce(&mut dyn Runner, &Placed) -> Result<(), String>,
 ) -> Result<(Placed, Value), String> {
     if places.len() > MAX_PLACEMENTS {
-        return Err(format!(
-            "sketch_point: choose at most {MAX_PLACEMENTS} points"
-        ));
+        return Err(format!("placement: choose at most {MAX_PLACEMENTS} points"));
     }
     let mut library = Library::new(
         host,

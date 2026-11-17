@@ -68,7 +68,7 @@ The id `techsquid-<name>` is also the folder, the Cargo package and the `dist/` 
 1. **Plugins change the model only through host commands**, and every command a plugin runs is listed in its `plugin.json`.
 2. **Every standards table names its source** in a comment, and a unit test repeats the table from that source. A changed table updates the Standards table in that plugin's REFERENCE.md.
 3. **Errors name what they are about.** An error that starts with `<field_key>: ` shows against that dialog field. One that starts with `<command.id>: ` is reported as a failed command. Anything else is a trap.
-4. **Field names are shared** across plugins (`size`, `custom_size`, `create`, `sketch`, `sketch_point`, `thread_modeled`). A breaking field change refuses the old key, with no alias, and lists it under Older field names in the reference.
+4. **Field names are shared** across plugins (`size`, `custom_size`, `create`, `placement`, `thread_modeled`). A breaking field change refuses the old key, with no alias, and lists it under Older field names in the reference.
 5. **Body names** are the kind and then the size, with a plain `x`: `Screw M3 x 12 socket`.
 6. **A cut in one placement is a cut in all of them.** Every placement of a component shares its body, so anything cut into a part belongs in its own build and name.
 7. **A part with a cut thread is built on a site, not on the origin**, so its thread can't land on another part's bore. The [parts skill](skills/techsquid-parts/SKILL.md) explains why.

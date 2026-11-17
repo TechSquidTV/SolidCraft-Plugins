@@ -78,9 +78,14 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Solid V Wheel",
-          "sketch": "Wheel centres",
-          "sketch_point": "p0",
-          "assembled": true
+          "assembled": true,
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Wheel centres",
+              "id": "p0"
+            }
+          ]
         }
       }
     },
@@ -93,9 +98,14 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Xtreme Solid V Wheel",
-          "sketch": "Wheel centres",
-          "sketch_point": "p1",
-          "assembled": true
+          "assembled": true,
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Wheel centres",
+              "id": "p1"
+            }
+          ]
         }
       }
     },
@@ -108,9 +118,14 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Delrin V Wheel",
-          "sketch": "Wheel centres",
-          "sketch_point": "p2",
-          "assembled": true
+          "assembled": true,
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Wheel centres",
+              "id": "p2"
+            }
+          ]
         }
       }
     },
@@ -123,9 +138,14 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Delrin Mini V Wheel",
-          "sketch": "Wheel centres",
-          "sketch_point": "p3",
-          "assembled": true
+          "assembled": true,
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Wheel centres",
+              "id": "p3"
+            }
+          ]
         }
       }
     },
@@ -138,9 +158,14 @@
         "entry": "make-v-wheel",
         "params": {
           "size": "Xtreme Mini V Wheel",
-          "sketch": "Wheel centres",
-          "sketch_point": "p4",
-          "assembled": true
+          "assembled": true,
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Wheel centres",
+              "id": "p4"
+            }
+          ]
         }
       }
     }

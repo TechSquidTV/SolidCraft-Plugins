@@ -439,7 +439,6 @@ mod tests {
                 return Ok(reply);
             }
             let reply = match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
@@ -496,7 +495,7 @@ mod tests {
             "sketch.finish",
             "solid.revolve",
         ];
-        let mut expected = vec!["selection.get"];
+        let mut expected: Vec<&str> = vec![];
         expected.extend(section);
         expected.extend(band);
         expected.extend(band);
@@ -508,13 +507,13 @@ mod tests {
         );
         let shape = knurl::shape(5.7, 4.6, 3.0, 4.0);
         // The core section lies in a plane through the axis, the depth along -Z.
-        let plane = &calls[1].1["plane"];
+        let plane = &calls[0].1["plane"];
         assert_eq!(plane["origin"], json!([0.0, 0.0, 0.0]));
         assert_eq!(plane["y_dir"], json!([0.0, 0.0, -1.0]));
-        assert_eq!(calls[1].1["name"], "Insert M3 x 5.7: Core section");
-        assert_eq!(calls[2].1["points"], json!(shape.core_profile()));
-        assert_eq!(calls[2].1["closed"], true);
-        let core = &calls[4].1;
+        assert_eq!(calls[0].1["name"], "Insert M3 x 5.7: Core section");
+        assert_eq!(calls[1].1["points"], json!(shape.core_profile()));
+        assert_eq!(calls[1].1["closed"], true);
+        let core = &calls[3].1;
         assert_eq!(core["sketch"], 1);
         assert_eq!(core["axis"], "y");
         assert_eq!(core["operation"], "new");
@@ -530,29 +529,29 @@ mod tests {
         assert_eq!(hidden[0], &json!({"visible": false, "items": [2, 3]}));
         assert_eq!(hidden[1], &json!({"visible": false, "items": [4, 5]}));
         // The upper knurl starts on the face, the middle one past the groove.
-        assert_eq!(calls[5].1["plane"]["origin"], json!([0.0, 0.0, 0.0]));
+        assert_eq!(calls[4].1["plane"]["origin"], json!([0.0, 0.0, 0.0]));
         assert_eq!(
-            calls[13].1["plane"]["origin"],
+            calls[12].1["plane"]["origin"],
             json!([0.0, 0.0, -shape.middle_start])
         );
-        let upper = &calls[6].1["points"];
+        let upper = &calls[5].1["points"];
         assert_eq!(upper.as_array().unwrap().len(), 24);
         assert_eq!(upper[0][0], json!(shape.crest));
-        assert_eq!(calls[14].1["points"][0][0], json!(shape.middle_crest));
-        assert_eq!(calls[9].1["points"][1][1], json!(shape.upper));
-        assert_eq!(calls[17].1["points"][1][1], json!(shape.middle));
-        assert_eq!(calls[11].1["twist"], json!(shape.upper_twist));
-        assert_eq!(calls[19].1["twist"], json!(shape.middle_twist));
-        assert_eq!(calls[11].1["targets"], json!(["Insert M3 x 5.7"]));
-        assert_eq!(calls[19].1["targets"], json!(["Insert M3 x 5.7"]));
+        assert_eq!(calls[13].1["points"][0][0], json!(shape.middle_crest));
+        assert_eq!(calls[8].1["points"][1][1], json!(shape.upper));
+        assert_eq!(calls[16].1["points"][1][1], json!(shape.middle));
+        assert_eq!(calls[10].1["twist"], json!(shape.upper_twist));
+        assert_eq!(calls[18].1["twist"], json!(shape.middle_twist));
+        assert_eq!(calls[10].1["targets"], json!(["Insert M3 x 5.7"]));
+        assert_eq!(calls[18].1["targets"], json!(["Insert M3 x 5.7"]));
         // The middle chamfer is cut out of the insert alone.
-        assert_eq!(calls[22].1["points"], json!(shape.chamfer_cut()));
-        let chamfer = &calls[24].1;
+        assert_eq!(calls[21].1["points"], json!(shape.chamfer_cut()));
+        let chamfer = &calls[23].1;
         assert_eq!(chamfer["sketch"], 6);
         assert_eq!(chamfer["operation"], "cut");
         assert_eq!(chamfer["targets"], json!(["Insert M3 x 5.7"]));
         assert_eq!(chamfer["name"], "Insert M3 x 5.7: Middle chamfer");
-        let hole = &calls[25].1;
+        let hole = &calls[24].1;
         assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, -1.0]));
         assert_eq!(hole["depth"], 5.7);
@@ -569,7 +568,7 @@ mod tests {
         assert_eq!(summary["min_wall"], 1.6);
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
         assert_eq!(summary["at"], json!([0.0, 0.0, 0.0]));
     }
@@ -578,10 +577,10 @@ mod tests {
     fn a_longer_insert_keeps_the_catalog_crest() {
         let (summary, calls) = commands(json!({"custom_length": 8}));
         let shape = knurl::shape(8.0, 4.6, 3.0, 4.0);
-        assert_eq!(calls[4].0, "solid.revolve");
-        assert_eq!(calls[2].1["points"], json!(shape.core_profile()));
+        assert_eq!(calls[3].0, "solid.revolve");
+        assert_eq!(calls[1].1["points"], json!(shape.core_profile()));
         assert_eq!(*shape.core_profile().last().unwrap(), [0.0, 8.0]);
-        assert_eq!(calls[6].1["points"][0][0], json!(2.3));
+        assert_eq!(calls[5].1["points"][0][0], json!(2.3));
         assert_eq!(last(&calls, "solid.hole")["depth"], 8.0);
         assert_eq!(summary["diameter"], 4.6);
         assert_eq!(summary["length"], 8.0);
@@ -593,8 +592,8 @@ mod tests {
         let (summary, calls) = commands(json!({"custom_diameter": 5}));
         // A typed diameter keeps the row's 0.6 mm interference, so the pilot fits 4.4.
         let shape = knurl::shape(5.7, 5.0, 3.0, 4.4);
-        assert_eq!(calls[2].1["points"], json!(shape.core_profile()));
-        assert_eq!(calls[6].1["points"][0][0], json!(shape.crest));
+        assert_eq!(calls[1].1["points"], json!(shape.core_profile()));
+        assert_eq!(calls[5].1["points"][0][0], json!(shape.crest));
         assert_eq!(summary["diameter"], 5.0);
         assert_eq!(summary["thread"], "M3");
         assert_eq!(
@@ -607,7 +606,7 @@ mod tests {
     fn a_number_two_insert_is_a_plain_bore() {
         let (_, calls) = commands(json!({"size": "#2-56 × 3.2"}));
         assert_eq!(
-            calls[2].1["points"].as_array().unwrap().last().unwrap()[1],
+            calls[1].1["points"].as_array().unwrap().last().unwrap()[1],
             3.2
         );
         let hole = last(&calls, "solid.hole");
@@ -633,7 +632,6 @@ mod tests {
                     return Ok(reply);
                 }
                 let reply = match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => {
                         self.sketch += 1;
                         json!({"sketch": self.sketch})
@@ -679,7 +677,6 @@ mod tests {
                 }
                 self.0.push(command.to_string());
                 Ok(match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => json!({"sketch": 1}),
                     _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 })
@@ -692,7 +689,6 @@ mod tests {
         assert_eq!(
             rec.0,
             [
-                "selection.get",
                 "sketch.create",
                 "sketch.line",
                 "sketch.finish",
@@ -716,6 +712,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
+                        "name": "Holes",
                         "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
@@ -737,7 +734,10 @@ mod tests {
                 Ok(reply)
             }
         }
-        let p = insert::parse(&loose(json!({"sketch": "Holes", "sketch_point": "c1"}))).unwrap();
+        let p = insert::parse(&loose(json!({"placement": [
+            {"type": "external_sketch_curve", "sketch": 3, "id": "c1"}
+        ]})))
+        .unwrap();
         let mut rec = Named(vec![]);
         let summary = make_insert(&mut rec, &p).unwrap();
         assert_eq!(rec.0[0].0, "sketch.inspect");
@@ -758,7 +758,7 @@ mod tests {
         assert_eq!(summary["modeled"], false);
     }
 
-    /// A plate with a sketch of two circles on its top face, both selected.
+    /// A plate with a sketch of two circles on its top face, both picked.
     struct Plate {
         calls: Vec<(String, Value)>,
         sketch: i64,
@@ -772,11 +772,8 @@ mod tests {
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
-                "selection.get" => json!({"count": 2, "items": [
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
-                ]}),
                 "sketch.inspect" => json!({
+                    "name": "Holes",
                     "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
@@ -802,7 +799,14 @@ mod tests {
         }
     }
 
-    fn on_plate(v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
+    /// Runs on the plate with both circles picked; `"placement": []` picks none.
+    fn on_plate(mut v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
+        if v.get("placement").is_none() {
+            v["placement"] = json!([
+                {"type": "external_sketch_curve", "sketch": 4, "id": "c1"},
+                {"type": "external_sketch_curve", "sketch": 4, "id": "c2"}
+            ]);
+        }
         let p = insert::parse(&v).unwrap();
         let mut rec = Plate {
             calls: vec![],
@@ -818,10 +822,9 @@ mod tests {
         let (summary, calls) = on_plate(json!({}), json!(["Plate"]));
         let summary = summary.unwrap();
         // The holes come before any insert body exists.
-        assert_eq!(calls[0].0, "selection.get");
-        assert_eq!(calls[1].0, "sketch.inspect");
-        assert_eq!(calls[2].0, "solid.hole");
-        let hole = &calls[2].1;
+        assert_eq!(calls[0].0, "sketch.inspect");
+        assert_eq!(calls[1].0, "solid.hole");
+        let hole = &calls[1].1;
         assert_eq!(hole["sketch"], "Holes");
         assert_eq!(hole["points"], json!(["c1.center", "c2.center"]));
         assert_eq!(hole["diameter"], 4.0);
@@ -865,7 +868,7 @@ mod tests {
         assert_eq!(summary["count"], 2);
         assert_eq!(summary["drilled"], json!(["Plate"]));
         assert_eq!(summary["hole"]["diameter"], 4.0);
-        assert_eq!(summary["placed"], "on the selected sketch point");
+        assert_eq!(summary["placed"], "on the picked sketch point");
     }
 
     #[test]
@@ -873,7 +876,7 @@ mod tests {
         let (summary, calls) = on_plate(json!({"create": "Hole only"}), json!(["Plate"]));
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
-            ["selection.get", "sketch.inspect", "solid.hole"]
+            ["sketch.inspect", "solid.hole"]
         );
         assert_eq!(summary.unwrap()["create"], "Hole only");
     }
@@ -884,13 +887,13 @@ mod tests {
             json!({"create": "Hole only", "hole_type": insert::STEPPED}),
             json!(["Plate"]),
         );
-        let upper = &calls[2].1;
+        let upper = &calls[1].1;
         assert_eq!(upper["type"], "counterbore");
         assert_eq!(upper["cb_diameter"], 4.6);
         assert_eq!(upper["cb_depth"], 1.7);
         assert_eq!(upper["diameter"], 4.4);
         assert_eq!(upper["depth"], 4.2);
-        let pilot = &calls[3].1;
+        let pilot = &calls[2].1;
         assert_eq!(pilot["diameter"], 4.0);
         assert_eq!(pilot["points"], json!(["c1.center", "c2.center"]));
         // 6.7 mm from the surface is 2.5 mm below the step at 4.2 mm.
@@ -905,12 +908,12 @@ mod tests {
         let err = made.unwrap_err();
         assert!(err.starts_with("hole_depth: "), "{err}");
         assert!(err.contains("Plate, Under"), "{err}");
-        assert!(calls[2].1.get("depth").is_none());
+        assert!(calls[1].1.get("depth").is_none());
         // A blind hole across two parts is what was asked for.
         let (made, _) = on_plate(json!({}), json!(["Plate", "Under"]));
         assert!(made.is_ok());
         let (made, _) = on_plate(json!({}), json!([]));
-        assert!(made.unwrap_err().starts_with("sketch_point: "));
+        assert!(made.unwrap_err().starts_with("placement: "));
     }
 
     #[test]
@@ -935,7 +938,7 @@ mod tests {
         assert_eq!(summary["note"], insert::CREATE.skipped());
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
         // Insert only says nothing about a hole it was not asked for.
         let (summary, _) = commands(json!({}));
@@ -950,9 +953,9 @@ mod tests {
             sketch: 0,
         };
         let err = make_insert(&mut rec, &p).unwrap_err();
-        assert!(err.starts_with("sketch_point: select"), "{err}");
+        assert!(err.starts_with("placement: pick"), "{err}");
         assert!(err.contains("Insert only"), "{err}");
-        assert_eq!(rec.calls.len(), 1);
+        assert!(rec.calls.is_empty());
     }
 
     #[test]
@@ -1004,13 +1007,11 @@ mod tests {
                 "custom_diameter",
                 "custom_length",
                 "custom_thread",
-                "sketch",
-                "sketch_point",
+                "placement",
                 "thread_modeled"
             ]
         );
         let expected: std::collections::BTreeSet<_> = [
-            "selection.get",
             "inspect.measure",
             "sketch.inspect",
             "sketch.create",
@@ -1062,13 +1063,13 @@ mod tests {
                 return Ok(reply);
             }
             Ok(match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
                 "sketch.line" => json!({"created": {"curves": ["l1"]}}),
                 "sketch.inspect" => json!({
+                    "name": "Points",
                     "world_plane": {"x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "a", "world": [10.0, 0.0, 5.0]},
@@ -1104,7 +1105,11 @@ mod tests {
     /// A run builds one insert, whatever the number of points.
     #[test]
     fn every_new_insert_asks_for_a_free_body_name() {
-        let p = insert::parse(&json!({"sketch": "Points", "sketch_point": "a, b"})).unwrap();
+        let p = insert::parse(&json!({"placement": [
+            {"type": "external_sketch_point", "sketch": "Points", "id": "a"},
+            {"type": "external_sketch_point", "sketch": "Points", "id": "b"}
+        ]}))
+        .unwrap();
         let mut host = design(&["Base"]);
         make_insert(&mut host, &p).unwrap();
         make_insert(&mut host, &p).unwrap();

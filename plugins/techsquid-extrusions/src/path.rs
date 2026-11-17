@@ -8,7 +8,7 @@ use extrusions::{
 use plugin_kit::{
     host::sketch_id,
     input::{self, FieldError},
-    name, timeline, Runner,
+    name, place, timeline, Runner,
 };
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const MAX_RAILS: usize = 16;
 const MAX_HOST_CALLS: usize = 256;
 
 /// Count the actual catalog drawing commands, plus the fixed operations in `build`.
-/// Reserve eight calls for selection, queries, and the guest's status/error logging.
+/// Reserve eight calls for the sketch query and the guest's status/error logging.
 fn call_budget(p: &Params, profile: &Profile, rails: usize) -> Result<usize, String> {
     let mut drawing = crate::CallCount::default();
     crate::draw_profile(&mut drawing, profile)?;
@@ -43,7 +43,8 @@ fn call_budget(p: &Params, profile: &Profile, rails: usize) -> Result<usize, Str
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Input {
-    pub sketch: Option<String>,
+    /// The sketch the lines are in: its feature id, or its name from a program.
+    pub sketch: Value,
     pub lines: Vec<String>,
     pub holes_from_end: bool,
 }
@@ -59,36 +60,28 @@ pub fn parse(v: &Value) -> Result<Option<Input>, FieldError> {
             ))
         }
     }
-    if input::optional_text(v, "sketch_point", "must be text")?.is_some() {
-        return Err(FieldError::new(
-            "sketch_point",
-            "use Path lines for sketch-driven rails",
-        ));
+    let wanted = format!("1 to {MAX_RAILS} straight lines in one sketch");
+    let mut sketch: Option<Value> = None;
+    let mut lines: Vec<String> = Vec::new();
+    for pick in place::parse_picks(v, &wanted)? {
+        if !pick.curve {
+            return Err(FieldError::new(
+                place::FIELD,
+                format!("a sketch-driven rail follows lines; pick {wanted}, not a point"),
+            ));
+        }
+        if sketch.as_ref().is_some_and(|s| *s != pick.sketch) {
+            return Err(FieldError::new(place::FIELD, format!("pick {wanted}")));
+        }
+        sketch = Some(pick.sketch);
+        if !lines.contains(&pick.id) {
+            lines.push(pick.id);
+        }
     }
-    let sketch = input::optional_text(v, "sketch", "must be a sketch name")?.map(str::to_string);
-    let lines = input::optional_text(v, "path_lines", "must be comma-separated line ids")?
-        .unwrap_or("")
-        .split(|c: char| c == ',' || c.is_whitespace())
-        .filter(|s| !s.is_empty())
-        .map(str::to_string)
-        .collect::<Vec<_>>();
-    if lines.len() > MAX_RAILS
-        || lines
-            .iter()
-            .enumerate()
-            .any(|(i, l)| lines[..i].contains(l))
-    {
-        return Err(FieldError::new(
-            "path_lines",
-            format!("give at most {MAX_RAILS} distinct line ids"),
-        ));
-    }
-    if sketch.is_none() && !lines.is_empty() {
-        return Err(FieldError::new(
-            "sketch",
-            "name the sketch containing Path lines",
-        ));
-    }
+    let sketch = match sketch {
+        Some(sketch) if lines.len() <= MAX_RAILS => sketch,
+        _ => return Err(FieldError::new(place::FIELD, format!("pick {wanted}"))),
+    };
     let holes_from_end = match input::choice(v, "holes_from", "Start")? {
         "Start" => false,
         "End" => true,
@@ -108,88 +101,46 @@ struct Path {
 }
 
 fn paths<R: Runner>(r: &mut R, input: &Input) -> Result<Vec<Path>, String> {
-    let (sketch, mut ids) = if let Some(sketch) = &input.sketch {
-        (json!(sketch), input.lines.clone())
-    } else {
-        let selection = r.run("selection.get", json!({"detail":true}))?;
-        let items = selection["items"]
-            .as_array()
-            .ok_or("path_lines: could not read selection")?;
-        let mut sketch = None;
-        let mut ids = Vec::new();
-        for item in items {
-            if item["entity"] != "line" {
-                return Err("path_lines: select straight sketch lines only".into());
-            }
-            let s = item["sketch"]
-                .as_u64()
-                .ok_or("path_lines: select sketch lines")?;
-            if sketch.is_some_and(|old| old != s) {
-                return Err("sketch: select lines from one sketch".into());
-            }
-            sketch = Some(s);
-            let id = item["id"]
-                .as_str()
-                .ok_or("path_lines: selected line has no id")?
-                .to_string();
-            if !ids.contains(&id) {
-                ids.push(id);
-            }
-        }
-        (
-            json!(sketch.ok_or("sketch: name a sketch or select its lines")?),
-            ids,
-        )
-    };
-    let info = r.run("sketch.inspect", json!({"sketch":sketch}))?;
+    let field = place::FIELD;
+    let info = r
+        .run("sketch.inspect", json!({"sketch": input.sketch}))
+        .map_err(|e| format!("{field}: {e}"))?;
     let curves = info["curves"]
         .as_array()
-        .ok_or("sketch: could not read curves")?;
-    if ids.is_empty() {
-        ids = curves
-            .iter()
-            .filter(|c| {
-                c["type"] == "line"
-                    && c["construction"] != true
-                    && c["centerline"] != true
-                    && c["link"].is_null()
-            })
-            .filter_map(|c| c["id"].as_str().map(str::to_string))
-            .collect();
-    }
-    if ids.is_empty() || ids.len() > MAX_RAILS {
-        return Err(format!(
-            "path_lines: choose 1 to {MAX_RAILS} straight 2D sketch lines"
-        ));
-    }
+        .ok_or_else(|| format!("{field}: could not read the sketch's curves"))?;
     let sketch_id = info
         .get("id")
         .filter(|id| id.is_number())
         .cloned()
-        .ok_or("sketch: missing sketch id")?;
-    ids.into_iter()
+        .ok_or_else(|| format!("{field}: the sketch has no id"))?;
+    input
+        .lines
+        .iter()
+        .cloned()
         .map(|line| {
             let curve = curves
                 .iter()
                 .find(|c| c["id"] == line)
-                .ok_or_else(|| format!("path_lines: no line {line}"))?;
+                .ok_or_else(|| format!("{field}: no line {line}"))?;
             if curve["type"] != "line"
                 || curve["construction"] == true
                 || curve["centerline"] == true
                 || !curve["link"].is_null()
             {
                 return Err(format!(
-                    "path_lines: {line} must be a drawn, non-construction straight line"
+                    "{field}: {line} must be a drawn, non-construction straight line"
                 ));
             }
             let read = |key: &str| -> Result<[f64; 2], String> {
                 let a = curve[key]
                     .as_array()
                     .filter(|a| a.len() == 2)
-                    .ok_or("path_lines: expected a 2D line")?;
+                    .ok_or_else(|| format!("{field}: expected a 2D line"))?;
                 Ok([
-                    a[0].as_f64().ok_or("path_lines: invalid coordinate")?,
-                    a[1].as_f64().ok_or("path_lines: invalid coordinate")?,
+                    a[0].as_f64()
+                        .ok_or_else(|| format!("{field}: invalid coordinate"))?,
+                    a[1].as_f64()
+                        .ok_or_else(|| format!("{field}: invalid coordinate"))?,
                 ])
             };
             let a = read("start_at")?;
@@ -197,7 +148,7 @@ fn paths<R: Runner>(r: &mut R, input: &Input) -> Result<Vec<Path>, String> {
             let length = (b[0] - a[0]).hypot(b[1] - a[1]);
             if !length.is_finite() || !(0.01..=MAX_LENGTH_MM).contains(&length) {
                 return Err(format!(
-                    "path_lines: {line} must be 0.01 to {MAX_LENGTH_MM} mm long"
+                    "{field}: {line} must be 0.01 to {MAX_LENGTH_MM} mm long"
                 ));
             }
             Ok(Path {
@@ -239,7 +190,7 @@ pub fn make<R: Runner>(r: &mut R, p: &Params, input: &Input) -> Result<Value, St
     let profile = Profile::new(p.slot, p.grid).ok_or("size: missing section")?;
     let calls = call_budget(p, &profile, paths.len())?;
     if calls > MAX_HOST_CALLS {
-        return Err(format!("path_lines: this batch needs about {calls} host calls; SolidCraft allows {MAX_HOST_CALLS}. Choose fewer lines or screw holes and run smaller batches"));
+        return Err(format!("{}: this batch needs about {calls} host calls; SolidCraft allows {MAX_HOST_CALLS}. Choose fewer lines or screw holes and run smaller batches", place::FIELD));
     }
     let mut taken = r.body_names();
     let mut template = None;
@@ -466,36 +417,59 @@ fn build<R: Runner>(
 mod tests {
     use super::*;
 
+    /// Lines picked in sketch 7, as the Placement field sends them.
+    fn picked(ids: &[&str]) -> Value {
+        ids.iter()
+            .map(|id| json!({"type":"external_sketch_curve","sketch":7,"id":id}))
+            .collect()
+    }
+
     #[test]
     fn mode_keeps_fixed_length_default_and_rejects_ambiguous_paths() {
         assert_eq!(parse(&json!({})).unwrap(), None);
+        let other_sketch = json!([
+            {"type":"external_sketch_curve","sketch":7,"id":"l1"},
+            {"type":"external_sketch_curve","sketch":8,"id":"l1"}
+        ]);
+        let point = json!([{"type":"external_sketch_point","sketch":7,"id":"p1"}]);
+        let many: Vec<String> = (1..=17).map(|i| format!("l{i}")).collect();
+        let many: Vec<&str> = many.iter().map(String::as_str).collect();
         for (value, field) in [
             (json!({"mode":"other"}), "mode"),
-            (json!({"mode":"Sketch driven","path_lines":"l1"}), "sketch"),
+            (json!({"mode":"Sketch driven"}), "placement"),
             (
-                json!({"mode":"Sketch driven","sketch":"Path","path_lines":"l1,l1"}),
-                "path_lines",
+                json!({"mode":"Sketch driven","placement":other_sketch}),
+                "placement",
             ),
             (
-                json!({"mode":"Sketch driven","sketch_point":"p1"}),
-                "sketch_point",
+                json!({"mode":"Sketch driven","placement":point}),
+                "placement",
             ),
             (
-                json!({"mode":"Sketch driven","holes_from":"Middle"}),
+                json!({"mode":"Sketch driven","placement":picked(&many)}),
+                "placement",
+            ),
+            (
+                json!({"mode":"Sketch driven","placement":picked(&["l1"]),"holes_from":"Middle"}),
                 "holes_from",
             ),
         ] {
-            assert_eq!(parse(&value).unwrap_err().field, field);
+            assert_eq!(parse(&value).unwrap_err().field, field, "{value}");
         }
+        let input = parse(&json!({"mode":"Sketch driven","placement":picked(&["l1","l2","l1"])}))
+            .unwrap()
+            .unwrap();
+        assert_eq!(input.sketch, json!(7));
+        assert_eq!(input.lines, ["l1", "l2"]);
     }
 
     #[test]
     fn path_mode_uses_shared_profile_validation_but_not_fixed_length() {
-        let p=crate::rail::parse(&json!({"mode":"Sketch driven","sketch":"Path","slot":"V-slot","size":"2080","length":0,"holes_from":"End"})).unwrap();
+        let p=crate::rail::parse(&json!({"mode":"Sketch driven","placement":picked(&["l1"]),"slot":"V-slot","size":"2080","length":0,"holes_from":"End"})).unwrap();
         assert_eq!(p.grid.ny, 4);
         assert!(p.path.unwrap().holes_from_end);
         assert_eq!(
-            crate::rail::parse(&json!({"mode":"Sketch driven","slot":"V-slot","size":"4040"}))
+            crate::rail::parse(&json!({"mode":"Sketch driven","placement":picked(&["l1"]),"slot":"V-slot","size":"4040"}))
                 .unwrap_err()
                 .field,
             "size"
@@ -505,14 +479,12 @@ mod tests {
     struct ReadSketch {
         info: Value,
         calls: Vec<String>,
-        selection: Vec<Value>,
         inspected: Vec<Value>,
     }
     impl Runner for ReadSketch {
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             self.calls.push(command.into());
             match command {
-                "selection.get" => Ok(json!({"items":self.selection})),
                 "sketch.inspect" => {
                     self.inspected.push(args["sketch"].clone());
                     Ok(self.info.clone())
@@ -524,7 +496,6 @@ mod tests {
     fn reader() -> ReadSketch {
         ReadSketch {
             calls: vec![],
-            selection: vec![],
             inspected: vec![],
             info: json!({"id":7,"curves":[
                 {"id":"l1","type":"line","start_at":[0,0],"end_at":[0,100]},
@@ -533,59 +504,45 @@ mod tests {
             ]}),
         }
     }
-    #[test]
-    fn selected_sketches_are_resolved_and_compared_by_id_not_name() {
-        let mut r = reader();
-        let input = Input {
-            sketch: None,
-            lines: vec![],
+    fn input(lines: &[&str]) -> Input {
+        Input {
+            sketch: json!("Paths"),
+            lines: lines.iter().map(|l| l.to_string()).collect(),
             holes_from_end: false,
-        };
-        let selected =
-            |sketch| json!({"entity":"line","sketch":sketch,"sketch_name":"Paths","id":"l1"});
-        r.selection = vec![selected(7)];
-        let found = paths(&mut r, &input).unwrap();
-        assert_eq!(found[0].sketch, json!(7));
-        assert_eq!(r.inspected, [json!(7)]);
-
-        let mut r = reader();
-        r.selection = vec![selected(7), selected(8)];
-        assert_eq!(
-            paths(&mut r, &input).err().as_deref(),
-            Some("sketch: select lines from one sketch")
-        );
-        assert_eq!(r.calls, ["selection.get"]);
+        }
     }
     #[test]
-    fn all_lines_excludes_construction_and_explicit_invalid_lines_fail_before_writes() {
+    fn a_sketch_named_by_a_program_is_built_by_its_id() {
         let mut r = reader();
-        let input = Input {
-            sketch: Some("Path".into()),
-            lines: vec![],
-            holes_from_end: false,
-        };
-        let found = paths(&mut r, &input).unwrap();
-        assert_eq!(found.len(), 1);
+        let found = paths(&mut r, &input(&["l1"])).unwrap();
+        assert_eq!(found[0].sketch, json!(7));
         assert_eq!(found[0].length, 100.0);
+        assert_eq!(r.inspected, [json!("Paths")]);
+    }
+    #[test]
+    fn construction_curves_and_missing_lines_fail_before_writes() {
+        let mut r = reader();
         for line in ["l2", "c1", "missing"] {
-            let mut input = input.clone();
-            input.lines = vec![line.into()];
-            assert!(paths(&mut r, &input).is_err());
+            let err = paths(&mut r, &input(&[line])).err().unwrap();
+            assert!(err.starts_with("placement: "), "{err}");
         }
         assert!(r.calls.iter().all(|c| c == "sketch.inspect"));
     }
     #[test]
     fn machining_limits_are_checked_on_actual_path_length_before_writes() {
         let mut r = reader();
-        let p = crate::rail::parse(&json!({"mode":"Sketch driven","sketch":"Path","holes":"150"}))
-            .unwrap();
+        let p = crate::rail::parse(
+            &json!({"mode":"Sketch driven","placement":picked(&["l1"]),"holes":"150"}),
+        )
+        .unwrap();
         assert!(make(&mut r, &p, p.path.as_ref().unwrap())
             .unwrap_err()
             .starts_with("holes:"));
         r.info["curves"][0]["end_at"] = json!([0, 20]);
-        let p =
-            crate::rail::parse(&json!({"mode":"Sketch driven","sketch":"Path","end_taps":"Both"}))
-                .unwrap();
+        let p = crate::rail::parse(
+            &json!({"mode":"Sketch driven","placement":picked(&["l1"]),"end_taps":"Both"}),
+        )
+        .unwrap();
         assert!(make(&mut r, &p, p.path.as_ref().unwrap())
             .unwrap_err()
             .starts_with("end_taps:"));
@@ -600,7 +557,9 @@ mod tests {
             line["id"] = json!(format!("l{i}"));
             r.info["curves"].as_array_mut().unwrap().push(line);
         }
-        let p = crate::rail::parse(&json!({"mode":"Sketch driven","sketch":"Path","size":"4040","end_taps":"Both","thread_modeled":false,"holes":"+X 25 -Y 40"})).unwrap();
+        let all: Vec<String> = (1..=16).map(|i| format!("l{i}")).collect();
+        let all: Vec<&str> = all.iter().map(String::as_str).collect();
+        let p = crate::rail::parse(&json!({"mode":"Sketch driven","placement":picked(&all),"size":"4040","end_taps":"Both","thread_modeled":false,"holes":"+X 25 -Y 40"})).unwrap();
         let error = make(&mut r, &p, p.path.as_ref().unwrap()).unwrap_err();
         assert!(error.contains("host calls"), "{error}");
         assert_eq!(r.calls, ["sketch.inspect"]);
@@ -629,7 +588,7 @@ mod tests {
                     continue;
                 }
                 for holes in ["", "+X 25 -Y 40 +Y 60 -X 80"] {
-                    let p = crate::rail::parse(&json!({"mode":"Sketch driven","sketch":"Path","slot":slot,"size":size,"end_taps":"Both","thread_modeled":false,"holes":holes})).unwrap();
+                    let p = crate::rail::parse(&json!({"mode":"Sketch driven","placement":picked(&["l1"]),"slot":slot,"size":size,"end_taps":"Both","thread_modeled":false,"holes":holes})).unwrap();
                     let profile = Profile::new(p.slot, p.grid).unwrap();
                     let mut host = BuildHost(vec![]);
                     let mut template = None;

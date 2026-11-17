@@ -1,32 +1,34 @@
 //! Where a part sits.
 //!
-//! The point is a sketch point, or the centre of a circle in a sketch. The sketch plane is
-//! the surface. Its normal points to the outside. For a screw, the head stands on that side
-//! and the shank runs the other way, and the top of the shank, where the head begins, is the
-//! point itself.
+//! The point is a sketch point, or the centre of a circle in a sketch, picked in the
+//! dialog's Placement field. The sketch plane is the surface. Its normal points to the
+//! outside. For a screw, the head stands on that side and the shank runs the other way, and
+//! the top of the shank, where the head begins, is the point itself.
 //!
-//! With no sketch and no selection, the point is the origin and the normal is +Z, so the
-//! head stands on the XY plane.
+//! With nothing picked, the point is the origin and the normal is +Z, so the head stands on
+//! the XY plane.
 
-use serde_json::Value;
+use serde_json::{json, Value};
 
 use crate::{FieldError, Runner};
 
+/// The key of the selection field every placing plugin shares. SolidCraft draws it as a
+/// pick field (`x-solidcraft-selection`) and sends the picks as selection references.
+pub const FIELD: &str = "placement";
+
 /// How the point was chosen. The reply says so, because the origin is also what a
-/// forgotten selection gives.
+/// forgotten pick gives.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Source {
     Origin,
-    Selection,
-    Named,
+    Picked,
 }
 
 impl Source {
     pub fn words(self) -> &'static str {
         match self {
-            Source::Origin => "on the origin, because nothing was selected",
-            Source::Selection => "on the selected sketch point",
-            Source::Named => "on the named sketch point",
+            Source::Origin => "on the origin, because no point was picked",
+            Source::Picked => "on the picked sketch point",
         }
     }
 }
@@ -42,11 +44,20 @@ pub struct Placement {
     pub source: Source,
 }
 
-/// Names from the dialog. Both empty means the current selection, or the origin.
-#[derive(Clone, Debug, PartialEq, Eq)]
+/// A sketch point or curve from the Placement field, as SolidCraft sends it:
+/// `{"type": "external_sketch_point", "sketch": 2, "id": "p3"}`. The sketch is its feature
+/// id; a program calling the plugin may name it instead.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Pick {
+    pub sketch: Value,
+    pub id: String,
+    pub curve: bool,
+}
+
+/// The picks from the dialog. None means the origin.
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlaceInput {
-    pub sketch: Option<String>,
-    pub point: Option<String>,
+    pub picks: Vec<Pick>,
 }
 
 impl Placement {
@@ -79,20 +90,61 @@ impl Placement {
     }
 }
 
+/// The Placement picks, for a plugin that places on sketch points and circles.
 pub fn parse_input(v: &Value) -> Result<PlaceInput, FieldError> {
-    let sketch = optional_text(v, "sketch")?;
-    let point = optional_text(v, "sketch_point")?;
-    match (&sketch, &point) {
-        (Some(_), None) => Err(FieldError::new(
-            "sketch_point",
-            "name a point or a circle in the sketch, such as c1.center",
-        )),
-        (None, Some(_)) => Err(FieldError::new(
-            "sketch",
-            "name the sketch that holds the point",
-        )),
-        _ => Ok(PlaceInput { sketch, point }),
-    }
+    Ok(PlaceInput {
+        picks: parse_picks(v, "sketch points or circles")?,
+    })
+}
+
+/// The Placement picks in pick order. `wanted` says what the plugin takes, for the error
+/// when something else is given.
+pub fn parse_picks(v: &Value, wanted: &str) -> Result<Vec<Pick>, FieldError> {
+    let items = match v.get(FIELD) {
+        None | Some(Value::Null) => return Ok(Vec::new()),
+        Some(Value::Array(items)) => items,
+        Some(_) => {
+            return Err(FieldError::new(
+                FIELD,
+                format!("must be a list of picked {wanted}"),
+            ))
+        }
+    };
+    items.iter().map(|item| pick(item, wanted)).collect()
+}
+
+fn pick(item: &Value, wanted: &str) -> Result<Pick, FieldError> {
+    let curve = match item.get("type").and_then(Value::as_str) {
+        Some("external_sketch_point") => false,
+        Some("external_sketch_curve") => true,
+        _ => {
+            return Err(FieldError::new(
+                FIELD,
+                format!("pick {wanted}; a face, an edge or a body cannot place it"),
+            ))
+        }
+    };
+    let sketch = match item.get("sketch") {
+        Some(Value::Number(n)) if n.as_u64().is_some() => Value::Number(n.clone()),
+        Some(Value::String(s)) if !s.trim().is_empty() => Value::String(s.trim().to_string()),
+        _ => {
+            return Err(FieldError::new(
+                FIELD,
+                "each pick names its sketch, by feature id or by name",
+            ))
+        }
+    };
+    let id = item
+        .get("id")
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|id| !id.is_empty())
+        .ok_or_else(|| FieldError::new(FIELD, "each pick names a point or a curve id"))?;
+    Ok(Pick {
+        sketch,
+        id: id.to_string(),
+        curve,
+    })
 }
 
 /// One placed point, with the sketch and the point id a host command can name.
@@ -104,47 +156,47 @@ pub struct Spot {
     pub place: Placement,
 }
 
-/// Every point the dialog names or the selection holds, in order, each once. A named
-/// `sketch_point` may list several ids with commas. Nothing named and nothing selected
-/// is an empty list, which the caller may put on the origin.
+/// Every picked point, in pick order, each once. A picked circle or arc is its centre.
+/// Nothing picked is an empty list, which the caller may put on the origin.
 pub fn resolve_all<R: Runner>(r: &mut R, input: &PlaceInput) -> Result<Vec<Spot>, String> {
-    let (wanted, source) = match (&input.sketch, &input.point) {
-        (Some(sketch), Some(points)) => (
-            points
-                .split(',')
-                .map(str::trim)
-                .filter(|id| !id.is_empty())
-                .map(|id| (sketch.clone(), id.to_string()))
-                .collect::<Vec<_>>(),
-            Source::Named,
-        ),
-        (None, None) => (selected_sketch_points(r)?, Source::Selection),
-        _ => return Err("sketch_point: name the sketch and the point, or leave both empty".into()),
-    };
-    let mut inspected: Vec<(String, Value)> = Vec::new();
+    let mut inspected: Vec<(Value, String, Value)> = Vec::new();
     let mut spots: Vec<Spot> = Vec::new();
-    for (sketch, id) in wanted {
-        if !inspected.iter().any(|(name, _)| *name == sketch) {
+    for pick in &input.picks {
+        if !inspected.iter().any(|(key, _, _)| *key == pick.sketch) {
             let inspect = r
-                .run("sketch.inspect", serde_json::json!({"sketch": sketch}))
-                .map_err(|err| format!("sketch: {err}"))?;
-            inspected.push((sketch.clone(), inspect));
+                .run("sketch.inspect", json!({"sketch": pick.sketch}))
+                .map_err(|err| format!("{FIELD}: {err}"))?;
+            let name = inspect
+                .get("name")
+                .and_then(Value::as_str)
+                .ok_or_else(|| format!("{FIELD}: sketch {} has no name", pick.sketch))?
+                .to_string();
+            inspected.push((pick.sketch.clone(), name, inspect));
         }
-        let inspect = &inspected
+        let (_, sketch, inspect) = inspected
             .iter()
-            .find(|(name, _)| *name == sketch)
-            .expect("inspected above")
-            .1;
-        let point = curve_center(inspect, &id).unwrap_or(&id).to_string();
+            .find(|(key, _, _)| *key == pick.sketch)
+            .expect("inspected above");
+        let point = if pick.curve {
+            curve_center(inspect, &pick.id).ok_or_else(|| {
+                format!(
+                    "{FIELD}: {} in {sketch} is not a circle or an arc; pick a point or a circle",
+                    pick.id
+                )
+            })?
+        } else {
+            pick.id.as_str()
+        }
+        .to_string();
         if spots
             .iter()
-            .any(|spot| spot.sketch == sketch && spot.point == point)
+            .any(|spot| spot.sketch == *sketch && spot.point == point)
         {
             continue;
         }
-        let place = from_inspect(inspect, &sketch, &id, source)?;
+        let place = from_inspect(inspect, sketch, &point, Source::Picked)?;
         spots.push(Spot {
-            sketch,
+            sketch: sketch.clone(),
             point,
             place,
         });
@@ -165,55 +217,22 @@ pub fn by_sketch(spots: &[Spot]) -> Vec<(&str, Vec<&str>)> {
     groups
 }
 
-/// The error when a cut into a part is asked for and no point is named or selected.
+/// The error when a cut into a part is asked for and no point is picked.
 /// `cut` is what would be made and `alone` is the Create choice that needs no part.
 pub fn nothing_selected(cut: &str, alone: &str) -> String {
     format!(
-        "sketch_point: select the sketch points or circles where the {cut} go, then run this again; or set Create to {alone}"
+        "{FIELD}: pick the sketch points or circles where the {cut} go; or set Create to {alone}"
     )
 }
 
-/// Where each fastener goes: every named or selected point, or the origin alone when
-/// nothing is named and nothing is selected.
+/// Where each fastener goes: every picked point, or the origin alone when nothing is
+/// picked.
 pub fn resolve_each<R: Runner>(r: &mut R, input: &PlaceInput) -> Result<Vec<Placement>, String> {
     let spots = resolve_all(r, input)?;
     if spots.is_empty() {
         return Ok(vec![Placement::on_origin()]);
     }
     Ok(spots.into_iter().map(|spot| spot.place).collect())
-}
-
-fn selected_sketch_points<R: Runner>(r: &mut R) -> Result<Vec<(String, String)>, String> {
-    let selected = r
-        .run("selection.get", serde_json::json!({"detail": true}))
-        .map_err(|err| format!("sketch_point: {err}"))?;
-    let items = selected
-        .get("items")
-        .and_then(Value::as_array)
-        .ok_or_else(|| "sketch_point: the selection could not be read".to_string())?;
-    let found: Vec<(String, String)> = items.iter().filter_map(sketch_item).collect();
-    if found.is_empty() && !items.is_empty() {
-        return Err("sketch_point: select a sketch point or a sketch circle; a face, an edge or a body cannot place it".into());
-    }
-    Ok(found)
-}
-
-fn optional_text(v: &Value, key: &str) -> Result<Option<String>, FieldError> {
-    Ok(crate::input::optional_text(v, key, "must be a string")?.map(str::to_string))
-}
-
-fn sketch_item(item: &Value) -> Option<(String, String)> {
-    let kind = item.get("kind").and_then(Value::as_str).unwrap_or("");
-    let entity = item.get("entity").and_then(Value::as_str).unwrap_or("");
-    let sketch = item.get("sketch_name").and_then(Value::as_str)?;
-    let id = item.get("id").and_then(Value::as_str)?;
-    let point = kind.contains("sketch_point") || entity == "point";
-    let round = entity == "circle" || entity == "arc";
-    if point || round {
-        Some((sketch.to_string(), id.to_string()))
-    } else {
-        None
-    }
 }
 
 fn from_inspect(
@@ -232,19 +251,19 @@ fn from_inspect(
                 .find(|point| point.get("id").and_then(Value::as_str) == Some(point_id))
         })
         .and_then(|point| point.get("world"))
-        .ok_or_else(|| format!("sketch_point: no point or circle {point_id} in sketch {sketch}"))?;
-    let point = xyz(world).ok_or_else(|| format!("sketch_point: {point_id} has no position"))?;
+        .ok_or_else(|| format!("{FIELD}: no point or circle {point_id} in sketch {sketch}"))?;
+    let point = xyz(world).ok_or_else(|| format!("{FIELD}: {point_id} has no position"))?;
     let plane = inspect.get("world_plane").ok_or_else(|| {
-        "sketch: update SolidCraft to a build exposing sketch.inspect world_plane".to_string()
+        "placement: update SolidCraft to a build exposing sketch.inspect world_plane".to_string()
     })?;
     let x_dir = xyz(plane.get("x_dir").unwrap_or(&Value::Null))
-        .ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
+        .ok_or_else(|| format!("{FIELD}: {sketch} has no plane"))?;
     let y_dir = xyz(plane.get("y_dir").unwrap_or(&Value::Null))
-        .ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
-    let x_dir = normalize(x_dir).ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
-    let y_dir = normalize(y_dir).ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
+        .ok_or_else(|| format!("{FIELD}: {sketch} has no plane"))?;
+    let x_dir = normalize(x_dir).ok_or_else(|| format!("{FIELD}: {sketch} has no plane"))?;
+    let y_dir = normalize(y_dir).ok_or_else(|| format!("{FIELD}: {sketch} has no plane"))?;
     let normal =
-        normalize(cross(x_dir, y_dir)).ok_or_else(|| format!("sketch: {sketch} has no plane"))?;
+        normalize(cross(x_dir, y_dir)).ok_or_else(|| format!("{FIELD}: {sketch} has no plane"))?;
     Ok(Placement {
         point,
         normal,
@@ -300,7 +319,6 @@ fn normalize(v: [f64; 3]) -> Option<[f64; 3]> {
         Some(scale(v, 1.0 / len))
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -333,7 +351,7 @@ mod tests {
                 "center": "c1.center"
             }]
         });
-        let place = from_inspect(&inspect, "Holes", "c1", Source::Named).unwrap();
+        let place = from_inspect(&inspect, "Holes", "c1", Source::Picked).unwrap();
         assert_eq!(place.point, [12.0, 10.0, 8.0]);
         assert_eq!(place.normal, [0.0, 0.0, 1.0]);
         assert_eq!(place.tip(12.0), [12.0, 10.0, -4.0]);
@@ -356,7 +374,7 @@ mod tests {
             },
             "points": [{"id": "p1", "world": [10.0, 0.0, 6.0]}]
         });
-        let place = from_inspect(&inspect, "Side", "p1", Source::Named).unwrap();
+        let place = from_inspect(&inspect, "Side", "p1", Source::Picked).unwrap();
         assert_eq!(place.normal, [0.0, 1.0, 0.0]);
         assert_eq!(place.tip(5.0), [10.0, -5.0, 6.0]);
     }
@@ -370,177 +388,178 @@ mod tests {
             .remove("world_plane")
             .unwrap();
         inspect["plane"] = plane;
-        assert!(from_inspect(&inspect, "Holes", "c1", Source::Named)
+        assert!(from_inspect(&inspect, "Holes", "c1", Source::Picked)
             .unwrap_err()
             .contains("update SolidCraft"));
     }
 
     struct Rec {
-        calls: Vec<String>,
-        selection: Value,
+        calls: Vec<(String, Value)>,
         inspect: Value,
     }
 
     impl Runner for Rec {
-        fn run(&mut self, command: &str, _args: Value) -> Result<Value, String> {
-            self.calls.push(command.to_string());
+        fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+            self.calls.push((command.to_string(), args));
             Ok(match command {
-                "selection.get" => self.selection.clone(),
                 "sketch.inspect" => self.inspect.clone(),
                 _ => Value::Null,
             })
         }
     }
 
-    /// The first placement, as a single fastener takes it.
-    fn resolve(r: &mut Rec, input: &PlaceInput) -> Result<Placement, String> {
-        resolve_each(r, input).map(|places| places[0])
-    }
-
     fn holes_inspect() -> Value {
         json!({
+            "id": 7,
+            "name": "Holes",
             "world_plane": {
                 "origin": [0.0, 0.0, 8.0],
                 "x_dir": [1.0, 0.0, 0.0],
                 "y_dir": [0.0, 1.0, 0.0]
             },
-            "points": [{"id": "c1.center", "world": [12.0, 10.0, 8.0]}],
-            "curves": [{"id": "c1", "center": "c1.center"}]
+            "points": [
+                {"id": "c1.center", "world": [12.0, 10.0, 8.0]},
+                {"id": "c2.center", "world": [30.0, 10.0, 8.0]},
+                {"id": "l1.start", "world": [0.0, 0.0, 8.0]}
+            ],
+            "curves": [
+                {"id": "c1", "center": "c1.center"},
+                {"id": "c2", "center": "c2.center"},
+                {"id": "l1", "type": "line"}
+            ]
         })
     }
 
-    #[test]
-    fn an_empty_selection_sits_on_the_origin() {
-        let mut rec = Rec {
+    fn rec() -> Rec {
+        Rec {
             calls: vec![],
-            selection: json!({"count": 0, "items": []}),
-            inspect: Value::Null,
-        };
-        let place = resolve(
-            &mut rec,
-            &PlaceInput {
-                sketch: None,
-                point: None,
-            },
-        )
-        .unwrap();
-        assert_eq!(place, Placement::on_origin());
-        assert_eq!(rec.calls, ["selection.get"]);
-    }
-
-    #[test]
-    fn a_selected_circle_is_read_from_its_sketch() {
-        let mut rec = Rec {
-            calls: vec![],
-            selection: json!({
-                "count": 1,
-                "items": [{
-                    "kind": "external_sketch_curve",
-                    "entity": "circle",
-                    "id": "c1",
-                    "sketch_name": "Holes"
-                }]
-            }),
             inspect: holes_inspect(),
-        };
-        let place = resolve(
-            &mut rec,
-            &PlaceInput {
-                sketch: None,
-                point: None,
-            },
-        )
-        .unwrap();
-        assert_eq!(place.point, [12.0, 10.0, 8.0]);
-        assert_eq!(place.normal, [0.0, 0.0, 1.0]);
-        assert_eq!(place.source, Source::Selection);
-        assert_eq!(rec.calls, ["selection.get", "sketch.inspect"]);
+        }
     }
 
     #[test]
-    fn every_selected_circle_is_a_spot_and_the_sketch_is_read_once() {
-        let mut rec = Rec {
-            calls: vec![],
-            selection: json!({
-                "count": 3,
-                "items": [
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
-                    {"kind": "sketch_point", "entity": "point", "id": "c2.center", "sketch_name": "Holes"},
-                    {"kind": "sketch_point", "entity": "point", "id": "c1.center", "sketch_name": "Holes"}
-                ]
-            }),
-            inspect: json!({
-                "world_plane": {"origin": [0.0, 0.0, 8.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
-                "points": [
-                    {"id": "c1.center", "world": [12.0, 10.0, 8.0]},
-                    {"id": "c2.center", "world": [30.0, 10.0, 8.0]}
-                ],
-                "curves": [{"id": "c1", "center": "c1.center"}, {"id": "c2", "center": "c2.center"}]
-            }),
-        };
-        let none = PlaceInput {
-            sketch: None,
-            point: None,
-        };
-        let spots = resolve_all(&mut rec, &none).unwrap();
+    fn nothing_picked_sits_on_the_origin_and_reads_nothing() {
+        let mut rec = rec();
+        let input = parse_input(&json!({})).unwrap();
+        assert_eq!(input, PlaceInput::default());
+        let places = resolve_each(&mut rec, &input).unwrap();
+        assert_eq!(places, [Placement::on_origin()]);
+        assert!(rec.calls.is_empty());
+        assert_eq!(parse_input(&json!({"placement": []})).unwrap(), input);
+    }
+
+    #[test]
+    fn a_picked_circle_is_its_centre_and_the_sketch_is_read_once() {
+        let mut rec = rec();
+        let input = parse_input(&json!({"placement": [
+            {"type": "external_sketch_curve", "sketch": 7, "id": "c1"},
+            {"type": "external_sketch_point", "sketch": 7, "id": "c2.center"},
+            {"type": "external_sketch_point", "sketch": 7, "id": "c1.center"}
+        ]}))
+        .unwrap();
+        let spots = resolve_all(&mut rec, &input).unwrap();
         // The circle and its own centre are one spot.
         assert_eq!(spots.len(), 2);
         assert_eq!(spots[0].point, "c1.center");
         assert_eq!(spots[0].sketch, "Holes");
+        assert_eq!(spots[0].place.point, [12.0, 10.0, 8.0]);
+        assert_eq!(spots[0].place.normal, [0.0, 0.0, 1.0]);
+        assert_eq!(spots[0].place.source, Source::Picked);
         assert_eq!(spots[1].place.point, [30.0, 10.0, 8.0]);
-        assert_eq!(rec.calls, ["selection.get", "sketch.inspect"]);
-
-        let named = PlaceInput {
-            sketch: Some("Holes".into()),
-            point: Some("c2, c1".into()),
-        };
-        let spots = resolve_all(&mut rec, &named).unwrap();
-        assert_eq!(spots[0].point, "c2.center");
-        assert_eq!(spots[1].place.source, Source::Named);
-
-        rec.selection = json!({"count": 0, "items": []});
-        assert!(resolve_all(&mut rec, &none).unwrap().is_empty());
-    }
-
-    #[test]
-    fn a_selected_body_is_refused() {
-        let mut rec = Rec {
-            calls: vec![],
-            selection: json!({
-                "count": 1,
-                "items": [{"kind": "body", "entity": "body", "id": "Plate"}]
-            }),
-            inspect: Value::Null,
-        };
-        let err = resolve(
-            &mut rec,
-            &PlaceInput {
-                sketch: None,
-                point: None,
-            },
-        )
-        .unwrap_err();
-        assert_eq!(err, "sketch_point: select a sketch point or a sketch circle; a face, an edge or a body cannot place it");
-    }
-
-    #[test]
-    fn one_name_without_the_other_is_refused() {
         assert_eq!(
-            parse_input(&json!({"sketch": "Holes"})).unwrap_err().field,
-            "sketch_point"
+            rec.calls,
+            [("sketch.inspect".to_string(), json!({"sketch": 7}))]
         );
+    }
+
+    #[test]
+    fn a_program_may_name_the_sketch() {
+        let mut rec = rec();
+        let input = parse_input(&json!({"placement": [
+            {"type": "external_sketch_point", "sketch": "Holes", "id": "c2.center"}
+        ]}))
+        .unwrap();
+        let spots = resolve_all(&mut rec, &input).unwrap();
+        assert_eq!(spots[0].sketch, "Holes");
+        assert_eq!(rec.calls[0].1, json!({"sketch": "Holes"}));
+    }
+
+    #[test]
+    fn a_picked_line_is_refused() {
+        let mut rec = rec();
+        let input = parse_input(&json!({"placement": [
+            {"type": "external_sketch_curve", "sketch": 7, "id": "l1"}
+        ]}))
+        .unwrap();
+        let err = resolve_all(&mut rec, &input).unwrap_err();
         assert_eq!(
-            parse_input(&json!({"sketch_point": "c1.center"}))
+            err,
+            "placement: l1 in Holes is not a circle or an arc; pick a point or a circle"
+        );
+    }
+
+    #[test]
+    fn anything_but_a_sketch_pick_is_refused_against_the_field() {
+        for bad in [
+            json!({"placement": [{"type": "body", "name": "Plate"}]}),
+            json!({"placement": [{"type": "edge", "body": "Plate", "index": 3}]}),
+            json!({"placement": [{"type": "external_sketch_point", "id": "p1"}]}),
+            json!({"placement": [{"type": "external_sketch_point", "sketch": 2}]}),
+            json!({"placement": [{"type": "external_sketch_point", "sketch": -1, "id": "p1"}]}),
+            json!({"placement": "Holes"}),
+        ] {
+            assert_eq!(parse_input(&bad).unwrap_err().field, "placement", "{bad}");
+        }
+        assert_eq!(
+            parse_input(&json!({"placement": [{"type": "body", "name": "Plate"}]}))
                 .unwrap_err()
-                .field,
-            "sketch"
+                .reason,
+            "pick sketch points or circles; a face, an edge or a body cannot place it"
         );
-        assert_eq!(
-            parse_input(&json!({})).unwrap(),
-            PlaceInput {
-                sketch: None,
-                point: None
+    }
+
+    /// SolidCraft's dialog draws a selection field only with these keywords, and turns
+    /// Run off for any other array. Every placing entry gets the same pick field.
+    #[test]
+    fn every_package_declares_the_placement_pick_field() {
+        let plugins = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../plugins");
+        let mut checked = 0;
+        for folder in std::fs::read_dir(plugins).unwrap() {
+            let path = folder.unwrap().path().join("plugin.json");
+            let Ok(text) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let manifest: Value = serde_json::from_str(&text).unwrap();
+            for entry in manifest["runtime"]["entries"].as_array().unwrap() {
+                let properties = entry["input_schema"]["properties"].as_object().unwrap();
+                for (key, property) in properties {
+                    if property["type"] == "array" {
+                        assert_eq!(key, FIELD, "{}", path.display());
+                    }
+                }
+                let field = properties[FIELD].as_object().unwrap();
+                let mut keys: Vec<&str> = field.keys().map(String::as_str).collect();
+                keys.sort();
+                assert_eq!(
+                    keys,
+                    [
+                        "description",
+                        "maxItems",
+                        "title",
+                        "type",
+                        "x-solidcraft-selection"
+                    ],
+                    "{}",
+                    path.display()
+                );
+                assert_eq!(
+                    field["x-solidcraft-selection"],
+                    json!({"version": 1, "accept": ["sketch_point", "sketch_curve"]})
+                );
+                assert_eq!(field["maxItems"], json!(32));
+                checked += 1;
             }
-        );
+        }
+        assert!(checked >= 8);
     }
 }

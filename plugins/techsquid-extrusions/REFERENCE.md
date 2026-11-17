@@ -12,9 +12,7 @@ A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot for M5 hardware. 
 
 All sizes are millimetres. The form opens on a 2020 T-slot, 500 mm long.
 
-In the default **Fixed length** mode, select a sketch point, or a circle, before you open the dialog. Leave Sketch and Sketch point empty. The rail's section is centred on that point, and the rail runs out of the sketch along its normal for its length. The section's width is along the sketch X and its height along the sketch Y, so a 2040 is 20 mm along X and 40 mm along Y. With nothing selected, the rail stands on the origin: the section is on the XY plane and the rail runs along +Z. The reply says which of these happened in `placed`. Select several points or circles and each one gets a rail, as one undo step; `count` and `points` in the reply list them. By name, Sketch point takes several ids with commas, such as `c1, c2`.
-
-Name Sketch and Sketch point together to place the rail without a selection. Sketch point is a point id such as `c1.center`, or a circle id such as `c1`.
+In the default **Fixed length** mode, pick a sketch point, or a circle, for Placement in the view. Points or circles already selected when the dialog opens fill the field. The rail's section is centred on that point, and the rail runs out of the sketch along its normal for its length. The section's width is along the sketch X and its height along the sketch Y, so a 2040 is 20 mm along X and 40 mm along Y. With nothing picked, the rail stands on the origin: the section is on the XY plane and the rail runs along +Z. The reply says which of these happened in `placed`. Pick several points or circles and each one gets a rail, as one undo step; `count` and `points` in the reply list them. An edge, face or body is refused against Placement.
 
 | Parameter | Default | Meaning |
 |---|---|---|
@@ -26,21 +24,20 @@ Name Sketch and Sketch point together to place the rail without a selection. Ske
 | `thread_modeled` | on | On cuts the thread into a tapped end. Off lists the thread and leaves the bore plain |
 | `holes` | empty | Where M5 screw holes go across the rail, as distances from the start in mm: `10, 290`. A face name puts the distances after it on that face: `+X 10, 290 -Y 150` |
 | `hole_face` | `+Y` | `+Y`, `-Y`, `+X` or `-X`: the face the screws go in from, for the holes that name none. Y is the section's height and X its width |
-| `sketch` | empty | Sketch that holds the points or path lines. Empty, with Sketch point empty, uses the selection or the origin |
-| `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
+| `placement` | empty | Fixed length: the sketch points or circles each rail starts on, picked in the view; a circle means its centre. Sketch driven: 1 to 16 straight lines from one sketch. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
 
 In fixed-length mode, the reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `thread_modeled` and `holes`, each with its `face` and its distance `at`. It also says where the rails went: `count`, `points`, the first one's `at` and `normal`, `placed` (how the point was found) and `component`.
 
 ### Sketch-driven mode
 
-Set `mode` to `Sketch driven`. Choose straight lines from one sketch, or set `sketch`
-to its name and `path_lines` to comma-separated ids such as `l1, l2`. A named sketch
-with empty `path_lines` uses every drawn, non-construction straight line. `sketch_point`
-must be empty. All nine catalog profiles work in this mode; `length` is ignored.
+Set `mode` to `Sketch driven` and pick 1 to 16 straight lines from one sketch for
+`placement`. A program lists each line as `{"type": "external_sketch_curve", "sketch": 2, "id": "l1"}`.
+Every line must be picked or listed; a sketch is not searched for its lines. A point
+pick, lines from two sketches or more than 16 lines are refused against Placement.
+All nine catalog profiles work in this mode; `length` is ignored.
 
 | Parameter | Default | Meaning |
 |---|---|---|
-| `path_lines` | empty | Line ids in `sketch`; empty means all eligible lines, or the selected lines when `sketch` is empty |
 | `holes_from` | `Start` | `Start` or `End`: the endpoint used for every cross-hole distance in this run |
 
 Each source line creates one body in the active component, with a timeline group
@@ -64,7 +61,7 @@ in a generated hole sketch to adjust offsets or diameters.
 
 Paths can lie on any 2D sketch plane. Arcs, construction lines, projected lines and 3D
 wires are rejected. There are no automatic corner joints, miters or trims between rails.
-The selected line set is captured at creation: added lines require another run; deleting
+The picked line set is captured at creation: added lines require another run; deleting
 a source line breaks its rail. Keep the edited paths long enough for their machining.
 
 A run accepts at most 16 rails and four modeled taps in total. SolidCraft also limits
@@ -98,13 +95,13 @@ A tapped or drilled rail is a part of its own. Its name says what is cut into it
 
 ### Slot nuts
 
-Plugins > Slot nut puts a nut under the lips of a slot. Sketch on the rail's face, put a point in the middle of the slot where each screw goes, select the points, and run it. The nut hangs under the lips with its tapped hole on the point: its shoulders are 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot, which is the lip of each. The form opens on an M5 pre-assembly nut in a T-slot.
+Plugins > Slot nut puts a nut under the lips of a slot. Sketch on the rail's face, put a point in the middle of the slot where each screw goes, pick the points for Placement, and run it. The nut hangs under the lips with its tapped hole on the point: its shoulders are 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot, which is the lip of each. The form opens on an M5 pre-assembly nut in a T-slot.
 
 ![A T-slot 2020 rail, drawn see-through, with a pre-assembly nut and a post-assembly nut under the lips of its top slot](slot-nuts.png)
 
 A pre-assembly nut and a post-assembly nut in the top slot of a T-slot 2020, the rail drawn see-through.
 
-The nut does not look for the slot. It goes on the point you give it, and Rail runs along says which sketch axis the slot follows, so the nut lies along it. With nothing selected the nut hangs under the origin, its hole on the Z axis and its length along X.
+The nut does not look for the slot. It goes on the point you give it, and Rail runs along says which sketch axis the slot follows, so the nut lies along it. With nothing picked the nut hangs under the origin, its hole on the Z axis and its length along X.
 
 | Parameter | Default | Meaning |
 |---|---|---|
@@ -113,14 +110,13 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 | `slot` | `T-slot` | `T-slot` or `V-slot`, the rail the nut sits in. It sets how far under the face the nut hangs |
 | `along` | `Sketch X` | `Sketch X` or `Sketch Y`, the sketch axis the rail runs along |
 | `thread_modeled` | on | On cuts the thread into the hole. Off drills the 4.2 mm tap hole and lists the thread |
-| `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
-| `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center`. Several go in one box with commas |
+| `placement` | empty | The sketch points or circles to put a nut on, picked in the view; a circle means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`, and where the nuts went, as a rail's reply does.
 
 Sketch-driven mode additionally calls `solid.sweep`, `construct.plane.along_path`, `construct.plane.axis_point`, `sketch.replace`, `sketch.point`, `sketch.constraint.fix`, `sketch.constraint.coincident`, `sketch.dimension` and `sketch.project`.
 
-The package calls `selection.get`, `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a nut's ball recess), `browser.visibility` (hides the reference sketches after their cuts), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
+The package calls `inspect.measure` (for the body names, so a new body gets a free one), `sketch.inspect`, `sketch.create`, `sketch.line`, `sketch.arc.three_point`, `sketch.circle.center`, `sketch.finish`, `solid.extrude`, `solid.hole` (a tap, and a nut's thread), `solid.cylinder` (a nut's ball recess), `browser.visibility` (hides the reference sketches after their cuts), `solid.sphere` (a nut's ball), `solid.move` (a nut whose thread is cut is made on the origin and moved aside before it is tapped), and `component.list`, `component.create`, `component.metadata`, `component.metadata.set`, `component.activate`, `occurrence.copy`, `occurrence.move` and `occurrence.reparent` to place it.
 
 ## Sizes
 
@@ -206,4 +202,4 @@ rules, inspection limits and migration from legacy metadata.
 
 ## Older field names
 
-None.
+`sketch`, `sketch_point` and `path_lines` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone. In Sketch driven mode, a named sketch no longer stands for all its lines: pick or list each line.

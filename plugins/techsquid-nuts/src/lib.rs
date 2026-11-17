@@ -434,7 +434,6 @@ mod tests {
                 return Ok(reply);
             }
             let reply = match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
@@ -511,7 +510,6 @@ mod tests {
         assert_eq!(
             calls.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
             [
-                "selection.get",
                 "sketch.create",
                 "sketch.polygon.circumscribed",
                 "sketch.dimension",
@@ -531,26 +529,26 @@ mod tests {
                 "solid.cone",
             ]
         );
-        assert_eq!(calls[2].1["radius"], 5.0);
-        assert_eq!(calls[2].1["sides"], 6);
-        assert_eq!(calls[6].1["distance"], 5.2);
-        assert_eq!(calls[6].1["operation"], "new");
-        assert_eq!(calls[6].1["body_name"], "Nut M6");
-        assert_eq!(calls[6].1["name"], "Nut M6: Hex");
-        assert_eq!(calls[6].1["sketch"], 1);
-        let bearing = &calls[7].1;
+        assert_eq!(calls[1].1["radius"], 5.0);
+        assert_eq!(calls[1].1["sides"], 6);
+        assert_eq!(calls[5].1["distance"], 5.2);
+        assert_eq!(calls[5].1["operation"], "new");
+        assert_eq!(calls[5].1["body_name"], "Nut M6");
+        assert_eq!(calls[5].1["name"], "Nut M6: Hex");
+        assert_eq!(calls[5].1["sketch"], 1);
+        let bearing = &calls[6].1;
         assert_eq!(bearing["plane"]["origin"], json!([0.0, 0.0, 0.0]));
         assert_eq!(bearing["plane"]["y_dir"], json!([0.0, 0.0, 1.0]));
-        let outer = &calls[11].1;
+        let outer = &calls[10].1;
         assert_eq!(outer["plane"]["origin"], json!([0.0, 0.0, 5.2]));
         assert_eq!(outer["plane"]["y_dir"], json!([0.0, 0.0, -1.0]));
-        let triangle = &calls[8].1["points"];
-        assert_eq!(triangle[0][0], calls[12].1["points"][0][0]);
-        assert_eq!(calls[10].1["operation"], "cut");
-        assert_eq!(calls[10].1["targets"], json!(["Nut"]));
-        assert_eq!(calls[10].1["sketch"], 2);
-        assert_eq!(calls[10].1["angle"], 360);
-        assert_eq!(calls[14].1["sketch"], 3);
+        let triangle = &calls[7].1["points"];
+        assert_eq!(triangle[0][0], calls[11].1["points"][0][0]);
+        assert_eq!(calls[9].1["operation"], "cut");
+        assert_eq!(calls[9].1["targets"], json!(["Nut"]));
+        assert_eq!(calls[9].1["sketch"], 2);
+        assert_eq!(calls[9].1["angle"], 360);
+        assert_eq!(calls[13].1["sketch"], 3);
         let hole = call(&calls, "solid.hole");
         assert_eq!(hole["position"], json!([0.0, 0.0, 0.0]));
         assert_eq!(hole["direction"], json!([0.0, 0.0, 1.0]));
@@ -574,7 +572,7 @@ mod tests {
         assert_eq!(summary["normal"], json!([0.0, 0.0, 1.0]));
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
     }
 
@@ -610,7 +608,6 @@ mod tests {
                     return Ok(reply);
                 }
                 let reply = match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => {
                         self.sketch += 1;
                         json!({"sketch": self.sketch})
@@ -651,7 +648,6 @@ mod tests {
                 }
                 self.0.push(command.to_string());
                 Ok(match command {
-                    "selection.get" => json!({"count": 0, "items": []}),
                     "sketch.create" => json!({"sketch": 1}),
                     _ => plugin_kit::component::stand_in(command).unwrap_or(Value::Null),
                 })
@@ -664,7 +660,6 @@ mod tests {
         assert_eq!(
             rec.0,
             [
-                "selection.get",
                 "sketch.create",
                 "sketch.polygon.circumscribed",
                 "sketch.dimension",
@@ -690,6 +685,7 @@ mod tests {
                 }
                 let reply = match command {
                     "sketch.inspect" => json!({
+                        "name": "Holes",
                         "world_plane": {
                             "origin": [0.0, 0.0, 8.0],
                             "x_dir": [1.0, 0.0, 0.0],
@@ -706,8 +702,10 @@ mod tests {
                 Ok(reply)
             }
         }
-        let p =
-            nut::parse(&json!({"size": "M6", "sketch": "Holes", "sketch_point": "c1"})).unwrap();
+        let p = nut::parse(&json!({"size": "M6", "placement": [
+            {"type": "external_sketch_curve", "sketch": "Holes", "id": "c1"}
+        ]}))
+        .unwrap();
         let mut rec = Named(vec![]);
         let summary = make_nut(&mut rec, &p).unwrap();
         assert_eq!(rec.0[0].0, "sketch.inspect");
@@ -719,7 +717,7 @@ mod tests {
         assert_eq!(hole["direction"], json!([0.0, 0.0, 1.0]));
         assert_eq!(last(&rec.0, "solid.cone")["base"], json!([0.0, 0.0, 5.2]));
         assert_eq!(summary["at"], json!([12.0, 10.0, 8.0]));
-        assert_eq!(summary["placed"], "on the named sketch point");
+        assert_eq!(summary["placed"], "on the picked sketch point");
     }
 
     #[test]
@@ -765,8 +763,7 @@ mod tests {
                 "custom_size",
                 "custom_thickness",
                 "custom_width",
-                "sketch",
-                "sketch_point",
+                "placement",
                 "thread_modeled"
             ]
         );
@@ -836,7 +833,6 @@ mod tests {
                 return Ok(reply);
             }
             Ok(match command {
-                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.create" => {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
@@ -906,7 +902,7 @@ mod tests {
         }
     }
 
-    /// Two selected circles on a sketch on the top face of a plate.
+    /// Two picked circles on a sketch on the top face of a plate.
     struct OnPlate {
         calls: Vec<(String, Value)>,
         sketch: i64,
@@ -925,14 +921,12 @@ mod tests {
                     Value::Null
                 }
                 "selection.get" if self.selected.is_some() => json!({"items": self.selected}),
-                "selection.get" => json!({"count": 2, "items": [
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
-                    {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
-                ]}),
+                "selection.get" => json!({"count": 0, "items": []}),
                 "sketch.inspect" if args.get("sketch").is_none() => json!({
                     "points": [{"id": "projected_center", "at": [10, 10]}],
                 }),
                 "sketch.inspect" => json!({
+                    "name": "Holes",
                     "world_plane": {"origin": [0.0, 0.0, 10.0], "x_dir": [1.0, 0.0, 0.0], "y_dir": [0.0, 1.0, 0.0]},
                     "points": [
                         {"id": "c1.center", "world": [10.0, 10.0, 10.0]},
@@ -978,7 +972,11 @@ mod tests {
         }
     }
 
-    fn on_plate(v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
+    fn on_plate(mut v: Value, changed: Value) -> (Result<Value, String>, Vec<(String, Value)>) {
+        v["placement"] = json!([
+            {"type": "external_sketch_curve", "sketch": 4, "id": "c1"},
+            {"type": "external_sketch_curve", "sketch": 4, "id": "c2"}
+        ]);
         let p = nut::parse(&v).unwrap();
         let mut rec = OnPlate {
             calls: vec![],
@@ -1188,7 +1186,7 @@ mod tests {
         assert_eq!(summary["note"], nut::CREATE.skipped());
         assert_eq!(
             summary["placed"],
-            "on the origin, because nothing was selected"
+            "on the origin, because no point was picked"
         );
         assert_eq!(summary["at"], json!([0.0, 0.0, 0.0]));
         let (summary, _) = commands(json!({}));
@@ -1204,14 +1202,12 @@ mod tests {
         };
         let err = make_nut(&mut rec, &p).unwrap_err();
         assert!(
-            err.starts_with("sketch_point: select the sketch points"),
+            err.starts_with("placement: pick the sketch points"),
             "{err}"
         );
         assert!(err.contains("Nut only"), "{err}");
         let (made, _) = on_plate(json!({"create": "Pocket only"}), json!([]));
-        assert!(made
-            .unwrap_err()
-            .starts_with("sketch_point: there is no part"));
+        assert!(made.unwrap_err().starts_with("placement: there is no part"));
         let (made, calls) = on_plate(json!({"create": "Pocket only"}), json!(["Plate"]));
         assert!(made.is_ok());
         assert!(calls

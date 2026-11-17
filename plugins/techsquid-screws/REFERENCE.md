@@ -10,9 +10,7 @@ Ten M5 x 16 screws, left to right: a socket head with a hex socket, a socket hea
 
 All sizes are millimetres. The top of the shank sits on a sketch point, and the head stands on the outer side of that sketch. `length` is the length as the standard lists it: under the head, into the part. A countersunk screw is measured overall, head and all, as ISO 10642, ISO 2009 and ISO 7046-1 measure it, so an M3×12 countersunk screw is 12 mm from the top of the head to the tip. For a set screw or a threaded rod it is the overall length too.
 
-Select a sketch point, or a circle, before you open the dialog. Leave Sketch and Sketch point empty. The dialog has no point picker, so those boxes stay blank and the selection is used when you press Run. The sketch normal is the outside of the surface. With nothing selected, the screw sits on the origin: the head stands above the XY plane and the shank runs along −Z. The reply says which of these happened in `placed`. Select several points or circles and each one gets a screw, as one undo step; `count` and `points` in the reply list them. By name, Sketch point takes several ids with commas, such as `c1, c2`.
-
-Name Sketch and Sketch point together to place the screw without a selection. Sketch point is a point id such as `c1.center`, or a circle id such as `c1`.
+Pick a sketch point, or a circle, for Placement in the view. Points or circles already selected when the dialog opens fill the field. The sketch normal is the outside of the surface. With nothing picked, the screw sits on the origin: the head stands above the XY plane and the shank runs along −Z. The reply says which of these happened in `placed`. Pick several points or circles and each one gets a screw, as one undo step; `count` and `points` in the reply list them. An edge, face or body is refused against Placement.
 
 The form opens on an M3 socket-head screw, 12 mm long, with its 2.5 mm hex socket. Drive is Standard, which follows the Head, so changing the Head alone gives a sensible screw. Size lists the common machine screw sizes, M1.6 to M20, with the coarse thread. For any other metric size, such as `M8x1` or `M3.5x0.6`, type it in Custom size, which replaces Size. Leave the custom head diameter and height empty to use the standard for that size and head. Fill one and the other stays the standard, except a countersunk head, which takes both or neither. A size with no standard head here needs both. On a hex head the diameter is the width across the flats.
 
@@ -27,10 +25,9 @@ Blank head sizes are filled from the standard of the head and drive: socket M1.6
 | `drive` | `Standard` | `Standard`, `Hex socket`, `Phillips`, `Slotted`, `Torx` or `None`. Standard is the usual drive for the head: a hex socket in a socket, button or countersunk head and in a set screw, Phillips in a pan head and in a countersunk head below M3 (ISO 10642 starts at M3), a slot in a cheese head, none in a hex head or a threaded rod |
 | `drive_size` | standard | Shown as Drive size. Sizes whichever drive is chosen. Hex socket: the key size, or the key size and the depth, such as `2.5` or `2.5x1.3`. Torx: `T10`. Phillips: `PH1` or `PH2x1.7`. Slotted: width and depth, such as `0.8x0.7`. Empty uses the standard for that screw |
 | `tip` | `Flat` | `Flat`, `Point` or `Cup`. Point is a gimlet one diameter long, included in the length, and it is not itself threaded. Cup is a recess in the end |
-| `create` | `Screw only` | `Screw only`, `Screw and hole` or `Hole only`. A hole needs selected points on a part; with none, `Screw and hole` makes the screw alone. Hole only skips the drive, and the head unless the hole recesses it |
+| `create` | `Screw only` | `Screw only`, `Screw and hole` or `Hole only`. A hole needs picked points on a part; with none, `Screw and hole` makes the screw alone. Hole only skips the drive, and the head unless the hole recesses it |
 | `hole_type` | `Clearance` | `Clearance` (ISO 273 normal fit), `Clearance, head recessed` or `Tapped`. Used when Create drills a hole |
-| `sketch` | empty | Sketch that holds the point. Empty, with Sketch point empty, uses the selection or the origin |
-| `sketch_point` | empty | A point or circle in that sketch, such as `c1` or `c1.center` |
+| `placement` | empty | The sketch points or circles to put a screw on, picked in the view; a circle means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
 | `head_diameter` | standard | Shown as Custom head diameter, mm. On a hex head, the width across the flats |
 | `head_height` | standard | Shown as Custom head height, mm. One of the two is enough, except on a countersunk head |
 | `thread_length` | standard | Threaded length from the tip of the cylinder, mm. A point is not included. Empty threads the whole shank on a short screw and the standard length `b` on a long one. Anything up to the full length threads all of the cylinder: above a point, and between the chamfers of a set screw |
@@ -38,7 +35,7 @@ Blank head sizes are filled from the standard of the head and drive: socket M1.6
 
 A set screw and a threaded rod have no head, so both head sizes stay empty.
 
-Create decides whether the part gets a hole. `Screw only`, the default, builds the screw and leaves the part alone. `Screw and hole` first drills the part under each selected point, and `Hole only` drills without a screw. A hole needs selected points on a part. With nothing selected, `Screw and hole` puts a loose screw on the origin and its reply's `note` says no hole was drilled, and `Hole only` asks you to select the points; the hole is one ordinary `solid.hole` feature on those sketch points, so it follows the sketch and can be edited afterwards. Every hole is as deep as the screw reaches, so it goes through a part thinner than that.
+Create decides whether the part gets a hole. `Screw only`, the default, builds the screw and leaves the part alone. `Screw and hole` first drills the part under each picked point, and `Hole only` drills without a screw. A hole needs picked points on a part. With nothing picked, `Screw and hole` puts a loose screw on the origin and its reply's `note` says no hole was drilled, and `Hole only` asks you to pick the points; the hole is one ordinary `solid.hole` feature on those sketch points, so it follows the sketch and can be edited afterwards. Every hole is as deep as the screw reaches, so it goes through a part thinner than that.
 
 - **Clearance.** The ISO 273 normal clearance hole for the size: 3.4 mm for an M3. The head sits on the surface. A size SolidCraft's own clearance table leaves out, such as M3.5 or M18, is drilled at its ISO 273 diameter instead.
 - **Clearance, head recessed.** The same hole with a counterbore the head sits in, 0.5 mm wider than the head all round and as deep as the head is tall: 6.5 by 3 mm for an M3 socket head. A countersunk head gets a 90° countersink. The screw is set down into the recess, so the top of its head ends flush with the surface. A set screw and a rod have no head to recess.
@@ -120,7 +117,7 @@ rules, inspection limits and migration from legacy metadata.
 
 ## Older field names
 
-Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, `head_diameter` / `head_height` instead of `custom_head_diameter` / `custom_head_height`, and `drive_size` instead of the separate `hex`, `torx`, `slot` or `phillips` input fields. Reply fields retain their documented names.
+Breaking change: retired input names are rejected. Use `size` instead of `designation`, `custom_size` instead of `custom_designation`, `head_diameter` / `head_height` instead of `custom_head_diameter` / `custom_head_height`, and `drive_size` instead of the separate `hex`, `torx`, `slot` or `phillips` input fields. `sketch` and `sketch_point` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone. Reply fields retain their documented names.
 
 ## License
 

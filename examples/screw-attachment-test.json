@@ -1,9 +1,17 @@
 {
-  "format": "solidcraft/57",
+  "format": "solidcraft/58",
   "format_pending": [
-    "extrude-to-object-keeps-picked-placements",
-    "linked-cosmetic-threads",
-    "plane-at-angle-follows-named-axis"
+    "bounding-solid-side-margins",
+    "joint-lateral-offsets",
+    "move-rotate-about-edge",
+    "sketch-3d-constraints",
+    "sketch-3d-dimensions",
+    "sketch-3d-relations",
+    "sketch-reference-placements",
+    "split-planar-tool",
+    "step-import-solid-items",
+    "surface-sweep-exact-spline-path",
+    "whole-profile-holes-share-a-curve"
   ],
   "name": "screw-attachment-test",
   "units": "mm",
@@ -196,7 +204,7 @@
     },
     {
       "id": 20,
-      "name": "Screw M4 x 8 socket: Seat axis Tapped positions back",
+      "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions back",
       "suppressed": false,
       "type": "construction_axis",
       "def": {
@@ -217,7 +225,7 @@
     },
     {
       "id": 21,
-      "name": "Screw M4 x 8 socket: Seat axis Tapped positions front",
+      "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions front",
       "suppressed": false,
       "type": "construction_axis",
       "def": {
@@ -927,7 +935,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "73578e69cb364ff6032a3fdd7813a453eb52a146f9dd2f9f0d863e4e1602e816",
+            "sha256": "5c63409282719e6cf631148b7885f644b9251d2f2ea4a40fc7d55f4456465405",
             "version": 2
           },
           "version": 1
@@ -962,7 +970,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "ad5e9a5549f1542f8351d98938b10c41a03d6ad1ccfe42974077e58037058102",
+            "sha256": "7efacab98cf8fb3ca7072efc626f29f27c4f8b36592c607c66a2d58afd389027",
             "version": 2
           },
           "version": 1
@@ -1188,6 +1196,10 @@
         "limits": [],
         "flip": true,
         "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
         "angle": 0.0
       },
       {
@@ -1199,8 +1211,8 @@
           "snap": {
             "type": "circle_center",
             "pick": [
-              -22.879862179158756,
-              -14.246663673623434,
+              -22.873912410707646,
+              -14.263622676437537,
               2.222817368541568
             ],
             "face": "F6:bore:side:0#2",
@@ -1237,6 +1249,10 @@
         "limits": [],
         "flip": true,
         "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
         "angle": 0.0
       },
       {
@@ -1249,7 +1265,7 @@
             "type": "axis",
             "axis": {
               "type": "construction",
-              "name": "Screw M4 x 8 socket: Seat axis Tapped positions back"
+              "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions back"
             },
             "x": [
               0.0,
@@ -1283,6 +1299,10 @@
         "limits": [],
         "flip": true,
         "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
         "angle": 0.0
       },
       {
@@ -1295,7 +1315,7 @@
             "type": "axis",
             "axis": {
               "type": "construction",
-              "name": "Screw M4 x 8 socket: Seat axis Tapped positions front"
+              "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions front"
             },
             "x": [
               0.0,
@@ -1329,6 +1349,10 @@
         "limits": [],
         "flip": true,
         "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
         "angle": 0.0
       }
     ]

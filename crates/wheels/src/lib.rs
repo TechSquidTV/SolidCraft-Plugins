@@ -4,6 +4,7 @@
 use bearings::Bearing;
 use parts::catalog::{Frame, Member};
 use plugin_kit::{
+    name::part,
     revolve::{self, Section},
     Placement, Runner,
 };
@@ -281,7 +282,7 @@ impl Wheel {
         revolve::build(
             r,
             frame,
-            &format!("{name} section"),
+            &part(name, "Section"),
             Section::Solid(self.section()),
             json!({"name": name, "body_name": name}),
         )?;
@@ -369,7 +370,7 @@ impl Shim {
         revolve::build(
             r,
             frame,
-            &format!("{name} section"),
+            &part(name, "Section"),
             Section::Solid(&[[inner, -half], [outer, -half], [outer, half], [inner, half]]),
             json!({"name": name, "body_name": name}),
         )?;

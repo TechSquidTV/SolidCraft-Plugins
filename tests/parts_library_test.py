@@ -154,12 +154,20 @@ with Headless() as host:
     renamed = insert(BEARINGS)
     check('display renaming preserves catalog reuse',renamed['component']['reused'] and renamed['component']['component'] == 'My bearing')
 
-    host.command('appearance.assign',bodies=['Bearing 625 2RS Seal front'],color=[255,0,0])
+    renamed_bodies = {body: f'Renamed bearing body {i}' for i, body in enumerate(bearing['bodies'])}
+    for body, name in renamed_bodies.items():
+        host.command('body.rename', body=body, name=name)
+    seal = renamed_bodies['Bearing 625 2RS Seal front']
+    host.command('appearance.assign',bodies=[seal],color=[255,0,0])
+    original = host.command('component.properties', component=bearing['id'])
     changed = insert(BEARINGS)
     check('changed bearing is preserved and a clean definition is built',not changed['component']['reused']
           and len(changed['library']['preserved_modified_definitions']) == 1)
     check('fresh multi-body part leaves the original seal appearance untouched',
-          host.command('appearance.list')['bodies']['Bearing 625 2RS Seal front']['color'] == '#ff0000')
+          host.command('appearance.list')['bodies'][seal]['color'] == '#ff0000')
+    check('renamed multi-body definition survives replacement unchanged',
+          host.command('component.properties', component=bearing['id']) == original
+          and set(definition(host.command('component.list'), 'My bearing')['bodies']) == set(renamed_bodies.values()))
     new_list = host.command('component.list')
     fresh = definition(new_list,changed['component']['component'])
     check('original assembly still references the edited original',all(c['component'] != fresh['id'] for c in definition(new_list,'Solid V Wheel assembly')['children']))

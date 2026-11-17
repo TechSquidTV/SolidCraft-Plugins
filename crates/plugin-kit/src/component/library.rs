@@ -5,7 +5,7 @@
 use super::{components, id_of, make_folder, put, Activation, Definition, Placed};
 use crate::{
     content::{Index, Snapshot, METADATA_KEY},
-    name::reserve,
+    name::{reserve, reserve_part},
     timeline, Placement, Runner,
 };
 use parts::Representation;
@@ -243,24 +243,15 @@ impl<'a, R: Runner> Library<'a, R> {
             .index
             .components
             .iter()
-            .flat_map(|c| std::iter::once(c.name.clone()).chain(c.bodies.clone()))
+            .flat_map(|c| c.names().map(str::to_string))
             .collect();
-        // Display renaming does not rename the bodies of a multi-body part. Keep
-        // its original body-name prefix reserved too, or a new ring/closure could
-        // target the old body's appearance or later cuts.
-        let body_names: Vec<_> = self
+        let bodies: Vec<_> = self
             .index
             .components
             .iter()
-            .flat_map(|c| &c.bodies)
+            .flat_map(|c| c.bodies.iter().map(String::as_str))
             .collect();
-        let name = loop {
-            let candidate = reserve(&mut taken, def.base);
-            let prefix = format!("{candidate} ");
-            if !body_names.iter().any(|name| name.starts_with(&prefix)) {
-                break candidate;
-            }
-        };
+        let name = reserve_part(&mut taken, def.base, &bodies);
         let made = self.host.run(
             "component.create",
             json!({"name": name, "parent": 0, "activate": true, "grounded": false}),

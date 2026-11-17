@@ -67,8 +67,12 @@ Placement, display component/feature renaming and creator plugin do not determin
 purchasing identity. A modified or unverifiable candidate is preserved and reported
 in `library.preserved_modified_definitions`; new placements get a clean definition.
 An edited child invalidates its assembly too. Body names remain part of inspected
-contents. When replacing a renamed multi-body definition, its original body-name
-prefix remains reserved to avoid targeting its bodies with a new appearance or cut.
+contents. New definitions reserve their component, body and feature names together,
+including derived prefixes and case variants. Renaming both a component and its
+bodies therefore leaves its original sketches protected; a replacement gets a
+free numbered name and can be reused on the next insertion. Generated sketches
+and subpart features use `Part: Feature`; bodies use `Part Subpart`. Unrelated
+layout sketches do not claim the body-name prefix.
 
 ## Creation, placement and transactions
 
@@ -86,6 +90,16 @@ placement. Consecutive insertions therefore keep using the selected copy, even
 when the same leaf occurrence appears under multiple parent paths. Placement uses
 the host's world sketch plane, matching its world point coordinates. Unplaced new
 definitions are an error.
+
+Pocket preparation also restores this context after editing a face-attached source
+sketch, since the host switches to the sketch's original authoring copy during the
+edit. Screw and nut seat inspection shares one resolver: faces are inspected in
+world placement, while hole-based joints use the definition name and exact occurrence path.
+Tapped screws keep their existing first-placement limitation because the host's
+axis-based joint origins do not honor an exact nested path.
+The host exposes that body-to-path mapping through selection details; the resolver
+batches these reads and restores the previous selection even if inspection fails.
+It never infers a path from a displayed body label.
 
 An assembly recipe is limited to eight levels and 32 distinct definitions. A run
 accepts 1–32 root placements. Before new construction, the library combines the
@@ -132,7 +146,7 @@ loading Wasm; skipped runs provide no runtime evidence.
 | Check | Evidence |
 |---|---|
 | `plugin_entries_test.py` | Insertion-only packages, removed catalog route rejection without edits, no residual guest handler, invalid fields and non-XY insertion |
-| `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, rename, modified appearance, custom identity, equivalent size spellings, unrelated parameters and mounting invariance |
+| `catalog_reuse_test.py` | Existing families, detail versus purchase identity, BOM grouping, component/body renaming together, preserved sketches, modified appearance, custom identity, equivalent size spellings, unrelated parameters and mounting invariance |
 | `parts_library_test.py` | Cross-plugin bearing reuse, exact core composition, nested transforms, BOM, copied-folder isolation and replacement reuse, consecutive fresh/reused insertions through copied and rotated nested occurrences, exact authoring context, undo/redo, save/reopen, modified children, late rollback and batch limits |
 | `parts_directory_test.py` | Missing IDs, obsolete revisions/snapshots, incorrect digest candidates, malformed/unsupported directories and unchanged failed transactions |
 | `parts_content_test.py` | Same-volume edits, sketches, external cuts, materials/appearances, direct/transitive/placement parameters, isolated sketch-only dependencies (including equal-value expression edits), parameter annotations, nested structure and unsupported states |

@@ -55,12 +55,21 @@ for plugin, entry, params, custom in CASES:
         host.command('component.rename', component=a['id'], name='Renamed catalog part')
         renamed = insert(thread_modeled=False)
         check(f'{label}: display rename retains reuse', renamed['component']['reused'] and renamed['component']['component'] == 'Renamed catalog part')
-        body = a['bodies'][0]
+        body = 'Renamed catalog body'
+        host.command('body.rename', body=a['bodies'][0], name=body)
         host.command('appearance.assign', bodies=[body], color=[240, 10, 20])
+        original = host.command('component.properties', component=a['id'])
         fresh = insert(thread_modeled=False)
         check(f'{label}: edited appearance is preserved and a clean definition is built',
               not fresh['component']['reused'] and fresh['library']['preserved_modified_definitions'][0]['component'] == a['id']
               and host.command('appearance.list')['bodies'][body]['color'] == '#f00a14')
+        check(f'{label}: renamed component and body survive replacement unchanged',
+              host.command('component.properties', component=a['id']) == original
+              and definition('Renamed catalog part')['bodies'] == [body])
+        replacement = insert(thread_modeled=False)
+        check(f'{label}: replacement gets a free feature prefix and remains reusable',
+              fresh['component']['component'] != a['name'] and replacement['component']['reused']
+              and replacement['component']['component'] == fresh['component']['component'])
         check(f'{label}: unchanged detail remains reusable after its sibling was edited', insert(thread_modeled=True)['component']['reused'])
         if custom:
             changed = insert(thread_modeled=False, **custom)
@@ -86,5 +95,42 @@ for plugin, entry, params, custom in CASES:
             check(f'{label}: mounting orientation does not change the purchased nut', mounted['component']['reused'])
         check(f'{label}: insertion stays within the command budget',
               max(cosmetic['library']['host_calls'], modeled['library']['host_calls'], fresh['library']['host_calls']) < 248)
+
+def renamed_definition_case(plugin, entry, params):
+    # No sibling representation: its numbered body name would accidentally reserve
+    # the original prefix and hide the feature-name collision after both renames.
+    with Headless() as host:
+        approval = host.command('plugin.inspect', path=package(plugin))['approval']
+
+        def insert():
+            result = host.command('plugin.run', path=package(plugin), approval=approval, entry=entry,
+                                  params={**params, 'thread_modeled': False}, allow_error=True)
+            return result.get('result', result)
+
+        first = insert()
+        original = next(c for c in host.command('component.list')['components']
+                        if c['name'] == first['component']['component'])
+        host.command('component.rename', component=original['id'], name='Edited part')
+        for i, body in enumerate(original['bodies']):
+            host.command('body.rename', body=body, name=f'Edited body {i}')
+        host.command('appearance.assign', bodies=['Edited body 0'], color=[240, 10, 20])
+        properties = host.command('component.properties', component=original['id'])
+        fresh = insert()
+        label = f'{plugin}/{entry}: isolated renamed definition'
+        check(label + ' gets a clean replacement', 'error' not in fresh, fresh.get('error', ''))
+        if 'error' in fresh:
+            return
+        check(label + ' preserves the edited original',
+              host.command('component.properties', component=original['id']) == properties
+              and host.command('appearance.list')['bodies']['Edited body 0']['color'] == '#f00a14'
+              and fresh['library']['preserved_modified_definitions'][0]['component'] == original['id'])
+        again = insert()
+        check(label + ' reuses the replacement', not fresh['component']['reused']
+              and again.get('component', {}).get('reused')
+              and again['component']['component'] == fresh['component']['component'])
+
+
+for plugin, entry, params, _ in CASES:
+    renamed_definition_case(plugin, entry, params)
 
 finish()

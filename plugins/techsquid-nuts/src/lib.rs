@@ -40,6 +40,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         // The pockets go first: a nut would otherwise be cut by the next one's pocket.
         let sink = match &p.pocket {
             Some(pocket) => {
+                let active = fasten::Activation::read(r)?;
                 // A sketch and a cut for every pocket and a bolt hole for every sketch:
                 // one folder in the part's timeline.
                 drilled = timeline::folded(r, &pockets_name(p), |mut r| {
@@ -50,7 +51,7 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                             &mut names,
                             &format!("Nut pockets {}: Plane", p.designation),
                         );
-                        let plane = pocket_plane(&mut r, sketch, &plane_name)?;
+                        let plane = pocket_plane(&mut r, sketch, &plane_name, &active)?;
                         for spot in spots.iter().filter(|spot| spot.sketch == sketch) {
                             add_new(
                                 &mut drilled,
@@ -152,7 +153,12 @@ pub fn pockets_name(p: &Params) -> String {
 
 /// Keep the pocket plane tied to the source sketch's axes. Construction lines do
 /// not split its profiles, and their ends are not standalone hole-placement points.
-fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, name: &str) -> Result<Value, String> {
+fn pocket_plane<R: Runner>(
+    r: &mut R,
+    sketch: &str,
+    name: &str,
+    active: &fasten::Activation,
+) -> Result<Value, String> {
     r.run("sketch.edit", json!({"sketch": sketch}))?;
     let drawn = r.run(
         "sketch.line",
@@ -172,6 +178,9 @@ fn pocket_plane<R: Runner>(r: &mut R, sketch: &str, name: &str) -> Result<Value,
         .ok_or("sketch.line did not return the two pocket frame lines")?;
     r.run("sketch.constraint.fix", json!({"entities": curves}))?;
     r.run("sketch.finish", json!({}))?;
+    // Editing a face-attached sketch selects its original authoring occurrence.
+    // Subsequent geometry and seat inspection must use the user's selected copy.
+    active.restore(r)?;
     let made = r.run(
         "construct.plane.two_edges",
         json!({
@@ -814,6 +823,7 @@ mod tests {
             ]
         );
         let expected: std::collections::BTreeSet<_> = [
+            "select.set",
             "selection.get",
             "inspect.measure",
             "sketch.inspect",
@@ -953,6 +963,7 @@ mod tests {
         calls: Vec<(String, Value)>,
         sketch: i64,
         changed: Value,
+        selected: Option<Value>,
     }
     impl Runner for OnPlate {
         fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
@@ -961,6 +972,11 @@ mod tests {
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
+                "select.set" => {
+                    self.selected = Some(args["items"].clone());
+                    Value::Null
+                }
+                "selection.get" if self.selected.is_some() => json!({"items": self.selected}),
                 "selection.get" => json!({"count": 2, "items": [
                     {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
@@ -989,6 +1005,7 @@ mod tests {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
+                "inspect.measure" => json!({"bodies": [{"name": "Plate", "definition": "Plate"}]}),
                 "model.faces" => json!({"faces": ([10.0, 30.0].into_iter().flat_map(|x| [
                     json!({"name": format!("floor{x}"), "centroid": [x, 10.0, 4.8], "plane_normal": [0, 0, 1]}),
                     json!({"name": format!("wall{x}"), "centroid": [x, 4.8, 7.4], "plane_normal": [0, 1, 0]}),
@@ -1018,6 +1035,7 @@ mod tests {
             calls: vec![],
             sketch: 0,
             changed,
+            selected: None,
         };
         let made = make_nut(&mut rec, &p);
         (made, rec.calls)
@@ -1195,7 +1213,7 @@ mod tests {
             assert_eq!(
                 joint["a"],
                 json!({
-                    "body": "Plate", "circle": format!("bore{x}"),
+                    "body": "Plate", "occurrence": 0, "circle": format!("bore{x}"),
                     "end": format!("floor{x}"), "x": format!("wall{x}"),
                 })
             );

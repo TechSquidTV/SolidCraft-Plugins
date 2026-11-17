@@ -1,7 +1,7 @@
 //! A pocketed nut follows the bolt-hole end at the pocket floor. The pocket wall
 //! supplies its turn, so moving or rotating the source sketch carries the hex too.
 
-use fasteners::seat::{near, same, unique, Faces, Seat};
+use fasteners::seat::{near, same, unique, Body, Faces, Seat};
 use plugin_kit::{Placement, Runner};
 
 use crate::nut::Pocket;
@@ -18,7 +18,7 @@ pub fn find_all<R: Runner>(
     let radius = fasteners::clearance::medium(major)
         .ok_or("sketch_point: the pocket has no bolt clearance size")?
         / 2.0;
-    let faces = Faces::read_all(r, bodies)?;
+    let faces = Faces::read_all(r, bodies, true)?;
     places
         .iter()
         .map(|place| find(&faces, place, pocket, radius))
@@ -26,7 +26,7 @@ pub fn find_all<R: Runner>(
 }
 
 fn find(
-    bodies: &[(String, Faces)],
+    bodies: &[(Body, Faces)],
     place: &Placement,
     pocket: &Pocket,
     radius: f64,
@@ -93,7 +93,13 @@ mod tests {
             let mut missing = faces();
             missing.faces.remove(index);
             assert!(find(
-                &[("Plate".into(), missing)],
+                &[(
+                    Body {
+                        definition: "Plate".into(),
+                        path: vec![]
+                    },
+                    missing
+                )],
                 &Placement::on_origin(),
                 &pocket(),
                 3.3
@@ -102,7 +108,13 @@ mod tests {
             let mut ambiguous = faces();
             ambiguous.faces.push(faces().faces.remove(index));
             assert!(find(
-                &[("Plate".into(), ambiguous)],
+                &[(
+                    Body {
+                        definition: "Plate".into(),
+                        path: vec![]
+                    },
+                    ambiguous
+                )],
                 &Placement::on_origin(),
                 &pocket(),
                 3.3
@@ -110,7 +122,22 @@ mod tests {
             .is_err());
         }
         assert!(find(
-            &[("A".into(), faces()), ("B".into(), faces())],
+            &[
+                (
+                    Body {
+                        definition: "A".into(),
+                        path: vec![]
+                    },
+                    faces()
+                ),
+                (
+                    Body {
+                        definition: "B".into(),
+                        path: vec![]
+                    },
+                    faces()
+                )
+            ],
             &Placement::on_origin(),
             &pocket(),
             3.3
@@ -123,14 +150,26 @@ mod tests {
         let mut wrong_axis = faces();
         wrong_axis.faces[2].cylinder.as_mut().unwrap().origin[0] = 1.0;
         assert!(find(
-            &[("Plate".into(), wrong_axis)],
+            &[(
+                Body {
+                    definition: "Plate".into(),
+                    path: vec![]
+                },
+                wrong_axis
+            )],
             &Placement::on_origin(),
             &pocket(),
             3.3
         )
         .is_err());
         assert!(find(
-            &[("Plate".into(), faces())],
+            &[(
+                Body {
+                    definition: "Plate".into(),
+                    path: vec![]
+                },
+                faces()
+            )],
             &Placement::on_origin(),
             &pocket(),
             4.5

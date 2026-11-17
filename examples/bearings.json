@@ -1,9 +1,17 @@
 {
-  "format": "solidcraft/57",
+  "format": "solidcraft/58",
   "format_pending": [
-    "extrude-to-object-keeps-picked-placements",
-    "linked-cosmetic-threads",
-    "plane-at-angle-follows-named-axis"
+    "bounding-solid-side-margins",
+    "joint-lateral-offsets",
+    "move-rotate-about-edge",
+    "sketch-3d-constraints",
+    "sketch-3d-dimensions",
+    "sketch-3d-relations",
+    "sketch-reference-placements",
+    "split-planar-tool",
+    "step-import-solid-items",
+    "surface-sweep-exact-spline-path",
+    "whole-profile-holes-share-a-curve"
   ],
   "name": "bearings",
   "units": "mm",
@@ -109,7 +117,7 @@
     },
     {
       "id": 4,
-      "name": "Bearing 625 2RS Inner ring section",
+      "name": "Bearing 625 2RS: Inner ring: Section",
       "suppressed": false,
       "component": 2,
       "type": "sketch",
@@ -214,7 +222,7 @@
     },
     {
       "id": 5,
-      "name": "Bearing 625 2RS Inner ring",
+      "name": "Bearing 625 2RS: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Inner ring"
@@ -238,7 +246,7 @@
     },
     {
       "id": 6,
-      "name": "Bearing 625 2RS Outer ring section",
+      "name": "Bearing 625 2RS: Outer ring: Section",
       "suppressed": false,
       "component": 2,
       "type": "sketch",
@@ -343,7 +351,7 @@
     },
     {
       "id": 7,
-      "name": "Bearing 625 2RS Outer ring",
+      "name": "Bearing 625 2RS: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Outer ring"
@@ -367,7 +375,7 @@
     },
     {
       "id": 8,
-      "name": "Bearing 625 2RS Seal front section",
+      "name": "Bearing 625 2RS: Seal front: Section",
       "suppressed": false,
       "component": 2,
       "type": "sketch",
@@ -433,7 +441,7 @@
     },
     {
       "id": 9,
-      "name": "Bearing 625 2RS Seal front",
+      "name": "Bearing 625 2RS: Seal front",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Seal front"
@@ -455,7 +463,7 @@
     },
     {
       "id": 10,
-      "name": "Bearing 625 2RS Seal back section",
+      "name": "Bearing 625 2RS: Seal back: Section",
       "suppressed": false,
       "component": 2,
       "type": "sketch",
@@ -521,7 +529,7 @@
     },
     {
       "id": 11,
-      "name": "Bearing 625 2RS Seal back",
+      "name": "Bearing 625 2RS: Seal back",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Seal back"
@@ -543,7 +551,7 @@
     },
     {
       "id": 17,
-      "name": "Bearing 105ZZ Inner ring section",
+      "name": "Bearing 105ZZ: Inner ring: Section",
       "suppressed": false,
       "component": 15,
       "type": "sketch",
@@ -648,7 +656,7 @@
     },
     {
       "id": 18,
-      "name": "Bearing 105ZZ Inner ring",
+      "name": "Bearing 105ZZ: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Inner ring"
@@ -672,7 +680,7 @@
     },
     {
       "id": 19,
-      "name": "Bearing 105ZZ Outer ring section",
+      "name": "Bearing 105ZZ: Outer ring: Section",
       "suppressed": false,
       "component": 15,
       "type": "sketch",
@@ -777,7 +785,7 @@
     },
     {
       "id": 20,
-      "name": "Bearing 105ZZ Outer ring",
+      "name": "Bearing 105ZZ: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Outer ring"
@@ -801,7 +809,7 @@
     },
     {
       "id": 21,
-      "name": "Bearing 105ZZ Shield front section",
+      "name": "Bearing 105ZZ: Shield front: Section",
       "suppressed": false,
       "component": 15,
       "type": "sketch",
@@ -867,7 +875,7 @@
     },
     {
       "id": 22,
-      "name": "Bearing 105ZZ Shield front",
+      "name": "Bearing 105ZZ: Shield front",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Shield front"
@@ -889,7 +897,7 @@
     },
     {
       "id": 23,
-      "name": "Bearing 105ZZ Shield back section",
+      "name": "Bearing 105ZZ: Shield back: Section",
       "suppressed": false,
       "component": 15,
       "type": "sketch",
@@ -955,7 +963,7 @@
     },
     {
       "id": 24,
-      "name": "Bearing 105ZZ Shield back",
+      "name": "Bearing 105ZZ: Shield back",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Shield back"
@@ -977,7 +985,7 @@
     },
     {
       "id": 28,
-      "name": "Bearing B626 Inner ring section",
+      "name": "Bearing B626: Inner ring: Section",
       "suppressed": false,
       "component": 26,
       "type": "sketch",
@@ -1271,7 +1279,7 @@
     },
     {
       "id": 29,
-      "name": "Bearing B626 Inner ring",
+      "name": "Bearing B626: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Inner ring"
@@ -1295,7 +1303,7 @@
     },
     {
       "id": 30,
-      "name": "Bearing B626 Outer ring section",
+      "name": "Bearing B626: Outer ring: Section",
       "suppressed": false,
       "component": 26,
       "type": "sketch",
@@ -1590,7 +1598,7 @@
     },
     {
       "id": 31,
-      "name": "Bearing B626 Outer ring",
+      "name": "Bearing B626: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Outer ring"
@@ -1614,7 +1622,7 @@
     },
     {
       "id": 32,
-      "name": "Bearing B626 Ball 1",
+      "name": "Bearing B626: Ball 1",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 1"
@@ -1634,7 +1642,7 @@
     },
     {
       "id": 33,
-      "name": "Bearing B626 Ball 2",
+      "name": "Bearing B626: Ball 2",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 2"
@@ -1654,7 +1662,7 @@
     },
     {
       "id": 34,
-      "name": "Bearing B626 Ball 3",
+      "name": "Bearing B626: Ball 3",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 3"
@@ -1674,7 +1682,7 @@
     },
     {
       "id": 35,
-      "name": "Bearing B626 Ball 4",
+      "name": "Bearing B626: Ball 4",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 4"
@@ -1694,7 +1702,7 @@
     },
     {
       "id": 36,
-      "name": "Bearing B626 Ball 5",
+      "name": "Bearing B626: Ball 5",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 5"
@@ -1714,7 +1722,7 @@
     },
     {
       "id": 37,
-      "name": "Bearing B626 Ball 6",
+      "name": "Bearing B626: Ball 6",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 6"
@@ -1734,7 +1742,7 @@
     },
     {
       "id": 38,
-      "name": "Bearing B626 Ball 7",
+      "name": "Bearing B626: Ball 7",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 7"
@@ -1754,7 +1762,7 @@
     },
     {
       "id": 39,
-      "name": "Bearing B626 Ball 8",
+      "name": "Bearing B626: Ball 8",
       "suppressed": false,
       "body_names": [
         "Bearing B626 Ball 8"
@@ -1774,7 +1782,7 @@
     },
     {
       "id": 43,
-      "name": "Bearing B626ZZ Inner ring section",
+      "name": "Bearing B626ZZ: Inner ring: Section",
       "suppressed": false,
       "component": 41,
       "type": "sketch",
@@ -2000,7 +2008,7 @@
     },
     {
       "id": 44,
-      "name": "Bearing B626ZZ Inner ring",
+      "name": "Bearing B626ZZ: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing B626ZZ Inner ring"
@@ -2024,7 +2032,7 @@
     },
     {
       "id": 45,
-      "name": "Bearing B626ZZ Outer ring section",
+      "name": "Bearing B626ZZ: Outer ring: Section",
       "suppressed": false,
       "component": 41,
       "type": "sketch",
@@ -2252,7 +2260,7 @@
     },
     {
       "id": 46,
-      "name": "Bearing B626ZZ Outer ring",
+      "name": "Bearing B626ZZ: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing B626ZZ Outer ring"
@@ -2276,7 +2284,7 @@
     },
     {
       "id": 47,
-      "name": "Bearing B626ZZ Shield front section",
+      "name": "Bearing B626ZZ: Shield front: Section",
       "suppressed": false,
       "component": 41,
       "type": "sketch",
@@ -2342,7 +2350,7 @@
     },
     {
       "id": 48,
-      "name": "Bearing B626ZZ Shield front",
+      "name": "Bearing B626ZZ: Shield front",
       "suppressed": false,
       "body_names": [
         "Bearing B626ZZ Shield front"
@@ -2364,7 +2372,7 @@
     },
     {
       "id": 49,
-      "name": "Bearing B626ZZ Shield back section",
+      "name": "Bearing B626ZZ: Shield back: Section",
       "suppressed": false,
       "component": 41,
       "type": "sketch",
@@ -2430,7 +2438,7 @@
     },
     {
       "id": 50,
-      "name": "Bearing B626ZZ Shield back",
+      "name": "Bearing B626ZZ: Shield back",
       "suppressed": false,
       "body_names": [
         "Bearing B626ZZ Shield back"
@@ -2452,7 +2460,7 @@
     },
     {
       "id": 54,
-      "name": "Bearing B626DDU Inner ring section",
+      "name": "Bearing B626DDU: Inner ring: Section",
       "suppressed": false,
       "component": 52,
       "type": "sketch",
@@ -2678,7 +2686,7 @@
     },
     {
       "id": 55,
-      "name": "Bearing B626DDU Inner ring",
+      "name": "Bearing B626DDU: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing B626DDU Inner ring"
@@ -2702,7 +2710,7 @@
     },
     {
       "id": 56,
-      "name": "Bearing B626DDU Outer ring section",
+      "name": "Bearing B626DDU: Outer ring: Section",
       "suppressed": false,
       "component": 52,
       "type": "sketch",
@@ -2930,7 +2938,7 @@
     },
     {
       "id": 57,
-      "name": "Bearing B626DDU Outer ring",
+      "name": "Bearing B626DDU: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing B626DDU Outer ring"
@@ -2954,7 +2962,7 @@
     },
     {
       "id": 58,
-      "name": "Bearing B626DDU Seal front section",
+      "name": "Bearing B626DDU: Seal front: Section",
       "suppressed": false,
       "component": 52,
       "type": "sketch",
@@ -3020,7 +3028,7 @@
     },
     {
       "id": 59,
-      "name": "Bearing B626DDU Seal front",
+      "name": "Bearing B626DDU: Seal front",
       "suppressed": false,
       "body_names": [
         "Bearing B626DDU Seal front"
@@ -3042,7 +3050,7 @@
     },
     {
       "id": 60,
-      "name": "Bearing B626DDU Seal back section",
+      "name": "Bearing B626DDU: Seal back: Section",
       "suppressed": false,
       "component": 52,
       "type": "sketch",
@@ -3108,7 +3116,7 @@
     },
     {
       "id": 61,
-      "name": "Bearing B626DDU Seal back",
+      "name": "Bearing B626DDU: Seal back",
       "suppressed": false,
       "body_names": [
         "Bearing B626DDU Seal back"
@@ -3130,7 +3138,7 @@
     },
     {
       "id": 65,
-      "name": "Bearing B608ZZ Inner ring section",
+      "name": "Bearing B608ZZ: Inner ring: Section",
       "suppressed": false,
       "component": 63,
       "type": "sketch",
@@ -3356,7 +3364,7 @@
     },
     {
       "id": 66,
-      "name": "Bearing B608ZZ Inner ring",
+      "name": "Bearing B608ZZ: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing B608ZZ Inner ring"
@@ -3380,7 +3388,7 @@
     },
     {
       "id": 67,
-      "name": "Bearing B608ZZ Outer ring section",
+      "name": "Bearing B608ZZ: Outer ring: Section",
       "suppressed": false,
       "component": 63,
       "type": "sketch",
@@ -3608,7 +3616,7 @@
     },
     {
       "id": 68,
-      "name": "Bearing B608ZZ Outer ring",
+      "name": "Bearing B608ZZ: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing B608ZZ Outer ring"
@@ -3632,7 +3640,7 @@
     },
     {
       "id": 69,
-      "name": "Bearing B608ZZ Shield front section",
+      "name": "Bearing B608ZZ: Shield front: Section",
       "suppressed": false,
       "component": 63,
       "type": "sketch",
@@ -3698,7 +3706,7 @@
     },
     {
       "id": 70,
-      "name": "Bearing B608ZZ Shield front",
+      "name": "Bearing B608ZZ: Shield front",
       "suppressed": false,
       "body_names": [
         "Bearing B608ZZ Shield front"
@@ -3720,7 +3728,7 @@
     },
     {
       "id": 71,
-      "name": "Bearing B608ZZ Shield back section",
+      "name": "Bearing B608ZZ: Shield back: Section",
       "suppressed": false,
       "component": 63,
       "type": "sketch",
@@ -3786,7 +3794,7 @@
     },
     {
       "id": 72,
-      "name": "Bearing B608ZZ Shield back",
+      "name": "Bearing B608ZZ: Shield back",
       "suppressed": false,
       "body_names": [
         "Bearing B608ZZ Shield back"
@@ -3827,7 +3835,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "bf85bf93d35f7df058978e0ec47de4e5d02a08f7676083535c6d0d4e8518ffe8",
+            "sha256": "9a87460785af1ed65b0e7b70d85a98f297a5a4cad93ceea0c320933fd6ec5b48",
             "version": 2
           },
           "version": 1
@@ -3862,7 +3870,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "8066312c42bceb71a339eba38085c41afdc66946d85260418a3cd95a88f3317a",
+            "sha256": "c74b503be50897dbf216266b26b94724a3810b6139a373bb2126c0b4cb888c4e",
             "version": 2
           },
           "version": 1
@@ -3888,7 +3896,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "162760fb597f9299e94a38480597aad7f28fcb3da0f1db4382cfba3b18669a22",
+            "sha256": "8c82960c921553b4d531f8dcb35459ff3cd4cd55eca2bb94c47be948447d9058",
             "version": 2
           },
           "version": 1
@@ -3914,7 +3922,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "bbcc69d32dda149450b6b106870dca8b4df4ea5b14dd715ea96cc7efbdedd6c0",
+            "sha256": "1f716645411203fa2bb97cc9e91f37391bb54e1c8caef001fb3be16971e8e156",
             "version": 2
           },
           "version": 1
@@ -3940,7 +3948,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "4570fe6a20b6511244ee72e6aceff79df7a596995c575b36d717486f44a31039",
+            "sha256": "2b817995fcddc79bf656e328343f9d4ffa920f6532fa20f92f626217677baf11",
             "version": 2
           },
           "version": 1
@@ -3966,7 +3974,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "264681f420c5442bb3f603757e16349910e0d60cf85a6b6755df7bc10a828357",
+            "sha256": "104d3629497325f7f4bd5597dd60cac35eef5818f210ea289addb95e6b08b76a",
             "version": 2
           },
           "version": 1

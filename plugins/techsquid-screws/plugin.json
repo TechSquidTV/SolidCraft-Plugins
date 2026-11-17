@@ -28,6 +28,7 @@
       "occurrence.reparent",
       "parameters.list",
       "parameters.users",
+      "select.set",
       "selection.get",
       "sketch.arc.three_point",
       "sketch.constraint.horizontal_vertical",

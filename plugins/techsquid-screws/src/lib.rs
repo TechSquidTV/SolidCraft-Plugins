@@ -1782,6 +1782,7 @@ mod tests {
     struct OnPlate {
         calls: Vec<(String, Value)>,
         changed: Value,
+        selected: Option<Value>,
     }
     impl Runner for OnPlate {
         fn site(&mut self, _: [f64; 2]) -> plugin_kit::Placement {
@@ -1790,6 +1791,11 @@ mod tests {
 
         fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
             let reply = match command {
+                "select.set" => {
+                    self.selected = Some(args["items"].clone());
+                    Value::Null
+                }
+                "selection.get" if self.selected.is_some() => json!({"items": self.selected}),
                 "selection.get" => json!({"count": 2, "items": [
                     {"kind": "sketch_curve", "entity": "circle", "id": "c1", "sketch_name": "Holes"},
                     {"kind": "sketch_curve", "entity": "circle", "id": "c2", "sketch_name": "Holes"}
@@ -1807,6 +1813,10 @@ mod tests {
                     json!({"created_bodies": [args["body_name"]]})
                 }
                 "solid.hole" => json!({"changed_bodies": self.changed}),
+                "inspect.measure" => {
+                    json!({"bodies": self.changed.as_array().into_iter().flatten().map(|name|
+                    json!({"name": name, "definition": name})).collect::<Vec<_>>()})
+                }
                 "model.faces" => {
                     let recessed = self
                         .calls
@@ -1845,6 +1855,7 @@ mod tests {
         let mut rec = OnPlate {
             calls: vec![],
             changed,
+            selected: None,
         };
         let made = make_screw(&mut rec, &p);
         (made, rec.calls)

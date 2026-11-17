@@ -1,9 +1,17 @@
 {
-  "format": "solidcraft/57",
+  "format": "solidcraft/58",
   "format_pending": [
-    "extrude-to-object-keeps-picked-placements",
-    "linked-cosmetic-threads",
-    "plane-at-angle-follows-named-axis"
+    "bounding-solid-side-margins",
+    "joint-lateral-offsets",
+    "move-rotate-about-edge",
+    "sketch-3d-constraints",
+    "sketch-3d-dimensions",
+    "sketch-3d-relations",
+    "sketch-reference-placements",
+    "split-planar-tool",
+    "step-import-solid-items",
+    "surface-sweep-exact-spline-path",
+    "whole-profile-holes-share-a-curve"
   ],
   "name": "plugin-showcase",
   "units": "mm",
@@ -20701,7 +20709,7 @@
     },
     {
       "id": 266,
-      "name": "Bearing 625 2RS Inner ring section",
+      "name": "Bearing 625 2RS: Inner ring: Section",
       "suppressed": false,
       "component": 264,
       "type": "sketch",
@@ -20806,7 +20814,7 @@
     },
     {
       "id": 267,
-      "name": "Bearing 625 2RS Inner ring",
+      "name": "Bearing 625 2RS: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Inner ring"
@@ -20830,7 +20838,7 @@
     },
     {
       "id": 268,
-      "name": "Bearing 625 2RS Outer ring section",
+      "name": "Bearing 625 2RS: Outer ring: Section",
       "suppressed": false,
       "component": 264,
       "type": "sketch",
@@ -20935,7 +20943,7 @@
     },
     {
       "id": 269,
-      "name": "Bearing 625 2RS Outer ring",
+      "name": "Bearing 625 2RS: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Outer ring"
@@ -20959,7 +20967,7 @@
     },
     {
       "id": 270,
-      "name": "Bearing 625 2RS Seal front section",
+      "name": "Bearing 625 2RS: Seal front: Section",
       "suppressed": false,
       "component": 264,
       "type": "sketch",
@@ -21025,7 +21033,7 @@
     },
     {
       "id": 271,
-      "name": "Bearing 625 2RS Seal front",
+      "name": "Bearing 625 2RS: Seal front",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Seal front"
@@ -21047,7 +21055,7 @@
     },
     {
       "id": 272,
-      "name": "Bearing 625 2RS Seal back section",
+      "name": "Bearing 625 2RS: Seal back: Section",
       "suppressed": false,
       "component": 264,
       "type": "sketch",
@@ -21113,7 +21121,7 @@
     },
     {
       "id": 273,
-      "name": "Bearing 625 2RS Seal back",
+      "name": "Bearing 625 2RS: Seal back",
       "suppressed": false,
       "body_names": [
         "Bearing 625 2RS Seal back"
@@ -21193,7 +21201,7 @@
     },
     {
       "id": 280,
-      "name": "Bearing 105ZZ Inner ring section",
+      "name": "Bearing 105ZZ: Inner ring: Section",
       "suppressed": false,
       "component": 278,
       "type": "sketch",
@@ -21298,7 +21306,7 @@
     },
     {
       "id": 281,
-      "name": "Bearing 105ZZ Inner ring",
+      "name": "Bearing 105ZZ: Inner ring",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Inner ring"
@@ -21322,7 +21330,7 @@
     },
     {
       "id": 282,
-      "name": "Bearing 105ZZ Outer ring section",
+      "name": "Bearing 105ZZ: Outer ring: Section",
       "suppressed": false,
       "component": 278,
       "type": "sketch",
@@ -21427,7 +21435,7 @@
     },
     {
       "id": 283,
-      "name": "Bearing 105ZZ Outer ring",
+      "name": "Bearing 105ZZ: Outer ring",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Outer ring"
@@ -21451,7 +21459,7 @@
     },
     {
       "id": 284,
-      "name": "Bearing 105ZZ Shield front section",
+      "name": "Bearing 105ZZ: Shield front: Section",
       "suppressed": false,
       "component": 278,
       "type": "sketch",
@@ -21517,7 +21525,7 @@
     },
     {
       "id": 285,
-      "name": "Bearing 105ZZ Shield front",
+      "name": "Bearing 105ZZ: Shield front",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Shield front"
@@ -21539,7 +21547,7 @@
     },
     {
       "id": 286,
-      "name": "Bearing 105ZZ Shield back section",
+      "name": "Bearing 105ZZ: Shield back: Section",
       "suppressed": false,
       "component": 278,
       "type": "sketch",
@@ -21605,7 +21613,7 @@
     },
     {
       "id": 287,
-      "name": "Bearing 105ZZ Shield back",
+      "name": "Bearing 105ZZ: Shield back",
       "suppressed": false,
       "body_names": [
         "Bearing 105ZZ Shield back"
@@ -21685,7 +21693,7 @@
     },
     {
       "id": 294,
-      "name": "Solid V Wheel section",
+      "name": "Solid V Wheel: Section",
       "suppressed": false,
       "component": 292,
       "type": "sketch",
@@ -21904,7 +21912,7 @@
     },
     {
       "id": 301,
-      "name": "Precision shim 10 x 5 x 1 section",
+      "name": "Precision shim 10 x 5 x 1: Section",
       "suppressed": false,
       "component": 299,
       "type": "sketch",
@@ -22091,7 +22099,7 @@
     },
     {
       "id": 311,
-      "name": "Xtreme Mini V Wheel section",
+      "name": "Xtreme Mini V Wheel: Section",
       "suppressed": false,
       "component": 309,
       "type": "sketch",
@@ -22310,7 +22318,7 @@
     },
     {
       "id": 318,
-      "name": "Precision shim 8 x 5 x 1 section",
+      "name": "Precision shim 8 x 5 x 1: Section",
       "suppressed": false,
       "component": 316,
       "type": "sketch",
@@ -22458,7 +22466,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "7a9f8cb1ff245619670b104908affb0b8456d67a6e8730a1f1b593c4fa4e6bbe",
+            "sha256": "f62dead8b4bc91bc544b1b247ad9f932453e7859545789f4d8bf5f9790857f92",
             "version": 2
           },
           "version": 1
@@ -22493,7 +22501,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "31d93dd1d1e811721552bd93e503b3bf790c3b4eea5f65e668438f53314e2340",
+            "sha256": "5a61f743f146ce339a5ab722a7d2b56c93711fbcabf4db43c7c2a35ea455c356",
             "version": 2
           },
           "version": 1
@@ -22519,7 +22527,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "3dc9d87a929f2297f785d0154c244b5ee2df464c56abde07d666aa1b8172890f",
+            "sha256": "d6576f108fc26a0918327c80bd0f0dc7bd22130bff667b17b739d6b28cbd2d48",
             "version": 2
           },
           "version": 1
@@ -22545,7 +22553,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "b43dafed63af4d6218dbbb39e81d215cfc1ee35899406fb59b1000dd44a523a3",
+            "sha256": "00721abaecd3920a7472b90bde34f46de8c267c08320614deec9af6ee9eb5718",
             "version": 2
           },
           "version": 1
@@ -22571,7 +22579,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "8453298522d21840503fd78900a99613d22b802263b8307ee3a812e8a3cccfd0",
+            "sha256": "13b480759a8814c02a76ec793bf8f2ec94ca4cdf7411461ef1a0a7ef4f789f26",
             "version": 2
           },
           "version": 1
@@ -22597,7 +22605,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "ba15d447130b81af6d7a47107c7adec8017b4abdcb0a182dacc1e6600ec4e918",
+            "sha256": "ad7d03836ffc5bb5bab8bf1f108c37f1dc26ef30400a2daa7e31892b0941b3aa",
             "version": 2
           },
           "version": 1
@@ -22623,7 +22631,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "1e84f56e3f6b872c66334b3d5bca5b98353d91e3657dbd55357ff43f152f8aef",
+            "sha256": "886138220c60efaff84bb094ce63ac455a5a9479feeb2bbe11be685f7f3b9e5d",
             "version": 2
           },
           "version": 1
@@ -22649,7 +22657,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "d044b6452fec1fb0582b8d6d52c0aebac314f238a79aedf2906a677bd5ded5c8",
+            "sha256": "fb21296d14ed77512179444a09584f4f95c6c913c9c66b2fc873cd54a31cc6fe",
             "version": 2
           },
           "version": 1
@@ -22675,7 +22683,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "05e686198de333b9fc36cb2d033bbc1f32f12eab53785289db1c492a461e8660",
+            "sha256": "f4c22eb0880287135cfb8aed9897bc6556a755b5ecc44b63f5b3fcfad490600f",
             "version": 2
           },
           "version": 1
@@ -22727,7 +22735,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "de7d8a076a512e0740739ebcae2662e196197ab4219f45f9f4088972d9dfec78",
+            "sha256": "bb1d7ad738b373acd48dfb9dec589b3b8176a31c02740c22b5ec784148e7094a",
             "version": 2
           },
           "version": 1
@@ -22762,7 +22770,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "0bdddc7f078d19417bccafb42bb17fa2b7d673072dea247791f10359967b045b",
+            "sha256": "f467bea96e931cf2cf56893f99b738d42153e1f1d21704c87f5575e0c21bdba6",
             "version": 2
           },
           "version": 1
@@ -22788,7 +22796,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "10cacea5ac6af348a38d08256fb8648585a749cb50678217abd4777e288a8ec3",
+            "sha256": "e9d8849b295ef51fde3458861f7e64bf034261bc69c70d64ec4e40e674363161",
             "version": 2
           },
           "version": 1
@@ -22814,7 +22822,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "11ecf90107c393ef72b8802cb410efc8610fd99b074b0acf29b309fe93bdee1a",
+            "sha256": "45e1bc7694c6b291cf9d7bdb800b2947c8df0022385fb74d28ebcae45ac30bb0",
             "version": 2
           },
           "version": 1
@@ -22840,7 +22848,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "a0c21fd3f7067b68e10d863092c88f312b374135ff86d688bdd73c9e7e89cf7b",
+            "sha256": "06c25ccd4f41a05a6de602d28dc5f73da9c3d32d51fe2d04c12679a843f4361e",
             "version": 2
           },
           "version": 1
@@ -22866,7 +22874,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "f3b18c3250a0f9ef9361eae75d7a85c73ab3f031dfe2d0f3bd83e8322f69e8c3",
+            "sha256": "85615b2d1c3a53e8ca34f573a2564c92080de704762d921777733dfc9340f5c2",
             "version": 2
           },
           "version": 1
@@ -22892,7 +22900,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "9e347941eebd022a782bd10386b2557a71661a8dab8a5818ac411fe54bfc714b",
+            "sha256": "9ad359d8d2585facf8719efd215e741b1d8459b9ff7089c5dd9012f9c1c9c540",
             "version": 2
           },
           "version": 1
@@ -22918,7 +22926,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "6200c292b95e0970b904ddbe674c7e7ada8d9fa76187339681b7828e5e3ac4e3",
+            "sha256": "77b1d87b0dd3bb0a20e7ac444ceb0272db0b8ba67ce4cde17ec2af49ab37e9df",
             "version": 2
           },
           "version": 1
@@ -22944,7 +22952,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "f2c06ad76380a08844d679c3c15f3b2490f4aeb8829d5fc099de5c0426431840",
+            "sha256": "8a3e7d32cf25378c2c3931b05a4862a3062765a07995e82200f03c0634b32deb",
             "version": 2
           },
           "version": 1
@@ -22970,7 +22978,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "e001e2e40a43f5ed35a527bdce59b4a9c1502b576febe74e6f97daa3f05b7e51",
+            "sha256": "d3451a36418e520194b8c386d341ac26e1eedbb1d7f12986f49e9d232e34ff2b",
             "version": 2
           },
           "version": 1
@@ -22996,7 +23004,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "83c4154076eb8037cc662fef2c9ac134aef54259f9271398b51c23d36c46e02e",
+            "sha256": "f48ad247da7312a7c178186c9d4b2db4798552381f74527c9bbd3f66db735ca2",
             "version": 2
           },
           "version": 1
@@ -23022,7 +23030,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "5a749a0b0b358762292ffebd28cdd1f7e3bdd8a114dc3f3d80be4695f8ec9ecf",
+            "sha256": "350397044bb912325b708a708071ba4ceb89d87ec8be1f9bf8d780186b61bf0b",
             "version": 2
           },
           "version": 1
@@ -23057,7 +23065,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "fd8af5eb36c19916c9a478cc846d0f31918fe1ba15058363daaf3a72f5589675",
+            "sha256": "84579929b3245639e3c7db0999662c547562df55e557bc7b0e09ae1b7e230cde",
             "version": 2
           },
           "version": 1
@@ -23083,7 +23091,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "88b52d18430c1bf1022e6678c1fae2615db702738caa3560650fc261d24a8c67",
+            "sha256": "c96d6486a299b7eb78edb6d5cd1e7e7be61079633fef8b412a6b3dc4ebf00a67",
             "version": 2
           },
           "version": 1
@@ -23109,7 +23117,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "a089d09d06d9ed1994923db4fa134b5b08aa41274e8b7b37611cd0a1fea2eaf3",
+            "sha256": "a63115a7dbeeb45b293b4fd0a35e4551012bcdb3bbbad19aa5c80b7526af1f5b",
             "version": 2
           },
           "version": 1
@@ -23135,7 +23143,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "85936cc0a7648999cf632e1a6351629457a0c9050e25f2a7bc2dc7783fe79ae6",
+            "sha256": "b401015f2afb278aaaf9b2d336f4e77f7bfcfb9fcbdf9d27ce95ea7bcbe651d7",
             "version": 2
           },
           "version": 1
@@ -23170,7 +23178,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "d497ae1eff5a2c3180d9a8764c0aab358219f102be6b984848e900aae121c741",
+            "sha256": "378fa3a0196116976217a7f66026fc2b15a0bd00fbf389cb70e000909583f8b2",
             "version": 2
           },
           "version": 1
@@ -23196,7 +23204,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "9039d9c4b0078781fa3e8425547ab443b3b87f274c804f797fc91d6f392f6756",
+            "sha256": "e443db0e118a97e07db12bd723bdcd8fc0c5e6f96f5c680e6addd19097b6797c",
             "version": 2
           },
           "version": 1
@@ -23222,7 +23230,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "59ba4a86f1ccd89a7d58bb3801b2ef447262a1d75b92ea0a2766d75f2983acc6",
+            "sha256": "27391808bda77144e721570e91c1d6aa14e37a023f5ff657bb4b4e7e3bf718c7",
             "version": 2
           },
           "version": 1

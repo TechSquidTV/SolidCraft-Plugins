@@ -58,6 +58,22 @@ pub struct Component {
     children: Vec<Child>,
 }
 
+impl Component {
+    pub fn feature_names(&self) -> impl Iterator<Item = &str> {
+        self.features
+            .iter()
+            .chain(&self.sketches)
+            .chain(&self.construction)
+            .map(String::as_str)
+    }
+
+    pub fn names(&self) -> impl Iterator<Item = &str> {
+        std::iter::once(self.name.as_str())
+            .chain(self.bodies.iter().map(String::as_str))
+            .chain(self.feature_names())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct Child {
     id: u64,
@@ -353,16 +369,11 @@ impl Index {
     }
 
     fn contents(&mut self, r: &mut impl Runner, node: &Component) -> Result<Contents, String> {
-        let names: Vec<_> = node
-            .features
-            .iter()
-            .chain(&node.sketches)
-            .chain(&node.construction)
-            .collect();
+        let names: Vec<_> = node.feature_names().collect();
         let candidates: Vec<_> = self
             .timeline
             .iter()
-            .filter(|row| names.contains(&&row.name))
+            .filter(|row| names.contains(&row.name.as_str()))
             .map(|row| row.id)
             .collect();
         let mut owned = Vec::new();

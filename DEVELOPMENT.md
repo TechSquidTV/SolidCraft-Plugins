@@ -35,34 +35,7 @@ A rail can be built with its ends tapped M5 and with screw holes across it, so r
 
 A slot nut is one section too, extruded along the slot and tapped. `make-t-nut`, the plugin's second entry, hangs it under the lips of a slot, on a point on the rail's face. Its shape is MISUMI's STEP model of the pre-assembly nut HNTT5-5 or the post-assembly nut HNTP5-5.
 
-## Layout
-
-```text
-.
-├── crates/
-│   ├── parts/          # pure catalog contract and canonical identities
-│   ├── plugin-kit/     # host transport, inspection, reuse, placement and generic geometry helpers
-│   ├── bearings/       # fixed supplier products and exterior geometry
-│   ├── wheels/         # fixed wheel products and shared assembly recipes
-│   ├── fasteners/      # standards, designations, heads, drives, nuts and clearance geometry
-│   └── extrusions/     # rail sections, machining rules and slot nuts
-├── plugins/
-│   └── techsquid-*/    # six independent packages: workflows, providers, manifests and user guides
-├── docs/
-│   ├── catalog-contract.md
-│   ├── parts-library.md
-│   ├── bearing-coverage.md
-│   └── sources/        # source evidence and independently measured references
-├── examples/           # saved designs, matching build recipes and native previews
-├── tests/              # native-host integration suites; shared harness and headless transport
-├── tools/
-│   ├── catalog-tool/   # catalog-owned manifest fields and reference tables
-│   └── measure_parts.py
-├── release-notes/
-├── wit/plugin.wit      # host interface copied from SolidCraft
-├── Cargo.toml          # workspace membership and shared dependencies
-└── build.sh            # packages into ignored dist/<plugin>/ directories
-```
+## Architecture
 
 A plugin id is its folder, Cargo package and installed package name. Plugins own
 workflow fields and their catalog adapters. Shared identity and protocol stay in
@@ -71,7 +44,7 @@ own compiled dimensions and geometry. The insert catalog stays in its only consu
 Wheel and bearing packages share factories through Rust dependencies, not runtime
 plugin calls.
 
-This layout keeps one owner for each concern. Short package READMEs link to their
+Each concern has one owner. Short package READMEs link to their
 full reference guides and shared architecture docs. Generated catalog tables are
 checked against domain data; independent source measurements remain separate test
 evidence. Test transports belong in `harness.py`/`headless.py`, not individual suites.
@@ -160,9 +133,18 @@ The naming regression builds multi-pocket batches beside existing names in anoth
 component, including case variants and reserved suffixes, then saves, reopens and
 inserts another batch. It checks distinct profile/cut names and their native links.
 
+The same suite checks two consecutive insertions through translated copies and
+rotated nested assemblies using a face-attached sketch, with and without nuts.
+It verifies the active path, mounting coordinates, actual nut positions and seat
+joints, then checks failed-operation rollback and save/reopen. Shared seat tests
+also verify that temporary body inspection restores selection after an error.
+
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut. A horizontal layout covers the previously failing move from -14 to -22 mm, larger horizontal and vertical moves across the origin, and pocket-width and depth edits followed by reopening.
 
 ### Screw seat references
+
+The copied-tapped-seat regression preserves the existing unsupported-case refusal
+and checks full rollback, so shared face inspection cannot attach to another copy.
 
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/screw_references_test.py` after building. It checks clearance, counterbored, countersunk and tapped holes with cosmetic and modeled threads. Point and circle moves, plane changes, parameter-driven recess depths, reused definitions, carrier movement and save/reopen must preserve each seat and the actual screw body's axial/radial mass-center offsets and volume. Tapped cases also cover layouts created before the solid, sketches attached to faces, and insertion from outside the sketch's component. `crates/fasteners/src/seat.rs` shares face inspection and rigid-joint creation with the nut plugin; each plugin resolves its own seating geometry before adding hardware. Tapped screws use construction axes through the source points, normal to each sketch's supporting plane or attached face. The axes are inserted immediately after their source sketches, in the same component, with the original history marker and active component restored afterwards. The solid need not exist at that history position, and later thread cuts cannot split the support face. Clearance and recessed screws use named round ends so their seats follow recess edits.
 

@@ -6,6 +6,7 @@
 //! its exposed, sourced raceways and balls; closed bearings omit hidden balls.
 
 use plugin_kit::{
+    name::part,
     revolve::{self, Section},
     Placement, Runner,
 };
@@ -259,18 +260,19 @@ impl Bearing {
             ("Outer ring", d.outer_ring_radius, d.diameter / 2.0, true),
         ] {
             let name = format!("{base} {label}");
+            let feature = part(base, label);
             let polygon = [[inner, -half], [outer, -half], [outer, half], [inner, half]];
             let curved = profile::ring(self, outer_ring);
             revolve::build(
                 r,
                 frame,
-                &format!("{name} section"),
+                &part(&feature, "Section"),
                 if d.edge_radius == 0.0 {
                     Section::Solid(&polygon)
                 } else {
                     Section::CurvedSolid(&curved)
                 },
-                json!({"name": name, "body_name": name}),
+                json!({"name": feature, "body_name": name}),
             )?;
             steel.push(name);
         }
@@ -286,7 +288,7 @@ impl Bearing {
                 r.run(
                     "solid.sphere",
                     json!({"radius":race.ball_radius, "center":center,
-                    "name":name, "body_name":name}),
+                    "name":part(base, &format!("Ball {}", index + 1)), "body_name":name}),
                 )?;
                 steel.push(name);
             }
@@ -306,13 +308,14 @@ impl Bearing {
             .ok_or("closed bearing has no sourced recess")?;
         for (side, sign) in [("front", 1.0), ("back", -1.0)] {
             let name = format!("{base} {label} {side}");
+            let feature = part(base, &format!("{label} {side}"));
             let z = sign * (half - recess);
             revolve::build(
                 r,
                 frame,
-                &format!("{name} section"),
+                &part(&feature, "Section"),
                 Section::Surface(&[[d.inner_ring_radius, z], [d.outer_ring_radius, z]]),
-                json!({"name": name, "body_name": name}),
+                json!({"name": feature, "body_name": name}),
             )?;
             closures.push(name);
         }
@@ -327,6 +330,39 @@ impl Bearing {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn generated_features_use_the_shared_namespace_separate_from_bodies() {
+        #[derive(Default)]
+        struct Host(Vec<(String, serde_json::Value)>);
+        impl Runner for Host {
+            fn run(
+                &mut self,
+                command: &str,
+                args: serde_json::Value,
+            ) -> Result<serde_json::Value, String> {
+                self.0.push((command.into(), args));
+                Ok(json!({"sketch": self.0.len()}))
+            }
+        }
+        for bearing in ALL {
+            let mut host = Host::default();
+            bearing
+                .build(&mut host, "Part", &Placement::on_origin())
+                .unwrap();
+            let mut names = std::collections::BTreeSet::new();
+            for (command, args) in host.0 {
+                if let Some(name) = args["name"].as_str() {
+                    assert!(name.starts_with("Part: "), "{command}: {name}");
+                    assert!(names.insert(name.to_string()), "duplicate {name}");
+                }
+                if let Some(body) = args["body_name"].as_str() {
+                    assert!(body.starts_with("Part "));
+                    assert!(!body.starts_with("Part: "));
+                }
+            }
+        }
+    }
 
     #[test]
     fn exterior_dimensions_match_source_and_mini_correction() {

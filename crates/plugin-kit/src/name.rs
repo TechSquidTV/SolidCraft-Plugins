@@ -28,30 +28,37 @@ pub fn reserve(taken: &mut Vec<String>, base: &str) -> String {
     name
 }
 
+/// Reserve a whole generated part's naming prefix, including its bodies (`part …`)
+/// and features (`part: …`). Renaming a component or body leaves its features behind.
+pub fn reserve_part(taken: &mut Vec<String>, base: &str, bodies: &[&str]) -> String {
+    loop {
+        let candidate = reserve(taken, base);
+        let derived = |name: &str, separator: u8| {
+            name.get(..candidate.len())
+                .is_some_and(|prefix| prefix.eq_ignore_ascii_case(&candidate))
+                && name.as_bytes().get(candidate.len()) == Some(&separator)
+        };
+        // A layout sketch or assembly can start with the product's name too.
+        // Only bodies own space-separated suffixes such as "Seal front".
+        let occupied = taken.iter().any(|name| derived(name, b':'))
+            || bodies.iter().any(|name| derived(name, b' '));
+        if !occupied {
+            return candidate;
+        }
+    }
+}
+
 /// Seed a run's name reservations from every component: sketches and construction
 /// planes share a document-wide namespace, including features outside the active part.
 pub fn feature_names<R: Runner>(r: &mut R) -> Result<Vec<String>, String> {
-    let listed = r.run("component.list", json!({}))?;
-    let components = listed["components"]
-        .as_array()
-        .ok_or("component.list did not return components for feature names")?;
-    let mut names = Vec::new();
-    for component in components {
-        for key in ["features", "sketches", "construction"] {
-            let entries = component[key]
-                .as_array()
-                .ok_or_else(|| format!("component.list did not return {key} for feature names"))?;
-            for entry in entries {
-                names.push(
-                    entry
-                        .as_str()
-                        .ok_or("component.list returned an invalid feature name")?
-                        .to_string(),
-                );
-            }
-        }
-    }
-    Ok(names)
+    let mut listed = r.run("component.list", json!({}))?;
+    let components: Vec<crate::content::Component> =
+        serde_json::from_value(listed["components"].take())
+            .map_err(|e| format!("cannot inspect components for feature names: {e}"))?;
+    Ok(components
+        .iter()
+        .flat_map(|c| c.feature_names().map(str::to_string))
+        .collect())
 }
 
 /// A length as a name shows it: at most two decimals and no trailing zeros, so `12.0` is
@@ -76,6 +83,32 @@ pub fn part(part: &str, feature: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn part_reservations_cover_old_features_and_multibody_names() {
+        let mut taken = vec![
+            "NUT M6: Hex profile".into(),
+            "Nut M6 (2): Thread".into(),
+            "Bearing 625 2RS Inner ring".into(),
+            "Nut M60: Hex profile".into(),
+        ];
+        let bodies = ["Bearing 625 2RS Inner ring"];
+        assert_eq!(reserve_part(&mut taken, "Nut M6", &bodies), "Nut M6 (3)");
+        assert_eq!(reserve_part(&mut taken, "Nut M6", &bodies), "Nut M6 (4)");
+        assert_eq!(
+            reserve_part(&mut taken, "Bearing 625 2RS", &bodies),
+            "Bearing 625 2RS (2)"
+        );
+        assert_eq!(reserve_part(&mut taken, "Nut M", &bodies), "Nut M");
+        taken.extend([
+            "Solid V Wheel assembly".into(),
+            "Solid V Wheel layout".into(),
+        ]);
+        assert_eq!(
+            reserve_part(&mut taken, "Solid V Wheel", &bodies),
+            "Solid V Wheel"
+        );
+    }
 
     #[test]
     fn reservations_skip_existing_case_variants_and_batch_names() {

@@ -1,7 +1,7 @@
 //! Seat screws on named hole ends, so the joints follow the cuts on rebuild.
 
-use fasteners::seat::{dot, near, same, unique, Faces, Seat};
-use plugin_kit::{component::Activation, place::Spot};
+use fasteners::seat::{dot, near, same, unique, Body, Faces, Seat};
+use plugin_kit::{component::Activation, name::part, place::Spot};
 use plugin_kit::{Placement, Runner};
 use serde_json::{json, Value};
 
@@ -70,7 +70,7 @@ pub fn tap_axes<R: Runner>(r: &mut R, spots: &[Spot], name: &str) -> Result<Vec<
             let reply = r.run(
                 "construct.axis.normal_to_face",
                 json!({
-                    "name": format!("{name}: Seat axis {} {}", spot.sketch, spot.point),
+                    "name": part(&format!("Seat for {name}"), &format!("Axis {} {}", spot.sketch, spot.point)),
                     "face": support,
                     "point": {"sketch": spot.sketch, "point": spot.point},
                 }),
@@ -105,7 +105,9 @@ pub fn find_all<R: Runner>(
     hole: &Hole,
     major: f64,
 ) -> Result<Vec<Attachment>, String> {
-    let faces = Faces::read_all(r, bodies)?;
+    // Axis origins still bind the first placement in the host. Keep copied tapped
+    // seats refused instead of finding a copy and attaching to a different one.
+    let faces = Faces::read_all(r, bodies, !matches!(hole.kind, HoleKind::Tapped { .. }))?;
     places
         .iter()
         .enumerate()
@@ -114,7 +116,7 @@ pub fn find_all<R: Runner>(
 }
 
 fn find(
-    bodies: &[(String, Faces)],
+    bodies: &[(Body, Faces)],
     place: &Placement,
     axis: Option<&str>,
     hole: &Hole,
@@ -288,7 +290,13 @@ mod tests {
             let mut missing: Faces = faces();
             missing.faces.remove(index);
             assert!(find(
-                &[("Plate".into(), missing)],
+                &[(
+                    Body {
+                        definition: "Plate".into(),
+                        path: vec![]
+                    },
+                    missing
+                )],
                 &Placement::on_origin(),
                 None,
                 &hole,
@@ -299,7 +307,13 @@ mod tests {
             let mut extra: Faces = faces();
             ambiguous.faces.push(extra.faces.remove(index));
             assert!(find(
-                &[("Plate".into(), ambiguous)],
+                &[(
+                    Body {
+                        definition: "Plate".into(),
+                        path: vec![]
+                    },
+                    ambiguous
+                )],
                 &Placement::on_origin(),
                 None,
                 &hole,
@@ -308,7 +322,22 @@ mod tests {
             .is_err());
         }
         assert!(find(
-            &[("A".into(), faces()), ("B".into(), faces())],
+            &[
+                (
+                    Body {
+                        definition: "A".into(),
+                        path: vec![]
+                    },
+                    faces()
+                ),
+                (
+                    Body {
+                        definition: "B".into(),
+                        path: vec![]
+                    },
+                    faces()
+                )
+            ],
             &Placement::on_origin(),
             None,
             &hole,

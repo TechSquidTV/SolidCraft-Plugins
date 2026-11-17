@@ -21,8 +21,8 @@ because the approval changes with every build.
                cylindrical face of that radius on the corner's axis, starting at floor_z
     fasteners  [{label, diameter, z: [low, high]}] one such body on every corner: its box
                is `diameter` across, centred on the corner, from low to high
-    placed     [{label, bbox, volume_mm3}] one body with exactly that box and, to one
-               part in ten thousand, that volume. This is for placements that share a
+    placed     [{label, bbox, volume_mm3?, area_mm2?}] one body with exactly that box and, to one
+               part in ten thousand, any specified volume or area. This is for placements that share a
                name, such as the rails of a frame
     overlaps   {pairs, volume_mm3: [least, most]} exactly that many pairs of bodies
                overlap, each by a volume in that range, to within 0.1 mm3. Without it
@@ -73,8 +73,9 @@ def same_bodies(a, b):
 
 def catalog_records(design):
     """Compare purchasing and representation state independently of document-local IDs."""
-    return sorted((metadata.get("part_number"), metadata.get("bom_type"),
-                   record["product"], record["representation"], record["snapshot"]["version"])
+    return sorted((metadata.get("part_number") or "", metadata.get("bom_type"),
+                   record["product"], record["representation"], record["snapshot"]["version"],
+                   json.dumps(metadata.get("org.techsquid.specification"), sort_keys=True))
                   for component in design.get("components", [])
                   for metadata in [component.get("metadata", {})]
                   for record in [metadata.get("org.techsquid.parts")]
@@ -216,7 +217,9 @@ def example(path):
         found = [
             b for b in loose
             if box_is(b["bbox"], part["bbox"])
-            and abs(b["volume_mm3"] - part["volume_mm3"]) <= 1e-4 * part["volume_mm3"]
+            and all(b.get(metric) is not None
+                    and abs(b[metric] - part[metric]) <= 1e-4 * max(1.0, part[metric])
+                    for metric in ("volume_mm3", "area_mm2") if metric in part)
         ]
         check(f"{name}: one {part['label']}", len(found) == 1, f"got {len(found)}")
     if "overlaps" in expect:

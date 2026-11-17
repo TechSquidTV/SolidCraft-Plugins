@@ -66,3 +66,10 @@ catalog-generated choices/reference table and independent geometry tests togethe
 Visible balls are included for sourced open bearings; sealed and shielded variants
 omit hidden balls. Cages remain outside this representation. Never fill an open
 bearing with an invented closure.
+
+The [CSK series](sources/csk.md) is a separate one-way clutch family. Its 55
+reference presets provide separate rings and closures with editable envelopes and
+keyways. Eight supplied STEP references establish exterior measurements; other
+variants use explicitly recorded estimates.
+They do not count toward the radial-bearing parity table above. The source ledger
+identifies each preset baseline; the generator does not assign a purchasing identity.

@@ -1,9 +1,10 @@
 //! Supplier products, not arbitrary bore/diameter/width combinations.
 //!
-//! Sources and measured CAD revisions: docs/sources/{openbuilds,misumi}.md. External rings
+//! Sources and measured CAD revisions: docs/sources/{openbuilds,misumi,csk}.md. External rings
 //! are solid envelopes; closures are annular faces at the measured recess. Hidden
 //! seal thickness and cages are deliberately not inferred. Open B626 includes
 //! its exposed, sourced raceways and balls; closed bearings omit hidden balls.
+//! CSK reference presets and customizable design specifications live in `csk`.
 
 use plugin_kit::{
     name::part,
@@ -13,6 +14,7 @@ use plugin_kit::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+pub mod csk;
 mod profile;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
@@ -58,6 +60,11 @@ pub struct Dimensions {
     pub bore: f64,
     pub diameter: f64,
     pub width: f64,
+    pub section: Option<RingSection>,
+}
+
+/// Source-backed visible ring geometry, absent when only the mounting envelope is known.
+pub struct RingSection {
     pub inner_ring_radius: f64,
     pub outer_ring_radius: f64,
     pub closure_recess: Option<f64>,
@@ -114,9 +121,7 @@ impl Bearing {
         match self {
             Self::OpenBuilds6252rs => "625 2RS",
             Self::OpenBuilds105zz => "105ZZ",
-            Self::MisumiB626 | Self::MisumiB626zz | Self::MisumiB626ddu | Self::MisumiB608zz => {
-                self.sku()
-            }
+            _ => self.sku(),
         }
     }
 
@@ -187,65 +192,27 @@ impl Bearing {
     }
 
     pub fn dimensions(self) -> Dimensions {
-        // OpenBuilds STEP exterior sections, with the documented 105ZZ width
-        // correction (2016-02-27). The 4.2 mm reference is not a separate product.
-        match self {
-            Self::OpenBuilds6252rs => Dimensions {
-                bore: 5.0,
-                diameter: 16.0,
-                width: 5.0,
-                inner_ring_radius: 4.3,
-                outer_ring_radius: 6.8,
-                closure_recess: Some(0.3),
-                edge_radius: 0.0,
-            },
-            Self::OpenBuilds105zz => Dimensions {
-                bore: 5.0,
-                diameter: 10.0,
-                width: 4.0,
-                inner_ring_radius: 3.1,
-                outer_ring_radius: 4.6,
-                closure_recess: Some(0.3),
-                edge_radius: 0.0,
-            },
-            // Exact supplied MISUMI STEP revisions; 626 variants have different
-            // radial boundaries and recesses despite sharing the 6 × 19 × 6 envelope.
-            Self::MisumiB626 => Dimensions {
-                bore: 6.0,
-                diameter: 19.0,
-                width: 6.0,
-                inner_ring_radius: 5.06,
-                outer_ring_radius: 7.55,
-                closure_recess: None,
-                edge_radius: 0.3,
-            },
-            Self::MisumiB626zz => Dimensions {
-                bore: 6.0,
-                diameter: 19.0,
-                width: 6.0,
-                inner_ring_radius: 4.75,
-                outer_ring_radius: 8.15,
-                closure_recess: Some(0.5),
-                edge_radius: 0.3,
-            },
-            Self::MisumiB626ddu => Dimensions {
-                bore: 6.0,
-                diameter: 19.0,
-                width: 6.0,
-                inner_ring_radius: 4.215,
-                outer_ring_radius: 8.1775,
-                closure_recess: Some(0.11),
-                edge_radius: 0.3,
-            },
-            Self::MisumiB608zz => Dimensions {
-                bore: 8.0,
-                diameter: 22.0,
-                width: 7.0,
-                inner_ring_radius: 6.1,
-                outer_ring_radius: 9.65,
-                closure_recess: Some(0.6),
-                edge_radius: 0.3,
-            },
+        // OpenBuilds and MISUMI ring sections are measured from their exact STEP files.
+        let (bore, diameter, width, section) = match self {
+            Self::OpenBuilds6252rs => (5.0, 16.0, 5.0, Some((4.3, 6.8, Some(0.3), 0.0))),
+            Self::OpenBuilds105zz => (5.0, 10.0, 4.0, Some((3.1, 4.6, Some(0.3), 0.0))),
+            Self::MisumiB626 => (6.0, 19.0, 6.0, Some((5.06, 7.55, None, 0.3))),
+            Self::MisumiB626zz => (6.0, 19.0, 6.0, Some((4.75, 8.15, Some(0.5), 0.3))),
+            Self::MisumiB626ddu => (6.0, 19.0, 6.0, Some((4.215, 8.1775, Some(0.11), 0.3))),
+            Self::MisumiB608zz => (8.0, 22.0, 7.0, Some((6.1, 9.65, Some(0.6), 0.3))),
+        };
+        Dimensions {
+            bore,
+            diameter,
+            width,
+            section: section.map(
+                |(inner_ring_radius, outer_ring_radius, closure_recess, edge_radius)| RingSection {
+                    inner_ring_radius,
+                    outer_ring_radius,
+                    closure_recess,
+                    edge_radius,
+                },
+            ),
         }
     }
 
@@ -254,20 +221,26 @@ impl Bearing {
     pub fn build(self, r: &mut impl Runner, base: &str, frame: &Placement) -> Result<(), String> {
         let d = self.dimensions();
         let half = d.width / 2.0;
+        let section = d.section.ok_or("bearing has no ring section")?;
         let mut steel = Vec::new();
         for (label, inner, outer, outer_ring) in [
-            ("Inner ring", d.bore / 2.0, d.inner_ring_radius, false),
-            ("Outer ring", d.outer_ring_radius, d.diameter / 2.0, true),
+            ("Inner ring", d.bore / 2.0, section.inner_ring_radius, false),
+            (
+                "Outer ring",
+                section.outer_ring_radius,
+                d.diameter / 2.0,
+                true,
+            ),
         ] {
             let name = format!("{base} {label}");
             let feature = part(base, label);
             let polygon = [[inner, -half], [outer, -half], [outer, half], [inner, half]];
-            let curved = profile::ring(self, outer_ring);
+            let curved = profile::ring(self, &section, outer_ring);
             revolve::build(
                 r,
                 frame,
                 &part(&feature, "Section"),
-                if d.edge_radius == 0.0 {
+                if section.edge_radius == 0.0 {
                     Section::Solid(&polygon)
                 } else {
                     Section::CurvedSolid(&curved)
@@ -303,7 +276,7 @@ impl Bearing {
             Closure::RubberSeals => ("Seal", [64, 64, 64]),
             Closure::MetalShields => ("Shield", [160, 160, 160]),
         };
-        let recess = d
+        let recess = section
             .closure_recess
             .ok_or("closed bearing has no sourced recess")?;
         for (side, sign) in [("front", 1.0), ("back", -1.0)] {
@@ -314,7 +287,10 @@ impl Bearing {
                 r,
                 frame,
                 &part(&feature, "Section"),
-                Section::Surface(&[[d.inner_ring_radius, z], [d.outer_ring_radius, z]]),
+                Section::Surface(&[
+                    [section.inner_ring_radius, z],
+                    [section.outer_ring_radius, z],
+                ]),
                 json!({"name": feature, "body_name": name}),
             )?;
             closures.push(name);
@@ -372,14 +348,15 @@ mod tests {
             (Bearing::OpenBuilds105zz, [5.0, 10.0, 4.0, 3.1, 4.6, 0.3]),
         ] {
             let d = bearing.dimensions();
+            let section = d.section.unwrap();
             assert_eq!(
                 [
                     d.bore,
                     d.diameter,
                     d.width,
-                    d.inner_ring_radius,
-                    d.outer_ring_radius,
-                    d.closure_recess.unwrap()
+                    section.inner_ring_radius,
+                    section.outer_ring_radius,
+                    section.closure_recess.unwrap()
                 ],
                 expected
             );
@@ -425,18 +402,19 @@ mod tests {
             ),
         ] {
             let d = bearing.dimensions();
+            let section = d.section.unwrap();
             assert_eq!(
                 [
                     d.bore,
                     d.diameter,
                     d.width,
-                    d.inner_ring_radius,
-                    d.outer_ring_radius
+                    section.inner_ring_radius,
+                    section.outer_ring_radius
                 ],
                 dims
             );
-            assert_eq!(d.closure_recess, recess);
-            assert_eq!(d.edge_radius, 0.3);
+            assert_eq!(section.closure_recess, recess);
+            assert_eq!(section.edge_radius, 0.3);
             assert_eq!(bearing.closure(), closure);
             assert_eq!(bearing.representation().product.catalog, "misumi");
         }

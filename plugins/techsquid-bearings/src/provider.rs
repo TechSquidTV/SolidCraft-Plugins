@@ -10,7 +10,7 @@ use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub struct Bearings;
-pub const REVISION: &str = "2";
+pub const REVISION: &str = "8";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -52,9 +52,9 @@ impl Catalog for Bearings {
             Dimension::mm("bore", d.bore),
             Dimension::mm("outside_diameter", d.diameter),
             Dimension::mm("width", d.width),
-            Dimension::mm("edge_radius", d.edge_radius),
+            Dimension::mm("edge_radius", d.section.as_ref().unwrap().edge_radius),
         ];
-        if let Some(recess) = d.closure_recess {
+        if let Some(recess) = d.section.as_ref().unwrap().closure_recess {
             dimensions.push(Dimension::mm("closure_recess", recess));
         }
         let mut sources = vec![Source {

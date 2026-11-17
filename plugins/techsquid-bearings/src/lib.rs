@@ -1,3 +1,4 @@
+pub mod csk;
 pub mod provider;
 
 use bearings::Bearing;
@@ -29,7 +30,18 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 }
 
 pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
-    let places = place::resolve_each(r, &p.place)?;
+    place_part(r, &p.place, json!({"part":p.bearing}), |library| {
+        p.bearing.ensure(library, PLUGIN)
+    })
+}
+
+fn place_part<R: Runner>(
+    r: &mut R,
+    placement: &place::PlaceInput,
+    mut result: Value,
+    ensure: impl FnOnce(&mut Library<'_, R>) -> Result<component::Handle, String>,
+) -> Result<Value, String> {
+    let places = place::resolve_each(r, placement)?;
     if places.len() > 32 {
         return Err("sketch_point: choose at most 32 points".into());
     }
@@ -40,14 +52,11 @@ pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
             placements: places.len(),
         },
     )?;
-    let handle = p.bearing.ensure(&mut library, PLUGIN)?;
+    let handle = ensure(&mut library)?;
     let placed = library.place_all(&handle, &places, "Bearings")?;
     let report = library.finish()?;
-    Ok(component::with_placements(
-        json!({"part":p.bearing, "library":report}),
-        &places,
-        Some(&placed),
-    ))
+    result["library"] = json!(report);
+    Ok(component::with_placements(result, &places, Some(&placed)))
 }
 
 plugin_kit::guest! {
@@ -56,6 +65,10 @@ plugin_kit::guest! {
         entry: "make-bearing", noun: "bearing",
         parse: parse, make: make,
         describe: |p: &Params| format!("Bearing {}", p.bearing.designation()),
+    }, {
+        entry: "make-csk", noun: "CSK clutch",
+        parse: csk::parse, make: csk::make,
+        describe: |p: &csk::Params| format!("CSK clutch {}", p.geometry.designation.map_or("Custom", bearings::csk::Csk::designation)),
     }],
 }
 

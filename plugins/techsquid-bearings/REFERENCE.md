@@ -46,7 +46,9 @@ an explicit override equal to the reference value reuses the default definition.
 
 `org.techsquid.specification` metadata stores geometry, its source-neutral identity,
 and reference evidence with schema version 2. Save/reopen preserves these records.
-Purchasing assignments are a separate feature, outside this generator's inputs.
+Purchasing assignment is
+[future work for a shared component workflow](../../docs/parts-library.md#future-component-purchasing-workflow)
+after creation, outside this generator's inputs.
 
 ## Radial bearing workflow
 
@@ -148,5 +150,5 @@ source-neutral specifications. Their existing geometry is preserved. Ring detail
 in the Rust `Dimensions` API live under `section`.
 
 Earlier PR revisions accepted `part_number` and `purchase_*` fields in `make-csk`.
-These inputs are now rejected without aliases. Purchasing moves to a separate PR;
-old saved definitions remain intact but are not adopted as current definitions.
+These inputs are now rejected without aliases. Old saved definitions remain intact
+but are not adopted as current definitions.

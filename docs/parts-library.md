@@ -178,3 +178,15 @@ the BOM without assigning a part number. The version 2
 reference baseline and customization status. Existing supplier-product workflows
 remain valid for explicitly chosen catalog products; using a reference drawing
 alone must not create that identity.
+
+## Future component purchasing workflow
+
+Purchasing assignment is future work for a shared workflow applied to an existing
+component after creation. It should support generated, imported and custom
+components independently of their geometry generators. CSK remains focused on
+geometry, keyway customization and reference evidence.
+
+That workflow must define whether an assignment applies to all copies of a
+component or selected occurrences, separate stable product identifiers from
+listing URLs, and handle BOM-number conflicts consistently. No purchasing
+assignment interface is provided by the CSK generator.

@@ -11,7 +11,9 @@ Choose a designation, then leave keyway overrides blank to use the documented
 Formsprag reference profile. Overrides change actual through-cut geometry. For
 example, `CSK12P` with `inner_keyway_depth: 1.2` retains its 12 × 32 × 10 mm envelope
 and 4 mm-wide keyway, with a 1.2 mm depth instead of the reference 1.8 mm.
-The resulting part does not claim to be a Formsprag purchase.
+The resulting part does not claim to be a Formsprag purchase. See the
+[CSK example](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/csk-clutches.md)
+for a saved design, reproducible commands and expected BOM rows.
 
 | Field | Default | Meaning |
 |---|---|---|

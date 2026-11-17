@@ -67,6 +67,7 @@ Visible balls are included for sourced open bearings; sealed and shielded varian
 omit hidden balls. Cages remain outside this representation. Never fill an open
 bearing with an invented closure.
 
-The [Formsprag CSK series](sources/csk.md) is a separate one-way clutch family.
-Its 42 sourced combinations are cataloged as mounting envelopes with keyways and do not count toward
-the radial-bearing parity table above.
+The [CSK series](sources/csk.md) is a separate one-way clutch family. Its 42
+reference presets provide mounting envelopes with editable keyways and do not
+count toward the radial-bearing parity table above. Formsprag drawings supply the
+reference dimensions; purchasing identity is unassigned until the user supplies it.

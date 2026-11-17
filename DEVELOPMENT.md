@@ -205,7 +205,7 @@ The checks compare actual pocket floors, bolt-hole axes, nut bounding boxes, sea
 solidcraft-cli snapshot --in examples/nut-pockets.json --out examples/nut-pockets.png --width 1280 --height 600 --camera '{"target":[0,0,6],"yaw":0.18,"pitch":0.45,"distance":70}' --section y=0,flip --no-grid --no-axes --quality fine --body 'Plate:color=#708da5' --body 'Nut M6:color=#d7af57'
 ```
 
-Eight standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+Nine standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
 
 | Example | Plugin | What it builds | Picture |
 |---|---|---|---|
@@ -216,6 +216,7 @@ Eight standalone examples show the plugins’ parts and editing modes. Each plug
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
 | `bearings` | `techsquid-bearings` | Six sourced radial bearings: open, sealed and shielded | `bearings.png` |
+| `csk-clutches` | `techsquid-bearings` | Six CSK envelopes: reference, repeated custom keyways, optional purchasing, PP and P-2RS | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
 The sketch-driven example uses three plugin runs on one fully constrained six-line
@@ -246,6 +247,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 
 ```sh
 solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 550 --camera '{"target":[1.5,0,0],"yaw":0.1,"pitch":0.75,"distance":110}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 500 --camera '{"target":[23.25,0,0],"yaw":0.05,"pitch":0.9,"distance":135}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
 
@@ -278,8 +280,9 @@ It needs a `solidcraft-cli` that can run a plugin, so on the signed macOS build 
 
 ## Wheel and bearing source geometry
 
-The `bearings` and `wheels` crates own fixed supplier products and their exterior
-geometry. The [OpenBuilds ledger](docs/sources/openbuilds.md) records wheel profiles,
+The `bearings` and `wheels` crates own radial-bearing and wheel supplier products
+and their exterior geometry. The `bearings::csk` module separately owns editable
+CSK design specifications. The [OpenBuilds ledger](docs/sources/openbuilds.md) records wheel profiles,
 assembly references and the 105ZZ width correction. The [MISUMI ledger](docs/sources/misumi.md)
 records rounded ring profiles, closures and the open B626's visible balls. Both
 retain source hashes and independent measurements. No source STEP files or
@@ -293,6 +296,7 @@ cargo build -p wheels --example reference_geometry
 cargo build -p plugin-kit --example inspect_content
 SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/wheel_geometry_test.py
 SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/bearing_geometry_test.py
+SOLIDCRAFT_CLI=/path/to/unsigned/solidcraft-cli python3 tests/csk_geometry_test.py
 ```
 
 The test compares wheels to independently imported STEP measurements, verifies
@@ -304,6 +308,18 @@ The bearing suite separately verifies MISUMI ring volumes against the STEP ledge
 bore/shoulder radii, closure recesses and colours, the open bearing's race depths,
 section vertices and eight spheres, and purchase/reuse
 behavior through the installed workflow.
+
+The CSK suite checks all 42 reference envelopes and their keyways, custom-keyway
+geometry, separate reference and purchasing metadata, BOM quantities, definition
+reuse, invalid-input rollback and save/reopen. It uses the built Bearings package;
+run `./build.sh` first. The [CSK walkthrough](examples/csk-clutches.md) explains the
+example’s five BOM rows and independent volume expectations. Rebuild and check it
+with:
+
+```bash
+python3 tests/examples_test.py --update examples/csk-clutches.steps.json
+python3 tests/examples_test.py examples/csk-clutches.steps.json
+```
 
 ## Components
 

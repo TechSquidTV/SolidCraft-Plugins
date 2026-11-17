@@ -73,8 +73,9 @@ def same_bodies(a, b):
 
 def catalog_records(design):
     """Compare purchasing and representation state independently of document-local IDs."""
-    return sorted((metadata.get("part_number"), metadata.get("bom_type"),
-                   record["product"], record["representation"], record["snapshot"]["version"])
+    return sorted((metadata.get("part_number") or "", metadata.get("bom_type"),
+                   record["product"], record["representation"], record["snapshot"]["version"],
+                   json.dumps(metadata.get("org.techsquid.specification"), sort_keys=True))
                   for component in design.get("components", [])
                   for metadata in [component.get("metadata", {})]
                   for record in [metadata.get("org.techsquid.parts")]

@@ -1005,7 +1005,8 @@ mod tests {
                     self.sketch += 1;
                     json!({"sketch": self.sketch})
                 }
-                "inspect.measure" => json!({"bodies": [{"name": "Plate", "definition": "Plate"}]}),
+                "inspect.measure" => json!({"bodies": [{"name": "Plate", "definition": "Plate",
+                    "bbox": {"min": [0, 0, 0], "max": [40, 20, 10]}}]}),
                 "model.faces" => json!({"faces": ([10.0, 30.0].into_iter().flat_map(|x| [
                     json!({"name": format!("floor{x}"), "centroid": [x, 10.0, 4.8], "plane_normal": [0, 0, 1]}),
                     json!({"name": format!("wall{x}"), "centroid": [x, 4.8, 7.4], "plane_normal": [0, 1, 0]}),

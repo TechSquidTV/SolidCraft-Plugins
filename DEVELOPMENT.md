@@ -138,6 +138,10 @@ rotated nested assemblies using a face-attached sketch, with and without nuts.
 It verifies the active path, mounting coordinates, actual nut positions and seat
 joints, then checks failed-operation rollback and save/reopen. Shared seat tests
 also verify that temporary body inspection restores selection after an error.
+The same cases run with 100 translated or rotated nested copies and assert that
+both consecutive insertions use the same host-call budget as the one-copy case.
+Shared unit tests cover multiple requested seats among 600 distant copies,
+overlapping candidates, bounds tolerance and failed bounds inspection.
 
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py` after building the packages. It checks a standalone point and a circle, moves the point, changes the source plane's offset and orientation, edits pocket depth, and reopens the design. Pocket centers, bolt-hole axes, floor depths and exact cut volumes must agree, and the source sketch keeps its existing profiles. The same edits check pocketed nuts with cosmetic and modeled threads: rigid seat joints and the actual nut bodies must follow the floor, axis and hex rotation. Separate runs reuse a modeled nut definition on an initially tilted plane without displacing the first nut. A horizontal layout covers the previously failing move from -14 to -22 mm, larger horizontal and vertical moves across the origin, and pocket-width and depth edits followed by reopening.
 
@@ -145,6 +149,8 @@ Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/nut_references_test.py
 
 The copied-tapped-seat regression preserves the existing unsupported-case refusal
 and checks full rollback, so shared face inspection cannot attach to another copy.
+A thin-plate countersink regression keeps its cone/bore junction attached even
+when the screw's origin lies just below the plate's bounds.
 
 Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/screw_references_test.py` after building. It checks clearance, counterbored, countersunk and tapped holes with cosmetic and modeled threads. Point and circle moves, plane changes, parameter-driven recess depths, reused definitions, carrier movement and save/reopen must preserve each seat and the actual screw body's axial/radial mass-center offsets and volume. Tapped cases also cover layouts created before the solid, sketches attached to faces, and insertion from outside the sketch's component. `crates/fasteners/src/seat.rs` shares face inspection and rigid-joint creation with the nut plugin; each plugin resolves its own seating geometry before adding hardware. Tapped screws use construction axes through the source points, normal to each sketch's supporting plane or attached face. The axes are inserted immediately after their source sketches, in the same component, with the original history marker and active component restored afterwards. The solid need not exist at that history position, and later thread cuts cannot split the support face. Clearance and recessed screws use named round ends so their seats follow recess edits.
 

@@ -1815,7 +1815,8 @@ mod tests {
                 "solid.hole" => json!({"changed_bodies": self.changed}),
                 "inspect.measure" => {
                     json!({"bodies": self.changed.as_array().into_iter().flatten().map(|name|
-                    json!({"name": name, "definition": name})).collect::<Vec<_>>()})
+                    json!({"name": name, "definition": name,
+                        "bbox": {"min": [0, 0, 0], "max": [40, 20, 10]}})).collect::<Vec<_>>()})
                 }
                 "model.faces" => {
                     let recessed = self

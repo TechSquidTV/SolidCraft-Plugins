@@ -105,10 +105,32 @@ pub fn find_all<R: Runner>(
     hole: &Hole,
     major: f64,
 ) -> Result<Vec<Attachment>, String> {
+    // The cone/bore junction is the actual seat of a countersunk screw, slightly
+    // above its origin. Use the same frames for bounds filtering and face matching.
+    let shift = if matches!(hole.kind, HoleKind::Countersink { .. }) {
+        fasteners::clearance::medium(major)
+            .ok_or("sketch_point: the countersink has no clearance size")?
+            / 2.0
+            - major / 2.0
+    } else {
+        0.0
+    };
+    let frames: Vec<_> = places
+        .iter()
+        .map(|place| Placement {
+            point: place.along(shift),
+            ..*place
+        })
+        .collect();
     // Axis origins still bind the first placement in the host. Keep copied tapped
     // seats refused instead of finding a copy and attaching to a different one.
-    let faces = Faces::read_all(r, bodies, !matches!(hole.kind, HoleKind::Tapped { .. }))?;
-    places
+    let faces = Faces::read_all(
+        r,
+        bodies,
+        &frames,
+        !matches!(hole.kind, HoleKind::Tapped { .. }),
+    )?;
+    frames
         .iter()
         .enumerate()
         .map(|(i, place)| find(&faces, place, axes.get(i).map(String::as_str), hole, major))
@@ -124,17 +146,7 @@ fn find(
 ) -> Result<Attachment, String> {
     let tapped = matches!(hole.kind, HoleKind::Tapped { .. });
     let clearance = fasteners::clearance::medium(major).map(|d| d / 2.0);
-    // A countersunk screw's cone meets the clearance bore above the foot of its
-    // head. Attach that point to the cone/bore junction, including any head land.
-    let shift = if matches!(hole.kind, HoleKind::Countersink { .. }) {
-        clearance.ok_or("sketch_point: the countersink has no clearance size")? - major / 2.0
-    } else {
-        0.0
-    };
-    let frame = Placement {
-        point: place.along(shift),
-        ..*place
-    };
+    let frame = *place;
     let mut found = None;
     for (body, faces) in bodies {
         let mut bores = faces.faces.iter().filter(|f| {

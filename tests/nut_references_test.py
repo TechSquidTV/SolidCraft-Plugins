@@ -65,8 +65,8 @@ def test_pocket_names():
               len({f["name"].lower() for f in features}) == len(features))
 
 
-def test_face_attached_copies(nested, with_nuts):
-    label = ('nested' if nested else 'copied') + (' pocketed nuts' if with_nuts else ' pockets only')
+def test_face_attached_copies(nested, with_nuts, copies=1):
+    label = f'{copies} ' + ('nested' if nested else 'copied') + (' pocketed nuts' if with_nuts else ' pockets only')
     with Headless() as host:
         parent = host.command('component.create', name='Assembly', activate=True, grounded=False) if nested else None
         carrier = host.command('component.create', name='Carrier', parent=parent['component'] if parent else 0,
@@ -78,14 +78,17 @@ def test_face_attached_copies(nested, with_nuts):
         host.command('sketch.finish')
         if nested:
             host.command('occurrence.move', occurrence=carrier['occurrence'], translate=[5, 0, 0])
-            copied = host.command('occurrence.copy', component=parent['component'], parent=0)['occurrence']
-            host.command('occurrence.move', occurrence=copied,
-                         to_matrix=[[0, 0, 1, 100], [0, 1, 0, 50], [-1, 0, 0, 30]])
-            path, normal, points = [copied, carrier['occurrence']], [1, 0, 0], [[112, 50, 37], [112, 50, 13]]
+        for index in range(1, copies + 1):
+            offset = 100 * index
+            copied = host.command('occurrence.copy', component=parent['component'] if nested else carrier['component'],
+                                  parent=0, translate=[offset, 0, 0])['occurrence']
+            if nested:
+                host.command('occurrence.move', occurrence=copied,
+                             to_matrix=[[0, 0, 1, offset], [0, 1, 0, 50], [-1, 0, 0, 30]])
+        if nested:
+            path, normal, points = [copied, carrier['occurrence']], [1, 0, 0], [[offset + 12, 50, 37], [offset + 12, 50, 13]]
         else:
-            copied = host.command('occurrence.copy', component=carrier['component'], parent=0,
-                                  translate=[100, 0, 0])['occurrence']
-            path, normal, points = [copied], [0, 0, 1], [[88, 0, 12], [112, 0, 12]]
+            path, normal, points = [copied], [0, 0, 1], [[offset - 12, 0, 12], [offset + 12, 0, 12]]
         host.command('component.activate', component=carrier['component'], occurrence=path[-1], path=path)
         approval = host.command('plugin.inspect', path=package('techsquid-nuts'))['approval']
 
@@ -107,7 +110,7 @@ def test_face_attached_copies(nested, with_nuts):
         check(label + ': fixture uses the intended copy', all(
             same(next(p['world'] for p in before['points'] if p['id'] == point + '.center'), expected)
             for point, expected in zip(['a', 'b'], points)))
-        definition = None
+        definition, calls = None, []
         for index, point in enumerate(['a', 'b']):
             result = insert(point)
             check(label + f': insertion {index + 1} succeeds', 'error' not in result, result.get('error', ''))
@@ -128,6 +131,7 @@ def test_face_attached_copies(nested, with_nuts):
             check(label + f': insertion {index + 1} reports the selected pocket floor',
                   same(result['at'], floor) and same(result['normal'], normal))
             if with_nuts:
+                calls.append(result['library']['host_calls'])
                 name = result['component']['component']
                 check(label + f': insertion {index + 1} creates then reuses one definition',
                       result['component']['reused'] == (index == 1) and (definition is None or definition == name))
@@ -153,6 +157,7 @@ def test_face_attached_copies(nested, with_nuts):
         host.command('file.save_as', path=saved)
         host.command('doc.open', path=saved)
         check(label + ': saved geometry reopens unchanged', host.command('inspect.measure', summary=True) == measure)
+        return calls
 
 
 def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
@@ -342,8 +347,11 @@ def test(with_nuts=False, modeled=False, reuse=False, large_moves=False):
 if __name__ == "__main__":
     test_pocket_names()
     for nested in [False, True]:
-        for with_nuts in [False, True]:
-            test_face_attached_copies(nested, with_nuts)
+        test_face_attached_copies(nested, False)
+        baseline = test_face_attached_copies(nested, True)
+        many = test_face_attached_copies(nested, True, copies=100)
+        check(('nested' if nested else 'copied') + ': 100 copies use the same insertion budget as one',
+              baseline is not None and many == baseline, f'{baseline} vs {many}')
     test()
     test(with_nuts=True)
     test(with_nuts=True, modeled=True, reuse=True)

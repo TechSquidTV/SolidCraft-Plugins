@@ -18,7 +18,7 @@ pub fn find_all<R: Runner>(
     let radius = fasteners::clearance::medium(major)
         .ok_or("sketch_point: the pocket has no bolt clearance size")?
         / 2.0;
-    let faces = Faces::read_all(r, bodies, true)?;
+    let faces = Faces::read_all(r, bodies, places, true)?;
     places
         .iter()
         .map(|place| find(&faces, place, pocket, radius))

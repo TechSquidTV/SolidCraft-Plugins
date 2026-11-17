@@ -95,6 +95,11 @@ Pocket preparation also restores this context after editing a face-attached sour
 sketch, since the host switches to the sketch's original authoring copy during the
 edit. Screw and nut seat inspection shares one resolver: faces are inspected in
 world placement, while hole-based joints use the definition name and exact occurrence path.
+It measures the cut bodies' placed bounds in one batch, then reads faces and paths
+only for copies containing a requested seating point. Distant copies do not add
+host calls per insertion. Overlapping candidates remain eligible so ambiguous
+seats are still refused. Countersunk screws use their cone/bore junction for this
+filter, including when the screw origin lies outside a thin plate.
 Tapped screws keep their existing first-placement limitation because the host's
 axis-based joint origins do not honor an exact nested path.
 The host exposes that body-to-path mapping through selection details; the resolver

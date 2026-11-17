@@ -179,6 +179,30 @@ def test(kind, modeled=False, reuse=False, layout="plane", active_root=False):
         verify("reopen moved carrier", [], xy, 20, sinks, 90, 60, (100, 50, 20))
 
 
+def test_thin_countersunk_seat():
+    """Filter by the cone/bore junction, even when the screw origin is below the plate."""
+    with Headless() as host:
+        host.command('solid.box', length=30, width=30, height=1.75,
+                     corner=[-15, -15, 0], body_name='Plate')
+        sketch = host.command('sketch.create', plane={'face': [0, 0, 1.75]}, name='Mount')['sketch']
+        host.command('sketch.point', point=[0, 0], id='p')
+        host.command('sketch.finish')
+        approval = host.command('plugin.inspect', path=package('techsquid-screws'))['approval']
+        result = host.command('plugin.run', path=package('techsquid-screws'), approval=approval,
+                              entry='make-screw', allow_error=True, params={
+                                  'size': 'M3', 'length': 8, 'create': 'Screw and hole',
+                                  'hole_type': 'Clearance, head recessed', 'head': 'Countersunk',
+                                  'thread_modeled': False, 'sketch': str(sketch), 'sketch_point': 'p'})
+        check('thin countersunk seat builds', 'error' not in result, str(result))
+        if 'error' in result:
+            return
+        check('thin countersunk fixture puts the screw origin below the plate', result['result']['at'][2] < 0)
+        joints = host.command('joint.inspect')['joints']
+        check('thin countersunk seat binds the junction inside the plate', len(joints) == 1
+              and not joints[0]['errors'] and not joints[0]['conflicts']
+              and all(same(joints[0][side]['frame']['origin'], [0, 0, 0.09]) for side in ['a', 'b']))
+
+
 def test_copied_tapped_seat_is_refused():
     """Do not turn the existing unsupported case into a joint on the wrong copy."""
     with Headless() as host:
@@ -205,6 +229,7 @@ def test_copied_tapped_seat_is_refused():
 
 
 if __name__ == "__main__":
+    test_thin_countersunk_seat()
     test_copied_tapped_seat_is_refused()
     for kind in ("clearance", "counterbore", "countersink", "tapped"):
         test(kind)

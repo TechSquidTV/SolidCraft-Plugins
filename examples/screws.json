@@ -1,9 +1,14 @@
 {
-  "format": "solidcraft/57",
+  "format": "solidcraft/58",
   "format_pending": [
-    "extrude-to-object-keeps-picked-placements",
-    "linked-cosmetic-threads",
-    "plane-at-angle-follows-named-axis"
+    "bounding-solid-side-margins",
+    "joint-lateral-offsets",
+    "sketch-3d-constraints",
+    "sketch-3d-dimensions",
+    "sketch-3d-relations",
+    "sketch-reference-placements",
+    "step-import-solid-items",
+    "whole-profile-holes-share-a-curve"
   ],
   "name": "screws",
   "units": "mm",
@@ -13,14 +18,8 @@
         "03aa0cd0a0b88218b1eb9290abf4ab1f13348e59bd4db8bbfe504c140c3f3f26": [
           101
         ],
-        "4d15597691916658caef34f75c9eedd1febc1b62b029f66d726c2fbab958d1da": [
-          13
-        ],
         "6bdc79c1434de1d0e37b51637e4c6bce692d80073b2abe8312e13553f8e38f82": [
           46
-        ],
-        "74b31c55b55bca42d78b8cc8a9f2f33ce475067688e059e9a97e6e5f75d66684": [
-          22
         ],
         "9d0e40ad205d5e0fe493f4279af43a43fbe348a8f643cb8ab83fe600b5507009": [
           90
@@ -34,8 +33,14 @@
         "add583f7f55135ce561ce389780289e757518dfbb5bdd5444006aaf280eb761b": [
           32
         ],
+        "be39b1307d8cdd7af7610d7dd0510c6d04d45112d70c67d965345f236cd429f6": [
+          13
+        ],
         "c0c4e2d290f45c39e138e5311259c47e6ad3c9e7d8c28a38d040d3bdde314f22": [
           2
+        ],
+        "c7f88c5aac41f27ee503f1f31ac4151e7c27a786361be4fa801e1bc64ea3223f": [
+          22
         ],
         "d499b98573b4c9f68d1f3bf96d86c81e335a724e01e293c6116ac87496b3e4d3": [
           56
@@ -4587,7 +4592,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "7a9f8cb1ff245619670b104908affb0b8456d67a6e8730a1f1b593c4fa4e6bbe",
+            "sha256": "f62dead8b4bc91bc544b1b247ad9f932453e7859545789f4d8bf5f9790857f92",
             "version": 2
           },
           "version": 1
@@ -4610,24 +4615,24 @@
       "name": "Screw M5 x 16 socket (2)",
       "parent": 11,
       "metadata": {
-        "bom_type": "purchased",
-        "description": "ISO 4762",
+        "bom_type": "normal",
+        "description": "Custom screw geometry",
         "org.techsquid.parts": {
           "creator": "techsquid-screws",
-          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Socket\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
-          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Socket\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
+          "product": "{\"catalog\":\"techsquid-custom\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Socket\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"custom\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"techsquid-custom\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Socket\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":8.5,\"height\":5.0}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"custom\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
           "site": [
             -365.0,
             -105.0,
             0.0
           ],
           "snapshot": {
-            "sha256": "ae2a618ad6b3cfd8d488e046ca784d2af2f6957bdb9e52f14218768c9624f553",
+            "sha256": "98d9f49e4d63cfda4b98e71c15b9e17029b080af6a57f9c27010f490dfb00d98",
             "version": 2
           },
           "version": 1
         },
-        "part_number": "ISO 4762 M5x0.8 x 16"
+        "part_number": "Custom socket [3f276d9c6e2a04d15147d71ce85140a2f31e2eb5cbe1b3f6535890cc6e0b7832]"
       }
     },
     {
@@ -4636,24 +4641,24 @@
       "name": "Screw M5 x 16 button",
       "parent": 11,
       "metadata": {
-        "bom_type": "purchased",
-        "description": "ISO 7380-1",
+        "bom_type": "normal",
+        "description": "Custom screw geometry",
         "org.techsquid.parts": {
           "creator": "techsquid-screws",
-          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Button\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":{\"Button\":{\"flat\":5.0,\"radius\":5.5}},\"head\":{\"Round\":{\"diameter\":9.5,\"height\":2.75}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"button\"}",
-          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Button\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":{\"Button\":{\"flat\":5.0,\"radius\":5.5}},\"head\":{\"Round\":{\"diameter\":9.5,\"height\":2.75}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"button\"},\"revision\":\"1\"}",
+          "product": "{\"catalog\":\"techsquid-custom\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Button\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":{\"Button\":{\"flat\":5.0,\"radius\":5.5}},\"head\":{\"Round\":{\"diameter\":9.5,\"height\":2.75}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"custom\",\"members\":[],\"part\":\"button\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"modeled\",\"product\":{\"catalog\":\"techsquid-custom\",\"configuration\":{\"drive\":\"Torx\",\"head\":\"Button\",\"hex\":null,\"nominal_length_mm\":16.0,\"phillips\":null,\"resolved\":{\"crown\":{\"Button\":{\"flat\":5.0,\"radius\":5.5}},\"head\":{\"Round\":{\"diameter\":9.5,\"height\":2.75}},\"major\":5.0,\"pitch\":0.8,\"tip\":\"Flat\"},\"shank_length_mm\":16.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":{\"depth\":1.65,\"number\":25}},\"kind\":\"custom\",\"members\":[],\"part\":\"button\"},\"revision\":\"1\"}",
           "site": [
             -545.0,
             -105.0,
             0.0
           ],
           "snapshot": {
-            "sha256": "f1afb4781cf021bcc378b24e5b8ffcc68bd5fa23d979b3424d33f12eaacf6843",
+            "sha256": "68b56471fdfa121f010a9d37456ba1a5972947f03d13dc71a4da107aa8d2b751",
             "version": 2
           },
           "version": 1
         },
-        "part_number": "ISO 7380-1 M5x0.8 x 16"
+        "part_number": "Custom button [35bcddc7df19b98c338218056cfaf0ee5749e911f8a116230aab247b780d7dd1]"
       }
     },
     {
@@ -4674,7 +4679,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "89f4b612e4f2660c09e0cd1e13d9256327b0f30b5d6b3b1d4acf7269d1f17279",
+            "sha256": "3a4cbbe18e2b8cdf31906f3cc8326d2ea4b181a81f82948aea5e615b292cb19d",
             "version": 2
           },
           "version": 1
@@ -4700,7 +4705,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "f9f3c471cfe2e38e646bd87235d3e737d4e3a7dce85c3591c8b1cb7ca59059ce",
+            "sha256": "5151eb9fa2e93831a5ab0638152055c45f8eb7d2124b5d69f5813d690a9888a8",
             "version": 2
           },
           "version": 1
@@ -4726,7 +4731,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "215561d889c2fa67de49566a508161943a0ef7601b1d3e0495758b30f641a8c2",
+            "sha256": "23b22bb3c299d81aaf1a4049502724e99911f8a47a86fd706171a53af06987ff",
             "version": 2
           },
           "version": 1
@@ -4752,7 +4757,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "463eea872c2dc47427e408f943b290de43d544bf3d4610553101d61a4bb2f48a",
+            "sha256": "8319c72d3743ed3aeeea3d33efe8262db5bbe23829c6b4487e08eb12b11e190f",
             "version": 2
           },
           "version": 1
@@ -4778,7 +4783,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "145f2f54068c53e108fbf783051d5916da95af9d11e7dc9b7bc7eb39ec38bdff",
+            "sha256": "0a2faa7ce166269f80edcf871b1b273a639cacb0d92a512a9d69831a125d5edd",
             "version": 2
           },
           "version": 1
@@ -4804,7 +4809,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "6ba5e42f72a13daaf5825eb0731f9996bade751acaa21d645d8ea1c46614733d",
+            "sha256": "804304389e577459ab93c39180f2096ef13e5055349341ab9ae1e024af849313",
             "version": 2
           },
           "version": 1

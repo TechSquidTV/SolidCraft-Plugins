@@ -16,19 +16,10 @@ const MAX_RAILS: usize = 16;
 // SolidCraft's Wasm host allows 256 calls, including queries and guest logging.
 const MAX_HOST_CALLS: usize = 256;
 
-#[derive(Default)]
-struct CallCount(usize);
-impl Runner for CallCount {
-    fn run(&mut self, _: &str, _: Value) -> Result<Value, String> {
-        self.0 += 1;
-        Ok(Value::Null)
-    }
-}
-
 /// Count the actual catalog drawing commands, plus the fixed operations in `build`.
 /// Reserve eight calls for selection, queries, and the guest's status/error logging.
 fn call_budget(p: &Params, profile: &Profile, rails: usize) -> Result<usize, String> {
-    let mut drawing = CallCount::default();
+    let mut drawing = crate::CallCount::default();
     crate::draw_profile(&mut drawing, profile)?;
     let mut per_rail = 6; // start plane, section, finish, sweep, visibility, group
     let mut sides = 0;

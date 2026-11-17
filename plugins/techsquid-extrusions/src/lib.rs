@@ -99,12 +99,51 @@ pub fn built_at(p: &Params) -> Site {
     }
 }
 
+/// Counts the commands a build sends, with no host behind it. Every sketch it
+/// creates is sketch 1, which is all a build reads from a reply.
+#[derive(Default)]
+pub(crate) struct CallCount(pub(crate) usize);
+impl Runner for CallCount {
+    fn run(&mut self, _: &str, _: Value) -> Result<Value, String> {
+        self.0 += 1;
+        Ok(json!({"sketch": 1}))
+    }
+    fn site(&mut self, _: [f64; 2]) -> Placement {
+        Placement::on_origin()
+    }
+}
+
+/// What the library spends on a new definition beside its build: naming it, its
+/// metadata and the record that lets a later run reuse it. Through the host a plain
+/// rail took 18 and a tapped rail drilled from two faces took 30.
+const SEAL_CALLS: usize = 48;
+
+/// The longest build one run has room for. The library stops a run at 248 commands,
+/// and reading the design, one placement and the reply take 20 of them.
+const MAX_BUILD_CALLS: usize = 248 - 20 - SEAL_CALLS;
+
+/// The commands `build_rail` sends for this rail.
+fn build_calls(profile: &Profile, p: &Params) -> Result<usize, String> {
+    let mut count = CallCount::default();
+    build_rail(&mut count, profile, p, &Placement::on_origin(), "Rail")?;
+    Ok(count.0)
+}
+
 /// Build fixed-length components on points or independent rails on sketch lines.
 pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     if let Some(path) = &p.path {
         return path::make(r, p, path);
     }
     let profile = Profile::new(p.slot, p.grid).ok_or("size: this size has no section")?;
+    // Every hole is two circles in each slot it crosses, so a wide rail with many
+    // holes can ask for more than one run is allowed. Say so before building any of it.
+    let build = build_calls(&profile, p)?;
+    if build > MAX_BUILD_CALLS {
+        return Err(format!(
+            "holes: {} holes in this rail take {build} commands and one run has room for {MAX_BUILD_CALLS}; drill fewer holes",
+            p.holes.len()
+        ));
+    }
     let spots = place::resolve_all(r, &p.place)?;
     let places: Vec<Placement> = if spots.is_empty() {
         vec![Placement::on_origin()]
@@ -125,7 +164,7 @@ pub fn make_extrusion<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String>
     let mut library = component::Library::new(
         r,
         component::Budget {
-            creation_calls: 160,
+            creation_calls: build + SEAL_CALLS,
             placements: places.len(),
         },
     )?;
@@ -428,6 +467,44 @@ mod tests {
         let mut rec = Rec { calls: vec![] };
         let summary = make_extrusion(&mut rec, &p).unwrap();
         (summary, rec.calls)
+    }
+
+    #[test]
+    fn the_counted_build_is_the_build_the_host_gets() {
+        for v in [
+            json!({"slot": "T-slot", "size": "2020", "length": 300}),
+            json!({"slot": "T-slot", "size": "2040", "length": 300, "end_taps": "Both",
+                "holes": "+Y 20 80 +X 10 90"}),
+            json!({"slot": "V-slot", "size": "2040", "length": 120}),
+        ] {
+            let p = rail::parse(&v).unwrap();
+            let profile = Profile::new(p.slot, p.grid).unwrap();
+            let mut rec = Rec { calls: vec![] };
+            build_rail(&mut rec, &profile, &p, &Placement::on_origin(), "Rail").unwrap();
+            assert_eq!(build_calls(&profile, &p).unwrap(), rec.calls.len(), "{v}");
+        }
+    }
+
+    #[test]
+    fn a_rail_with_more_holes_than_a_run_has_room_for_is_refused_on_holes() {
+        // 19 places across the four slots of a 2080 are 152 circles.
+        let holes = (1..=19)
+            .map(|i| (50 * i).to_string())
+            .collect::<Vec<_>>()
+            .join(" ");
+        let many = json!({"slot": "T-slot", "size": "2080", "length": 1000,
+            "holes": format!("+X {holes}")});
+        let p = rail::parse(&many).unwrap();
+        let mut rec = Rec { calls: vec![] };
+        let err = make_extrusion(&mut rec, &p).unwrap_err();
+        assert!(err.starts_with("holes: 19 holes"), "{err}");
+        // Nothing was sent: the rail is refused before the design is touched.
+        assert!(rec.calls.is_empty());
+        // Twelve of them fit, as they do through the host.
+        let fewer = json!({"slot": "T-slot", "size": "2080", "length": 1000,
+            "holes": "+X 50 100 150 200 250 300 350 400 450 500 550 600"});
+        let p = rail::parse(&fewer).unwrap();
+        assert!(make_extrusion(&mut Rec { calls: vec![] }, &p).is_ok());
     }
 
     fn all<'a>(calls: &'a [(String, Value)], command: &str) -> Vec<&'a Value> {

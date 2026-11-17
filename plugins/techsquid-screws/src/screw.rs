@@ -371,6 +371,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     );
     let mut p = Params {
         custom: standard.is_none()
+            || !standard_lists(head, drive)
             || tip == Tip::Point
             || (tip == Tip::Cup && (head, drive) != (Head::Set, Drive::HexSocket))
             || resolved.major.is_none_or(|major| {
@@ -1042,6 +1043,21 @@ impl Params {
     pub fn socket_end_chamfer_length(&self) -> Option<f64> {
         let half = (self.socket_end_angle_deg() / 2.0).to_radians();
         self.socket_end_chamfer().map(|radial| radial / half.tan())
+    }
+}
+
+/// Whether the standard that sizes this head lists the drive. A Torx recess, or a
+/// slot in a socket head, is still sized from that standard, but it is not the screw
+/// the standard describes, so it takes a part number of its own.
+fn standard_lists(head: Head, drive: Drive) -> bool {
+    match head {
+        Head::Socket | Head::Button => drive == Drive::HexSocket,
+        Head::Countersunk => matches!(drive, Drive::HexSocket | Drive::Phillips | Drive::Slotted),
+        Head::Hex => drive == Drive::None,
+        Head::Pan => matches!(drive, Drive::Phillips | Drive::Slotted),
+        Head::Cheese => drive == Drive::Slotted,
+        Head::Set => matches!(drive, Drive::HexSocket | Drive::Slotted),
+        Head::Rod => true,
     }
 }
 
@@ -2509,6 +2525,50 @@ mod tests {
         );
         assert_eq!(standard(json!({"head": "Threaded rod"})), None);
         assert_eq!(standard(json!({"head_height": 4})), None);
+    }
+
+    #[test]
+    fn a_drive_the_standard_does_not_list_is_a_custom_screw() {
+        let custom = |v: Value| parse(&v).unwrap().custom;
+        // The usual drive of every head, and the other drives its standards list.
+        for head in [
+            "Socket head",
+            "Button head",
+            "Countersunk",
+            "Hex head",
+            "Pan head",
+            "Cheese head",
+            "Set screw",
+        ] {
+            assert!(!custom(json!({"head": head})), "{head}");
+        }
+        for (head, drive) in [
+            ("Countersunk", "Phillips"),
+            ("Countersunk", "Slotted"),
+            ("Pan head", "Slotted"),
+            ("Set screw", "Slotted"),
+        ] {
+            assert!(
+                !custom(json!({"head": head, "drive": drive})),
+                "{head} {drive}"
+            );
+        }
+        // ISO 4762 has a hex socket only, so these are not the screw it describes.
+        for (head, drive) in [
+            ("Socket head", "Torx"),
+            ("Socket head", "Slotted"),
+            ("Button head", "Torx"),
+            ("Button head", "None"),
+            ("Countersunk", "Torx"),
+            ("Hex head", "Slotted"),
+            ("Pan head", "Torx"),
+            ("Cheese head", "Torx"),
+        ] {
+            assert!(
+                custom(json!({"head": head, "drive": drive})),
+                "{head} {drive}"
+            );
+        }
     }
 
     #[test]

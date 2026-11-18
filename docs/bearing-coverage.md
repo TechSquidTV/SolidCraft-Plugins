@@ -130,6 +130,11 @@ compatibility aliases or silently reuse the old geometry.
 
 `crates/bearings` remains the owner of product identity, closure type, measurements
 and native geometry. Both the Bearings workflow and wheel recipes use its factory.
+A product is one row of `products!` in `crates/bearings/src/lib.rs`: its saved identity,
+supplier, part number, base size, closure and measured section. The envelope is one row
+of `Size::envelope` per base size, shared by every closure and supplier of that size.
+`crates/bearings/src/build.rs` builds the rings and closure faces for radial bearings
+and CSK clutches alike.
 Reuse a section across variants only when their references establish the match;
 retain separate purchasing identities for different sourced products. Extend the
 catalog-generated choices/reference table and independent geometry tests together.

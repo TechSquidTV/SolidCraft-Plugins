@@ -1,12 +1,7 @@
 //! CSK reference presets and customizable exterior geometry. See docs/sources/csk.md.
-use super::Dimensions;
+use super::{build, Envelope};
 pub mod exterior;
-use plugin_kit::{
-    host::sketch_id,
-    name::part,
-    revolve::{self, Section},
-    Placement, Runner,
-};
+use plugin_kit::{host::sketch_id, name::part, revolve::Section, Placement, Runner};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -152,7 +147,7 @@ impl Csk {
         }
     }
 
-    pub fn dimensions(self) -> Dimensions {
+    pub fn dimensions(self) -> Envelope {
         let (size, _, sealed) = self.configuration();
         let (bore, diameter, plain_width, sealed_width) = match size {
             Size::S8 => (8.0, 22.0, 9.0, 9.0),
@@ -166,11 +161,10 @@ impl Csk {
             Size::S35 => (35.0, 72.0, 17.0, 22.0),
             Size::S40 => (40.0, 80.0, 22.0, 27.0),
         };
-        Dimensions {
+        Envelope {
             bore,
             diameter,
             width: if sealed { sealed_width } else { plain_width },
-            section: None,
         }
     }
     pub fn keyways(self) -> (Option<Keyway>, Option<Keyway>) {
@@ -249,12 +243,11 @@ impl Geometry {
             .is_none_or(|preset| *self != preset.geometry())
     }
 
-    pub fn dimensions(&self) -> Dimensions {
-        Dimensions {
+    pub fn dimensions(&self) -> Envelope {
+        Envelope {
             bore: self.bore,
             diameter: self.diameter,
             width: self.width,
-            section: None,
         }
     }
 
@@ -344,47 +337,24 @@ impl Geometry {
         self.validate()?;
         let exterior = exterior::resolve(self)?;
         let section = &exterior.section;
-        let mut steel = Vec::new();
-        for (label, outer) in [("Inner ring", false), ("Outer ring", true)] {
-            let name = format!("{base} {label}");
-            let feature = part(base, label);
-            revolve::build(
-                r,
-                frame,
-                &part(&feature, "Section"),
-                Section::Solid(&exterior::ring(self, section, outer)),
-                json!({"name":feature,"body_name":name}),
-            )?;
-            steel.push(name);
-        }
-        self.cut_keyways(r, base, frame)?;
-        r.run(
-            "appearance.assign",
-            json!({"bodies":steel,"color":[160,160,160]}),
+        let sections = [false, true].map(|outer| exterior::ring(self, section, outer));
+        let steel = build::rings(
+            r,
+            frame,
+            base,
+            [Section::Solid(&sections[0]), Section::Solid(&sections[1])],
         )?;
+        self.cut_keyways(r, base, frame)?;
+        build::colour(r, &steel, build::STEEL)?;
+        let shoulders = [section.inner_ring_radius, section.outer_ring_radius];
         for (side, sign) in [("front", 1.0), ("back", -1.0)] {
             let sealed = self.closure == Closure::LipSeals
                 || self.closure == Closure::SingleLipSeal && sign > 0.0;
             let label = format!("{} {side}", if sealed { "Seal" } else { "Cover" });
-            let name = format!("{base} {label}");
-            let feature = part(base, &label);
             let z = sign * (self.width / 2.0 - section.closure_recess);
-            revolve::build(
-                r,
-                frame,
-                &part(&feature, "Section"),
-                Section::Surface(&[
-                    [section.inner_ring_radius, z],
-                    [section.outer_ring_radius, z],
-                ]),
-                json!({"name":feature,"body_name":name}),
-            )?;
-            let color = if sealed {
-                [64, 64, 64]
-            } else {
-                [160, 160, 160]
-            };
-            r.run("appearance.assign", json!({"bodies":[name],"color":color}))?;
+            let face = build::face(r, frame, base, &label, z, shoulders)?;
+            let colour = if sealed { build::RUBBER } else { build::STEEL };
+            build::colour(r, &[face], colour)?;
         }
         Ok(())
     }

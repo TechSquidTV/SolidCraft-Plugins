@@ -56,9 +56,9 @@ mod tests {
                 Dimension::mm("bore", d.bore),
                 Dimension::mm("outside_diameter", d.diameter),
                 Dimension::mm("width", d.width),
-                Dimension::mm("edge_radius", d.section.as_ref().unwrap().edge_radius),
+                Dimension::mm("edge_radius", bearing.section().edge_radius),
             ];
-            if let Some(recess) = d.section.as_ref().unwrap().closure_recess {
+            if let Some(recess) = bearing.section().closure_recess {
                 dimensions.push(Dimension::mm("closure_recess", recess));
             }
             let mut sources = vec![Source {

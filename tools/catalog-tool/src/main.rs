@@ -239,7 +239,6 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                             title.push_str(&format!("; {label} {} × {}", key.width, key.depth));
                         }
                     }
-                    title.push_str(&format!("; {}", exterior_basis(csk).to_lowercase()));
                     json!({"const":csk.designation(), "title":title})
                 })
                 .collect();

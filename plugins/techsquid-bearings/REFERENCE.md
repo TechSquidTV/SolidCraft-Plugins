@@ -49,7 +49,7 @@ representations, unsuitable for mass prediction or one-way motion simulation.
 
 Eight supplied STEP files establish measured exterior profiles. Other sizes use
 interpolated radial proportions; custom envelopes use the same estimation rule.
-The preset list and generated table identify measured versus estimated exteriors.
+The generated table identifies measured versus estimated exteriors.
 Deep custom slots widen the respective ring when necessary; combinations leaving
 no room for a closure are rejected. The [source ledger](../../docs/sources/csk.md)
 describes the measurements and interpolation limits.
@@ -207,8 +207,8 @@ representation identities are unchanged by this catalog expansion.
 
 CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
 there is no old-route alias. Previous supplier-identified CSK definitions are not reused as the new
-source-neutral specifications. Their existing geometry is preserved. Ring details
-in the Rust `Dimensions` API live under `section`.
+source-neutral specifications. Their existing geometry is preserved. Rust callers use
+`bearing.dimensions()` for the mounting envelope and `bearing.section()` for ring details.
 
 Earlier PR revisions accepted `part_number` and `purchase_*` fields in `make-csk`.
 These inputs are now rejected without aliases. Old saved definitions remain intact

@@ -9,13 +9,13 @@ assembled. It is the package’s only entry.
 |---|---|---|
 | `size` | `Solid V Wheel` | Product name from the catalog |
 | `assembled` | `true` | Include two matching bearings and one internal shim |
-| `placement` | empty | Sketch points or circles picked in the view; a circle means its centre |
+| `placement` | empty | Sketch points or circles picked in the view; a circle, or a click inside one, means its centre |
 
 The local origin is the wheel centre plane, with Z along the axle. Points or circles
 already selected when the dialog opens fill Placement. With nothing picked, insert
 at the origin. Up to 32 points can reuse a definition; a new
 assembly may need a smaller batch. Errors leave the design unchanged.
-Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name. An edge, face or body is refused against Placement.
+Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle, `{"type": "profile", "sketch": 2, "index": 0}` for the inside of one. `sketch` is the sketch's feature id or its name. A region that is not the inside of a circle is refused against Placement, and so is an edge, face or body.
 No arbitrary diameter, seat, material or bearing substitutions are accepted.
 
 ## Sizes and composition

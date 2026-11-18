@@ -45,12 +45,13 @@
           "additionalProperties": true,
           "properties": {
             "placement": {
-              "description": "Sketch points or circles picked in the view. With none, one sits on the origin.",
+              "description": "Sketch points, circles or inside a circle. With none, one sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],
@@ -96,7 +97,7 @@
             },
             "closure": {
               "default": "Preset",
-              "description": "Keep the preset, or choose visible covers or seals. Custom defaults to dust covers. Width does not change with it.",
+              "description": "Keep the preset, or choose visible covers or seals. Custom defaults to dust covers. Width stays the same.",
               "enum": [
                 "Preset",
                 "Dust covers",
@@ -126,7 +127,7 @@
               "type": "string"
             },
             "inner_keyway_angle": {
-              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer slots at 180°.",
+              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer at 180°.",
               "title": "Inner keyway angle",
               "type": "number",
               "unit": "deg"
@@ -157,7 +158,7 @@
               "type": "string"
             },
             "outer_keyway_angle": {
-              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer slots at 180°.",
+              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer at 180°.",
               "title": "Outer keyway angle",
               "type": "number",
               "unit": "deg"
@@ -177,12 +178,13 @@
               "unit": "mm"
             },
             "placement": {
-              "description": "Sketch points or circles picked in the view. With none, one sits on the origin.",
+              "description": "Sketch points, circles or inside a circle. With none, one sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],
@@ -191,7 +193,7 @@
             },
             "size": {
               "default": "CSK12P",
-              "description": "Choose an editable reference preset or Custom dimensions. Measured/estimated describes the exterior ring profile, not internal construction.",
+              "description": "Choose an editable reference preset or Custom dimensions. Measured/estimated describes the exterior ring profile only.",
               "oneOf": [
                 {
                   "const": "CSK8",

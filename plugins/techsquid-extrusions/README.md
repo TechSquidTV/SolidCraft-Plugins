@@ -13,7 +13,7 @@ Go from a sketch to a frame with configurable T-slot and V-slot rails for [Solid
 
 ## Get started
 
-Open **Plugins > Extrusion** and pick one or more sketch points or circles for **Placement** in the view. Points or circles already selected when the dialog opens fill the field. Choose a profile, size and length, then press **Run**. With nothing picked, the rail starts at the origin. The default is a 500 mm T-slot 2020 rail.
+Open **Plugins > Extrusion** and pick one or more sketch points or circles for **Placement** in the view; clicking inside a circle picks it too. Points or circles already selected when the dialog opens fill the field. Choose a profile, size and length, then press **Run**. With nothing picked, the rail starts at the origin. The default is a 500 mm T-slot 2020 rail.
 
 ## Sketch-driven rails
 

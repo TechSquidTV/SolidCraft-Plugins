@@ -89,12 +89,13 @@
               "unit": "mm"
             },
             "placement": {
-              "description": "The sketch points or circles to put a nut on, picked in the view. Each gets a nut, and its pocket if Create says so. With nothing picked, one nut sits on the origin.",
+              "description": "The sketch points or circles to put a nut on, picked in the view. Click a circle or inside it for its centre. Each gets a nut, and its pocket if Create says so. With nothing picked, one nut sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],

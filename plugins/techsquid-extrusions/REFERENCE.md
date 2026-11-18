@@ -12,7 +12,7 @@ A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot with an Ø4.2 cor
 
 All sizes are millimetres. The form opens on a 2020 T-slot, 500 mm long.
 
-In the default **Fixed length** mode, pick a sketch point, or a circle, for Placement in the view. Points or circles already selected when the dialog opens fill the field. The rail's section is centred on that point, and the rail runs out of the sketch along its normal for its length. The section's width is along the sketch X and its height along the sketch Y, so a 2040 is 20 mm along X and 40 mm along Y. With nothing picked, the rail stands on the origin: the section is on the XY plane and the rail runs along +Z. The reply says which of these happened in `placed`. Pick several points or circles and each one gets a rail, as one undo step; `count` and `points` in the reply list them. An edge, face or body is refused against Placement.
+In the default **Fixed length** mode, pick a sketch point, or a circle (on it or anywhere inside it), for Placement in the view. Points or circles already selected when the dialog opens fill the field. The rail's section is centred on that point, and the rail runs out of the sketch along its normal for its length. The section's width is along the sketch X and its height along the sketch Y, so a 2040 is 20 mm along X and 40 mm along Y. With nothing picked, the rail stands on the origin: the section is on the XY plane and the rail runs along +Z. The reply says which of these happened in `placed`. Pick several points or circles and each one gets a rail, as one undo step; `count` and `points` in the reply list them. A region that is not the inside of a circle is refused against Placement, and so is an edge, face or body.
 
 | Parameter | Default | Meaning |
 |---|---|---|
@@ -24,7 +24,7 @@ In the default **Fixed length** mode, pick a sketch point, or a circle, for Plac
 | `thread_modeled` | on | On cuts the thread into a tapped end. Off lists the thread and leaves the bore plain |
 | `holes` | empty | Where M5 screw holes go across the rail, as distances from the start in mm: `10, 290`. A face name puts the distances after it on that face: `+X 10, 290 -Y 150` |
 | `hole_face` | `+Y` | `+Y`, `-Y`, `+X` or `-X`: the face the screws go in from, for the holes that name none. Y is the section's height and X its width |
-| `placement` | empty | Fixed length: the sketch points or circles each rail starts on, picked in the view; a circle means its centre. Sketch driven: 1 to 16 straight lines from one sketch. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
+| `placement` | empty | Fixed length: the sketch points or circles each rail starts on, picked in the view; a circle, or a click inside one, means its centre. Sketch driven: 1 to 16 straight lines from one sketch. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle, `{"type": "profile", "sketch": 2, "index": 0}` for the inside of one. `sketch` is the sketch's feature id or its name |
 
 In fixed-length mode, the reply gives `slot`, `size`, `length`, `width`, `height`, `area_mm2` (the area of the section), `end_taps`, `thread_modeled` and `holes`, each with its `face` and its distance `at`. It also says where the rails went: `count`, `points`, the first one's `at` and `normal`, `placed` (how the point was found) and `component`.
 
@@ -110,7 +110,7 @@ The nut does not look for the slot. It goes on the point you give it, and Rail r
 | `slot` | `T-slot` | `T-slot` or `V-slot`, the rail the nut sits in. It sets how far under the face the nut hangs |
 | `along` | `Sketch X` | `Sketch X` or `Sketch Y`, the sketch axis the rail runs along |
 | `thread_modeled` | on | On cuts the thread into the hole. Off drills the selected thread's tap hole (2.5 mm for M3, 3.3 mm for M4, 4.2 mm for M5) and lists the thread |
-| `placement` | empty | The sketch points or circles to put a nut on, picked in the view; a circle means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
+| `placement` | empty | The sketch points or circles to put a nut on, picked in the view; a circle, or a click inside one, means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle, `{"type": "profile", "sketch": 2, "index": 0}` for the inside of one. `sketch` is the sketch's feature id or its name |
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`, and where the nuts went, as a rail's reply does.
 

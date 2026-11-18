@@ -151,3 +151,22 @@ Existing B626ZZ and B608ZZ measurements illustrate the required evidence format,
 but do not establish dimensions for the larger products. Reuse the measurement
 and native geometry workflow, not their section values. Record each acquired
 reference and its measurements before implementing the corresponding tracker row.
+
+## Catalog identities for estimated closure variants
+
+The **Contact Sealed** column lists B608DDU, B6000DDU through B6004DDU, and
+B6200DDU through B6204DDU with their nominal bore, outside diameter and width.
+The shielded B-series table lists B625ZZ at 5 × 16 × 5 mm.
+[MISUMI sealed series, pp. 1003–1004](https://es.misumi-ec.com/pdf/fa/2014/P1_1003-1004_F14_EN.pdf) ·
+[MISUMI shielded series, pp. 1028–1029](https://us.misumi-ec.com/pdf/fa/2019/2019_US_1028.pdf).
+
+These tables establish the twelve purchasing identities and mounting envelopes.
+The CAD borrows the other closure's measured section at the same size. For example,
+B6203DDU uses B6203ZZ's ring shoulders and 0.34 mm recess. B625ZZ uses the
+OpenBuilds 625 2RS exterior. The measured 626 pair illustrates the uncertainty:
+the inner-ring shoulder radius is 4.75 mm on B626ZZ and 4.215 mm on B626DDU.
+Their closure recesses are 0.50 and 0.11 mm respectively.
+
+The sealed 105 uses the measured OpenBuilds 105ZZ section at 5 × 10 × 4 mm.
+It carries no supplier number. The rubber-sealed row is empty in the
+[MISUMI MR105 selector](https://us.misumi-ec.com/blog/ball-bearings/miniature/MR105-ball-bearings-5X10X3mm-z-zz-2rs/).

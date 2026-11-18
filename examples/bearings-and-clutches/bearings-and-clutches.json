@@ -1,13 +1,7 @@
 {
-  "format": "solidcraft/59",
+  "format": "solidcraft/61",
   "format_pending": [
-    "bom-item-numbers",
-    "bom-suppressed-parts",
-    "drawings",
-    "extrude-one-sided-direction",
-    "named-view-roll-and-up",
-    "occurrence-bom-type",
-    "plane-at-angle-axis-origin-expressions"
+    "import-record-copies"
   ],
   "name": "bearings-and-clutches",
   "units": "mm",
@@ -27,43 +21,46 @@
           118
         ],
         "1cfc9fc472e5d96e0767d338a16e0183be6c8d6cd31876b215f6a6e1a63704a6": [
-          239
+          261
         ],
         "1d74c4ee85af9e78a2d3fe3a9e513cf24b0842be0b9f9b41ec2faa9b3d5acd19": [
-          226
+          248
         ],
         "223856b251a44d367cbe1ad7d9e2240491a71f61113021ae539ea26b11cf56b6": [
-          295
+          317
         ],
         "41448059256c4c1db32e2e4f296f055bf108fc8d6dfd0840a661235058850938": [
-          254
+          276
         ],
         "4162a37a94ed5a0430c68b0c35c9b5253f62c57ffe28bde4da1efa5bb33bcf8e": [
           162
         ],
         "4e029a512ccc5cd22ccdc7f10064896bb1265bc414ec14beb27f922e72e302a3": [
-          197
+          219
         ],
         "57f56bc5123cd6c580451b06654cca80ad0620367d3479a0d3333646695ec92c": [
           107
         ],
         "68ae32761665e2d5450c275c4b493a5185dbd92edb4be516f2579c0d75d7dbf4": [
-          269
+          291
         ],
         "6fa9702278779f048dd568a5a687b682b00bc5d4b05267cca7de83ebee9b4ea3": [
           129
         ],
         "715046a6c72de240e24bee3890c505b11a2526fed243d5ed5166867382f1ba8f": [
-          282
+          304
         ],
         "776d9dd2329fa0faa45245a7f8f2d757662ccf0c1c3ebcdee422db42e7784f9e": [
-          184
+          206
         ],
         "85ca13be43afb7e0d1f1fd1be24287e83fdd7c79eb5ad22aa5712f744bdf51fc": [
           15
         ],
         "88f780a2c2ebb7aa90518d8a05229f4dec6ffa1fab203593094e099ed6aa50d2": [
-          211
+          233
+        ],
+        "a0a8d5e27e8634c9df2c54de611ca3e7ddaa0676d6fe19c575a43162135edc29": [
+          184
         ],
         "b7794afbf9942bed04acf59d20efcf3d34eac736078676c5b52e72d166baa17a": [
           140
@@ -79,6 +76,9 @@
         ],
         "d2170acec297b1f4257325b1c42a97f7fe0f461846847873dd16f5211bb30de8": [
           173
+        ],
+        "d7a5e098c12864ce411cdc7ac678bc59541088dcfa30cfcb517ddbb8c524e1fe": [
+          195
         ],
         "dfcc2eb172e4cb35cb84d3b9f00e623280f1b856ff9afa3b33e2dfceed2223bf": [
           85
@@ -319,6 +319,22 @@
             "pos": [
               90.0,
               -77.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "105_sealed",
+            "pos": [
+              -98.0,
+              45.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "b6203ddu",
+            "pos": [
+              105.0,
+              45.0
             ],
             "fixed": false
           }
@@ -10809,7 +10825,7 @@
     },
     {
       "id": 186,
-      "name": "CSK clutch CSK12P: Inner ring: Section",
+      "name": "Bearing 105 sealed: Inner ring: Section",
       "suppressed": false,
       "component": 184,
       "type": "sketch",
@@ -10846,48 +10862,32 @@
           {
             "id": "l1.start",
             "pos": [
-              9.105,
-              -5.0
+              2.5,
+              -2.0
             ],
             "fixed": false
           },
           {
             "id": "l1.end",
             "pos": [
-              6.36397,
-              -5.0
+              3.1,
+              -2.0
             ],
             "fixed": false
           },
           {
             "id": "l2.end",
             "pos": [
-              6.0,
-              -4.0
+              3.1,
+              2.0
             ],
             "fixed": false
           },
           {
             "id": "l3.end",
             "pos": [
-              6.0,
-              4.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l4.end",
-            "pos": [
-              6.36397,
-              5.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l5.end",
-            "pos": [
-              9.105,
-              5.0
+              2.5,
+              2.0
             ],
             "fixed": false
           }
@@ -10918,36 +10918,22 @@
             "id": "l4",
             "type": "line",
             "a": 4,
-            "b": 5,
-            "construction": false
-          },
-          {
-            "id": "l5",
-            "type": "line",
-            "a": 5,
-            "b": 6,
-            "construction": false
-          },
-          {
-            "id": "l6",
-            "type": "line",
-            "a": 6,
             "b": 1,
             "construction": false
           }
         ],
         "constraints": [],
         "counters": {
-          "l": 6
+          "l": 4
         }
       }
     },
     {
       "id": 187,
-      "name": "CSK clutch CSK12P: Inner ring",
+      "name": "Bearing 105 sealed: Inner ring",
       "suppressed": false,
       "body_names": [
-        "CSK clutch CSK12P Inner ring"
+        "Bearing 105 sealed Inner ring"
       ],
       "param_names": [
         "d71"
@@ -10968,7 +10954,7 @@
     },
     {
       "id": 188,
-      "name": "CSK clutch CSK12P: Outer ring: Section",
+      "name": "Bearing 105 sealed: Outer ring: Section",
       "suppressed": false,
       "component": 184,
       "type": "sketch",
@@ -11005,48 +10991,32 @@
           {
             "id": "l1.start",
             "pos": [
-              13.295,
-              -5.0
+              4.6,
+              -2.0
             ],
             "fixed": false
           },
           {
             "id": "l1.end",
             "pos": [
-              15.63603,
-              -5.0
+              5.0,
+              -2.0
             ],
             "fixed": false
           },
           {
             "id": "l2.end",
             "pos": [
-              16.0,
-              -4.0
+              5.0,
+              2.0
             ],
             "fixed": false
           },
           {
             "id": "l3.end",
             "pos": [
-              16.0,
-              4.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l4.end",
-            "pos": [
-              15.63603,
-              5.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l5.end",
-            "pos": [
-              13.295,
-              5.0
+              4.6,
+              2.0
             ],
             "fixed": false
           }
@@ -11077,36 +11047,22 @@
             "id": "l4",
             "type": "line",
             "a": 4,
-            "b": 5,
-            "construction": false
-          },
-          {
-            "id": "l5",
-            "type": "line",
-            "a": 5,
-            "b": 6,
-            "construction": false
-          },
-          {
-            "id": "l6",
-            "type": "line",
-            "a": 6,
             "b": 1,
             "construction": false
           }
         ],
         "constraints": [],
         "counters": {
-          "l": 6
+          "l": 4
         }
       }
     },
     {
       "id": 189,
-      "name": "CSK clutch CSK12P: Outer ring",
+      "name": "Bearing 105 sealed: Outer ring",
       "suppressed": false,
       "body_names": [
-        "CSK clutch CSK12P Outer ring"
+        "Bearing 105 sealed Outer ring"
       ],
       "param_names": [
         "d72"
@@ -11127,135 +11083,7 @@
     },
     {
       "id": 190,
-      "name": "CSK clutch CSK12P: Inner keyway: Section",
-      "suppressed": false,
-      "component": 184,
-      "type": "sketch",
-      "plane": {
-        "type": "custom",
-        "plane": {
-          "origin": [
-            0.0,
-            0.0,
-            -5.0
-          ],
-          "x_dir": [
-            1.0,
-            0.0,
-            0.0
-          ],
-          "y_dir": [
-            0.0,
-            1.0,
-            0.0
-          ]
-        }
-      },
-      "sketch": {
-        "points": [
-          {
-            "id": "origin",
-            "pos": [
-              0.0,
-              0.0
-            ],
-            "fixed": true
-          },
-          {
-            "id": "l1.start",
-            "pos": [
-              -2.0,
-              0.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l1.end",
-            "pos": [
-              2.0,
-              0.0
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l2.end",
-            "pos": [
-              2.0,
-              7.8
-            ],
-            "fixed": false
-          },
-          {
-            "id": "l3.end",
-            "pos": [
-              -2.0,
-              7.8
-            ],
-            "fixed": false
-          }
-        ],
-        "curves": [
-          {
-            "id": "l1",
-            "type": "line",
-            "a": 1,
-            "b": 2,
-            "construction": false
-          },
-          {
-            "id": "l2",
-            "type": "line",
-            "a": 2,
-            "b": 3,
-            "construction": false
-          },
-          {
-            "id": "l3",
-            "type": "line",
-            "a": 3,
-            "b": 4,
-            "construction": false
-          },
-          {
-            "id": "l4",
-            "type": "line",
-            "a": 4,
-            "b": 1,
-            "construction": false
-          }
-        ],
-        "constraints": [],
-        "counters": {
-          "l": 4
-        }
-      }
-    },
-    {
-      "id": 191,
-      "name": "CSK clutch CSK12P: Inner keyway",
-      "suppressed": false,
-      "param_names": [
-        "d73"
-      ],
-      "component": 184,
-      "type": "extrude",
-      "sketch": 190,
-      "profiles": {
-        "type": "all"
-      },
-      "extent": {
-        "distance": "10",
-        "convention": "total_distance",
-        "direction": "positive"
-      },
-      "operation": "cut",
-      "targets": [
-        "CSK clutch CSK12P Inner ring"
-      ]
-    },
-    {
-      "id": 192,
-      "name": "CSK clutch CSK12P: Cover front: Section",
+      "name": "Bearing 105 sealed: Seal front: Section",
       "suppressed": false,
       "component": 184,
       "type": "sketch",
@@ -11292,16 +11120,104 @@
           {
             "id": "section.start",
             "pos": [
-              9.105,
-              5.0
+              3.1,
+              1.7
             ],
             "fixed": false
           },
           {
             "id": "section.end",
             "pos": [
-              13.295,
-              5.0
+              4.6,
+              1.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 191,
+      "name": "Bearing 105 sealed: Seal front",
+      "suppressed": false,
+      "body_names": [
+        "Bearing 105 sealed Seal front"
+      ],
+      "param_names": [
+        "d73"
+      ],
+      "component": 184,
+      "type": "surface_revolve",
+      "sketch": 190,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 192,
+      "name": "Bearing 105 sealed: Seal back: Section",
+      "suppressed": false,
+      "component": 184,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              3.1,
+              -1.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              4.6,
+              -1.7
             ],
             "fixed": false
           }
@@ -11321,10 +11237,10 @@
     },
     {
       "id": 193,
-      "name": "CSK clutch CSK12P: Cover front",
+      "name": "Bearing 105 sealed: Seal back",
       "suppressed": false,
       "body_names": [
-        "CSK clutch CSK12P Cover front"
+        "Bearing 105 sealed Seal back"
       ],
       "param_names": [
         "d74"
@@ -11342,10 +11258,1222 @@
       "angle": "360"
     },
     {
-      "id": 194,
+      "id": 197,
+      "name": "Bearing B6203DDU: Inner ring: Section",
+      "suppressed": false,
+      "component": 195,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              9.1,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              11.5,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              11.5,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              11.5,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              9.1,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              9.100000000000025,
+              5.399999999999986
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              9.1,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              8.50000000000001,
+              5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              8.5,
+              5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              8.5,
+              -5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              9.100000000000025,
+              -5.399999999999986
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              8.5,
+              -5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              9.1,
+              -6.000000000000011
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 7
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 8,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 10,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 1,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 198,
+      "name": "Bearing B6203DDU: Inner ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B6203DDU Inner ring"
+      ],
+      "param_names": [
+        "d75"
+      ],
+      "component": 195,
+      "type": "revolve",
+      "sketch": 197,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 199,
+      "name": "Bearing B6203DDU: Outer ring: Section",
+      "suppressed": false,
+      "component": 195,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              19.4,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              17.6,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.start",
+            "pos": [
+              17.6,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              17.6,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              19.4,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              19.400000000000055,
+              5.400000000000009
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              20.0,
+              5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              19.4,
+              5.999999999999954
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.start",
+            "pos": [
+              20.0,
+              5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              20.0,
+              -5.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              19.40000000000001,
+              -5.399999999999962
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              19.4,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              20.000000000000046,
+              -5.4
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 6,
+            "a": 7,
+            "b": 8,
+            "construction": false,
+            "reversed": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 11,
+            "a": 12,
+            "b": 13,
+            "construction": false,
+            "reversed": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 3
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 5,
+            "q": 8
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 7,
+            "q": 9
+          },
+          {
+            "id": "k4",
+            "type": "coincident",
+            "p": 1,
+            "q": 12
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 10,
+            "q": 13
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "k": 5,
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 200,
+      "name": "Bearing B6203DDU: Outer ring",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B6203DDU Outer ring"
+      ],
+      "param_names": [
+        "d76"
+      ],
+      "component": 195,
+      "type": "revolve",
+      "sketch": 199,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 201,
+      "name": "Bearing B6203DDU: Seal front: Section",
+      "suppressed": false,
+      "component": 195,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              11.5,
+              5.66
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              17.6,
+              5.66
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 202,
+      "name": "Bearing B6203DDU: Seal front",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B6203DDU Seal front"
+      ],
+      "param_names": [
+        "d77"
+      ],
+      "component": 195,
+      "type": "surface_revolve",
+      "sketch": 201,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 203,
+      "name": "Bearing B6203DDU: Seal back: Section",
+      "suppressed": false,
+      "component": 195,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              11.5,
+              -5.66
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              17.6,
+              -5.66
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 204,
+      "name": "Bearing B6203DDU: Seal back",
+      "suppressed": false,
+      "body_names": [
+        "Bearing B6203DDU Seal back"
+      ],
+      "param_names": [
+        "d78"
+      ],
+      "component": 195,
+      "type": "surface_revolve",
+      "sketch": 203,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 208,
+      "name": "CSK clutch CSK12P: Inner ring: Section",
+      "suppressed": false,
+      "component": 206,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              9.105,
+              -5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              6.36397,
+              -5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              6.0,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              6.0,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              6.36397,
+              5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              9.105,
+              5.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6
+        }
+      }
+    },
+    {
+      "id": 209,
+      "name": "CSK clutch CSK12P: Inner ring",
+      "suppressed": false,
+      "body_names": [
+        "CSK clutch CSK12P Inner ring"
+      ],
+      "param_names": [
+        "d79"
+      ],
+      "component": 206,
+      "type": "revolve",
+      "sketch": 208,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 210,
+      "name": "CSK clutch CSK12P: Outer ring: Section",
+      "suppressed": false,
+      "component": 206,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              13.295,
+              -5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              15.63603,
+              -5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              16.0,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              16.0,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              15.63603,
+              5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              13.295,
+              5.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6
+        }
+      }
+    },
+    {
+      "id": 211,
+      "name": "CSK clutch CSK12P: Outer ring",
+      "suppressed": false,
+      "body_names": [
+        "CSK clutch CSK12P Outer ring"
+      ],
+      "param_names": [
+        "d80"
+      ],
+      "component": 206,
+      "type": "revolve",
+      "sketch": 210,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 212,
+      "name": "CSK clutch CSK12P: Inner keyway: Section",
+      "suppressed": false,
+      "component": 206,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            -5.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              -2.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              2.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              2.0,
+              7.8
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -2.0,
+              7.8
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 213,
+      "name": "CSK clutch CSK12P: Inner keyway",
+      "suppressed": false,
+      "param_names": [
+        "d81"
+      ],
+      "component": 206,
+      "type": "extrude",
+      "sketch": 212,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "10",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "CSK clutch CSK12P Inner ring"
+      ]
+    },
+    {
+      "id": 214,
+      "name": "CSK clutch CSK12P: Cover front: Section",
+      "suppressed": false,
+      "component": 206,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "section.start",
+            "pos": [
+              9.105,
+              5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "section.end",
+            "pos": [
+              13.295,
+              5.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "section",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 215,
+      "name": "CSK clutch CSK12P: Cover front",
+      "suppressed": false,
+      "body_names": [
+        "CSK clutch CSK12P Cover front"
+      ],
+      "param_names": [
+        "d82"
+      ],
+      "component": 206,
+      "type": "surface_revolve",
+      "sketch": 214,
+      "curves": [
+        "section"
+      ],
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360"
+    },
+    {
+      "id": 216,
       "name": "CSK clutch CSK12P: Cover back: Section",
       "suppressed": false,
-      "component": 184,
+      "component": 206,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -11408,18 +12536,18 @@
       }
     },
     {
-      "id": 195,
+      "id": 217,
       "name": "CSK clutch CSK12P: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK12P Cover back"
       ],
       "param_names": [
-        "d75"
+        "d83"
       ],
-      "component": 184,
+      "component": 206,
       "type": "surface_revolve",
-      "sketch": 194,
+      "sketch": 216,
       "curves": [
         "section"
       ],
@@ -11430,10 +12558,10 @@
       "angle": "360"
     },
     {
-      "id": 199,
+      "id": 221,
       "name": "CSK clutch CSK12P custom: Inner ring: Section",
       "suppressed": false,
-      "component": 197,
+      "component": 219,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -11565,18 +12693,18 @@
       }
     },
     {
-      "id": 200,
+      "id": 222,
       "name": "CSK clutch CSK12P custom: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK12P custom Inner ring"
       ],
       "param_names": [
-        "d76"
+        "d84"
       ],
-      "component": 197,
+      "component": 219,
       "type": "revolve",
-      "sketch": 199,
+      "sketch": 221,
       "profiles": {
         "type": "all"
       },
@@ -11589,10 +12717,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 201,
+      "id": 223,
       "name": "CSK clutch CSK12P custom: Outer ring: Section",
       "suppressed": false,
-      "component": 197,
+      "component": 219,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -11724,18 +12852,18 @@
       }
     },
     {
-      "id": 202,
+      "id": 224,
       "name": "CSK clutch CSK12P custom: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK12P custom Outer ring"
       ],
       "param_names": [
-        "d77"
+        "d85"
       ],
-      "component": 197,
+      "component": 219,
       "type": "revolve",
-      "sketch": 201,
+      "sketch": 223,
       "profiles": {
         "type": "all"
       },
@@ -11748,10 +12876,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 203,
+      "id": 225,
       "name": "CSK clutch CSK12P custom: Inner keyway: Section",
       "suppressed": false,
-      "component": 197,
+      "component": 219,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -11853,15 +12981,15 @@
       }
     },
     {
-      "id": 204,
+      "id": 226,
       "name": "CSK clutch CSK12P custom: Inner keyway",
       "suppressed": false,
       "param_names": [
-        "d78"
+        "d86"
       ],
-      "component": 197,
+      "component": 219,
       "type": "extrude",
-      "sketch": 203,
+      "sketch": 225,
       "profiles": {
         "type": "all"
       },
@@ -11876,10 +13004,10 @@
       ]
     },
     {
-      "id": 205,
+      "id": 227,
       "name": "CSK clutch CSK12P custom: Cover front: Section",
       "suppressed": false,
-      "component": 197,
+      "component": 219,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -11942,18 +13070,18 @@
       }
     },
     {
-      "id": 206,
+      "id": 228,
       "name": "CSK clutch CSK12P custom: Cover front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK12P custom Cover front"
       ],
       "param_names": [
-        "d79"
+        "d87"
       ],
-      "component": 197,
+      "component": 219,
       "type": "surface_revolve",
-      "sketch": 205,
+      "sketch": 227,
       "curves": [
         "section"
       ],
@@ -11964,10 +13092,10 @@
       "angle": "360"
     },
     {
-      "id": 207,
+      "id": 229,
       "name": "CSK clutch CSK12P custom: Cover back: Section",
       "suppressed": false,
-      "component": 197,
+      "component": 219,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12030,18 +13158,18 @@
       }
     },
     {
-      "id": 208,
+      "id": 230,
       "name": "CSK clutch CSK12P custom: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK12P custom Cover back"
       ],
       "param_names": [
-        "d80"
+        "d88"
       ],
-      "component": 197,
+      "component": 219,
       "type": "surface_revolve",
-      "sketch": 207,
+      "sketch": 229,
       "curves": [
         "section"
       ],
@@ -12052,10 +13180,10 @@
       "angle": "360"
     },
     {
-      "id": 213,
+      "id": 235,
       "name": "CSK clutch CSK15PP: Inner ring: Section",
       "suppressed": false,
-      "component": 211,
+      "component": 233,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12187,18 +13315,18 @@
       }
     },
     {
-      "id": 214,
+      "id": 236,
       "name": "CSK clutch CSK15PP: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15PP Inner ring"
       ],
       "param_names": [
-        "d81"
+        "d89"
       ],
-      "component": 211,
+      "component": 233,
       "type": "revolve",
-      "sketch": 213,
+      "sketch": 235,
       "profiles": {
         "type": "all"
       },
@@ -12211,10 +13339,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 215,
+      "id": 237,
       "name": "CSK clutch CSK15PP: Outer ring: Section",
       "suppressed": false,
-      "component": 211,
+      "component": 233,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12346,18 +13474,18 @@
       }
     },
     {
-      "id": 216,
+      "id": 238,
       "name": "CSK clutch CSK15PP: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15PP Outer ring"
       ],
       "param_names": [
-        "d82"
+        "d90"
       ],
-      "component": 211,
+      "component": 233,
       "type": "revolve",
-      "sketch": 215,
+      "sketch": 237,
       "profiles": {
         "type": "all"
       },
@@ -12370,10 +13498,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 217,
+      "id": 239,
       "name": "CSK clutch CSK15PP: Inner keyway: Section",
       "suppressed": false,
-      "component": 211,
+      "component": 233,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12475,15 +13603,15 @@
       }
     },
     {
-      "id": 218,
+      "id": 240,
       "name": "CSK clutch CSK15PP: Inner keyway",
       "suppressed": false,
       "param_names": [
-        "d83"
+        "d91"
       ],
-      "component": 211,
+      "component": 233,
       "type": "extrude",
-      "sketch": 217,
+      "sketch": 239,
       "profiles": {
         "type": "all"
       },
@@ -12498,10 +13626,10 @@
       ]
     },
     {
-      "id": 219,
+      "id": 241,
       "name": "CSK clutch CSK15PP: Outer keyway: Section",
       "suppressed": false,
-      "component": 211,
+      "component": 233,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12603,15 +13731,15 @@
       }
     },
     {
-      "id": 220,
+      "id": 242,
       "name": "CSK clutch CSK15PP: Outer keyway",
       "suppressed": false,
       "param_names": [
-        "d84"
+        "d92"
       ],
-      "component": 211,
+      "component": 233,
       "type": "extrude",
-      "sketch": 219,
+      "sketch": 241,
       "profiles": {
         "type": "all"
       },
@@ -12626,10 +13754,10 @@
       ]
     },
     {
-      "id": 221,
+      "id": 243,
       "name": "CSK clutch CSK15PP: Cover front: Section",
       "suppressed": false,
-      "component": 211,
+      "component": 233,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12692,18 +13820,18 @@
       }
     },
     {
-      "id": 222,
+      "id": 244,
       "name": "CSK clutch CSK15PP: Cover front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15PP Cover front"
       ],
       "param_names": [
-        "d85"
+        "d93"
       ],
-      "component": 211,
+      "component": 233,
       "type": "surface_revolve",
-      "sketch": 221,
+      "sketch": 243,
       "curves": [
         "section"
       ],
@@ -12714,10 +13842,10 @@
       "angle": "360"
     },
     {
-      "id": 223,
+      "id": 245,
       "name": "CSK clutch CSK15PP: Cover back: Section",
       "suppressed": false,
-      "component": 211,
+      "component": 233,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12780,18 +13908,18 @@
       }
     },
     {
-      "id": 224,
+      "id": 246,
       "name": "CSK clutch CSK15PP: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15PP Cover back"
       ],
       "param_names": [
-        "d86"
+        "d94"
       ],
-      "component": 211,
+      "component": 233,
       "type": "surface_revolve",
-      "sketch": 223,
+      "sketch": 245,
       "curves": [
         "section"
       ],
@@ -12802,10 +13930,10 @@
       "angle": "360"
     },
     {
-      "id": 228,
+      "id": 250,
       "name": "CSK clutch CSK15P-2RS: Inner ring: Section",
       "suppressed": false,
-      "component": 226,
+      "component": 248,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -12937,18 +14065,18 @@
       }
     },
     {
-      "id": 229,
+      "id": 251,
       "name": "CSK clutch CSK15P-2RS: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P-2RS Inner ring"
       ],
       "param_names": [
-        "d87"
+        "d95"
       ],
-      "component": 226,
+      "component": 248,
       "type": "revolve",
-      "sketch": 228,
+      "sketch": 250,
       "profiles": {
         "type": "all"
       },
@@ -12961,10 +14089,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 230,
+      "id": 252,
       "name": "CSK clutch CSK15P-2RS: Outer ring: Section",
       "suppressed": false,
-      "component": 226,
+      "component": 248,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13096,18 +14224,18 @@
       }
     },
     {
-      "id": 231,
+      "id": 253,
       "name": "CSK clutch CSK15P-2RS: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P-2RS Outer ring"
       ],
       "param_names": [
-        "d88"
+        "d96"
       ],
-      "component": 226,
+      "component": 248,
       "type": "revolve",
-      "sketch": 230,
+      "sketch": 252,
       "profiles": {
         "type": "all"
       },
@@ -13120,10 +14248,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 232,
+      "id": 254,
       "name": "CSK clutch CSK15P-2RS: Inner keyway: Section",
       "suppressed": false,
-      "component": 226,
+      "component": 248,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13225,15 +14353,15 @@
       }
     },
     {
-      "id": 233,
+      "id": 255,
       "name": "CSK clutch CSK15P-2RS: Inner keyway",
       "suppressed": false,
       "param_names": [
-        "d89"
+        "d97"
       ],
-      "component": 226,
+      "component": 248,
       "type": "extrude",
-      "sketch": 232,
+      "sketch": 254,
       "profiles": {
         "type": "all"
       },
@@ -13248,10 +14376,10 @@
       ]
     },
     {
-      "id": 234,
+      "id": 256,
       "name": "CSK clutch CSK15P-2RS: Seal front: Section",
       "suppressed": false,
-      "component": 226,
+      "component": 248,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13314,18 +14442,18 @@
       }
     },
     {
-      "id": 235,
+      "id": 257,
       "name": "CSK clutch CSK15P-2RS: Seal front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P-2RS Seal front"
       ],
       "param_names": [
-        "d90"
+        "d98"
       ],
-      "component": 226,
+      "component": 248,
       "type": "surface_revolve",
-      "sketch": 234,
+      "sketch": 256,
       "curves": [
         "section"
       ],
@@ -13336,10 +14464,10 @@
       "angle": "360"
     },
     {
-      "id": 236,
+      "id": 258,
       "name": "CSK clutch CSK15P-2RS: Seal back: Section",
       "suppressed": false,
-      "component": 226,
+      "component": 248,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13402,18 +14530,18 @@
       }
     },
     {
-      "id": 237,
+      "id": 259,
       "name": "CSK clutch CSK15P-2RS: Seal back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P-2RS Seal back"
       ],
       "param_names": [
-        "d91"
+        "d99"
       ],
-      "component": 226,
+      "component": 248,
       "type": "surface_revolve",
-      "sketch": 236,
+      "sketch": 258,
       "curves": [
         "section"
       ],
@@ -13424,10 +14552,10 @@
       "angle": "360"
     },
     {
-      "id": 241,
+      "id": 263,
       "name": "CSK clutch CSK8PP: Inner ring: Section",
       "suppressed": false,
-      "component": 239,
+      "component": 261,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13559,18 +14687,18 @@
       }
     },
     {
-      "id": 242,
+      "id": 264,
       "name": "CSK clutch CSK8PP: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK8PP Inner ring"
       ],
       "param_names": [
-        "d92"
+        "d100"
       ],
-      "component": 239,
+      "component": 261,
       "type": "revolve",
-      "sketch": 241,
+      "sketch": 263,
       "profiles": {
         "type": "all"
       },
@@ -13583,10 +14711,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 243,
+      "id": 265,
       "name": "CSK clutch CSK8PP: Outer ring: Section",
       "suppressed": false,
-      "component": 239,
+      "component": 261,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13718,18 +14846,18 @@
       }
     },
     {
-      "id": 244,
+      "id": 266,
       "name": "CSK clutch CSK8PP: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK8PP Outer ring"
       ],
       "param_names": [
-        "d93"
+        "d101"
       ],
-      "component": 239,
+      "component": 261,
       "type": "revolve",
-      "sketch": 243,
+      "sketch": 265,
       "profiles": {
         "type": "all"
       },
@@ -13742,10 +14870,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 245,
+      "id": 267,
       "name": "CSK clutch CSK8PP: Inner keyway: Section",
       "suppressed": false,
-      "component": 239,
+      "component": 261,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13847,15 +14975,15 @@
       }
     },
     {
-      "id": 246,
+      "id": 268,
       "name": "CSK clutch CSK8PP: Inner keyway",
       "suppressed": false,
       "param_names": [
-        "d94"
+        "d102"
       ],
-      "component": 239,
+      "component": 261,
       "type": "extrude",
-      "sketch": 245,
+      "sketch": 267,
       "profiles": {
         "type": "all"
       },
@@ -13870,10 +14998,10 @@
       ]
     },
     {
-      "id": 247,
+      "id": 269,
       "name": "CSK clutch CSK8PP: Outer keyway: Section",
       "suppressed": false,
-      "component": 239,
+      "component": 261,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -13975,15 +15103,15 @@
       }
     },
     {
-      "id": 248,
+      "id": 270,
       "name": "CSK clutch CSK8PP: Outer keyway",
       "suppressed": false,
       "param_names": [
-        "d95"
+        "d103"
       ],
-      "component": 239,
+      "component": 261,
       "type": "extrude",
-      "sketch": 247,
+      "sketch": 269,
       "profiles": {
         "type": "all"
       },
@@ -13998,10 +15126,10 @@
       ]
     },
     {
-      "id": 249,
+      "id": 271,
       "name": "CSK clutch CSK8PP: Cover front: Section",
       "suppressed": false,
-      "component": 239,
+      "component": 261,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14064,18 +15192,18 @@
       }
     },
     {
-      "id": 250,
+      "id": 272,
       "name": "CSK clutch CSK8PP: Cover front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK8PP Cover front"
       ],
       "param_names": [
-        "d96"
+        "d104"
       ],
-      "component": 239,
+      "component": 261,
       "type": "surface_revolve",
-      "sketch": 249,
+      "sketch": 271,
       "curves": [
         "section"
       ],
@@ -14086,10 +15214,10 @@
       "angle": "360"
     },
     {
-      "id": 251,
+      "id": 273,
       "name": "CSK clutch CSK8PP: Cover back: Section",
       "suppressed": false,
-      "component": 239,
+      "component": 261,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14152,18 +15280,18 @@
       }
     },
     {
-      "id": 252,
+      "id": 274,
       "name": "CSK clutch CSK8PP: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK8PP Cover back"
       ],
       "param_names": [
-        "d97"
+        "d105"
       ],
-      "component": 239,
+      "component": 261,
       "type": "surface_revolve",
-      "sketch": 251,
+      "sketch": 273,
       "curves": [
         "section"
       ],
@@ -14174,10 +15302,10 @@
       "angle": "360"
     },
     {
-      "id": 256,
+      "id": 278,
       "name": "CSK clutch CSK10PP: Inner ring: Section",
       "suppressed": false,
-      "component": 254,
+      "component": 276,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14309,18 +15437,18 @@
       }
     },
     {
-      "id": 257,
+      "id": 279,
       "name": "CSK clutch CSK10PP: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK10PP Inner ring"
       ],
       "param_names": [
-        "d98"
+        "d106"
       ],
-      "component": 254,
+      "component": 276,
       "type": "revolve",
-      "sketch": 256,
+      "sketch": 278,
       "profiles": {
         "type": "all"
       },
@@ -14333,10 +15461,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 258,
+      "id": 280,
       "name": "CSK clutch CSK10PP: Outer ring: Section",
       "suppressed": false,
-      "component": 254,
+      "component": 276,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14468,18 +15596,18 @@
       }
     },
     {
-      "id": 259,
+      "id": 281,
       "name": "CSK clutch CSK10PP: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK10PP Outer ring"
       ],
       "param_names": [
-        "d99"
+        "d107"
       ],
-      "component": 254,
+      "component": 276,
       "type": "revolve",
-      "sketch": 258,
+      "sketch": 280,
       "profiles": {
         "type": "all"
       },
@@ -14492,10 +15620,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 260,
+      "id": 282,
       "name": "CSK clutch CSK10PP: Inner keyway: Section",
       "suppressed": false,
-      "component": 254,
+      "component": 276,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14597,15 +15725,15 @@
       }
     },
     {
-      "id": 261,
+      "id": 283,
       "name": "CSK clutch CSK10PP: Inner keyway",
       "suppressed": false,
       "param_names": [
-        "d100"
+        "d108"
       ],
-      "component": 254,
+      "component": 276,
       "type": "extrude",
-      "sketch": 260,
+      "sketch": 282,
       "profiles": {
         "type": "all"
       },
@@ -14620,10 +15748,10 @@
       ]
     },
     {
-      "id": 262,
+      "id": 284,
       "name": "CSK clutch CSK10PP: Outer keyway: Section",
       "suppressed": false,
-      "component": 254,
+      "component": 276,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14725,15 +15853,15 @@
       }
     },
     {
-      "id": 263,
+      "id": 285,
       "name": "CSK clutch CSK10PP: Outer keyway",
       "suppressed": false,
       "param_names": [
-        "d101"
+        "d109"
       ],
-      "component": 254,
+      "component": 276,
       "type": "extrude",
-      "sketch": 262,
+      "sketch": 284,
       "profiles": {
         "type": "all"
       },
@@ -14748,10 +15876,10 @@
       ]
     },
     {
-      "id": 264,
+      "id": 286,
       "name": "CSK clutch CSK10PP: Cover front: Section",
       "suppressed": false,
-      "component": 254,
+      "component": 276,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14814,18 +15942,18 @@
       }
     },
     {
-      "id": 265,
+      "id": 287,
       "name": "CSK clutch CSK10PP: Cover front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK10PP Cover front"
       ],
       "param_names": [
-        "d102"
+        "d110"
       ],
-      "component": 254,
+      "component": 276,
       "type": "surface_revolve",
-      "sketch": 264,
+      "sketch": 286,
       "curves": [
         "section"
       ],
@@ -14836,10 +15964,10 @@
       "angle": "360"
     },
     {
-      "id": 266,
+      "id": 288,
       "name": "CSK clutch CSK10PP: Cover back: Section",
       "suppressed": false,
-      "component": 254,
+      "component": 276,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -14902,18 +16030,18 @@
       }
     },
     {
-      "id": 267,
+      "id": 289,
       "name": "CSK clutch CSK10PP: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK10PP Cover back"
       ],
       "param_names": [
-        "d103"
+        "d111"
       ],
-      "component": 254,
+      "component": 276,
       "type": "surface_revolve",
-      "sketch": 266,
+      "sketch": 288,
       "curves": [
         "section"
       ],
@@ -14924,10 +16052,10 @@
       "angle": "360"
     },
     {
-      "id": 271,
+      "id": 293,
       "name": "CSK clutch Custom: Inner ring: Section",
       "suppressed": false,
-      "component": 269,
+      "component": 291,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15059,18 +16187,18 @@
       }
     },
     {
-      "id": 272,
+      "id": 294,
       "name": "CSK clutch Custom: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch Custom Inner ring"
       ],
       "param_names": [
-        "d104"
+        "d112"
       ],
-      "component": 269,
+      "component": 291,
       "type": "revolve",
-      "sketch": 271,
+      "sketch": 293,
       "profiles": {
         "type": "all"
       },
@@ -15083,10 +16211,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 273,
+      "id": 295,
       "name": "CSK clutch Custom: Outer ring: Section",
       "suppressed": false,
-      "component": 269,
+      "component": 291,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15218,18 +16346,18 @@
       }
     },
     {
-      "id": 274,
+      "id": 296,
       "name": "CSK clutch Custom: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch Custom Outer ring"
       ],
       "param_names": [
-        "d105"
+        "d113"
       ],
-      "component": 269,
+      "component": 291,
       "type": "revolve",
-      "sketch": 273,
+      "sketch": 295,
       "profiles": {
         "type": "all"
       },
@@ -15242,10 +16370,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 275,
+      "id": 297,
       "name": "CSK clutch Custom: Outer keyway: Section",
       "suppressed": false,
-      "component": 269,
+      "component": 291,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15347,15 +16475,15 @@
       }
     },
     {
-      "id": 276,
+      "id": 298,
       "name": "CSK clutch Custom: Outer keyway",
       "suppressed": false,
       "param_names": [
-        "d106"
+        "d114"
       ],
-      "component": 269,
+      "component": 291,
       "type": "extrude",
-      "sketch": 275,
+      "sketch": 297,
       "profiles": {
         "type": "all"
       },
@@ -15370,10 +16498,10 @@
       ]
     },
     {
-      "id": 277,
+      "id": 299,
       "name": "CSK clutch Custom: Cover front: Section",
       "suppressed": false,
-      "component": 269,
+      "component": 291,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15436,18 +16564,18 @@
       }
     },
     {
-      "id": 278,
+      "id": 300,
       "name": "CSK clutch Custom: Cover front",
       "suppressed": false,
       "body_names": [
         "CSK clutch Custom Cover front"
       ],
       "param_names": [
-        "d107"
+        "d115"
       ],
-      "component": 269,
+      "component": 291,
       "type": "surface_revolve",
-      "sketch": 277,
+      "sketch": 299,
       "curves": [
         "section"
       ],
@@ -15458,10 +16586,10 @@
       "angle": "360"
     },
     {
-      "id": 279,
+      "id": 301,
       "name": "CSK clutch Custom: Cover back: Section",
       "suppressed": false,
-      "component": 269,
+      "component": 291,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15524,18 +16652,18 @@
       }
     },
     {
-      "id": 280,
+      "id": 302,
       "name": "CSK clutch Custom: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch Custom Cover back"
       ],
       "param_names": [
-        "d108"
+        "d116"
       ],
-      "component": 269,
+      "component": 291,
       "type": "surface_revolve",
-      "sketch": 279,
+      "sketch": 301,
       "curves": [
         "section"
       ],
@@ -15546,10 +16674,10 @@
       "angle": "360"
     },
     {
-      "id": 284,
+      "id": 306,
       "name": "CSK clutch CSK15P: Inner ring: Section",
       "suppressed": false,
-      "component": 282,
+      "component": 304,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15681,18 +16809,18 @@
       }
     },
     {
-      "id": 285,
+      "id": 307,
       "name": "CSK clutch CSK15P: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P Inner ring"
       ],
       "param_names": [
-        "d109"
+        "d117"
       ],
-      "component": 282,
+      "component": 304,
       "type": "revolve",
-      "sketch": 284,
+      "sketch": 306,
       "profiles": {
         "type": "all"
       },
@@ -15705,10 +16833,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 286,
+      "id": 308,
       "name": "CSK clutch CSK15P: Outer ring: Section",
       "suppressed": false,
-      "component": 282,
+      "component": 304,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15840,18 +16968,18 @@
       }
     },
     {
-      "id": 287,
+      "id": 309,
       "name": "CSK clutch CSK15P: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P Outer ring"
       ],
       "param_names": [
-        "d110"
+        "d118"
       ],
-      "component": 282,
+      "component": 304,
       "type": "revolve",
-      "sketch": 286,
+      "sketch": 308,
       "profiles": {
         "type": "all"
       },
@@ -15864,10 +16992,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 288,
+      "id": 310,
       "name": "CSK clutch CSK15P: Inner keyway: Section",
       "suppressed": false,
-      "component": 282,
+      "component": 304,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -15969,15 +17097,15 @@
       }
     },
     {
-      "id": 289,
+      "id": 311,
       "name": "CSK clutch CSK15P: Inner keyway",
       "suppressed": false,
       "param_names": [
-        "d111"
+        "d119"
       ],
-      "component": 282,
+      "component": 304,
       "type": "extrude",
-      "sketch": 288,
+      "sketch": 310,
       "profiles": {
         "type": "all"
       },
@@ -15992,10 +17120,10 @@
       ]
     },
     {
-      "id": 290,
+      "id": 312,
       "name": "CSK clutch CSK15P: Cover front: Section",
       "suppressed": false,
-      "component": 282,
+      "component": 304,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16058,18 +17186,18 @@
       }
     },
     {
-      "id": 291,
+      "id": 313,
       "name": "CSK clutch CSK15P: Cover front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P Cover front"
       ],
       "param_names": [
-        "d112"
+        "d120"
       ],
-      "component": 282,
+      "component": 304,
       "type": "surface_revolve",
-      "sketch": 290,
+      "sketch": 312,
       "curves": [
         "section"
       ],
@@ -16080,10 +17208,10 @@
       "angle": "360"
     },
     {
-      "id": 292,
+      "id": 314,
       "name": "CSK clutch CSK15P: Cover back: Section",
       "suppressed": false,
-      "component": 282,
+      "component": 304,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16146,18 +17274,18 @@
       }
     },
     {
-      "id": 293,
+      "id": 315,
       "name": "CSK clutch CSK15P: Cover back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15P Cover back"
       ],
       "param_names": [
-        "d113"
+        "d121"
       ],
-      "component": 282,
+      "component": 304,
       "type": "surface_revolve",
-      "sketch": 292,
+      "sketch": 314,
       "curves": [
         "section"
       ],
@@ -16168,10 +17296,10 @@
       "angle": "360"
     },
     {
-      "id": 297,
+      "id": 319,
       "name": "CSK clutch CSK15-2RS: Inner ring: Section",
       "suppressed": false,
-      "component": 295,
+      "component": 317,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16303,18 +17431,18 @@
       }
     },
     {
-      "id": 298,
+      "id": 320,
       "name": "CSK clutch CSK15-2RS: Inner ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15-2RS Inner ring"
       ],
       "param_names": [
-        "d114"
+        "d122"
       ],
-      "component": 295,
+      "component": 317,
       "type": "revolve",
-      "sketch": 297,
+      "sketch": 319,
       "profiles": {
         "type": "all"
       },
@@ -16327,10 +17455,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 299,
+      "id": 321,
       "name": "CSK clutch CSK15-2RS: Outer ring: Section",
       "suppressed": false,
-      "component": 295,
+      "component": 317,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16462,18 +17590,18 @@
       }
     },
     {
-      "id": 300,
+      "id": 322,
       "name": "CSK clutch CSK15-2RS: Outer ring",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15-2RS Outer ring"
       ],
       "param_names": [
-        "d115"
+        "d123"
       ],
-      "component": 295,
+      "component": 317,
       "type": "revolve",
-      "sketch": 299,
+      "sketch": 321,
       "profiles": {
         "type": "all"
       },
@@ -16486,10 +17614,10 @@
       "convention": "sketch_normal"
     },
     {
-      "id": 301,
+      "id": 323,
       "name": "CSK clutch CSK15-2RS: Seal front: Section",
       "suppressed": false,
-      "component": 295,
+      "component": 317,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16552,18 +17680,18 @@
       }
     },
     {
-      "id": 302,
+      "id": 324,
       "name": "CSK clutch CSK15-2RS: Seal front",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15-2RS Seal front"
       ],
       "param_names": [
-        "d116"
+        "d124"
       ],
-      "component": 295,
+      "component": 317,
       "type": "surface_revolve",
-      "sketch": 301,
+      "sketch": 323,
       "curves": [
         "section"
       ],
@@ -16574,10 +17702,10 @@
       "angle": "360"
     },
     {
-      "id": 303,
+      "id": 325,
       "name": "CSK clutch CSK15-2RS: Seal back: Section",
       "suppressed": false,
-      "component": 295,
+      "component": 317,
       "type": "sketch",
       "plane": {
         "type": "custom",
@@ -16640,18 +17768,18 @@
       }
     },
     {
-      "id": 304,
+      "id": 326,
       "name": "CSK clutch CSK15-2RS: Seal back",
       "suppressed": false,
       "body_names": [
         "CSK clutch CSK15-2RS Seal back"
       ],
       "param_names": [
-        "d117"
+        "d125"
       ],
-      "component": 295,
+      "component": 317,
       "type": "surface_revolve",
-      "sketch": 303,
+      "sketch": 325,
       "curves": [
         "section"
       ],
@@ -16662,7 +17790,7 @@
       "angle": "360"
     }
   ],
-  "next_id": 306,
+  "next_id": 328,
   "components": [
     {
       "id": 2,
@@ -17092,6 +18220,89 @@
     {
       "id": 184,
       "identification_color_index": 17,
+      "name": "Bearing 105 sealed",
+      "parent": 13,
+      "metadata": {
+        "bom_type": "normal",
+        "description": "105 sealed",
+        "org.techsquid.bearing.exterior": {
+          "provenance": {
+            "basis": "estimated",
+            "method": "Copied the measured exterior of the same size with the other closure",
+            "sources": [
+              "openbuilds-105zz"
+            ]
+          },
+          "section": {
+            "closure_recess": 0.3,
+            "edge_radius": 0.0,
+            "inner_ring_radius": 3.1,
+            "outer_ring_radius": 4.6
+          },
+          "version": 1
+        },
+        "org.techsquid.parts": {
+          "creator": "techsquid-bearings",
+          "product": "{\"catalog\":\"techsquid-specifications\",\"configuration\":\"105-sealed\",\"kind\":\"design_specification\",\"members\":[],\"part\":\"105-sealed\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"exterior\",\"product\":{\"catalog\":\"techsquid-specifications\",\"configuration\":\"105-sealed\",\"kind\":\"design_specification\",\"members\":[],\"part\":\"105-sealed\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "690f374751f7a0625ff78dc0604e56488af0dd99571e1bdb06f5797af5a742df",
+            "version": 2
+          },
+          "version": 1
+        }
+      }
+    },
+    {
+      "id": 195,
+      "identification_color_index": 18,
+      "name": "Bearing B6203DDU",
+      "parent": 13,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "B6203DDU",
+        "org.techsquid.bearing.exterior": {
+          "provenance": {
+            "basis": "estimated",
+            "method": "Copied the measured exterior of the same size with the other closure",
+            "sources": [
+              "misumi-b6203zz"
+            ]
+          },
+          "section": {
+            "closure_recess": 0.34,
+            "edge_radius": 0.6,
+            "inner_ring_radius": 11.5,
+            "outer_ring_radius": 17.6
+          },
+          "version": 1
+        },
+        "org.techsquid.parts": {
+          "creator": "techsquid-bearings",
+          "product": "{\"catalog\":\"misumi\",\"configuration\":\"misumi-b6203ddu\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B6203DDU\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"exterior\",\"product\":{\"catalog\":\"misumi\",\"configuration\":\"misumi-b6203ddu\",\"kind\":\"supplier_product\",\"members\":[],\"part\":\"B6203DDU\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "4d4ee8931c0c5da12ceb6aacbc8592ab66dfbd7650bcab42996d75f4f6ce17ae",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "MISUMI B6203DDU"
+      }
+    },
+    {
+      "id": 206,
+      "identification_color_index": 19,
       "name": "CSK clutch CSK12P",
       "parent": 13,
       "metadata": {
@@ -17107,7 +18318,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "5796b0950f46409ac3411ded3d4db44c04fd57eff280f21d848b6eda10c2695e",
+            "sha256": "df7e4138486c95a52b8647d0e7a06dcabd59c9ba95b76d7c1725ba2f1644b93f",
             "version": 2
           },
           "version": 1
@@ -17176,8 +18387,8 @@
       }
     },
     {
-      "id": 197,
-      "identification_color_index": 18,
+      "id": 219,
+      "identification_color_index": 20,
       "name": "CSK clutch CSK12P custom",
       "parent": 13,
       "metadata": {
@@ -17193,7 +18404,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "d6fb5303bd24d890402df9a0f5260c17b435cb2645129cea0df24f67100edb15",
+            "sha256": "7fb388bdfac92721ff6ca8323ab37d837957b14cc221b9983969f085e4c88d43",
             "version": 2
           },
           "version": 1
@@ -17262,8 +18473,8 @@
       }
     },
     {
-      "id": 211,
-      "identification_color_index": 19,
+      "id": 233,
+      "identification_color_index": 21,
       "name": "CSK clutch CSK15PP",
       "parent": 13,
       "metadata": {
@@ -17279,7 +18490,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "86def9d98700ac4c18df6774a975dc42b64c82fe066ef91c512142bf95fe2b8a",
+            "sha256": "c729536b078786dedd902d600d8477dce51144dec359d986438bf7bf16d3200e",
             "version": 2
           },
           "version": 1
@@ -17356,8 +18567,8 @@
       }
     },
     {
-      "id": 226,
-      "identification_color_index": 20,
+      "id": 248,
+      "identification_color_index": 22,
       "name": "CSK clutch CSK15P-2RS",
       "parent": 13,
       "metadata": {
@@ -17373,7 +18584,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "11f5db476ad26b8267ccf6f109252f929f5e0e418c1f5379b9b4b90659a71963",
+            "sha256": "f22709b7c687babbc6621c42c9d65d4bd90749933d075d600c0a5e36faa63450",
             "version": 2
           },
           "version": 1
@@ -17442,8 +18653,8 @@
       }
     },
     {
-      "id": 239,
-      "identification_color_index": 21,
+      "id": 261,
+      "identification_color_index": 23,
       "name": "CSK clutch CSK8PP",
       "parent": 13,
       "metadata": {
@@ -17459,7 +18670,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "6ca3b39645d06d85e69e33a74188f2c132211e5cac6860e02ac56a42a6885493",
+            "sha256": "b3d5c9cc907d6ae01cdd49359ab5d89fada1de23e8aa9fa1c15cf8c4b530d627",
             "version": 2
           },
           "version": 1
@@ -17536,8 +18747,8 @@
       }
     },
     {
-      "id": 254,
-      "identification_color_index": 22,
+      "id": 276,
+      "identification_color_index": 24,
       "name": "CSK clutch CSK10PP",
       "parent": 13,
       "metadata": {
@@ -17553,7 +18764,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "dcaa7f2095b116331efdb74fce9a52f9b83415b615233ac52add719c24808d1b",
+            "sha256": "cac4b14cbd3ef66ab0e0c95209feca4c16567d6ac63a371e85e05becfed6059b",
             "version": 2
           },
           "version": 1
@@ -17634,8 +18845,8 @@
       }
     },
     {
-      "id": 269,
-      "identification_color_index": 23,
+      "id": 291,
+      "identification_color_index": 25,
       "name": "CSK clutch Custom",
       "parent": 13,
       "metadata": {
@@ -17651,7 +18862,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "25844935d3c84afcef9b8cc6c61a3c88f121a91229069d9922a0fd8d7bd33d24",
+            "sha256": "86fffaac5818eb9257796ecec9be9c90ad65b6e751fbaa486ca5747c97ea6458",
             "version": 2
           },
           "version": 1
@@ -17705,8 +18916,8 @@
       }
     },
     {
-      "id": 282,
-      "identification_color_index": 24,
+      "id": 304,
+      "identification_color_index": 26,
       "name": "CSK clutch CSK15P",
       "parent": 13,
       "metadata": {
@@ -17722,7 +18933,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "b0acb68b472a84d73e2f8d6c5a5cb7563091069cfb702d0fbd7d27af0b7493db",
+            "sha256": "14537ec7e4fbf6d789058dd5d53234f144a92c5a48b47916b9867a8313a2d14d",
             "version": 2
           },
           "version": 1
@@ -17791,8 +19002,8 @@
       }
     },
     {
-      "id": 295,
-      "identification_color_index": 25,
+      "id": 317,
+      "identification_color_index": 27,
       "name": "CSK clutch CSK15-2RS",
       "parent": 13,
       "metadata": {
@@ -17808,7 +19019,7 @@
             0.0
           ],
           "snapshot": {
-            "sha256": "59749422e660e5c11ce3124b9c8c1dc1ff4ed42923a6879f18f2e6749afbb19d",
+            "sha256": "83e65e23366769a6d4b529cc3c9bb395693bde30654487e527e6aa1b84c80a3f",
             "version": 2
           },
           "version": 1
@@ -17869,7 +19080,7 @@
       }
     }
   ],
-  "next_component_color_index": 26,
+  "next_component_color_index": 28,
   "occurrences": [
     {
       "id": 3,
@@ -18436,6 +19647,72 @@
       "id": 185,
       "component": 184,
       "parent": 13,
+      "name": "Bearing 105 sealed:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -98.0,
+          45.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 196,
+      "component": 195,
+      "parent": 13,
+      "name": "Bearing B6203DDU:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          105.0,
+          45.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 207,
+      "component": 206,
+      "parent": 13,
       "name": "CSK clutch CSK12P:1",
       "transform": [
         [
@@ -18466,8 +19743,8 @@
       "grounded": false
     },
     {
-      "id": 198,
-      "component": 197,
+      "id": 220,
+      "component": 219,
       "parent": 13,
       "name": "CSK clutch CSK12P custom:1",
       "transform": [
@@ -18499,8 +19776,8 @@
       "grounded": false
     },
     {
-      "id": 210,
-      "component": 197,
+      "id": 232,
+      "component": 219,
       "parent": 13,
       "name": "CSK clutch CSK12P custom:2",
       "transform": [
@@ -18532,8 +19809,8 @@
       "grounded": false
     },
     {
-      "id": 212,
-      "component": 211,
+      "id": 234,
+      "component": 233,
       "parent": 13,
       "name": "CSK clutch CSK15PP:1",
       "transform": [
@@ -18565,8 +19842,8 @@
       "grounded": false
     },
     {
-      "id": 227,
-      "component": 226,
+      "id": 249,
+      "component": 248,
       "parent": 13,
       "name": "CSK clutch CSK15P-2RS:1",
       "transform": [
@@ -18598,8 +19875,8 @@
       "grounded": false
     },
     {
-      "id": 240,
-      "component": 239,
+      "id": 262,
+      "component": 261,
       "parent": 13,
       "name": "CSK clutch CSK8PP:1",
       "transform": [
@@ -18631,8 +19908,8 @@
       "grounded": false
     },
     {
-      "id": 255,
-      "component": 254,
+      "id": 277,
+      "component": 276,
       "parent": 13,
       "name": "CSK clutch CSK10PP:1",
       "transform": [
@@ -18664,8 +19941,8 @@
       "grounded": false
     },
     {
-      "id": 270,
-      "component": 269,
+      "id": 292,
+      "component": 291,
       "parent": 13,
       "name": "CSK clutch Custom:1",
       "transform": [
@@ -18697,8 +19974,8 @@
       "grounded": false
     },
     {
-      "id": 283,
-      "component": 282,
+      "id": 305,
+      "component": 304,
       "parent": 13,
       "name": "CSK clutch CSK15P:1",
       "transform": [
@@ -18730,8 +20007,8 @@
       "grounded": false
     },
     {
-      "id": 296,
-      "component": 295,
+      "id": 318,
+      "component": 317,
       "parent": 13,
       "name": "CSK clutch CSK15-2RS:1",
       "transform": [
@@ -18765,6 +20042,42 @@
   ],
   "appearances": {
     "bodies": {
+      "Bearing 105 sealed Inner ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing 105 sealed Outer ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing 105 sealed Seal back": {
+        "name": "Custom",
+        "color": [
+          64,
+          64,
+          64
+        ],
+        "opacity": 1.0
+      },
+      "Bearing 105 sealed Seal front": {
+        "name": "Custom",
+        "color": [
+          64,
+          64,
+          64
+        ],
+        "opacity": 1.0
+      },
       "Bearing 105ZZ Inner ring": {
         "name": "Custom",
         "color": [
@@ -19158,6 +20471,42 @@
           160,
           160,
           160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B6203DDU Inner ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B6203DDU Outer ring": {
+        "name": "Custom",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B6203DDU Seal back": {
+        "name": "Custom",
+        "color": [
+          64,
+          64,
+          64
+        ],
+        "opacity": 1.0
+      },
+      "Bearing B6203DDU Seal front": {
+        "name": "Custom",
+        "color": [
+          64,
+          64,
+          64
         ],
         "opacity": 1.0
       },
@@ -19967,8 +21316,8 @@
       ]
     },
     {
-      "id": 196,
-      "name": "CSK clutch CSK12P",
+      "id": 194,
+      "name": "Bearing 105 sealed",
       "parent": null,
       "features": [
         186,
@@ -19978,149 +21327,179 @@
         190,
         191,
         192,
-        193,
-        194,
-        195
+        193
       ]
     },
     {
-      "id": 209,
-      "name": "CSK clutch CSK12P custom",
+      "id": 205,
+      "name": "Bearing B6203DDU",
       "parent": null,
       "features": [
+        197,
+        198,
         199,
         200,
         201,
         202,
         203,
-        204,
-        205,
-        206,
-        207,
-        208
+        204
       ]
     },
     {
-      "id": 225,
-      "name": "CSK clutch CSK15PP",
+      "id": 218,
+      "name": "CSK clutch CSK12P",
       "parent": null,
       "features": [
+        208,
+        209,
+        210,
+        211,
+        212,
         213,
         214,
         215,
         216,
-        217,
-        218,
-        219,
-        220,
+        217
+      ]
+    },
+    {
+      "id": 231,
+      "name": "CSK clutch CSK12P custom",
+      "parent": null,
+      "features": [
         221,
         222,
         223,
-        224
-      ]
-    },
-    {
-      "id": 238,
-      "name": "CSK clutch CSK15P-2RS",
-      "parent": null,
-      "features": [
+        224,
+        225,
+        226,
+        227,
         228,
         229,
-        230,
-        231,
-        232,
-        233,
-        234,
-        235,
-        236,
-        237
+        230
       ]
     },
     {
-      "id": 253,
-      "name": "CSK clutch CSK8PP",
+      "id": 247,
+      "name": "CSK clutch CSK15PP",
       "parent": null,
       "features": [
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
         241,
         242,
         243,
         244,
         245,
-        246,
-        247,
-        248,
-        249,
-        250,
-        251,
-        252
+        246
       ]
     },
     {
-      "id": 268,
-      "name": "CSK clutch CSK10PP",
+      "id": 260,
+      "name": "CSK clutch CSK15P-2RS",
       "parent": null,
       "features": [
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
         256,
         257,
         258,
-        259,
-        260,
-        261,
-        262,
+        259
+      ]
+    },
+    {
+      "id": 275,
+      "name": "CSK clutch CSK8PP",
+      "parent": null,
+      "features": [
         263,
         264,
         265,
         266,
-        267
-      ]
-    },
-    {
-      "id": 281,
-      "name": "CSK clutch Custom",
-      "parent": null,
-      "features": [
+        267,
+        268,
+        269,
+        270,
         271,
         272,
         273,
-        274,
-        275,
-        276,
-        277,
-        278,
-        279,
-        280
+        274
       ]
     },
     {
-      "id": 294,
-      "name": "CSK clutch CSK15P",
+      "id": 290,
+      "name": "CSK clutch CSK10PP",
       "parent": null,
       "features": [
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
         284,
         285,
         286,
         287,
         288,
-        289,
-        290,
-        291,
-        292,
-        293
+        289
       ]
     },
     {
-      "id": 305,
-      "name": "CSK clutch CSK15-2RS",
+      "id": 303,
+      "name": "CSK clutch Custom",
       "parent": null,
       "features": [
+        293,
+        294,
+        295,
+        296,
         297,
         298,
         299,
         300,
         301,
-        302,
-        303,
-        304
+        302
+      ]
+    },
+    {
+      "id": 316,
+      "name": "CSK clutch CSK15P",
+      "parent": null,
+      "features": [
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313,
+        314,
+        315
+      ]
+    },
+    {
+      "id": 327,
+      "name": "CSK clutch CSK15-2RS",
+      "parent": null,
+      "features": [
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325,
+        326
       ]
     }
   ]

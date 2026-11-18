@@ -21,7 +21,7 @@ TOL = 1e-6
 
 # Entry: (plugin, parameters that build the part alone).
 ENTRIES = {
-    "make-bearing": ("techsquid-bearings", {"size": "625 2RS"}),
+    "make-bearing": ("techsquid-bearings", {"size": "625", "closure": "Sealed"}),
     "make-csk": ("techsquid-bearings", {"size": "CSK12P"}),
     "make-v-wheel": ("techsquid-v-wheels", {"size": "Solid V Wheel", "assembled": False}),
     "make-screw": ("techsquid-screws", {"size": "M3", "length": 12, "head": "Socket head",

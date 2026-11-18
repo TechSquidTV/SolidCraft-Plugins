@@ -44,9 +44,17 @@ fn run() -> Result<(), String> {
                 (
                     "make-bearing",
                     "size",
-                    bearings::ALL
+                    bearings::Size::ALL
+                        .iter()
+                        .map(|s| s.label().to_string())
+                        .collect(),
+                ),
+                (
+                    "make-bearing",
+                    "closure",
+                    bearings::Closure::ALL
                         .into_iter()
-                        .map(|b| b.designation().to_string())
+                        .map(|c| c.label().to_string())
                         .collect(),
                 ),
                 (
@@ -117,18 +125,23 @@ fn run() -> Result<(), String> {
             bearings::Closure::MetalShields => "Metal shields, both sides",
         };
         bearings_table.push_str(&format!(
-            "| {} | {} | {} | {} × {} × {} | {closure} | Measured |\n",
+            "| {} | {} | {} | {} × {} × {} | {closure} | {} |\n",
             bearing.designation(),
-            bearing.supplier().name,
-            bearing.sku(),
+            bearing.supplier().map_or("Unassigned", |s| s.name),
+            bearing.sku().unwrap_or("—"),
             d.bore,
             d.diameter,
-            d.width
+            d.width,
+            bearing.basis().label()
         ));
     }
     for csk in bearings::csk::ALL {
         let d = csk.dimensions();
-        let basis = exterior_basis(csk);
+        let basis = bearings::csk::exterior::resolve(&csk.geometry())
+            .expect("valid CSK preset")
+            .provenance
+            .basis
+            .label();
         bearings_table.push_str(&format!(
             "| {} | Unassigned | — | {} × {} × {} | {} ([reference]({})) | {basis} |\n",
             csk.designation(),
@@ -169,16 +182,6 @@ fn run() -> Result<(), String> {
         )?;
     }
     Ok(())
-}
-
-fn exterior_basis(csk: bearings::csk::Csk) -> &'static str {
-    match bearings::csk::exterior::resolve(&csk.geometry())
-        .expect("valid CSK preset")
-        .basis
-    {
-        bearings::csk::exterior::Basis::Measured => "Measured",
-        bearings::csk::exterior::Basis::Estimated => "Estimated",
-    }
 }
 
 fn update_table(path: &Path, table: &str, write: bool) -> Result<(), String> {
@@ -246,31 +249,14 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                 .push(json!({"const":"Custom", "title":"Custom — enter dimensions and keyways"}));
             property["oneOf"] = json!(options);
         } else if entry == "make-bearing" && field == "size" {
-            // The designation alone says little: show who makes it, its size and its closure.
             property
                 .as_object_mut()
                 .ok_or("missing bearing size property")?
                 .remove("enum");
-            let options: Vec<_> = bearings::ALL
-                .into_iter()
-                .map(|bearing| {
-                    let d = bearing.dimensions();
-                    let closure = match bearing.closure() {
-                        bearings::Closure::Open => "open",
-                        bearings::Closure::RubberSeals => "sealed",
-                        bearings::Closure::MetalShields => "shielded",
-                    };
-                    let title = format!(
-                        "{} — {}, {} × {} × {} mm, {closure}",
-                        bearing.designation(),
-                        bearing.supplier().name,
-                        d.bore,
-                        d.diameter,
-                        d.width
-                    );
-                    json!({"const":bearing.designation(), "title":title})
-                })
-                .collect();
+            let mut options: Vec<_> = bearings::Size::ALL.iter().map(|size| {
+                json!({"const":size.label(), "title":format!("{} — {} mm",size.label(),size.envelope())})
+            }).collect();
+            options.push(json!({"const":"By dimensions","title":"By dimensions"}));
             property["oneOf"] = json!(options);
         } else {
             property["enum"] = json!(choices);

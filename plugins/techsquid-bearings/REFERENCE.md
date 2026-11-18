@@ -2,7 +2,7 @@
 
 The package offers two insertion workflows:
 
-- `make-bearing`: fixed OpenBuilds and MISUMI radial bearing products.
+- `make-bearing`: radial bearings selected by base size or nominal dimensions and closure.
 - `make-csk`: CSK design specifications with editable keyways and recorded references.
 
 ## CSK workflow
@@ -80,14 +80,28 @@ after creation, outside this generator's inputs.
 
 ## Radial bearing workflow
 
-`make-bearing` accepts `size` (default `625 2RS`) and `placement`.
-It inserts fixed supplier products and rejects dimensional overrides. OpenBuilds
-and MISUMI purchasing identities remain explicit for these catalog products.
-Every radial product has a measured exterior: separate rings and sourced seals,
-shields or exposed raceways. Closed variants omit hidden balls; open B626 includes
-eight sourced balls. Cages and closure thickness are not inferred. Matching a
-standard envelope does not establish another product's ring or closure details;
-the [source ledgers](#sources) identify the exact references used.
+| Field | Default | Meaning |
+|---|---|---|
+| `size` | `608` | Base size as a string, or `By dimensions` |
+| `closure` | `Shielded` | `Shielded`, `Sealed` or `Open`. Only 626 supports Open. |
+| `match_bore`, `match_diameter`, `match_width` | Empty | Nominal bore, outside diameter and width in mm. Used only with By dimensions. |
+| `placement` | Empty | Sketch picks as described below |
+
+By dimensions needs at least one dimension. Each value must be greater than 0, at most 1000 mm,
+and match the catalog exactly. Switching to a base size ignores the numeric values in these fields.
+A 17 mm bore matches 6003 and 6203. Adding a 40 mm outside diameter selects 6203.
+Multiple or zero matches produce a message during Preview or on Run. Matching and
+choosing the base size directly create the same component.
+
+All sizes offer shielded and sealed closures. For the thirteen new closed variants,
+both rings, edge radii and the closure recess come from the measured variant of
+the same size. Each estimated component records the section, estimation method and
+donor identity in `org.techsquid.bearing.exterior` version 1. Twelve have verified
+MISUMI catalog numbers. The sealed 105 is a design specification with a normal BOM
+row and an empty part number. See the [catalog evidence](../../docs/sources/misumi.md#catalog-identities-for-estimated-closure-variants).
+
+Open B626 has eight visible balls and measured raceways. Closed models omit hidden
+balls. All closure faces have zero thickness.
 
 ## Placement and reuse
 
@@ -128,6 +142,19 @@ replacement. See [verified reuse](../../docs/parts-library.md).
 | B6202ZZ | MISUMI | B6202ZZ | 15 × 35 × 11 | Metal shields, both sides | Measured |
 | B6203ZZ | MISUMI | B6203ZZ | 17 × 40 × 12 | Metal shields, both sides | Measured |
 | B6204ZZ | MISUMI | B6204ZZ | 20 × 47 × 14 | Metal shields, both sides | Measured |
+| B625ZZ | MISUMI | B625ZZ | 5 × 16 × 5 | Metal shields, both sides | Estimated |
+| 105 sealed | Unassigned | — | 5 × 10 × 4 | Rubber seals, both sides | Estimated |
+| B608DDU | MISUMI | B608DDU | 8 × 22 × 7 | Rubber seals, both sides | Estimated |
+| B6000DDU | MISUMI | B6000DDU | 10 × 26 × 8 | Rubber seals, both sides | Estimated |
+| B6001DDU | MISUMI | B6001DDU | 12 × 28 × 8 | Rubber seals, both sides | Estimated |
+| B6002DDU | MISUMI | B6002DDU | 15 × 32 × 9 | Rubber seals, both sides | Estimated |
+| B6003DDU | MISUMI | B6003DDU | 17 × 35 × 10 | Rubber seals, both sides | Estimated |
+| B6004DDU | MISUMI | B6004DDU | 20 × 42 × 12 | Rubber seals, both sides | Estimated |
+| B6200DDU | MISUMI | B6200DDU | 10 × 30 × 9 | Rubber seals, both sides | Estimated |
+| B6201DDU | MISUMI | B6201DDU | 12 × 32 × 10 | Rubber seals, both sides | Estimated |
+| B6202DDU | MISUMI | B6202DDU | 15 × 35 × 11 | Rubber seals, both sides | Estimated |
+| B6203DDU | MISUMI | B6203DDU | 17 × 40 × 12 | Rubber seals, both sides | Estimated |
+| B6204DDU | MISUMI | B6204DDU | 20 × 47 × 14 | Rubber seals, both sides | Estimated |
 | CSK8 | Unassigned | — | 8 × 22 × 9 | Unkeyed ([reference](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf)) | Measured |
 | CSK8P | Unassigned | — | 8 × 22 × 9 | Inner keyway ([reference](https://www.peakbearings.com/keywaysize.htm)) | Estimated |
 | CSK8PP | Unassigned | — | 8 × 22 × 9 | Inner and outer keyways ([reference](https://www.peakbearings.com/keywaysize.htm)) | Estimated |
@@ -199,11 +226,12 @@ profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
 
 ## Breaking changes
 
-Catalog revision 10 rejects `catalog_selection` payloads pinned to earlier revisions,
-including revisions 8 and 9, for both radial bearings and CSK clutches. Internal
-callers must resolve those selections again before insertion. Ordinary dialog
-inputs do not carry this precondition, and existing model geometry and product
-representation identities are unchanged by this catalog expansion.
+**Breaking change for radial scripts.** Replace product-valued `size` with a base size
+and closure. For example, `{"size":"B6203ZZ"}` becomes
+`{"size":"6203","closure":"Shielded"}`. Old values are rejected. To reproduce the old
+empty-input default, pass `{"size":"625","closure":"Sealed"}`. The new default is
+608 Shielded. Direct plugin runs can omit both fields. Clients invoking the generated
+tool pass the two required choices. Refresh catalog selections pinned before revision 11.
 
 CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
 there is no old-route alias. Previous supplier-identified CSK definitions are not reused as the new

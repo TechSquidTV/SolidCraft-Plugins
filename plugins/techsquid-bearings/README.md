@@ -1,16 +1,16 @@
 # Bearings
 
-Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). Every radial product has a measured exterior with separate steel rings and sourced closures. CSK presets have separate chamfered rings, cover or seal faces, editable keyways, and recorded references; the [supported-parts table](#supported-bearings-and-csk-presets) distinguishes measured and estimated exteriors.
+Place radial bearings by size, closure or mounting dimensions, or create a CSK one-way clutch with editable keyways in [SolidCraft](https://github.com/tangency-labs/solidcraft). The [supported-parts table](#supported-bearings-and-csk-presets) gives the supplier number and exterior measurement basis for each choice.
 
 ![Sourced radial bearings and CSK clutches shown at the same scale](../../examples/bearings-and-clutches/bearings-and-clutches.png)
 
-The preview shows every supported radial bearing and four representative CSK presets,
+The preview shows the measured radial bearings, two estimated exteriors and ten CSK occurrences,
 all at the same scale. Left to right:
 
 - **Back row:** MISUMI B6200ZZ through B6204ZZ.
 - **Second row:** MISUMI B6000ZZ through B6004ZZ.
-- **Third row:** OpenBuilds 625 2RS and 105ZZ; MISUMI B626, B626ZZ, B626DDU and B608ZZ.
-- **Front row — CSK clutches:** CSK8PP, CSK15P, CSK15PP and CSK15-2RS. These show small dual-keyed, inner-keyed, dual-keyed and sealed variants.
+- **Third row:** sealed 105, OpenBuilds 625 2RS and 105ZZ, MISUMI B626, B626ZZ, B626DDU, B608ZZ and B6203DDU.
+- **Front two rows** show reference and customized CSK clutches. The walkthrough identifies each placement.
 
 Dark faces depict seals; gray closure faces depict shields or dust covers. The open
 B626 shows its balls and raceways. [Open the combined example](../../examples/bearings-and-clutches/)
@@ -25,7 +25,7 @@ Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In Solid
 
 Choose a workflow:
 
-- **Plugins > Bearing** (`make-bearing` in scripts) inserts a fixed OpenBuilds or MISUMI radial bearing.
+- **Plugins > Bearing** (`make-bearing` in scripts) defaults to 608 Shielded. Choose a base size and closure, or select **By dimensions** and enter the dimensions you know. A 17 mm bore and 40 mm outside diameter select 6203. Open is available for 626.
 - **Plugins > CSK clutch** (`make-csk` in scripts) starts with a CSK designation. Leave dimension fields blank
   for reference values, override bore/OD/width, or add, remove, resize and rotate either keyway.
   Closure style can also be changed independently of width.
@@ -43,9 +43,9 @@ circle, or a click inside one, means its centre. Points or circles already selec
 fill the field. With nothing picked, the part sits at the origin. Its centre plane
 sits on the point and its axle follows the sketch normal.
 
-Each radial bearing’s rings and closure faces belong to one purchased component. Later insertions reuse an unchanged definition, including bearings already inside V-wheel assemblies. Edited definitions are preserved; a new insertion builds a clean replacement. New occurrences remain free to move or join to your assembly.
+Each radial bearing’s rings and closure faces belong to one component. The sealed 105 counts in the BOM without a supplier number. Later insertions reuse an unchanged definition, including bearings already inside V-wheel assemblies. Edited definitions are preserved; a new insertion builds a clean replacement. New occurrences remain free to move or join to your assembly.
 
-The built-in bearing tool provides a simple ring envelope. This plugin shows the sourced exterior ring and closure boundaries, with visible balls and raceways in open B626. CSK keyways cut the appropriate ring. Cover and seal faces follow the measured flush boundaries; dark seal colours are illustrative. Hidden sprags, raceways and seal cross-sections are omitted. The CAD does not simulate one-way motion or predict mass. It does not use the built-in **Change Part Size** workflow.
+The built-in bearing tool provides a simple ring envelope. This plugin shows measured or estimated exterior ring and closure boundaries, with visible balls and raceways in open B626. CSK keyways cut the appropriate ring. Cover and seal faces follow the measured flush boundaries; dark seal colours are illustrative. Hidden sprags, raceways and seal cross-sections are omitted. The CAD does not simulate one-way motion or predict mass. It does not use the built-in **Change Part Size** workflow.
 
 See the [reference](REFERENCE.md) for dimensions, part numbers, placement fields and representation limits. Shared internal definitions drive the insertion choices and verified reuse; no Catalog entry is exposed. The example designs open without the plugin installed.
 
@@ -79,6 +79,19 @@ CSK presets are reference geometry, with no purchasing identity. Envelope dimens
 | B6202ZZ | MISUMI | B6202ZZ | 15 × 35 × 11 | Metal shields, both sides | Measured |
 | B6203ZZ | MISUMI | B6203ZZ | 17 × 40 × 12 | Metal shields, both sides | Measured |
 | B6204ZZ | MISUMI | B6204ZZ | 20 × 47 × 14 | Metal shields, both sides | Measured |
+| B625ZZ | MISUMI | B625ZZ | 5 × 16 × 5 | Metal shields, both sides | Estimated |
+| 105 sealed | Unassigned | — | 5 × 10 × 4 | Rubber seals, both sides | Estimated |
+| B608DDU | MISUMI | B608DDU | 8 × 22 × 7 | Rubber seals, both sides | Estimated |
+| B6000DDU | MISUMI | B6000DDU | 10 × 26 × 8 | Rubber seals, both sides | Estimated |
+| B6001DDU | MISUMI | B6001DDU | 12 × 28 × 8 | Rubber seals, both sides | Estimated |
+| B6002DDU | MISUMI | B6002DDU | 15 × 32 × 9 | Rubber seals, both sides | Estimated |
+| B6003DDU | MISUMI | B6003DDU | 17 × 35 × 10 | Rubber seals, both sides | Estimated |
+| B6004DDU | MISUMI | B6004DDU | 20 × 42 × 12 | Rubber seals, both sides | Estimated |
+| B6200DDU | MISUMI | B6200DDU | 10 × 30 × 9 | Rubber seals, both sides | Estimated |
+| B6201DDU | MISUMI | B6201DDU | 12 × 32 × 10 | Rubber seals, both sides | Estimated |
+| B6202DDU | MISUMI | B6202DDU | 15 × 35 × 11 | Rubber seals, both sides | Estimated |
+| B6203DDU | MISUMI | B6203DDU | 17 × 40 × 12 | Rubber seals, both sides | Estimated |
+| B6204DDU | MISUMI | B6204DDU | 20 × 47 × 14 | Rubber seals, both sides | Estimated |
 | CSK8 | Unassigned | — | 8 × 22 × 9 | Unkeyed ([reference](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf)) | Measured |
 | CSK8P | Unassigned | — | 8 × 22 × 9 | Inner keyway ([reference](https://www.peakbearings.com/keywaysize.htm)) | Estimated |
 | CSK8PP | Unassigned | — | 8 × 22 × 9 | Inner and outer keyways ([reference](https://www.peakbearings.com/keywaysize.htm)) | Estimated |

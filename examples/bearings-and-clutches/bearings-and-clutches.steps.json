@@ -1,5 +1,5 @@
 {
-  "description": "The baseline radial-bearing catalog and ten CSK clutch occurrences at the same scale. Two placements of the same CSK12P keyway override share one definition.",
+  "description": "The measured radial catalog, two estimated closure variants and ten CSK clutch occurrences at the same scale. Two placements of the same CSK12P keyway override share one definition.",
   "steps": [
     {"caption": "Lay out the axle centres", "command": "sketch.create", "params": {"name": "Bearing centres", "plane": "XY"}},
     {"caption": "Radial bearing centre p0", "command": "sketch.point", "params": {"point": [-65, 45], "id": "p0"}},
@@ -28,23 +28,27 @@
     {"command": "sketch.point", "caption": "Locate CSK display position 8", "params": {"id": "clutch_8", "point": [0, -77]}},
     {"command": "sketch.point", "caption": "Locate CSK15P", "params": {"id": "clutch_9", "point": [45, -77]}},
     {"command": "sketch.point", "caption": "Locate CSK15-2RS", "params": {"id": "clutch_10", "point": [90, -77]}},
+    {"caption": "105 sealed centre", "command": "sketch.point", "params": {"point": [-98, 45], "id": "105_sealed"}},
+    {"caption": "B6203DDU centre", "command": "sketch.point", "params": {"point": [105, 45], "id": "b6203ddu"}},
     {"command": "sketch.finish", "caption": "Finish the display layout", "params": {}},
-    {"caption": "625 2RS", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "625 2RS", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p0"}]}}},
-    {"caption": "105ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "105ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p1"}]}}},
-    {"caption": "B626", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B626", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p2"}]}}},
-    {"caption": "B626ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B626ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p3"}]}}},
-    {"caption": "B626DDU", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B626DDU", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p4"}]}}},
-    {"caption": "B608ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B608ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p5"}]}}},
-    {"caption": "B6000ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6000ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6000zz"}]}}},
-    {"caption": "B6001ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6001ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6001zz"}]}}},
-    {"caption": "B6002ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6002ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6002zz"}]}}},
-    {"caption": "B6003ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6003ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6003zz"}]}}},
-    {"caption": "B6004ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6004ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6004zz"}]}}},
-    {"caption": "B6200ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6200ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6200zz"}]}}},
-    {"caption": "B6201ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6201ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6201zz"}]}}},
-    {"caption": "B6202ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6202ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6202zz"}]}}},
-    {"caption": "B6203ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6203ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6203zz"}]}}},
-    {"caption": "B6204ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6204ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6204zz"}]}}},
+    {"caption": "625 2RS", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "625", "closure": "Sealed", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p0"}]}}},
+    {"caption": "105ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "105", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p1"}]}}},
+    {"caption": "B626", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "626", "closure": "Open", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p2"}]}}},
+    {"caption": "B626ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "626", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p3"}]}}},
+    {"caption": "B626DDU", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "626", "closure": "Sealed", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p4"}]}}},
+    {"caption": "B608ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "608", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p5"}]}}},
+    {"caption": "B6000ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6000", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6000zz"}]}}},
+    {"caption": "B6001ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6001", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6001zz"}]}}},
+    {"caption": "B6002ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6002", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6002zz"}]}}},
+    {"caption": "B6003ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6003", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6003zz"}]}}},
+    {"caption": "B6004ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6004", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6004zz"}]}}},
+    {"caption": "B6200ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6200", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6200zz"}]}}},
+    {"caption": "B6201ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6201", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6201zz"}]}}},
+    {"caption": "B6202ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6202", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6202zz"}]}}},
+    {"caption": "B6203ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "By dimensions", "match_bore": 17, "match_diameter": 40, "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6203zz"}]}}},
+    {"caption": "B6204ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "6204", "closure": "Shielded", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6204zz"}]}}},
+    {"caption": "105 sealed estimated exterior", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "105", "closure": "Sealed", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "105_sealed"}]}}},
+    {"caption": "B6203DDU estimated exterior", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "By dimensions", "match_bore": 17, "match_diameter": 40, "closure": "Sealed", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6203ddu"}]}}},
     {"caption": "Reference CSK12P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK12P", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_1"}]}}},
     {"caption": "Custom CSK12P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK12P", "inner_keyway_depth": 1.2, "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_2"}]}}},
     {"caption": "Repeated custom CSK12P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK12P", "inner_keyway_depth": 1.2, "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_3"}]}}},
@@ -57,8 +61,8 @@
     {"caption": "CSK15-2RS", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK15-2RS", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_10"}]}}}
   ],
   "expect": {
-    "bodies": 110,
-    "surface_bodies": 50,
+    "bodies": 118,
+    "surface_bodies": 54,
     "bbox": {
       "min": [
         -125.0,
@@ -1191,6 +1195,134 @@
           ]
         },
         "area_mm2": 743.4264855454887
+      },
+      {
+        "bbox": {
+          "max": [
+            -94.9,
+            48.1,
+            2.0
+          ],
+          "min": [
+            -101.1,
+            41.9,
+            -2.0
+          ]
+        },
+        "area_mm2": 161.85485351336197,
+        "volume_mm3": 42.22300526346691,
+        "body": "Bearing 105 sealed Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -93.0,
+            50.0,
+            2.0
+          ],
+          "min": [
+            -103.0,
+            40.0,
+            -2.0
+          ]
+        },
+        "area_mm2": 265.40174737627217,
+        "volume_mm3": 48.254863158398166,
+        "body": "Bearing 105 sealed Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -93.4,
+            49.6,
+            1.7
+          ],
+          "min": [
+            -102.6,
+            40.4,
+            1.7
+          ]
+        },
+        "area_mm2": 36.285395146617844,
+        "body": "Bearing 105 sealed Seal front"
+      },
+      {
+        "bbox": {
+          "max": [
+            -93.4,
+            49.6,
+            -1.7
+          ],
+          "min": [
+            -102.6,
+            40.4,
+            -1.7
+          ]
+        },
+        "area_mm2": 36.285395146617844,
+        "body": "Bearing 105 sealed Seal back"
+      },
+      {
+        "body": "Bearing B6203DDU Inner ring",
+        "bbox": {
+          "min": [
+            93.5,
+            33.5,
+            -6.0
+          ],
+          "max": [
+            116.5,
+            56.5,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6203DDU Outer ring",
+        "bbox": {
+          "min": [
+            85.0,
+            25.0,
+            -6.0
+          ],
+          "max": [
+            125.0,
+            65.0,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6203DDU Seal front",
+        "bbox": {
+          "min": [
+            87.4,
+            27.4,
+            5.66
+          ],
+          "max": [
+            122.6,
+            62.6,
+            5.66
+          ]
+        },
+        "area_mm2": 557.6641119387243
+      },
+      {
+        "body": "Bearing B6203DDU Seal back",
+        "bbox": {
+          "min": [
+            87.4,
+            27.4,
+            -5.66
+          ],
+          "max": [
+            122.6,
+            62.6,
+            -5.66
+          ]
+        },
+        "area_mm2": 557.6641119387243
       }
     ],
     "placed": [
@@ -1832,7 +1964,7 @@
       }
     ],
     "catalog_definitions": {
-      "techsquid-bearings": 25
+      "techsquid-bearings": 27
     }
   }
 }

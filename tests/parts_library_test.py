@@ -68,7 +68,7 @@ def activation_case(plugin, nested):
         entry = 'make-bearing' if plugin == BEARINGS else 'make-v-wheel'
         params = {'placement': picks('Mount', 'mount.center')}
         if plugin == BEARINGS:
-            params['size'] = 'B626'
+            params.update(size='626', closure='Open')
         check(label+': fixture selects the intended world point', same_point(mount_world(), point))
         # Failure after creation must restore the selected path, not only its
         # component ID. This uses the same late-failure fixture as the main suite.
@@ -117,10 +117,10 @@ with Headless() as host:
     host.command('sketch.circle.center',center=[70,20],radius=1,id='b')
     host.command('sketch.finish')
     before = host.command('document.inspect',measure=False)
-    direct = insert(BEARINGS)
+    direct = insert(BEARINGS, size='625', closure='Sealed')
     wheel = insert(WHEELS,placement=picks('Mounts','a.center'))
     repeated = insert(WHEELS,placement=picks('Mounts','b.center'))
-    another = insert(BEARINGS)
+    another = insert(BEARINGS, size='625', closure='Sealed')
     listed = host.command('component.list')
     after = host.command('document.inspect',measure=False)
     bearing = definition(listed,'Bearing 625 2RS')
@@ -151,7 +151,7 @@ with Headless() as host:
     reopened = insert(WHEELS,placement=picks('Mounts','a.center'))
     check('shared assembly remains reusable after save/reopen',reopened['component']['reused'])
     host.command('component.rename',component=bearing['id'],name='My bearing')
-    renamed = insert(BEARINGS)
+    renamed = insert(BEARINGS, size='625', closure='Sealed')
     check('display renaming preserves catalog reuse',renamed['component']['reused'] and renamed['component']['component'] == 'My bearing')
 
     renamed_bodies = {body: f'Renamed bearing body {i}' for i, body in enumerate(bearing['bodies'])}
@@ -160,7 +160,7 @@ with Headless() as host:
     seal = renamed_bodies['Bearing 625 2RS Seal front']
     host.command('appearance.assign',bodies=[seal],color=[255,0,0])
     original = host.command('component.properties', component=bearing['id'])
-    changed = insert(BEARINGS)
+    changed = insert(BEARINGS, size='625', closure='Sealed')
     check('changed bearing is preserved and a clean definition is built',not changed['component']['reused']
           and len(changed['library']['preserved_modified_definitions']) == 1)
     check('fresh multi-body part leaves the original seal appearance untouched',
@@ -187,7 +187,7 @@ with Headless() as host:
     before_doc = host.command('document.inspect',measure=False)
     before_components = host.command('component.list')
     failed = host.command('plugin.run',allow_error=True,path=denied,approval=approval,
-                          entry='make-bearing',params={'size':'105ZZ'})
+                          entry='make-bearing',params={'size':'105','closure':'Shielded'})
     check('fixture fails at the final directory write','document.metadata.set' in str(failed.get('error')))
     check('failed insertion rolls back geometry, metadata, undo and active context',host.command('document.inspect',measure=False) == before_doc
           and host.command('component.list') == before_components)
@@ -198,7 +198,7 @@ with Headless() as host:
     mini_bearing = definition(mini_list,'Bearing 105ZZ')
     check('mini assembly uses corrected bearing stack',sorted(c['transform'][3][2] for c in mini_assembly['children'] if c['component'] == mini_bearing['id']) == [-2.5,2.5])
     check('mini assembly uses its own precision shim',any(c['name'] == 'Precision shim 8 x 5 x 1' for c in mini_list['components']))
-    check('bearing first built by wheels is reused by Bearings',insert(BEARINGS,size='105ZZ')['component']['reused'])
+    check('bearing first built by wheels is reused by Bearings',insert(BEARINGS,size='105', closure='Shielded')['component']['reused'])
 
     host.command('sketch.create',name='Batch points',plane='XY')
     for i in range(32):
@@ -228,7 +228,7 @@ with Headless() as host:
         copied_folder = definition(before_components, folder['name'])
         before_bom = {r['part_number']:r['count'] for r in host.command('assembly.bom')['rows']}
         result = host.command('plugin.run', allow_error=True, path=package(BEARINGS),
-                              approval=approvals[BEARINGS], entry='make-bearing', params={})
+                              approval=approvals[BEARINGS], entry='make-bearing', params={'size':'625','closure':'Sealed'})
         check(label+': insertion into copied-folder design succeeds', 'error' not in result, str(result.get('error','')))
         if 'error' in result:
             continue
@@ -253,7 +253,7 @@ with Headless() as host:
         check(label+': redo restores the complete insertion', host.command('component.list') == after_components)
         host.command('file.save_as', path=saved)
         host.command('doc.open', path=saved)
-        again = insert(BEARINGS)
+        again = insert(BEARINGS, size='625', closure='Sealed')
         listed = host.command('component.list')
         placed_bearing = definition(listed, again['component']['component'])
         occurrence = next(o for o in placed_bearing['occurrences'] if o['id'] == again['component']['occurrences'][0])
@@ -274,7 +274,7 @@ with Headless() as host:
         ('techsquid-inserts', 'make-insert', {'create': 'Insert only', 'thread_modeled': False}),
         ('techsquid-nuts', 'make-nut', {'create': 'Nut only', 'thread_modeled': False}),
         ('techsquid-extrusions', 'make-extrusion', {'length': 40}),
-        (BEARINGS, 'make-bearing', {'size': '625 2RS'}),
+        (BEARINGS, 'make-bearing', {'size': '625', 'closure': 'Sealed'}),
         (WHEELS, 'make-v-wheel', {'size': 'Solid V Wheel', 'assembled': True}),
     ]
     host.command('sketch.create', name='Part centers', plane='XY')

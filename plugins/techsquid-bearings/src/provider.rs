@@ -1,6 +1,6 @@
 //! Discovery delegates dimensions and identity to the shared bearing factory.
 
-pub const REVISION: &str = "10";
+pub const REVISION: &str = "11";
 
 #[cfg(test)]
 mod tests {
@@ -10,7 +10,7 @@ mod tests {
         CatalogInfo, Dimension, Frame, Insertion, PartDescription, PartSummary, Provenance,
         ResolvedPart, Route, Source,
     };
-    use parts::{Catalog, CatalogError, ProductKind};
+    use parts::{Catalog, CatalogError};
     use serde::Deserialize;
     use serde_json::{json, Value};
 
@@ -23,16 +23,16 @@ mod tests {
     fn bearing(id: &str) -> Result<Bearing, CatalogError> {
         bearings::ALL
             .into_iter()
-            .find(|b| b.sku() == id)
+            .find(|b| b.catalog_part() == id)
             .ok_or_else(|| CatalogError::new("part", format!("unknown bearing {id}")))
     }
 
     fn summary(bearing: Bearing) -> PartSummary {
         PartSummary {
-            id: bearing.sku().into(),
+            id: bearing.catalog_part().into(),
             name: format!("Bearing {}", bearing.designation()),
             family: "radial-ball-bearings".into(),
-            kind: ProductKind::SupplierProduct,
+            kind: bearing.kind(),
             designation: bearing.designation().into(),
         }
     }
@@ -61,14 +61,14 @@ mod tests {
             if let Some(recess) = bearing.section().closure_recess {
                 dimensions.push(Dimension::mm("closure_recess", recess));
             }
-            let mut sources = vec![Source {
-                title: format!(
-                    "{} {} product reference",
-                    bearing.supplier().name,
-                    bearing.sku()
-                ),
-                url: bearing.product_url(),
-            }];
+            let mut sources: Vec<_> = bearing
+                .product_url()
+                .map(|url| Source {
+                    title: format!("{} product reference", bearing.designation()),
+                    url,
+                })
+                .into_iter()
+                .collect();
             if bearing == Bearing::OpenBuilds105zz {
                 sources.push(Source {
                     title: "OpenBuilds correction of 105ZZ width to 4 mm".into(),
@@ -78,14 +78,14 @@ mod tests {
             }
             Ok(PartDescription {
                 part: summary(bearing), dimensions, sources,
-                provenance: Provenance { supplier: Some(bearing.supplier().name.into()),
-                    supplier_part_number: Some(bearing.sku().into()), ..Provenance::default() },
+                provenance: Provenance { supplier: bearing.supplier().map(|s| s.name.into()),
+                    supplier_part_number: bearing.sku().map(str::to_string), ..Provenance::default() },
                 configuration_schema: json!({"type":"object","additionalProperties":false,"properties":{}}),
                 details: vec!["exterior".into()],
                 attachments: vec![Frame::axial("axle-centre", 0.0), Frame::axial("negative-seat", -d.width/2.0),
                     Frame::axial("positive-seat", d.width/2.0)],
                 insertion: Route { plugin: crate::PLUGIN.into(), entry: "make-bearing".into() },
-                notes: vec!["Separate inner/outer rings and sourced closure surfaces; open B626 includes sourced exposed raceways and eight visible balls, without a cage. Hidden internals and closure thickness are not inferred; unsuitable for mass prediction.".into(),
+                notes: vec![format!("{} exterior section", bearing.basis().label()), "Separate rings and closure surfaces; open B626 includes sourced exposed raceways and eight visible balls, without a cage. Hidden internals and closure thickness are not inferred; unsuitable for mass prediction.".into(),
                     "Supplier product identity does not establish a bearing manufacturer, material grade, clearance or precision class.".into()],
             })
         }
@@ -97,7 +97,7 @@ mod tests {
             let insertion = Insertion::resolved(
                 crate::PLUGIN,
                 "make-bearing",
-                json!({"size":bearing.designation()}),
+                json!({"size":bearing.size().label(),"closure":bearing.closure().label()}),
                 REVISION,
                 &representation,
             )?;
@@ -112,7 +112,7 @@ mod tests {
     #[test]
     fn every_product_round_trips_without_freeform_dimensions() {
         for b in bearings::ALL {
-            let resolved = Bearings.resolve(b.sku(), &json!({})).unwrap();
+            let resolved = Bearings.resolve(b.catalog_part(), &json!({})).unwrap();
             assert_eq!(crate::parse(&resolved.insertion.params).unwrap().bearing, b);
             assert_eq!(
                 resolved
@@ -120,14 +120,16 @@ mod tests {
                     .provenance
                     .supplier_part_number
                     .as_deref(),
-                Some(b.sku())
+                b.sku()
             );
-            assert!(Bearings.resolve(b.sku(), &json!({"width":4.2})).is_err());
+            assert!(Bearings
+                .resolve(b.catalog_part(), &json!({"width":4.2}))
+                .is_err());
             let mut modified = resolved.insertion.params;
-            modified["size"] = json!(if b == Bearing::OpenBuilds6252rs {
-                "105ZZ"
+            modified["size"] = json!(if b.size() == bearings::Size::S625 {
+                "105"
             } else {
-                "625 2RS"
+                "625"
             });
             assert!(crate::parse(&modified).is_err());
         }

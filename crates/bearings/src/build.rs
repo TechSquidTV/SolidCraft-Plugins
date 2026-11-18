@@ -21,6 +21,12 @@ pub struct Envelope {
     pub width: f64,
 }
 
+impl std::fmt::Display for Envelope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} × {} × {}", self.bore, self.diameter, self.width)
+    }
+}
+
 /// Revolve the inner ring, then the outer ring, about the frame's normal.
 /// Returns the two body names, for the caller to cut and colour.
 pub fn rings(

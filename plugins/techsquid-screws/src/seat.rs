@@ -2,10 +2,135 @@
 
 use fasteners::seat::{dot, near, same, unique, Body, Faces, Seat};
 use plugin_kit::{component::Activation, name::part, place::Spot};
-use plugin_kit::{Placement, Runner};
+use plugin_kit::{
+    place::{self, PlaceInput, Source},
+    FieldError, Placement, Runner,
+};
+use serde::Deserialize;
 use serde_json::{json, Value};
 
-use crate::screw::{Hole, HoleKind};
+use crate::screw::{Head, Hole, HoleKind, Params};
+
+/// Keep source indices so a host-deduplicated bore batch can be interleaved with
+/// sketch picks (which are independently deduplicated by their centre point).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Picks {
+    pub sketches: PlaceInput,
+    sketch_indices: Vec<usize>,
+    bores: Vec<(usize, Value)>,
+}
+
+impl Picks {
+    pub fn parse(v: &Value) -> Result<Self, FieldError> {
+        const WANTED: &str = "bore rims, bore walls, sketch points or circles";
+        let mut picks = Self::default();
+        let items = place::selection_items(v, WANTED)?;
+        if items.len() > plugin_kit::component::MAX_PLACEMENTS {
+            return Err(FieldError::new(
+                place::FIELD,
+                "choose at most 32 placement picks",
+            ));
+        }
+        for (i, item) in items.iter().enumerate() {
+            if matches!(item["type"].as_str(), Some("edge" | "face")) {
+                picks.bores.push((i, item.clone()));
+            } else if matches!(
+                item["type"].as_str(),
+                Some("external_sketch_point" | "external_sketch_curve" | "profile")
+            ) {
+                picks
+                    .sketches
+                    .picks
+                    .push(place::sketch_pick(item, "sketch points or circles")?);
+                picks.sketch_indices.push(i);
+            } else {
+                return Err(FieldError::new(place::FIELD, format!("pick {WANTED}")));
+            }
+        }
+        Ok(picks)
+    }
+
+    pub fn has_bores(&self) -> bool {
+        !self.bores.is_empty()
+    }
+}
+
+#[derive(Deserialize)]
+struct BoreEnd {
+    pick_index: usize,
+    origin: Value,
+    point: [f64; 3],
+    normal: [f64; 3],
+    x_dir: [f64; 3],
+    shank_offset: f64,
+}
+
+#[derive(Deserialize)]
+struct BoreSeats {
+    seats: Vec<BoreEnd>,
+}
+
+/// Before the new screw can obscure its pick, ask the host for the named
+/// seat at each distinct bore. Its rim and seating normal are also the frame
+/// for the joint, including when the screw is turned over in that frame.
+pub fn picked_bores<R: Runner>(
+    r: &mut R,
+    p: &Params,
+    spots: &[Spot],
+    major: f64,
+) -> Result<(Vec<Placement>, Vec<Option<Attachment>>), String> {
+    let picks = &p.place;
+    let mut args = json!({"picks": picks.bores.iter().map(|(_, pick)| pick).collect::<Vec<_>>()});
+    if p.head == Head::Countersunk {
+        args["countersunk_shank_diameter"] = json!(major);
+    }
+    let reply = r
+        .run("parts.seats", args)
+        .map_err(|err| format!("placement: {err}"))?;
+    let reply: BoreSeats = serde_json::from_value(reply)
+        .map_err(|e| format!("parts.seats: invalid screw seat: {e}"))?;
+    if reply.seats.is_empty() {
+        return Err("placement: pick a bore rim or wall".into());
+    }
+    let mut ordered: Vec<_> = spots
+        .iter()
+        .map(|spot| (picks.sketch_indices[spot.pick_index], spot.place, None))
+        .collect();
+    for end in reply.seats {
+        let (index, _) = picks
+            .bores
+            .get(end.pick_index)
+            .ok_or("parts.seats: invalid pick index")?;
+        if !end.origin.is_object() {
+            return Err("parts.seats: missing bore joint origin".into());
+        }
+        let frame = Placement {
+            point: end.point,
+            normal: end.normal,
+            x_dir: end.x_dir,
+            y_dir: place::cross(end.normal, end.x_dir),
+            source: Source::Bore,
+        };
+        let place = Placement {
+            point: frame.along(if p.flip {
+                -end.shank_offset
+            } else {
+                end.shank_offset
+            }),
+            ..frame
+        };
+        let attachment = Attachment {
+            seat: Seat::Bore { origin: end.origin },
+            frame,
+        };
+        ordered.push((*index, place, Some(attachment)));
+    }
+    ordered.sort_by_key(|(index, _, _)| *index);
+    Ok(ordered
+        .into_iter()
+        .map(|(_, place, attachment)| (place, attachment))
+        .unzip())
+}
 
 pub struct Attachment {
     seat: Seat,
@@ -233,6 +358,72 @@ mod tests {
     use serde_json::json;
 
     #[test]
+    fn native_seats_preserve_mixed_order_and_countersink_alignment() {
+        struct Bores(Vec<(String, Value)>);
+        impl Runner for Bores {
+            fn run(&mut self, command: &str, args: Value) -> Result<Value, String> {
+                self.0.push((command.into(), args));
+                Ok(match command {
+                    "parts.seats" => json!({"seats": [
+                        {"pick_index": 0, "point": [40, 0, 0], "normal": [1, 0, 0], "x_dir": [0, 1, 0],
+                         "shank_offset": -0.25, "origin": {"circle": "wall", "end": "mouth", "occurrence": 12, "path": [9, 12]}}
+                    ]}),
+                    "joint.create" => json!({"joint": 1, "errors": [], "conflicts": []}),
+                    _ => panic!("unexpected {command}"),
+                })
+            }
+        }
+        let edge = json!({"type": "edge", "body": "Rail", "index": 0, "point": [40, 2, 0]});
+        let sketch = json!({"type": "external_sketch_point", "sketch": 8, "id": "p1"});
+        let spot = Spot {
+            pick_index: 0,
+            sketch: "Layout".into(),
+            point: "p1".into(),
+            place: Placement::on_origin(),
+        };
+        for flip in [false, true] {
+            let p = crate::screw::parse(
+                &json!({"placement": [edge, sketch, edge], "head": "Countersunk", "flip": flip}),
+            )
+            .unwrap();
+            let mut host = Bores(Vec::new());
+            let (places, seats) =
+                picked_bores(&mut host, &p, std::slice::from_ref(&spot), 3.0).unwrap();
+            assert_eq!(
+                host.0[0],
+                (
+                    "parts.seats".into(),
+                    json!({"picks": [edge, edge], "countersunk_shank_diameter": 3.0})
+                )
+            );
+            assert_eq!(places.len(), 2);
+            assert_eq!(
+                places[0].point,
+                [if flip { 40.25 } else { 39.75 }, 0.0, 0.0]
+            );
+            assert_eq!(places[1], spot.place);
+            assert!(seats[1].is_none());
+            seats[0]
+                .as_ref()
+                .unwrap()
+                .attach(&mut host, 21, "Screw")
+                .unwrap();
+            let joint = &host.0[1].1;
+            assert_eq!(joint["a"]["end"], "mouth");
+            assert_eq!(joint["a"]["path"], json!([9, 12]));
+            assert_eq!(joint["b"]["point"], json!([40.0, 0.0, 0.0]));
+        }
+    }
+
+    #[test]
+    fn drilling_requires_sketch_picks() {
+        for create in ["Hole only", "Screw and hole"] {
+            let err = crate::screw::parse(&json!({"create": create, "placement":[{"type":"face", "body":"Rail", "index":5,"point":[0,0,0]}]})).unwrap_err();
+            assert_eq!(err.field, "placement");
+        }
+    }
+
+    #[test]
     fn axis_creation_restores_history_and_exact_active_occurrence() {
         #[derive(Default)]
         struct Host {
@@ -271,6 +462,7 @@ mod tests {
                 };
                 let spots =
                     [("Layout", "p"), (second_sketch, "c.center")].map(|(sketch, point)| Spot {
+                        pick_index: 0,
                         sketch: sketch.into(),
                         point: point.into(),
                         place: Placement::on_origin(),

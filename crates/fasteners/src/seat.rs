@@ -293,6 +293,8 @@ impl Faces {
 }
 
 pub enum Seat {
+    /// A round end resolved by the host from a viewport pick.
+    Bore { origin: Value },
     Hole {
         body: Body,
         bore: String,
@@ -314,6 +316,11 @@ impl Seat {
         name: &str,
     ) -> Result<(), String> {
         let host = match self {
+            Self::Bore { origin } => {
+                let mut host = origin.clone();
+                host["x"] = json!(place.y_dir);
+                host
+            }
             Self::Hole {
                 body,
                 bore,

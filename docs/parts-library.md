@@ -19,6 +19,8 @@ The Placement field is a native selection field, which needs SolidCraft 0.44 or 
 cannot draw it, so it leaves the dialog's Run off and says to run the entry from the
 agent or the CLI. A program can still run it there by passing the picks itself.
 
+**Compatibility warning for Screws.** The entire updated Screws package requires a SolidCraft build exposing `parts.seats`, including for sketch placements. Earlier hosts reject the package when they check its declared commands. Upgrade SolidCraft before installing this Screws build, or keep the previous Screws package until you upgrade. See [SolidCraft PR #18893](https://github.com/tangency-labs/solidcraft/pull/18893).
+
 ## Responsibilities
 
 - `parts` owns typed discovery, product and representation identities. It has no

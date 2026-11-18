@@ -257,8 +257,67 @@ def test_gantry_track_direction():
               near(bounds["min"][0], lo) and near(bounds["max"][0], hi), str(bounds))
 
 
+def test_gantry_bore_seats():
+    """Seat the same custom screw at opposite ends, from a rim edge and a bore wall."""
+    track = "V-slot 2020 x 200"
+    gantry = os.path.join(ROOT, "examples", "v-slot-gantry", "v-slot-gantry.json")
+    code, text, topology = run([cmd("model.faces", body=track), cmd("model.edges", body=track)], inp=gantry)
+    check("gantry bore topology", code == 0, text[-1200:])
+    if code:
+        return
+    wall = next(f for f in topology[0]["faces"] if near(f.get("cylinder", {}).get("radius", 0), 2.1))
+    rim = next(e for e in topology[1]["edges"] if near(e["mid"][0], -100)
+               and wall["name"] in e["name"].split("|"))
+    _, _, info = inspect("techsquid-screws")
+    steps = []
+    for pick in [
+        {"type": "edge", "body": track, "index": rim["index"], "point": rim["mid"]},
+        {"type": "face", "body": track, "index": wall["index"], "point": [99, 2.1, 20]},
+    ]:
+        steps.append(cmd("plugin.run", path=package("techsquid-screws"), approval=info["approval"],
+                         entry="make-screw", params={"size": "M5", "length": 12, "drive": "Torx",
+                                                     "thread_modeled": False, "placement": [pick]}))
+    saved = os.path.join(TMP, "gantry-with-custom-screws.json")
+    code, text, results = run(steps, inp=gantry, save=saved)
+    if killed(code):
+        skip("gantry bore placement", "host killed while loading plugin")
+        return
+    check("gantry bore placement through the Screw picker", code == 0, text[-1200:])
+    if code:
+        return
+    first, second = [r["component"] for r in results]
+    check("gantry bore picks reuse the custom Torx definition", all(r["drive"] == "Torx" for r in results)
+          and not first["reused"] and second["reused"] and first["component"] == second["component"]
+          and first["occurrences"] != second["occurrences"])
+    code, text, reads = run([cmd("inspect.measure", summary=True), cmd("joint.inspect")], inp=saved)
+    check("gantry with seated screws reopens", code == 0, text[-1200:])
+    if code:
+        return
+    name = first["component"]
+    screws = [b for b in reads[0]["bodies"] if b["name"] == name or b["name"].startswith(name + " (")]
+    joints = [j for j in reads[1]["joints"] if j["b"]["component_name"] == name]
+    check("two gantry screws and two rigid seats", len(screws) == len(joints) == 2)
+    for sign, result in zip((-1, 1), results):
+        x = sign * 100
+        at = [x, 0, 20]
+        normal = [sign, 0, 0]
+        # The socket head projects 5 mm outside the rail and the shank reaches 12 mm inside.
+        lo, hi = sorted((x + sign * 5, x - sign * 12))
+        check(f"gantry screw at X={x} spans the bore and the exposed head",
+              any(b["closed"] and same(b["bbox"]["min"], [lo, -4.25, 15.75])
+                  and same(b["bbox"]["max"], [hi, 4.25, 24.25]) for b in screws))
+        check(f"gantry joint at X={x} binds the screw to the bore end",
+              any(j["type"] == "rigid" and not j["errors"] and not j["conflicts"]
+                  and j["b"]["occurrence"] in result["component"]["occurrences"]
+                  and j["a"]["component_name"] == track and j["a"]["snap"].get("face") == wall["name"]
+                  and j["a"]["snap"].get("end") and j["a"]["resolves"] and j["b"]["resolves"]
+                  and same(j["a"]["frame"]["origin"], at) and same(j["a"]["frame"]["z"], normal)
+                  and same(j["b"]["frame"]["origin"], at) for j in joints))
+
+
 if __name__ == "__main__":
     test_gantry_track_direction()
+    test_gantry_bore_seats()
     test_thin_countersunk_seat()
     test_copied_tapped_seat_is_refused()
     for kind in ("clearance", "counterbore", "countersink", "tapped"):

@@ -6,6 +6,7 @@
 //! shortens that cylinder and leaves the last diameter for a cone. A cup is a recess in
 //! the end. This module resolves the size. The crate root builds the solid.
 
+use crate::seat::Picks;
 use fasteners::clearance;
 use fasteners::designation;
 use fasteners::head::{self, Crown, HeadKind};
@@ -17,7 +18,6 @@ use fasteners::torx::{self, Recess};
 pub use plugin_kit::create::Create;
 use plugin_kit::create::Words;
 use plugin_kit::input::{self, FieldError};
-use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
@@ -237,8 +237,10 @@ pub struct Params {
     pub thread_length: Option<f64>,
     /// `solid.thread`'s `modeled`. The dialog calls this `thread_modeled`.
     pub modeled: bool,
-    /// Where the top of the shank sits. Both empty uses the selection, or the origin.
-    pub place: PlaceInput,
+    /// Where the top of the shank sits. No picks uses the origin.
+    pub place: Picks,
+    /// Turn each loose screw over about the placement frame's X axis.
+    pub flip: bool,
     /// ISO 10664 recess. Set when `drive` is Torx.
     pub recess: Option<Recess>,
     /// Straight slot. Set when `drive` is Slotted.
@@ -263,7 +265,8 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let head_height = input::optional_length(v, "head_height")?;
     let thread_length = input::optional_length(v, "thread_length")?;
     let modeled = input::flag(v, "thread_modeled", true)?;
-    let place = place::parse_input(v)?;
+    let place = Picks::parse(v)?;
+    let flip = input::flag(v, "flip", false)?;
     let create = CREATE.parse(v)?;
     // The drive comes first: a head is sized from the standard of its drive.
     let major = metric::parse_metric(&designation)
@@ -398,6 +401,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         thread_length,
         modeled,
         place,
+        flip,
         recess,
         slot,
         phillips,
@@ -423,6 +427,18 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 }
 
 pub fn validate(p: &Params) -> Result<(), FieldError> {
+    if p.place.has_bores() && p.create.cut() {
+        return Err(FieldError::new(
+            "placement",
+            "choose Screw only for an existing bore, or pick sketch points to drill holes",
+        ));
+    }
+    if p.flip && p.create.cut() {
+        return Err(FieldError::new(
+            "flip",
+            "choose Screw only to flip the screw",
+        ));
+    }
     designation::check_designation(&p.designation)
         .map_err(|err| err.moved("size", p.size_field))?;
     input::check_length("length", p.nominal_length)?;

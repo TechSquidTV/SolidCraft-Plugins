@@ -23,6 +23,7 @@ pub const FIELD: &str = "placement";
 pub enum Source {
     Origin,
     Picked,
+    Bore,
 }
 
 impl Source {
@@ -30,6 +31,7 @@ impl Source {
         match self {
             Source::Origin => "on the origin, because no point was picked",
             Source::Picked => "on the picked sketch point",
+            Source::Bore => "seated in the picked bore",
         }
     }
 }
@@ -114,20 +116,26 @@ pub fn parse_input(v: &Value) -> Result<PlaceInput, FieldError> {
 /// The Placement picks in pick order. `wanted` says what the plugin takes, for the error
 /// when something else is given.
 pub fn parse_picks(v: &Value, wanted: &str) -> Result<Vec<Pick>, FieldError> {
-    let items = match v.get(FIELD) {
-        None | Some(Value::Null) => return Ok(Vec::new()),
-        Some(Value::Array(items)) => items,
-        Some(_) => {
-            return Err(FieldError::new(
-                FIELD,
-                format!("must be a list of picked {wanted}"),
-            ))
-        }
-    };
-    items.iter().map(|item| pick(item, wanted)).collect()
+    selection_items(v, wanted)?
+        .iter()
+        .map(|item| sketch_pick(item, wanted))
+        .collect()
 }
 
-fn pick(item: &Value, wanted: &str) -> Result<Pick, FieldError> {
+/// The raw references supplied to a placement picker.
+pub fn selection_items<'a>(v: &'a Value, wanted: &str) -> Result<&'a [Value], FieldError> {
+    match v.get(FIELD) {
+        None | Some(Value::Null) => Ok(&[]),
+        Some(Value::Array(items)) => Ok(items),
+        Some(_) => Err(FieldError::new(
+            FIELD,
+            format!("must be a list of picked {wanted}"),
+        )),
+    }
+}
+
+/// Parse one sketch reference from a placement picker.
+pub fn sketch_pick(item: &Value, wanted: &str) -> Result<Pick, FieldError> {
     let kind = match item.get("type").and_then(Value::as_str) {
         Some(kind @ ("external_sketch_point" | "external_sketch_curve" | "profile")) => kind,
         _ => {
@@ -173,6 +181,8 @@ fn pick(item: &Value, wanted: &str) -> Result<Pick, FieldError> {
 /// One placed point, with the sketch and the point id a host command can name.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Spot {
+    /// Index of the first pick that resolved to this spot.
+    pub pick_index: usize,
     pub sketch: String,
     /// The point id itself: a circle resolves to its centre.
     pub point: String,
@@ -185,7 +195,7 @@ pub struct Spot {
 pub fn resolve_all<R: Runner>(r: &mut R, input: &PlaceInput) -> Result<Vec<Spot>, String> {
     let mut inspected: Vec<(Value, String, Value)> = Vec::new();
     let mut spots: Vec<Spot> = Vec::new();
-    for pick in &input.picks {
+    for (pick_index, pick) in input.picks.iter().enumerate() {
         if !inspected.iter().any(|(key, _, _)| *key == pick.sketch) {
             let inspect = r
                 .run("sketch.inspect", json!({"sketch": pick.sketch}))
@@ -223,6 +233,7 @@ pub fn resolve_all<R: Runner>(r: &mut R, input: &PlaceInput) -> Result<Vec<Spot>
         }
         let place = from_inspect(inspect, sketch, &point, Source::Picked)?;
         spots.push(Spot {
+            pick_index,
             sketch: sketch.clone(),
             point,
             place,
@@ -345,7 +356,7 @@ pub fn opposite(v: [f64; 3]) -> [f64; 3] {
     scale(v, -1.0)
 }
 
-fn cross(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
+pub fn cross(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
     [
         a[1] * b[2] - a[2] * b[1],
         a[2] * b[0] - a[0] * b[2],
@@ -639,9 +650,13 @@ mod tests {
                     "{}",
                     path.display()
                 );
+                let mut accept = vec!["profile", "sketch_point", "sketch_curve"];
+                if manifest["id"] == "techsquid-screws" {
+                    accept.extend(["edge", "face"]);
+                }
                 assert_eq!(
                     field["x-solidcraft-selection"],
-                    json!({"version": 1, "accept": ["profile", "sketch_point", "sketch_curve"]})
+                    json!({"version": 1, "accept": accept})
                 );
                 assert_eq!(field["maxItems"], json!(32));
                 checked += 1;

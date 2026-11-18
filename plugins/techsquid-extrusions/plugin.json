@@ -160,7 +160,8 @@
             "slot",
             "size"
           ],
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-extrusion.svg"
         },
         "name": "make-extrusion",
         "slots": [
@@ -242,7 +243,8 @@
             "slot",
             "along"
           ],
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-t-nut.svg"
         },
         "name": "make-t-nut",
         "slots": [

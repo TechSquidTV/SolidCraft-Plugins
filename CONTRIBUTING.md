@@ -33,6 +33,7 @@ The signed macOS SolidCraft build is killed when it loads a plugin, so on it the
 | `crates/parts` | Product and representation identity, with no host dependency |
 | `crates/fasteners`, `crates/extrusions`, `crates/bearings`, `crates/wheels` | One crate per family of parts: standards, sourced dimensions and geometry |
 | `tools/catalog-tool` | Generates catalog choices and reference tables from the crates |
+| `tools/icons` | Draws each command's icon into `plugins/techsquid-<name>/icons/` |
 | `tests/` | Python tests that build parts through `solidcraft-cli` |
 | `examples/` | Saved designs, the `.steps.json` recipes that build them, and pictures |
 | `docs/` | Shared contracts and `docs/sources/`, the evidence behind measured dimensions |

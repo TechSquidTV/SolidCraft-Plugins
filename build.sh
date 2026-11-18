@@ -8,6 +8,8 @@ cd "$(dirname "$0")"
 
 # Catalog choices and reference tables come from the compiled descriptors.
 cargo run --quiet --locked -p catalog-tool -- --check
+# Command icons come from tools/icons/draw.py, and every entry names one.
+python3 tools/icons/draw.py --check
 
 build_one() {
   local id="$1"
@@ -40,6 +42,8 @@ for name in ("README.md", "REFERENCE.md"):
     text = text.replace("../../DEVELOPMENT.md#components", "docs/parts-library.md")
     path.write_text(text)
 PY
+  # The command icons plugin.json names with x-solidcraft-icon.
+  cp -R "plugins/$id/icons" "$out/icons"
   # The pictures the README shows sit beside it.
   for png in "plugins/$id/"*.png; do
     [ -e "$png" ] && cp "$png" "$out/"

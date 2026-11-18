@@ -86,6 +86,15 @@ Source manifests stay formatted for review; `build.sh` writes compact UTF-8 JSON
 to each package and enforces the host's 16 KiB limit on those bytes. All fields,
 choices and help text are preserved. The guest reads the same source content;
 `tests/cli_test.py` checks that the packaged JSON equals it and fits the limit.
+
+Each entry has a command icon: `"x-solidcraft-icon": "icons/<entry>.svg"` at the top
+of its `input_schema`, which SolidCraft 0.44 and later draw in the Plugins menu and
+the dialog header. `tools/icons/draw.py` draws every icon in SolidCraft's icon SVG
+subset and palette, so they follow the theme; change an icon there and run
+`python3 tools/icons/draw.py`. `--sheet FILE.html` previews every icon in both themes;
+[skills/techsquid-icons](skills/techsquid-icons/SKILL.md) has the drawing method. `./build.sh` runs `--check`, which refuses drift, an
+entry without an icon and an icon outside the subset, and copies `icons/` into the
+package. SolidCraft leaves out an icon it refuses and logs why; the command still runs.
 The generator must not add API entries.
 
 The internal resolver's `catalog_selection` precondition pins the protocol version,

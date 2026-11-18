@@ -8,6 +8,7 @@ Skills for contributing to the TechSquid SolidCraft plugins. Each folder is one 
 | [`techsquid-plugins`](techsquid-plugins/SKILL.md) | looks for where something lives, or adds a new plugin or family of parts |
 | [`techsquid-parts`](techsquid-parts/SKILL.md) | adds or changes the hardware a plugin builds: sizes, variants, tables, names, part numbers, reuse |
 | [`techsquid-fields`](techsquid-fields/SKILL.md) | changes a dialog, `plugin.json`, an error message or the host commands a plugin runs |
+| [`techsquid-icons`](techsquid-icons/SKILL.md) | draws, redraws or reviews a command icon, or hears that one doesn't look right |
 | [`techsquid-tests`](techsquid-tests/SKILL.md) | proves a change works: unit tests, host tests, examples, pictures |
 | [`techsquid-docs`](techsquid-docs/SKILL.md) | writes or updates guides, references, ledgers, release notes or these skills |
 

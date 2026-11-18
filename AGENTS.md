@@ -21,6 +21,7 @@ A Rust workspace of [SolidCraft](https://github.com/tangency-labs/solidcraft) pl
 - Every saved example has a `.steps.json` recipe, and geometry changes regenerate examples and pictures: `tests/examples_test.py`. `skills/techsquid-tests/SKILL.md`.
 - Host tests need an unsigned, locally built `solidcraft-cli`; a run that is all SKIP proved nothing. `skills/techsquid-tests/SKILL.md`.
 - Catalog choices and reference tables are generated: `cargo run -p catalog-tool -- --write`, checked by `./build.sh`.
+- Every entry names a command icon, and the icons are drawn by `python3 tools/icons/draw.py`: `./build.sh`. A new or reworked icon is shown as three candidate views first, and the user picks. `skills/techsquid-icons/SKILL.md`.
 - All plugins share `workspace.package.version`; a `v*` tag must match it and every `plugin.json`. `skills/techsquid-contributing/SKILL.md`.
 - Each fact has one home: README is the short guide, REFERENCE the full one, DEVELOPMENT.md the build and test notes. Link instead of restating. `skills/techsquid-docs/SKILL.md`.
 - Before every commit: `cargo fmt --all -- --check`, both clippy runs with `-D warnings`, `cargo test --workspace --locked`, `./build.sh`, and `python3 tests/skills_test.py` when you touch this file, `skills/` or CONTRIBUTING.md.
@@ -33,5 +34,6 @@ A Rust workspace of [SolidCraft](https://github.com/tangency-labs/solidcraft) pl
 | Where a plugin lives, a new plugin or a new family crate | `skills/techsquid-plugins/SKILL.md` |
 | A new part or component: geometry, standards, names, reuse | `skills/techsquid-parts/SKILL.md` |
 | Dialog fields, `plugin.json`, errors, host commands | `skills/techsquid-fields/SKILL.md` |
+| A command icon: drawing, redrawing or reviewing one | `skills/techsquid-icons/SKILL.md` |
 | Unit tests, host tests, examples, pictures | `skills/techsquid-tests/SKILL.md` |
 | A plugin guide, reference, source ledger or release notes | `skills/techsquid-docs/SKILL.md` |

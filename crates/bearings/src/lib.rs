@@ -31,15 +31,42 @@ pub enum Bearing {
     MisumiB626ddu,
     #[serde(rename = "misumi-b608zz")]
     MisumiB608zz,
+    #[serde(rename = "misumi-b6000zz")]
+    MisumiB6000zz,
+    #[serde(rename = "misumi-b6001zz")]
+    MisumiB6001zz,
+    #[serde(rename = "misumi-b6002zz")]
+    MisumiB6002zz,
+    #[serde(rename = "misumi-b6003zz")]
+    MisumiB6003zz,
+    #[serde(rename = "misumi-b6004zz")]
+    MisumiB6004zz,
+    #[serde(rename = "misumi-b6200zz")]
+    MisumiB6200zz,
+    #[serde(rename = "misumi-b6202zz")]
+    MisumiB6202zz,
+    #[serde(rename = "misumi-b6203zz")]
+    MisumiB6203zz,
+    #[serde(rename = "misumi-b6204zz")]
+    MisumiB6204zz,
 }
 
-pub const ALL: [Bearing; 6] = [
+pub const ALL: [Bearing; 15] = [
     Bearing::OpenBuilds6252rs,
     Bearing::OpenBuilds105zz,
     Bearing::MisumiB626,
     Bearing::MisumiB626zz,
     Bearing::MisumiB626ddu,
     Bearing::MisumiB608zz,
+    Bearing::MisumiB6000zz,
+    Bearing::MisumiB6001zz,
+    Bearing::MisumiB6002zz,
+    Bearing::MisumiB6003zz,
+    Bearing::MisumiB6004zz,
+    Bearing::MisumiB6200zz,
+    Bearing::MisumiB6202zz,
+    Bearing::MisumiB6203zz,
+    Bearing::MisumiB6204zz,
 ];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -131,12 +158,22 @@ impl Bearing {
                 catalog: "openbuilds",
                 name: "OpenBuilds",
             },
-            Self::MisumiB626 | Self::MisumiB626zz | Self::MisumiB626ddu | Self::MisumiB608zz => {
-                Supplier {
-                    catalog: "misumi",
-                    name: "MISUMI",
-                }
-            }
+            Self::MisumiB626
+            | Self::MisumiB626zz
+            | Self::MisumiB626ddu
+            | Self::MisumiB608zz
+            | Self::MisumiB6000zz
+            | Self::MisumiB6001zz
+            | Self::MisumiB6002zz
+            | Self::MisumiB6003zz
+            | Self::MisumiB6004zz
+            | Self::MisumiB6200zz
+            | Self::MisumiB6202zz
+            | Self::MisumiB6203zz
+            | Self::MisumiB6204zz => Supplier {
+                catalog: "misumi",
+                name: "MISUMI",
+            },
         }
     }
 
@@ -157,6 +194,33 @@ impl Bearing {
             Self::MisumiB608zz => {
                 "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B608ZZ"
             }
+            Self::MisumiB6000zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6000ZZ"
+            }
+            Self::MisumiB6001zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6001ZZ"
+            }
+            Self::MisumiB6002zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6002ZZ"
+            }
+            Self::MisumiB6003zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6003ZZ"
+            }
+            Self::MisumiB6004zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6004ZZ"
+            }
+            Self::MisumiB6200zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6200ZZ"
+            }
+            Self::MisumiB6202zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6202ZZ"
+            }
+            Self::MisumiB6203zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6203ZZ"
+            }
+            Self::MisumiB6204zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6204ZZ"
+            }
         }
     }
 
@@ -169,6 +233,15 @@ impl Bearing {
             Self::MisumiB626zz => "B626ZZ",
             Self::MisumiB626ddu => "B626DDU",
             Self::MisumiB608zz => "B608ZZ",
+            Self::MisumiB6000zz => "B6000ZZ",
+            Self::MisumiB6001zz => "B6001ZZ",
+            Self::MisumiB6002zz => "B6002ZZ",
+            Self::MisumiB6003zz => "B6003ZZ",
+            Self::MisumiB6004zz => "B6004ZZ",
+            Self::MisumiB6200zz => "B6200ZZ",
+            Self::MisumiB6202zz => "B6202ZZ",
+            Self::MisumiB6203zz => "B6203ZZ",
+            Self::MisumiB6204zz => "B6204ZZ",
         }
     }
 
@@ -177,7 +250,17 @@ impl Bearing {
             Self::OpenBuilds6252rs => Closure::RubberSeals,
             Self::OpenBuilds105zz => Closure::MetalShields,
             Self::MisumiB626 => Closure::Open,
-            Self::MisumiB626zz | Self::MisumiB608zz => Closure::MetalShields,
+            Self::MisumiB626zz
+            | Self::MisumiB608zz
+            | Self::MisumiB6000zz
+            | Self::MisumiB6001zz
+            | Self::MisumiB6002zz
+            | Self::MisumiB6003zz
+            | Self::MisumiB6004zz
+            | Self::MisumiB6200zz
+            | Self::MisumiB6202zz
+            | Self::MisumiB6203zz
+            | Self::MisumiB6204zz => Closure::MetalShields,
             Self::MisumiB626ddu => Closure::RubberSeals,
         }
     }
@@ -192,7 +275,7 @@ impl Bearing {
     }
 
     pub fn dimensions(self) -> Dimensions {
-        // OpenBuilds and MISUMI ring sections are measured from their exact STEP files.
+        // Exact supplier STEP sections: docs/sources/{openbuilds,misumi}-measurements.json.
         let (bore, diameter, width, section) = match self {
             Self::OpenBuilds6252rs => (5.0, 16.0, 5.0, Some((4.3, 6.8, Some(0.3), 0.0))),
             Self::OpenBuilds105zz => (5.0, 10.0, 4.0, Some((3.1, 4.6, Some(0.3), 0.0))),
@@ -200,6 +283,15 @@ impl Bearing {
             Self::MisumiB626zz => (6.0, 19.0, 6.0, Some((4.75, 8.15, Some(0.5), 0.3))),
             Self::MisumiB626ddu => (6.0, 19.0, 6.0, Some((4.215, 8.1775, Some(0.11), 0.3))),
             Self::MisumiB608zz => (8.0, 22.0, 7.0, Some((6.1, 9.65, Some(0.6), 0.3))),
+            Self::MisumiB6000zz => (10.0, 26.0, 8.0, Some((6.95, 11.1, Some(0.33), 0.3))),
+            Self::MisumiB6001zz => (12.0, 28.0, 8.0, Some((8.15, 12.45, Some(0.435), 0.3))),
+            Self::MisumiB6002zz => (15.0, 32.0, 9.0, Some((9.65, 13.95, Some(0.435), 0.3))),
+            Self::MisumiB6003zz => (17.0, 35.0, 10.0, Some((10.7, 15.4, Some(0.435), 0.3))),
+            Self::MisumiB6004zz => (20.0, 42.0, 12.0, Some((13.2, 18.4, Some(0.435), 0.6))),
+            Self::MisumiB6200zz => (10.0, 30.0, 9.0, Some((8.15, 12.45, Some(0.435), 0.6))),
+            Self::MisumiB6202zz => (15.0, 35.0, 11.0, Some((9.85, 15.45, Some(0.34), 0.6))),
+            Self::MisumiB6203zz => (17.0, 40.0, 12.0, Some((11.5, 17.6, Some(0.34), 0.6))),
+            Self::MisumiB6204zz => (20.0, 47.0, 14.0, Some((14.0, 20.8, Some(0.53), 1.0))),
         };
         Dimensions {
             bore,
@@ -374,30 +466,85 @@ mod tests {
 
     #[test]
     fn misumi_sections_match_supplied_source_revisions() {
-        // Independently transcribed from the source surfaces and vertices.
+        // Independently transcribed from docs/sources/misumi-measurements.json:
+        // bore, OD, width, shoulder radii and edge radius from each exact STEP.
         for (bearing, dims, recess, closure) in [
             (
                 Bearing::MisumiB626,
-                [6.0, 19.0, 6.0, 5.06, 7.55],
+                [6.0, 19.0, 6.0, 5.06, 7.55, 0.3],
                 None,
                 Closure::Open,
             ),
             (
                 Bearing::MisumiB626zz,
-                [6.0, 19.0, 6.0, 4.75, 8.15],
+                [6.0, 19.0, 6.0, 4.75, 8.15, 0.3],
                 Some(0.5),
                 Closure::MetalShields,
             ),
             (
                 Bearing::MisumiB626ddu,
-                [6.0, 19.0, 6.0, 4.215, 8.1775],
+                [6.0, 19.0, 6.0, 4.215, 8.1775, 0.3],
                 Some(0.11),
                 Closure::RubberSeals,
             ),
             (
                 Bearing::MisumiB608zz,
-                [8.0, 22.0, 7.0, 6.1, 9.65],
+                [8.0, 22.0, 7.0, 6.1, 9.65, 0.3],
                 Some(0.6),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6000zz,
+                [10.0, 26.0, 8.0, 6.95, 11.1, 0.3],
+                Some(0.33),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6001zz,
+                [12.0, 28.0, 8.0, 8.15, 12.45, 0.3],
+                Some(0.435),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6002zz,
+                [15.0, 32.0, 9.0, 9.65, 13.95, 0.3],
+                Some(0.435),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6003zz,
+                [17.0, 35.0, 10.0, 10.7, 15.4, 0.3],
+                Some(0.435),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6004zz,
+                [20.0, 42.0, 12.0, 13.2, 18.4, 0.6],
+                Some(0.435),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6200zz,
+                [10.0, 30.0, 9.0, 8.15, 12.45, 0.6],
+                Some(0.435),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6202zz,
+                [15.0, 35.0, 11.0, 9.85, 15.45, 0.6],
+                Some(0.34),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6203zz,
+                [17.0, 40.0, 12.0, 11.5, 17.6, 0.6],
+                Some(0.34),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6204zz,
+                [20.0, 47.0, 14.0, 14.0, 20.8, 1.0],
+                Some(0.53),
                 Closure::MetalShields,
             ),
         ] {
@@ -409,12 +556,12 @@ mod tests {
                     d.diameter,
                     d.width,
                     section.inner_ring_radius,
-                    section.outer_ring_radius
+                    section.outer_ring_radius,
+                    section.edge_radius
                 ],
                 dims
             );
             assert_eq!(section.closure_recess, recess);
-            assert_eq!(section.edge_radius, 0.3);
             assert_eq!(bearing.closure(), closure);
             assert_eq!(bearing.representation().product.catalog, "misumi");
         }

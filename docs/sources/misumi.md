@@ -1,7 +1,7 @@
 # MISUMI bearing geometry evidence
 
 Measured on 2026-11-15 from the original four user-supplied MISUMI STEP archives,
-and on 2026-11-17 from four further coverage samples.
+and on 2026-11-17 from nine further coverage references.
 [misumi-files.json](misumi-files.json) records exact filenames, SHA-256 hashes, byte
 counts and product links. [misumi-measurements.json](misumi-measurements.json)
 records imported native bounds/volumes, section vertices and analytic surface radii.
@@ -34,8 +34,13 @@ the source's analytic values rather than fitting polygonal approximations.
 | [B626DDU](https://us.misumi-ec.com/vona2/detail/110302273630/?HissuCode=B626DDU) | 6 × 19 × 6 | 4.215 | 8.1775 | 0.11 | 0.3 |
 | [B608ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B608ZZ) | 8 × 22 × 7 | 6.1 | 9.65 | 0.6 | 0.3 |
 | [B6000ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6000ZZ) | 10 × 26 × 8 | 6.95 | 11.1 | 0.33 | 0.3 |
+| [B6001ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6001ZZ) | 12 × 28 × 8 | 8.15 | 12.45 | 0.435 | 0.3 |
+| [B6002ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6002ZZ) | 15 × 32 × 9 | 9.65 | 13.95 | 0.435 | 0.3 |
 | [B6003ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6003ZZ) | 17 × 35 × 10 | 10.7 | 15.4 | 0.435 | 0.3 |
 | [B6004ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6004ZZ) | 20 × 42 × 12 | 13.2 | 18.4 | 0.435 | 0.6 |
+| [B6200ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6200ZZ) | 10 × 30 × 9 | 8.15 | 12.45 | 0.435 | 0.6 |
+| [B6202ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6202ZZ) | 15 × 35 × 11 | 9.85 | 15.45 | 0.34 | 0.6 |
+| [B6203ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6203ZZ) | 17 × 40 × 12 | 11.5 | 17.6 | 0.34 | 0.6 |
 | [B6204ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6204ZZ) | 20 × 47 × 14 | 14 | 20.8 | 0.53 | 1 |
 
 Ring boundaries are shoulder radii, not ball pitch diameters. Each source has four
@@ -64,7 +69,7 @@ same native section/arc factory; no duplicated plugin geometry is needed.
 `bearing_geometry_test.py` builds each product through the packaged plugin and
 checks closure area, axial recess, appearance, ring bounds, bore/shoulder radii,
 curved faces, ball count/radii/centres, native
-reuse and purchasing BOM rows. For the three closed variants, subtracting the
+reuse and purchasing BOM rows. For closed variants, subtracting the
 known annular fill between the source closure faces yields the source ring volume;
 the native ring volumes agree within numerical tolerance. Open B626's native ring
 edge vertices are compared with the measured source section; race seam midpoints
@@ -73,16 +78,17 @@ uses separate sphere bodies rather than the source’s joined rolling-element su
 topology, so summed body volumes are not compared with its single imported solid.
 The nominal overlap and absent cage make these models unsuitable for mass prediction.
 
-Rust source-table tests independently transcribe the original four MISUMI profiles.
-The saved Bearings example displays those products and the two OpenBuilds bearings.
-The four new samples have been measured but are not yet implemented or covered by
-native plugin geometry tests; their status is in the completion tracker.
+Rust source-table tests independently transcribe all included MISUMI profiles.
+The native suite checks every closed product's complete axial/radial vertex set,
+including each source's edge radii. The saved Bearings example displays these
+products and the two OpenBuilds bearings.
 
 ## Shared section and inference limits
 
-The 2026-11-17 samples B6000ZZ, B6003ZZ, B6004ZZ and B6204ZZ have the same
-section structure as the existing closed MISUMI bearings: rounded bore and OD
-edges, straight ring shoulders, and a recessed annulus on each side. All four
+The initial 2026-11-17 samples B6000ZZ, B6003ZZ, B6004ZZ and B6204ZZ, and the
+subsequent B6001ZZ, B6002ZZ, B6200ZZ, B6202ZZ and B6203ZZ references, share the
+existing closed MISUMI section structure: rounded bore and OD
+edges, straight ring shoulders, and a recessed annulus on each side. All nine
 imports have six cylindrical faces, four toroidal faces and six planar faces.
 Their sections are symmetric about the width centre. One shared generator can
 construct this geometry from the envelope and four section parameters in the table;
@@ -107,8 +113,8 @@ A constant proportional section therefore does not reproduce both references.
 The edge radii also change discretely. A fitted formula could match these four
 samples without predicting the remaining sizes correctly.
 
-The remaining six products need evidence for their shoulder radii, shield recesses
-and actual edge profiles. An exact-product drawing, dimension table or documented
+B6201ZZ remains the only missing baseline product. It still needs evidence for its
+shoulder radii, shield recesses and actual edge profiles. An exact-product drawing, dimension table or documented
 supplier family formula is sufficient; a separate STEP is only the most convenient
 way to obtain and independently check those values. Standard envelopes remain
 usable for accurate placement/clearance, while inferred ring and shield details
@@ -133,7 +139,7 @@ catalog designations, double-shielded closure family and bore/OD/width in the
 [completion tracker](../bearing-coverage.md#missing-radial-bearings). They provide
 an independent envelope cross-check for incoming CAD. The historical catalog does
 not establish current stock or availability. No supplier STEP files were acquired
-in the initial web audit; four samples were subsequently supplied and measured as
+in the initial web audit; nine references were subsequently supplied and measured as
 recorded above.
 
 The drawing labels `Ds`, `dh` and `R` as installation dimensions; these are not

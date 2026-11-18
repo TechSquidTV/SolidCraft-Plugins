@@ -18,6 +18,15 @@ for sku, bore, od, width, ri, ro, recess, closure in [
     ('B626ZZ', 6, 19, 6, 4.75, 8.15, .5, 'Shield'),
     ('B626DDU', 6, 19, 6, 4.215, 8.1775, .11, 'Seal'),
     ('B608ZZ', 8, 22, 7, 6.1, 9.65, .6, 'Shield'),
+    ('B6000ZZ', 10, 26, 8, 6.95, 11.1, .33, 'Shield'),
+    ('B6001ZZ', 12, 28, 8, 8.15, 12.45, .435, 'Shield'),
+    ('B6002ZZ', 15, 32, 9, 9.65, 13.95, .435, 'Shield'),
+    ('B6003ZZ', 17, 35, 10, 10.7, 15.4, .435, 'Shield'),
+    ('B6004ZZ', 20, 42, 12, 13.2, 18.4, .435, 'Shield'),
+    ('B6200ZZ', 10, 30, 9, 8.15, 12.45, .435, 'Shield'),
+    ('B6202ZZ', 15, 35, 11, 9.85, 15.45, .34, 'Shield'),
+    ('B6203ZZ', 17, 40, 12, 11.5, 17.6, .34, 'Shield'),
+    ('B6204ZZ', 20, 47, 14, 14, 20.8, .53, 'Shield'),
 ]:
     with Headless() as host:
         path = package('techsquid-bearings')
@@ -46,6 +55,15 @@ for sku, bore, od, width, ri, ro, recess, closure in [
             check(ring['name']+': sourced bore and shoulder radii', len(cylinders) == len(radii)
                   and all(close(a,b) for a,b in zip(cylinders, radii)))
         if closure:
+            # Each source fillet and shoulder must match, not just the envelope.
+            # Include closure edges because the source represents one filled solid.
+            section = set()
+            for name in bodies:
+                edges = host.command('model.edges', body=name)['edges']
+                section.update((round(p[2],6), round(math.hypot(p[0],p[1]),6))
+                               for edge in edges for p in (edge['start'],edge['end']) if p is not None)
+            check(sku+': native section and fillets match source vertices', section ==
+                  {tuple(p) for p in sources[sku+'.stp']['centered_axial_radial_vertices_mm']})
             source_volume = sources[sku+'.stp']['bodies'][0]['volume_mm3']
             # The supplier STEP fills the space between closure faces. Removing
             # that known annular fill leaves the independently measured ring volume.

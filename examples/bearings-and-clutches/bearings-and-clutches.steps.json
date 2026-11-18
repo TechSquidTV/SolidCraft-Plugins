@@ -1,0 +1,1838 @@
+{
+  "description": "The baseline radial-bearing catalog and ten CSK clutch occurrences at the same scale. Two placements of the same CSK12P keyway override share one definition.",
+  "steps": [
+    {"caption": "Lay out the axle centres", "command": "sketch.create", "params": {"name": "Bearing centres", "plane": "XY"}},
+    {"caption": "Radial bearing centre p0", "command": "sketch.point", "params": {"point": [-65, 45], "id": "p0"}},
+    {"caption": "Radial bearing centre p1", "command": "sketch.point", "params": {"point": [-39, 45], "id": "p1"}},
+    {"caption": "Radial bearing centre p2", "command": "sketch.point", "params": {"point": [-13, 45], "id": "p2"}},
+    {"caption": "Radial bearing centre p3", "command": "sketch.point", "params": {"point": [13, 45], "id": "p3"}},
+    {"caption": "Radial bearing centre p4", "command": "sketch.point", "params": {"point": [39, 45], "id": "p4"}},
+    {"caption": "Radial bearing centre p5", "command": "sketch.point", "params": {"point": [65, 45], "id": "p5"}},
+    {"caption": "B6000ZZ centre", "command": "sketch.point", "params": {"point": [-110, 105], "id": "b6000zz"}},
+    {"caption": "B6001ZZ centre", "command": "sketch.point", "params": {"point": [-55, 105], "id": "b6001zz"}},
+    {"caption": "B6002ZZ centre", "command": "sketch.point", "params": {"point": [0, 105], "id": "b6002zz"}},
+    {"caption": "B6003ZZ centre", "command": "sketch.point", "params": {"point": [55, 105], "id": "b6003zz"}},
+    {"caption": "B6004ZZ centre", "command": "sketch.point", "params": {"point": [110, 105], "id": "b6004zz"}},
+    {"caption": "B6200ZZ centre", "command": "sketch.point", "params": {"point": [-110, 165], "id": "b6200zz"}},
+    {"caption": "B6201ZZ centre", "command": "sketch.point", "params": {"point": [-55, 165], "id": "b6201zz"}},
+    {"caption": "B6202ZZ centre", "command": "sketch.point", "params": {"point": [0, 165], "id": "b6202zz"}},
+    {"caption": "B6203ZZ centre", "command": "sketch.point", "params": {"point": [55, 165], "id": "b6203zz"}},
+    {"caption": "B6204ZZ centre", "command": "sketch.point", "params": {"point": [110, 165], "id": "b6204zz"}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 1", "params": {"id": "clutch_1", "point": [-90, -25]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 2", "params": {"id": "clutch_2", "point": [-45, -25]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 3", "params": {"id": "clutch_3", "point": [0, -25]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 4", "params": {"id": "clutch_4", "point": [45, -25]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 5", "params": {"id": "clutch_5", "point": [90, -25]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 6", "params": {"id": "clutch_6", "point": [-90, -77]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 7", "params": {"id": "clutch_7", "point": [-45, -77]}},
+    {"command": "sketch.point", "caption": "Locate CSK display position 8", "params": {"id": "clutch_8", "point": [0, -77]}},
+    {"command": "sketch.point", "caption": "Locate CSK15P", "params": {"id": "clutch_9", "point": [45, -77]}},
+    {"command": "sketch.point", "caption": "Locate CSK15-2RS", "params": {"id": "clutch_10", "point": [90, -77]}},
+    {"command": "sketch.finish", "caption": "Finish the display layout", "params": {}},
+    {"caption": "625 2RS", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "625 2RS", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p0"}]}}},
+    {"caption": "105ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "105ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p1"}]}}},
+    {"caption": "B626", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B626", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p2"}]}}},
+    {"caption": "B626ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B626ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p3"}]}}},
+    {"caption": "B626DDU", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B626DDU", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p4"}]}}},
+    {"caption": "B608ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B608ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "p5"}]}}},
+    {"caption": "B6000ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6000ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6000zz"}]}}},
+    {"caption": "B6001ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6001ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6001zz"}]}}},
+    {"caption": "B6002ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6002ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6002zz"}]}}},
+    {"caption": "B6003ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6003ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6003zz"}]}}},
+    {"caption": "B6004ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6004ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6004zz"}]}}},
+    {"caption": "B6200ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6200ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6200zz"}]}}},
+    {"caption": "B6201ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6201ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6201zz"}]}}},
+    {"caption": "B6202ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6202ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6202zz"}]}}},
+    {"caption": "B6203ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6203ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6203zz"}]}}},
+    {"caption": "B6204ZZ", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-bearing", "params": {"size": "B6204ZZ", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "b6204zz"}]}}},
+    {"caption": "Reference CSK12P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK12P", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_1"}]}}},
+    {"caption": "Custom CSK12P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK12P", "inner_keyway_depth": 1.2, "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_2"}]}}},
+    {"caption": "Repeated custom CSK12P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK12P", "inner_keyway_depth": 1.2, "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_3"}]}}},
+    {"caption": "CSK15PP with both keyways", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK15PP", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_4"}]}}},
+    {"caption": "Wider CSK15P-2RS exterior", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK15P-2RS", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_5"}]}}},
+    {"caption": "CSK8PP", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK8PP", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_6"}]}}},
+    {"caption": "CSK10PP", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK10PP", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_7"}]}}},
+    {"caption": "Custom", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "Custom", "bore": 13, "diameter": 34, "width": 12, "outer_keyway": "Enabled", "outer_keyway_width": 3, "outer_keyway_depth": 1, "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_8"}]}}},
+    {"caption": "CSK15P", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK15P", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_9"}]}}},
+    {"caption": "CSK15-2RS", "command": "plugin.run", "params": {"path": "dist/techsquid-bearings", "approval": "@approval", "entry": "make-csk", "params": {"size": "CSK15-2RS", "placement": [{"type": "external_sketch_point", "sketch": "Bearing centres", "id": "clutch_10"}]}}}
+  ],
+  "expect": {
+    "bodies": 110,
+    "surface_bodies": 50,
+    "bbox": {
+      "min": [
+        -125.0,
+        -94.5,
+        -8.0
+      ],
+      "max": [
+        133.5,
+        188.5,
+        8.0
+      ]
+    },
+    "parts": [
+      {
+        "bbox": {
+          "max": [
+            -60.7,
+            49.3,
+            2.5000000000000004
+          ],
+          "min": [
+            -69.30000000000001,
+            40.7,
+            -2.5000000000000004
+          ]
+        },
+        "area_mm2": 290.5344886044948,
+        "volume_mm3": 192.26547039842006,
+        "body": "Bearing 625 2RS Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -57.0,
+            53.0,
+            2.5
+          ],
+          "min": [
+            -73.0,
+            37.0,
+            -2.5
+          ]
+        },
+        "area_mm2": 576.5450837871044,
+        "volume_mm3": 278.9734276338418,
+        "body": "Bearing 625 2RS Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -58.2,
+            51.8,
+            2.2
+          ],
+          "min": [
+            -71.8,
+            38.2,
+            2.2
+          ]
+        },
+        "area_mm2": 87.17919613251553,
+        "body": "Bearing 625 2RS Seal front"
+      },
+      {
+        "bbox": {
+          "max": [
+            -58.2,
+            51.8,
+            -2.2
+          ],
+          "min": [
+            -71.8,
+            38.2,
+            -2.2
+          ]
+        },
+        "area_mm2": 87.17919613251553,
+        "body": "Bearing 625 2RS Seal back"
+      },
+      {
+        "bbox": {
+          "max": [
+            -35.9,
+            48.1,
+            2.0
+          ],
+          "min": [
+            -42.1,
+            41.9,
+            -2.0
+          ]
+        },
+        "area_mm2": 161.85485351336197,
+        "volume_mm3": 42.22300526346691,
+        "body": "Bearing 105ZZ Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -34.0,
+            50.0,
+            2.0
+          ],
+          "min": [
+            -44.0,
+            40.0,
+            -2.0
+          ]
+        },
+        "area_mm2": 265.40174737627217,
+        "volume_mm3": 48.254863158398166,
+        "body": "Bearing 105ZZ Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -34.4,
+            49.6,
+            1.7
+          ],
+          "min": [
+            -43.6,
+            40.4,
+            1.7
+          ]
+        },
+        "area_mm2": 36.285395146617844,
+        "body": "Bearing 105ZZ Shield front"
+      },
+      {
+        "bbox": {
+          "max": [
+            -34.4,
+            49.6,
+            -1.7
+          ],
+          "min": [
+            -43.6,
+            40.4,
+            -1.7
+          ]
+        },
+        "area_mm2": 36.285395146617844,
+        "body": "Bearing 105ZZ Shield back"
+      },
+      {
+        "bbox": {
+          "max": [
+            -7.94,
+            50.06,
+            3.0
+          ],
+          "min": [
+            -18.06,
+            39.94,
+            -3.000000000000003
+          ]
+        },
+        "area_mm2": 407.3672270326333,
+        "volume_mm3": 263.31481544344695,
+        "body": "Bearing B626 Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -3.499999999999954,
+            54.50000000000004,
+            3.0
+          ],
+          "min": [
+            -22.500000000000046,
+            35.49999999999996,
+            -3.0
+          ]
+        },
+        "area_mm2": 862.7490106531843,
+        "volume_mm3": 560.1578883813486,
+        "body": "Bearing B626 Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            -4.775,
+            46.975,
+            1.975
+          ],
+          "min": [
+            -8.724999999999998,
+            43.025,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.01669937812582,
+        "volume_mm3": 32.26932709200977,
+        "body": "Bearing B626 Ball 1"
+      },
+      {
+        "bbox": {
+          "max": [
+            -6.605582617584078,
+            51.394417382415924,
+            1.975
+          ],
+          "min": [
+            -10.555582617584077,
+            47.44441738241592,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.01669937812582,
+        "volume_mm3": 32.26932709200977,
+        "body": "Bearing B626 Ball 2"
+      },
+      {
+        "bbox": {
+          "max": [
+            -11.024999999999999,
+            53.225,
+            1.975
+          ],
+          "min": [
+            -14.975,
+            49.275,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.01669937812582,
+        "volume_mm3": 32.269327092009775,
+        "body": "Bearing B626 Ball 3"
+      },
+      {
+        "bbox": {
+          "max": [
+            -15.44441738241592,
+            51.394417382415924,
+            1.975
+          ],
+          "min": [
+            -19.394417382415924,
+            47.44441738241592,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.01669937812581,
+        "volume_mm3": 32.26932709200977,
+        "body": "Bearing B626 Ball 4"
+      },
+      {
+        "bbox": {
+          "max": [
+            -17.275,
+            46.975,
+            1.975
+          ],
+          "min": [
+            -21.225,
+            43.025,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.016699378125836,
+        "volume_mm3": 32.269327092009775,
+        "body": "Bearing B626 Ball 5"
+      },
+      {
+        "bbox": {
+          "max": [
+            -15.444417382415923,
+            42.55558261758408,
+            1.975
+          ],
+          "min": [
+            -19.394417382415924,
+            38.605582617584076,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.01669937812585,
+        "volume_mm3": 32.26932709200978,
+        "body": "Bearing B626 Ball 6"
+      },
+      {
+        "bbox": {
+          "max": [
+            -11.025,
+            40.725,
+            1.975
+          ],
+          "min": [
+            -14.975000000000003,
+            36.775,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.016699378125836,
+        "volume_mm3": 32.269327092009775,
+        "body": "Bearing B626 Ball 7"
+      },
+      {
+        "bbox": {
+          "max": [
+            -6.605582617584078,
+            42.55558261758408,
+            1.975
+          ],
+          "min": [
+            -10.55558261758408,
+            38.605582617584076,
+            -1.975
+          ]
+        },
+        "area_mm2": 49.01669937812587,
+        "volume_mm3": 32.26932709200981,
+        "body": "Bearing B626 Ball 8"
+      },
+      {
+        "bbox": {
+          "max": [
+            17.75,
+            49.75,
+            3.0
+          ],
+          "min": [
+            8.25,
+            40.25,
+            -3.000000000000003
+          ]
+        },
+        "area_mm2": 372.6097070887732,
+        "volume_mm3": 254.90271129102302,
+        "body": "Bearing B626ZZ Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            22.500000000000046,
+            54.50000000000004,
+            3.0
+          ],
+          "min": [
+            3.499999999999954,
+            35.49999999999996,
+            -3.0
+          ]
+        },
+        "area_mm2": 799.650285764884,
+        "volume_mm3": 446.84832264640403,
+        "body": "Bearing B626ZZ Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            21.150000000000002,
+            53.15,
+            2.5000000000000004
+          ],
+          "min": [
+            4.85,
+            36.85,
+            2.5
+          ]
+        },
+        "area_mm2": 137.7902537813296,
+        "body": "Bearing B626ZZ Shield front"
+      },
+      {
+        "bbox": {
+          "max": [
+            21.150000000000002,
+            53.15,
+            -2.5
+          ],
+          "min": [
+            4.85,
+            36.85,
+            -2.5000000000000004
+          ]
+        },
+        "area_mm2": 137.7902537813296,
+        "body": "Bearing B626ZZ Shield back"
+      },
+      {
+        "bbox": {
+          "max": [
+            43.215,
+            49.215,
+            3.0
+          ],
+          "min": [
+            34.785,
+            40.785,
+            -3.000000000000003
+          ]
+        },
+        "area_mm2": 322.3047976437668,
+        "volume_mm3": 164.49505746389434,
+        "body": "Bearing B626DDU Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            48.50000000000004,
+            54.50000000000004,
+            3.0
+          ],
+          "min": [
+            29.499999999999954,
+            35.49999999999996,
+            -3.0
+          ]
+        },
+        "area_mm2": 797.865821867669,
+        "volume_mm3": 438.384754227647,
+        "body": "Bearing B626DDU Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            47.1775,
+            53.1775,
+            2.89
+          ],
+          "min": [
+            30.822499999999998,
+            36.8225,
+            2.89
+          ]
+        },
+        "area_mm2": 154.2687908239682,
+        "body": "Bearing B626DDU Seal front"
+      },
+      {
+        "bbox": {
+          "max": [
+            47.1775,
+            53.1775,
+            -2.89
+          ],
+          "min": [
+            30.822499999999998,
+            36.8225,
+            -2.89
+          ]
+        },
+        "area_mm2": 154.2687908239682,
+        "body": "Bearing B626DDU Seal back"
+      },
+      {
+        "bbox": {
+          "max": [
+            71.1,
+            51.1,
+            3.5
+          ],
+          "min": [
+            58.9,
+            38.9,
+            -3.5000000000000018
+          ]
+        },
+        "area_mm2": 571.0953914312075,
+        "volume_mm3": 465.4451614271513,
+        "body": "Bearing B608ZZ Inner ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            76.00000000000004,
+            56.00000000000005,
+            3.5000000000000004
+          ],
+          "min": [
+            53.99999999999995,
+            33.99999999999995,
+            -3.5000000000000004
+          ]
+        },
+        "area_mm2": 1065.515208789776,
+        "volume_mm3": 610.404709895239,
+        "body": "Bearing B608ZZ Outer ring"
+      },
+      {
+        "bbox": {
+          "max": [
+            74.65,
+            54.65,
+            2.9
+          ],
+          "min": [
+            55.35,
+            35.35,
+            2.8999999999999995
+          ]
+        },
+        "area_mm2": 175.6542992345474,
+        "body": "Bearing B608ZZ Shield front"
+      },
+      {
+        "bbox": {
+          "max": [
+            74.65,
+            54.65,
+            -2.8999999999999995
+          ],
+          "min": [
+            55.35,
+            35.35,
+            -2.9
+          ]
+        },
+        "area_mm2": 175.6542992345474,
+        "body": "Bearing B608ZZ Shield back"
+      },
+      {
+        "body": "Bearing B6000ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -116.95,
+            98.05,
+            -4.0
+          ],
+          "max": [
+            -103.05,
+            111.95,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6000ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -123.0,
+            92.0,
+            -4.0
+          ],
+          "max": [
+            -97.0,
+            118.0,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6000ZZ Shield front",
+        "bbox": {
+          "min": [
+            -121.1,
+            93.9,
+            3.67
+          ],
+          "max": [
+            -98.9,
+            116.1,
+            3.67
+          ]
+        },
+        "area_mm2": 235.3288516987774
+      },
+      {
+        "body": "Bearing B6000ZZ Shield back",
+        "bbox": {
+          "min": [
+            -121.1,
+            93.9,
+            -3.67
+          ],
+          "max": [
+            -98.9,
+            116.1,
+            -3.67
+          ]
+        },
+        "area_mm2": 235.3288516987774
+      },
+      {
+        "body": "Bearing B6001ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -63.15,
+            96.85,
+            -4.0
+          ],
+          "max": [
+            -46.85,
+            113.15,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6001ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -69.0,
+            91.0,
+            -4.0
+          ],
+          "max": [
+            -41.0,
+            119.0,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6001ZZ Shield front",
+        "bbox": {
+          "min": [
+            -67.45,
+            92.55,
+            3.565
+          ],
+          "max": [
+            -42.55,
+            117.45,
+            3.565
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6001ZZ Shield back",
+        "bbox": {
+          "min": [
+            -67.45,
+            92.55,
+            -3.565
+          ],
+          "max": [
+            -42.55,
+            117.45,
+            -3.565
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6002ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -9.65,
+            95.35,
+            -4.5
+          ],
+          "max": [
+            9.65,
+            114.65,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6002ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -16.0,
+            89.0,
+            -4.5
+          ],
+          "max": [
+            16.0,
+            121.0,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6002ZZ Shield front",
+        "bbox": {
+          "min": [
+            -13.95,
+            91.05,
+            4.065
+          ],
+          "max": [
+            13.95,
+            118.95,
+            4.065
+          ]
+        },
+        "area_mm2": 318.8088224862922
+      },
+      {
+        "body": "Bearing B6002ZZ Shield back",
+        "bbox": {
+          "min": [
+            -13.95,
+            91.05,
+            -4.065
+          ],
+          "max": [
+            13.95,
+            118.95,
+            -4.065
+          ]
+        },
+        "area_mm2": 318.8088224862922
+      },
+      {
+        "body": "Bearing B6003ZZ Inner ring",
+        "bbox": {
+          "min": [
+            44.3,
+            94.3,
+            -5.0
+          ],
+          "max": [
+            65.7,
+            115.7,
+            5.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6003ZZ Outer ring",
+        "bbox": {
+          "min": [
+            37.5,
+            87.5,
+            -5.0
+          ],
+          "max": [
+            72.5,
+            122.5,
+            5.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6003ZZ Shield front",
+        "bbox": {
+          "min": [
+            39.6,
+            89.6,
+            4.565
+          ],
+          "max": [
+            70.4,
+            120.4,
+            4.565
+          ]
+        },
+        "area_mm2": 385.37917081586005
+      },
+      {
+        "body": "Bearing B6003ZZ Shield back",
+        "bbox": {
+          "min": [
+            39.6,
+            89.6,
+            -4.565
+          ],
+          "max": [
+            70.4,
+            120.4,
+            -4.565
+          ]
+        },
+        "area_mm2": 385.37917081586005
+      },
+      {
+        "body": "Bearing B6004ZZ Inner ring",
+        "bbox": {
+          "min": [
+            96.8,
+            91.8,
+            -6.0
+          ],
+          "max": [
+            123.2,
+            118.2,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6004ZZ Outer ring",
+        "bbox": {
+          "min": [
+            89.0,
+            84.0,
+            -6.0
+          ],
+          "max": [
+            131.0,
+            126.0,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6004ZZ Shield front",
+        "bbox": {
+          "min": [
+            91.6,
+            86.6,
+            5.565
+          ],
+          "max": [
+            128.4,
+            123.4,
+            5.565
+          ]
+        },
+        "area_mm2": 516.2265048378747
+      },
+      {
+        "body": "Bearing B6004ZZ Shield back",
+        "bbox": {
+          "min": [
+            91.6,
+            86.6,
+            -5.565
+          ],
+          "max": [
+            128.4,
+            123.4,
+            -5.565
+          ]
+        },
+        "area_mm2": 516.2265048378747
+      },
+      {
+        "body": "Bearing B6200ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -118.15,
+            156.85,
+            -4.5
+          ],
+          "max": [
+            -101.85,
+            173.15,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6200ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -125.0,
+            150.0,
+            -4.5
+          ],
+          "max": [
+            -95.0,
+            180.0,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6200ZZ Shield front",
+        "bbox": {
+          "min": [
+            -122.45,
+            152.55,
+            4.065
+          ],
+          "max": [
+            -97.55,
+            177.45,
+            4.065
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6200ZZ Shield back",
+        "bbox": {
+          "min": [
+            -122.45,
+            152.55,
+            -4.065
+          ],
+          "max": [
+            -97.55,
+            177.45,
+            -4.065
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6201ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -63.7,
+            156.3,
+            -5
+          ],
+          "max": [
+            -46.3,
+            173.7,
+            5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6201ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -71,
+            149,
+            -5
+          ],
+          "max": [
+            -39,
+            181,
+            5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6201ZZ Shield front",
+        "bbox": {
+          "min": [
+            -68.4,
+            151.6,
+            4.565
+          ],
+          "max": [
+            -41.6,
+            178.4,
+            4.565
+          ]
+        },
+        "area_mm2": 326.3172289283719
+      },
+      {
+        "body": "Bearing B6201ZZ Shield back",
+        "bbox": {
+          "min": [
+            -68.4,
+            151.6,
+            -4.565
+          ],
+          "max": [
+            -41.6,
+            178.4,
+            -4.565
+          ]
+        },
+        "area_mm2": 326.3172289283719
+      },
+      {
+        "body": "Bearing B6202ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -9.850000000000001,
+            155.15,
+            -5.5
+          ],
+          "max": [
+            9.850000000000001,
+            174.85,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6202ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -17.5,
+            147.5,
+            -5.5
+          ],
+          "max": [
+            17.5,
+            182.5,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6202ZZ Shield front",
+        "bbox": {
+          "min": [
+            -15.450000000000003,
+            149.55,
+            5.16
+          ],
+          "max": [
+            15.45,
+            180.45,
+            5.16
+          ]
+        },
+        "area_mm2": 445.1008471606019
+      },
+      {
+        "body": "Bearing B6202ZZ Shield back",
+        "bbox": {
+          "min": [
+            -15.450000000000003,
+            149.55,
+            -5.16
+          ],
+          "max": [
+            15.45,
+            180.45,
+            -5.16
+          ]
+        },
+        "area_mm2": 445.1008471606019
+      },
+      {
+        "body": "Bearing B6203ZZ Inner ring",
+        "bbox": {
+          "min": [
+            43.5,
+            153.5,
+            -6.0
+          ],
+          "max": [
+            66.5,
+            176.5,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6203ZZ Outer ring",
+        "bbox": {
+          "min": [
+            35.0,
+            145.0,
+            -6.0
+          ],
+          "max": [
+            75.0,
+            185.0,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6203ZZ Shield front",
+        "bbox": {
+          "min": [
+            37.4,
+            147.4,
+            5.66
+          ],
+          "max": [
+            72.6,
+            182.6,
+            5.66
+          ]
+        },
+        "area_mm2": 557.6641119387243
+      },
+      {
+        "body": "Bearing B6203ZZ Shield back",
+        "bbox": {
+          "min": [
+            37.4,
+            147.4,
+            -5.66
+          ],
+          "max": [
+            72.6,
+            182.6,
+            -5.66
+          ]
+        },
+        "area_mm2": 557.6641119387243
+      },
+      {
+        "body": "Bearing B6204ZZ Inner ring",
+        "bbox": {
+          "min": [
+            96.0,
+            151,
+            -7.0
+          ],
+          "max": [
+            124.0,
+            179,
+            7.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6204ZZ Outer ring",
+        "bbox": {
+          "min": [
+            86.5,
+            141.5,
+            -7.0
+          ],
+          "max": [
+            133.5,
+            188.5,
+            7.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6204ZZ Shield front",
+        "bbox": {
+          "min": [
+            89.2,
+            144.2,
+            6.47
+          ],
+          "max": [
+            130.8,
+            185.8,
+            6.47
+          ]
+        },
+        "area_mm2": 743.4264855454887
+      },
+      {
+        "body": "Bearing B6204ZZ Shield back",
+        "bbox": {
+          "min": [
+            89.2,
+            144.2,
+            -6.47
+          ],
+          "max": [
+            130.8,
+            185.8,
+            -6.47
+          ]
+        },
+        "area_mm2": 743.4264855454887
+      }
+    ],
+    "placed": [
+      {
+        "label": "Reference CSK12P Inner ring",
+        "bbox": {
+          "min": [
+            -99.105,
+            -34.105000000000004,
+            -5.0
+          ],
+          "max": [
+            -80.895,
+            -15.895,
+            5.0
+          ]
+        },
+        "volume_mm3": 1384.401859390034
+      },
+      {
+        "label": "Reference CSK12P Outer ring",
+        "bbox": {
+          "min": [
+            -106.0,
+            -41.0,
+            -5.0
+          ],
+          "max": [
+            -74.0,
+            -9.0,
+            5.0
+          ]
+        },
+        "volume_mm3": 2453.1786790197125
+      },
+      {
+        "label": "Reference CSK12P Cover front",
+        "bbox": {
+          "min": [
+            -103.295,
+            -38.295,
+            5.0
+          ],
+          "max": [
+            -76.705,
+            -11.705,
+            5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Reference CSK12P Cover back",
+        "bbox": {
+          "min": [
+            -103.295,
+            -38.295,
+            -5.0
+          ],
+          "max": [
+            -76.705,
+            -11.705,
+            -5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Custom CSK12P Inner ring",
+        "bbox": {
+          "min": [
+            -54.105000000000004,
+            -34.105000000000004,
+            -5.0
+          ],
+          "max": [
+            -35.894999999999996,
+            -15.895,
+            5.0
+          ]
+        },
+        "volume_mm3": 1408.4018593900337
+      },
+      {
+        "label": "Custom CSK12P Outer ring",
+        "bbox": {
+          "min": [
+            -61.0,
+            -41.0,
+            -5.0
+          ],
+          "max": [
+            -29.0,
+            -9.0,
+            5.0
+          ]
+        },
+        "volume_mm3": 2453.1786790197125
+      },
+      {
+        "label": "Custom CSK12P Cover front",
+        "bbox": {
+          "min": [
+            -58.295,
+            -38.295,
+            5.0
+          ],
+          "max": [
+            -31.705,
+            -11.705,
+            5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Custom CSK12P Cover back",
+        "bbox": {
+          "min": [
+            -58.295,
+            -38.295,
+            -5.0
+          ],
+          "max": [
+            -31.705,
+            -11.705,
+            -5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Repeated custom CSK12P Inner ring",
+        "bbox": {
+          "min": [
+            -9.105,
+            -34.105000000000004,
+            -5.0
+          ],
+          "max": [
+            9.105,
+            -15.895,
+            5.0
+          ]
+        },
+        "volume_mm3": 1408.4018593900337
+      },
+      {
+        "label": "Repeated custom CSK12P Outer ring",
+        "bbox": {
+          "min": [
+            -16.0,
+            -41.0,
+            -5.0
+          ],
+          "max": [
+            16.0,
+            -9.0,
+            5.0
+          ]
+        },
+        "volume_mm3": 2453.1786790197125
+      },
+      {
+        "label": "Repeated custom CSK12P Cover front",
+        "bbox": {
+          "min": [
+            -13.295,
+            -38.295,
+            5.0
+          ],
+          "max": [
+            13.295,
+            -11.705,
+            5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "Repeated custom CSK12P Cover back",
+        "bbox": {
+          "min": [
+            -13.295,
+            -38.295,
+            -5.0
+          ],
+          "max": [
+            13.295,
+            -11.705,
+            -5.0
+          ]
+        },
+        "area_mm2": 294.8573200953236
+      },
+      {
+        "label": "CSK15PP Inner ring",
+        "bbox": {
+          "min": [
+            33.945,
+            -36.055,
+            -5.5
+          ],
+          "max": [
+            56.055,
+            -13.945,
+            5.5
+          ]
+        },
+        "volume_mm3": 2190.1719972747583
+      },
+      {
+        "label": "CSK15PP Outer ring",
+        "bbox": {
+          "min": [
+            27.5,
+            -42.47140520965615,
+            -5.5
+          ],
+          "max": [
+            62.5,
+            -7.5,
+            5.5
+          ]
+        },
+        "volume_mm3": 2499.7211506601543
+      },
+      {
+        "label": "CSK15PP Cover front",
+        "bbox": {
+          "min": [
+            29.755000000000003,
+            -40.245,
+            5.5
+          ],
+          "max": [
+            60.245,
+            -9.755,
+            5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK15PP Cover back",
+        "bbox": {
+          "min": [
+            29.755000000000003,
+            -40.245,
+            -5.5
+          ],
+          "max": [
+            60.245,
+            -9.755,
+            -5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK15P-2RS Inner ring",
+        "bbox": {
+          "min": [
+            78.945,
+            -36.055,
+            -8.0
+          ],
+          "max": [
+            101.055,
+            -13.945,
+            8.0
+          ]
+        },
+        "volume_mm3": 3192.784262196298
+      },
+      {
+        "label": "CSK15P-2RS Outer ring",
+        "bbox": {
+          "min": [
+            72.5,
+            -42.5,
+            -8.0
+          ],
+          "max": [
+            107.5,
+            -7.5,
+            8.0
+          ]
+        },
+        "volume_mm3": 3671.858829519399
+      },
+      {
+        "label": "CSK15P-2RS Seal front",
+        "bbox": {
+          "min": [
+            74.755,
+            -40.245,
+            8.0
+          ],
+          "max": [
+            105.245,
+            -9.755,
+            8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK15P-2RS Seal back",
+        "bbox": {
+          "min": [
+            74.755,
+            -40.245,
+            -8.0
+          ],
+          "max": [
+            105.245,
+            -9.755,
+            -8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444
+      },
+      {
+        "label": "CSK8PP Inner ring",
+        "bbox": {
+          "min": [
+            -95.72,
+            -82.72,
+            -4.5
+          ],
+          "max": [
+            -84.28,
+            -71.28,
+            4.5
+          ]
+        },
+        "volume_mm3": 454.5721258929388
+      },
+      {
+        "label": "CSK8PP Outer ring",
+        "bbox": {
+          "min": [
+            -101.0,
+            -87.95445115010332,
+            -4.5
+          ],
+          "max": [
+            -79.0,
+            -66.0,
+            4.5
+          ]
+        },
+        "volume_mm3": 1098.0970314345736
+      },
+      {
+        "label": "CSK8PP Cover front",
+        "bbox": {
+          "min": [
+            -99,
+            -86,
+            4.5
+          ],
+          "max": [
+            -81,
+            -68,
+            4.5
+          ]
+        },
+        "area_mm2": 151.68111986356098
+      },
+      {
+        "label": "CSK8PP Cover back",
+        "bbox": {
+          "min": [
+            -99,
+            -86,
+            -4.5
+          ],
+          "max": [
+            -81,
+            -68,
+            -4.5
+          ]
+        },
+        "area_mm2": 151.68111986356098
+      },
+      {
+        "label": "CSK10PP Inner ring",
+        "bbox": {
+          "min": [
+            -52.78107142857143,
+            -84.78107142857144,
+            -4.5
+          ],
+          "max": [
+            -37.21892857142857,
+            -69.21892857142856,
+            4.5
+          ]
+        },
+        "volume_mm3": 979.9688577281781
+      },
+      {
+        "label": "CSK10PP Outer ring",
+        "bbox": {
+          "min": [
+            -60.0,
+            -91.96662954709576,
+            -4.5
+          ],
+          "max": [
+            -30.0,
+            -62.0,
+            4.5
+          ]
+        },
+        "volume_mm3": 2091.1441612507283
+      },
+      {
+        "label": "CSK10PP Cover front",
+        "bbox": {
+          "min": [
+            -57.21892857142857,
+            -89.21892857142856,
+            4.5
+          ],
+          "max": [
+            -32.78107142857143,
+            -64.78107142857144,
+            4.5
+          ]
+        },
+        "area_mm2": 278.83878795361966
+      },
+      {
+        "label": "CSK10PP Cover back",
+        "bbox": {
+          "min": [
+            -57.21892857142857,
+            -89.21892857142856,
+            -4.5
+          ],
+          "max": [
+            -32.78107142857143,
+            -64.78107142857144,
+            -4.5
+          ]
+        },
+        "area_mm2": 278.83878795361966
+      },
+      {
+        "label": "Custom Inner ring",
+        "bbox": {
+          "min": [
+            -9.917749999999998,
+            -86.91775,
+            -6.0
+          ],
+          "max": [
+            9.917749999999998,
+            -67.08225,
+            6.0
+          ]
+        },
+        "volume_mm3": 2099.4497838382204
+      },
+      {
+        "label": "Custom Outer ring",
+        "bbox": {
+          "min": [
+            -17.0,
+            -93.9336942218761,
+            -6.0
+          ],
+          "max": [
+            17.0,
+            -60.0,
+            6.0
+          ]
+        },
+        "volume_mm3": 3092.769824687626
+      },
+      {
+        "label": "Custom Cover front",
+        "bbox": {
+          "min": [
+            -14.317250000000001,
+            -91.31725,
+            6.0
+          ],
+          "max": [
+            14.317250000000001,
+            -62.68275,
+            6.0
+          ]
+        },
+        "area_mm2": 334.9625227739141
+      },
+      {
+        "label": "Custom Cover back",
+        "bbox": {
+          "min": [
+            -14.317250000000001,
+            -91.31725,
+            -6.0
+          ],
+          "max": [
+            14.317250000000001,
+            -62.68275,
+            -6.0
+          ]
+        },
+        "area_mm2": 334.9625227739141
+      },
+      {
+        "bbox": {
+          "min": [
+            33.945,
+            -88.055,
+            -5.5
+          ],
+          "max": [
+            56.055,
+            -65.945,
+            5.5
+          ]
+        },
+        "label": "CSK clutch CSK15P Inner ring"
+      },
+      {
+        "bbox": {
+          "min": [
+            27.5,
+            -94.5,
+            -5.5
+          ],
+          "max": [
+            62.5,
+            -59.5,
+            5.5
+          ]
+        },
+        "label": "CSK clutch CSK15P Outer ring"
+      },
+      {
+        "bbox": {
+          "min": [
+            29.755000000000003,
+            -92.245,
+            5.5
+          ],
+          "max": [
+            60.245,
+            -61.755,
+            5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444,
+        "label": "CSK clutch CSK15P Cover front"
+      },
+      {
+        "bbox": {
+          "min": [
+            29.755000000000003,
+            -92.245,
+            -5.5
+          ],
+          "max": [
+            60.245,
+            -61.755,
+            -5.5
+          ]
+        },
+        "area_mm2": 346.19408564763444,
+        "label": "CSK clutch CSK15P Cover back"
+      },
+      {
+        "bbox": {
+          "min": [
+            78.945,
+            -88.055,
+            -8.0
+          ],
+          "max": [
+            101.055,
+            -65.945,
+            8.0
+          ]
+        },
+        "label": "CSK clutch CSK15-2RS Inner ring"
+      },
+      {
+        "bbox": {
+          "min": [
+            72.5,
+            -94.5,
+            -8.0
+          ],
+          "max": [
+            107.5,
+            -59.5,
+            8.0
+          ]
+        },
+        "label": "CSK clutch CSK15-2RS Outer ring"
+      },
+      {
+        "bbox": {
+          "min": [
+            74.755,
+            -92.245,
+            8.0
+          ],
+          "max": [
+            105.245,
+            -61.755,
+            8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444,
+        "label": "CSK clutch CSK15-2RS Seal front"
+      },
+      {
+        "bbox": {
+          "min": [
+            74.755,
+            -92.245,
+            -8.0
+          ],
+          "max": [
+            105.245,
+            -61.755,
+            -8.0
+          ]
+        },
+        "area_mm2": 346.19408564763444,
+        "label": "CSK clutch CSK15-2RS Seal back"
+      }
+    ],
+    "catalog_definitions": {
+      "techsquid-bearings": 25
+    }
+  }
+}

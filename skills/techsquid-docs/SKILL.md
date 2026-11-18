@@ -20,7 +20,7 @@ description: Use this skill when writing or updating any prose in the TechSquid 
 | `AGENTS.md`, `skills/` | Agent routing and the short form of each rule |
 | `CONTRIBUTING.md` | The human contributor guide |
 
-Link to the owner instead of restating it. `build.sh` copies each plugin's README, REFERENCE, pictures and the shared docs into its package and rewrites `../../docs/` links, so keep plugin guides linking with relative paths.
+Link to the owner instead of restating it. `build.sh` copies the plugin guides, linked example images and shared docs into each package. It rewrites example walkthrough links to GitHub and shared docs links to their installed paths. Use relative links in source guides.
 
 ## Style
 
@@ -30,7 +30,7 @@ Write in plain, direct sentences like the existing docs: one idea per sentence, 
 
 - A field, default or limit changes: REFERENCE.md, and README.md if Get started mentions it.
 - A standards table changes: the Standards table in REFERENCE.md, with its source.
-- A new plugin: both guides, an example with a picture, a row in the root Plugin List and the DEVELOPMENT.md table.
+- A new plugin: both guides, a gallery example with a picture linked from the guide, and a row in the root Plugin List.
 - A new rule or workflow for contributors: the matching skill and, if it is a hard rule, AGENTS.md and CONTRIBUTING.md. Run `python3 tests/skills_test.py`.
 
 ## Gotchas

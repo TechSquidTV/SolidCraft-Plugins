@@ -2,7 +2,7 @@
 
 An ISO 4032 hexagon nut for [SolidCraft](https://github.com/tangency-labs/solidcraft). One entry, `make-nut`. It builds the nut as a component of its own, once, and places it on every point (see [Components](../../DEVELOPMENT.md#components)). The bore is a tapped hole.
 
-![An ISO 4032 M3 hexagon nut, chamfered on both ends, with its bore countersunk and tapped](nut.png)
+![An ISO 4032 M3 hexagon nut, chamfered on both ends, with its bore countersunk and tapped](../../examples/editable-mounting-plate/reference/standalone-nut.png)
 
 An M3 nut, the size the form opens on.
 

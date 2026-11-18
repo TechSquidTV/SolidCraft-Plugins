@@ -2,7 +2,7 @@
 
 Add OpenBuilds V-slot wheels to [SolidCraft](https://github.com/tangency-labs/solidcraft), either bare or with two bearings and the internal precision shim. Fixed supplier profiles keep the tread and bearing seats consistent with the source parts.
 
-![Five OpenBuilds V-wheel products with bearings and internal shims](v-wheels.png)
+![Section through the V-slot gantry showing two wheel stacks with bearings and shims](../../examples/v-slot-gantry/axle-section.png)
 
 ## Install
 

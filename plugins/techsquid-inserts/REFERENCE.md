@@ -2,7 +2,7 @@
 
 A heat-set insert generator for [SolidCraft](https://github.com/tangency-labs/solidcraft). The `make-insert` workflow drills the hole for every sketch point or circle you pick and builds the brass insert as a component of its own, once, placed on every point (see [Components](../../DEVELOPMENT.md#components)).
 
-![An M3 x 5.7 heat-set insert: two star-shaped knurls twisting opposite ways with a groove between them, the chamfer under the lower knurl, the smooth pilot at the tip, and the threaded bore](insert.png)
+![An M3 x 5.7 heat-set insert: two star-shaped knurls twisting opposite ways with a groove between them, the chamfer under the lower knurl, the smooth pilot at the tip, and the threaded bore](../../examples/pcb-enclosure/reference/standalone-insert.png)
 
 An M3 × 5.7 insert, the size the form opens on.
 

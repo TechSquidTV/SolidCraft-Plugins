@@ -4,7 +4,7 @@ Check the [host requirements](../../docs/parts-library.md#host-requirements) bef
 
 Add ISO 4032 hex nuts to your [SolidCraft](https://github.com/tangency-labs/solidcraft) assemblies, complete with optional pockets and bolt holes. Place several at once and keep them organized as reusable components.
 
-![An M3 hexagon nut with a threaded bore](nut.png)
+![Captive M6 nuts on the floors of their pockets](../../examples/editable-mounting-plate/pockets-after.png)
 
 - Choose a common metric size or enter a custom size and pitch.
 - Create nuts, pockets or both. Pockets include a clearance hole for the bolt. The cuts and pocketed nuts follow the picked sketch point when it moves or turns.

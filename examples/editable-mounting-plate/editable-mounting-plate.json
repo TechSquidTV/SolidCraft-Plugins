@@ -1,0 +1,3204 @@
+{
+  "format": "solidcraft/59",
+  "format_pending": [
+    "bom-item-numbers",
+    "bom-suppressed-parts",
+    "drawings",
+    "extrude-one-sided-direction",
+    "named-view-roll-and-up",
+    "occurrence-bom-type",
+    "plane-at-angle-axis-origin-expressions"
+  ],
+  "name": "editable-mounting-plate",
+  "units": "mm",
+  "metadata": {
+    "org.techsquid.parts.index": {
+      "definitions": {
+        "2875677454ee6b635f2adce6470609ae71f5dcfa3722e0382c695cb8470d5c8a": [
+          7
+        ],
+        "bc91ca87489d019e50e8cea630b70dc087d99a02ae51eb5ed02904ee2d073d2b": [
+          23
+        ],
+        "c0446c4c41e9573ae87647c58c69c4fb2db2992bb68bb56b2669eee57cecd03e": [
+          42
+        ]
+      },
+      "version": 1
+    }
+  },
+  "params": [
+    {
+      "name": "plate_length",
+      "expr": "100 mm",
+      "unit": "mm",
+      "comment": "Overall length, X",
+      "model": false
+    },
+    {
+      "name": "plate_width",
+      "expr": "60 mm",
+      "unit": "mm",
+      "comment": "Overall width, Y",
+      "model": false
+    },
+    {
+      "name": "plate_thickness",
+      "expr": "14 mm",
+      "unit": "mm",
+      "comment": "Plate thickness and screw seating height",
+      "model": false
+    },
+    {
+      "name": "counterbore_x",
+      "expr": "32 mm",
+      "unit": "mm",
+      "comment": "Distance of the LEFT pair from the center",
+      "model": false
+    },
+    {
+      "name": "counterbore_y",
+      "expr": "18 mm",
+      "unit": "mm",
+      "comment": "Half the spacing of the LEFT pair",
+      "model": false
+    },
+    {
+      "name": "tapped_x",
+      "expr": "18 mm",
+      "unit": "mm",
+      "comment": "Distance of the RIGHT pair from the center",
+      "model": false
+    },
+    {
+      "name": "tapped_y",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "Half the spacing of the RIGHT pair",
+      "model": false
+    },
+    {
+      "name": "recess_depth",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "Counterbore depth; try 3 to 6 mm",
+      "model": false
+    },
+    {
+      "name": "d22",
+      "expr": "10.4",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d23",
+      "expr": "d22 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "60 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d25",
+      "expr": "d22 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "120 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "d22 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "180 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "d22 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "240 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d31",
+      "expr": "d22 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d32",
+      "expr": "300 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d33",
+      "expr": "d22 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d34",
+      "expr": "0 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d36",
+      "expr": "10.4",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d37",
+      "expr": "d36 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d38",
+      "expr": "60 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d39",
+      "expr": "d36 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d40",
+      "expr": "120 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d41",
+      "expr": "d36 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d42",
+      "expr": "180 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d43",
+      "expr": "d36 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d44",
+      "expr": "240 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d45",
+      "expr": "d36 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d46",
+      "expr": "300 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d47",
+      "expr": "d36 / sqrt(3)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d48",
+      "expr": "0 deg",
+      "unit": "deg",
+      "model": true
+    },
+    {
+      "name": "d51",
+      "expr": "10",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "left_pocket_depth",
+      "expr": "8 mm",
+      "unit": "mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Plate top",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "plate_thickness"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Counterbore positions",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 1
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "back",
+            "pos": [
+              -25.0,
+              15.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-counterbore_x",
+              "y": "counterbore_y"
+            }
+          },
+          {
+            "id": "front",
+            "pos": [
+              -25.0,
+              -15.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-counterbore_x",
+              "y": "-counterbore_y"
+            }
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 3,
+      "name": "Tapped positions",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 1
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "back",
+            "pos": [
+              25.0,
+              15.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tapped_x",
+              "y": "tapped_y"
+            }
+          },
+          {
+            "id": "front",
+            "pos": [
+              25.0,
+              -15.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tapped_x",
+              "y": "-tapped_y"
+            }
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {}
+      }
+    },
+    {
+      "id": 20,
+      "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions back",
+      "suppressed": false,
+      "type": "construction_axis",
+      "def": {
+        "type": "normal_to_face",
+        "face": {
+          "type": "plane",
+          "plane": {
+            "type": "construction",
+            "feature": 1
+          }
+        },
+        "point": {
+          "type": "sketch_point",
+          "sketch": 3,
+          "point": "back"
+        }
+      }
+    },
+    {
+      "id": 21,
+      "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions front",
+      "suppressed": false,
+      "type": "construction_axis",
+      "def": {
+        "type": "normal_to_face",
+        "face": {
+          "type": "plane",
+          "plane": {
+            "type": "construction",
+            "feature": 1
+          }
+        },
+        "point": {
+          "type": "sketch_point",
+          "sketch": 3,
+          "point": "front"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Mounting plate blank",
+      "suppressed": false,
+      "body_names": [
+        "Mounting plate"
+      ],
+      "param_names": [
+        "d2",
+        "d3",
+        "d4"
+      ],
+      "type": "box",
+      "corner": [
+        0.0,
+        0.0,
+        "plate_thickness / 2"
+      ],
+      "length": "plate_length",
+      "width": "plate_width",
+      "height": "plate_thickness",
+      "operation": "new_body",
+      "centred": true
+    },
+    {
+      "id": 5,
+      "name": "Rounded plate corners",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -50.0,
+            -30.0,
+            0.0
+          ],
+          "max": [
+            50.0,
+            30.0,
+            12.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -50.0,
+            -30.0,
+            0.0
+          ],
+          "max": [
+            50.0,
+            30.0,
+            12.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -50.0,
+            -30.0,
+            0.0
+          ],
+          "max": [
+            50.0,
+            30.0,
+            12.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -50.0,
+            -30.0,
+            0.0
+          ],
+          "max": [
+            50.0,
+            30.0,
+            12.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F4:+x|F4:+y",
+        "F4:+y|F4:-x",
+        "F4:-x|F4:-y",
+        "F4:+x|F4:-y"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          50.0,
+          30.0,
+          6.0
+        ],
+        [
+          -50.0,
+          30.0,
+          6.0
+        ],
+        [
+          -50.0,
+          -30.0,
+          6.0
+        ],
+        [
+          50.0,
+          -30.0,
+          6.0
+        ]
+      ],
+      "radius": "3",
+      "body": "Mounting plate"
+    },
+    {
+      "id": 6,
+      "name": "Counterbore M4",
+      "suppressed": false,
+      "param_names": [
+        "d6",
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "type": "hole",
+      "position": [
+        -25.0,
+        15.0,
+        12.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.5 mm",
+      "depth": "plate_thickness",
+      "hole": {
+        "type": "counterbore",
+        "cb_diameter": "8",
+        "cb_depth": "recess_depth"
+      },
+      "points": {
+        "sketch": 2,
+        "ids": [
+          "back",
+          "front"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "name": "Screw M4 x 6 socket: Shank",
+      "suppressed": false,
+      "body_names": [
+        "Screw M4 x 6 socket"
+      ],
+      "param_names": [
+        "d10",
+        "d11"
+      ],
+      "component": 7,
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        -6.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(4 mm) / 2",
+      "height": "6",
+      "operation": "new_body"
+    },
+    {
+      "id": 10,
+      "name": "Screw M4 x 6 socket: Head",
+      "suppressed": false,
+      "param_names": [
+        "d12",
+        "d13"
+      ],
+      "component": 7,
+      "participants": [
+        "Screw M4 x 6 socket"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(7 mm) / 2",
+      "height": "4",
+      "operation": "join"
+    },
+    {
+      "id": 11,
+      "name": "Screw M4 x 6 socket: Hex socket profile",
+      "suppressed": false,
+      "component": 7,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            4.02
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              1.7320508075688774,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              0.8660254037844385,
+              1.5000000000000002
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -0.866025403784439,
+              1.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -1.7320508075688774,
+              -5.570700268084443e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -0.866025403784438,
+              -1.5000000000000004
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              0.8660254037844403,
+              -1.4999999999999993
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Screw M4 x 6 socket: Hex socket",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "component": 7,
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2.02",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "Screw M4 x 6 socket"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Screw M4 x 6 socket: Thread",
+      "suppressed": false,
+      "component": 7,
+      "face_names": [
+        "F9:side"
+      ],
+      "type": "thread",
+      "face": [
+        2.0,
+        0.0,
+        -5.0
+      ],
+      "designation": "M4",
+      "continuous_flanks": true,
+      "from": [
+        2.0,
+        0.0,
+        -5.0
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Tapped hole M4",
+      "suppressed": false,
+      "param_names": [
+        "d15",
+        "d16"
+      ],
+      "type": "hole",
+      "position": [
+        25.0,
+        15.0,
+        12.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "3.3 mm",
+      "depth": "plate_thickness",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 3,
+        "ids": [
+          "back",
+          "front"
+        ]
+      },
+      "thread": "M4"
+    },
+    {
+      "id": 25,
+      "name": "Screw M4 x 8 socket: Shank",
+      "suppressed": false,
+      "body_names": [
+        "Screw M4 x 8 socket"
+      ],
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "component": 23,
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        -8.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(4 mm) / 2",
+      "height": "8",
+      "operation": "new_body"
+    },
+    {
+      "id": 26,
+      "name": "Screw M4 x 8 socket: Head",
+      "suppressed": false,
+      "param_names": [
+        "d19",
+        "d20"
+      ],
+      "component": 23,
+      "participants": [
+        "Screw M4 x 8 socket"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(7 mm) / 2",
+      "height": "4",
+      "operation": "join"
+    },
+    {
+      "id": 27,
+      "name": "Screw M4 x 8 socket: Hex socket profile",
+      "suppressed": false,
+      "component": 23,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            4.02
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              1.7320508075688774,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              0.8660254037844385,
+              1.5000000000000002
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -0.866025403784439,
+              1.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -1.7320508075688774,
+              -5.570700268084443e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -0.866025403784438,
+              -1.5000000000000004
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              0.8660254037844403,
+              -1.4999999999999993
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6
+        }
+      }
+    },
+    {
+      "id": 28,
+      "name": "Screw M4 x 8 socket: Hex socket",
+      "suppressed": false,
+      "param_names": [
+        "d21"
+      ],
+      "component": 23,
+      "type": "extrude",
+      "sketch": 27,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2.02",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "Screw M4 x 8 socket"
+      ]
+    },
+    {
+      "id": 29,
+      "name": "Screw M4 x 8 socket: Thread",
+      "suppressed": false,
+      "component": 23,
+      "face_names": [
+        "F25:side"
+      ],
+      "type": "thread",
+      "face": [
+        2.0,
+        0.0,
+        -6.666666666666667
+      ],
+      "designation": "M4",
+      "continuous_flanks": true,
+      "from": [
+        2.0,
+        0.0,
+        -6.666666666666667
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Nut centers",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 1
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "left",
+            "pos": [
+              -22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "right.center",
+            "pos": [
+              22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              1.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              1.0,
+              1.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "right",
+            "type": "circle",
+            "c": 2,
+            "r": 2.0,
+            "construction": false
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": true,
+            "fixed": true
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": true,
+            "fixed": true
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 2
+        }
+      }
+    },
+    {
+      "id": 35,
+      "name": "Nut pockets M6: Plane",
+      "suppressed": false,
+      "type": "construction_plane",
+      "plane": {
+        "type": "two_edges",
+        "a": {
+          "type": "sketch_curve",
+          "sketch": 34,
+          "curve": "l1"
+        },
+        "b": {
+          "type": "sketch_curve",
+          "sketch": 34,
+          "curve": "l2"
+        }
+      }
+    },
+    {
+      "id": 36,
+      "name": "Nut pocket M6 profile",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 35
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -22.0,
+              0.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              -22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              -18.997778600213945,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              -25.002221399786052,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              -28.004442799572107,
+              7.353321655159355e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              -25.002221399786055,
+              -5.199999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              -18.997778600213945,
+              -5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              -15.995557200427893,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 2,
+            "r": 5.2,
+            "construction": true
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 8,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 2,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 2,
+            "b": 6,
+            "construction": true
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 2,
+            "b": 7,
+            "construction": true
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 2,
+            "b": 8,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 10.4,
+            "param": "d22"
+          },
+          {
+            "id": "k3",
+            "type": "length",
+            "l": 7,
+            "value": 6.004442799572108,
+            "param": "d23"
+          },
+          {
+            "id": "k4",
+            "type": "line_angle",
+            "l": 7,
+            "value": 1.0471975511965976,
+            "param": "d24"
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 8,
+            "value": 6.004442799572108,
+            "param": "d25"
+          },
+          {
+            "id": "k6",
+            "type": "line_angle",
+            "l": 8,
+            "value": 2.0943951023931953,
+            "param": "d26"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 9,
+            "value": 6.004442799572108,
+            "param": "d27"
+          },
+          {
+            "id": "k8",
+            "type": "line_angle",
+            "l": 9,
+            "value": 3.141592653589793,
+            "param": "d28"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 10,
+            "value": 6.004442799572108,
+            "param": "d29"
+          },
+          {
+            "id": "k10",
+            "type": "line_angle",
+            "l": 10,
+            "value": 4.1887902047863905,
+            "param": "d30"
+          },
+          {
+            "id": "k11",
+            "type": "length",
+            "l": 11,
+            "value": 6.004442799572108,
+            "param": "d31"
+          },
+          {
+            "id": "k12",
+            "type": "line_angle",
+            "l": 11,
+            "value": 5.235987755982989,
+            "param": "d32"
+          },
+          {
+            "id": "k13",
+            "type": "length",
+            "l": 12,
+            "value": 6.004442799572108,
+            "param": "d33"
+          },
+          {
+            "id": "k14",
+            "type": "line_angle",
+            "l": 12,
+            "value": 0.0,
+            "param": "d34"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_point",
+              "sketch": 34,
+              "point": "left"
+            }
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "j": 1,
+          "k": 14,
+          "l": 12,
+          "p": 1
+        }
+      }
+    },
+    {
+      "id": 37,
+      "name": "Left nut pocket",
+      "suppressed": false,
+      "param_names": [
+        "d35"
+      ],
+      "type": "extrude",
+      "sketch": 36,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "left_pocket_depth",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 38,
+      "name": "Nut pocket M6 profile (2)",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 35
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              22.0,
+              0.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              22.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              25.002221399786055,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              18.997778600213948,
+              5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              15.995557200427893,
+              7.353321655159355e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              18.997778600213945,
+              -5.199999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              25.002221399786055,
+              -5.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              28.004442799572107,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 2,
+            "r": 5.2,
+            "construction": true
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 8,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 2,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 2,
+            "b": 6,
+            "construction": true
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 2,
+            "b": 7,
+            "construction": true
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 2,
+            "b": 8,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 2,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 10.4,
+            "param": "d36"
+          },
+          {
+            "id": "k3",
+            "type": "length",
+            "l": 7,
+            "value": 6.004442799572108,
+            "param": "d37"
+          },
+          {
+            "id": "k4",
+            "type": "line_angle",
+            "l": 7,
+            "value": 1.0471975511965976,
+            "param": "d38"
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 8,
+            "value": 6.004442799572108,
+            "param": "d39"
+          },
+          {
+            "id": "k6",
+            "type": "line_angle",
+            "l": 8,
+            "value": 2.0943951023931953,
+            "param": "d40"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 9,
+            "value": 6.004442799572108,
+            "param": "d41"
+          },
+          {
+            "id": "k8",
+            "type": "line_angle",
+            "l": 9,
+            "value": 3.141592653589793,
+            "param": "d42"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 10,
+            "value": 6.004442799572108,
+            "param": "d43"
+          },
+          {
+            "id": "k10",
+            "type": "line_angle",
+            "l": 10,
+            "value": 4.1887902047863905,
+            "param": "d44"
+          },
+          {
+            "id": "k11",
+            "type": "length",
+            "l": 11,
+            "value": 6.004442799572108,
+            "param": "d45"
+          },
+          {
+            "id": "k12",
+            "type": "line_angle",
+            "l": 11,
+            "value": 5.235987755982989,
+            "param": "d46"
+          },
+          {
+            "id": "k13",
+            "type": "length",
+            "l": 12,
+            "value": 6.004442799572108,
+            "param": "d47"
+          },
+          {
+            "id": "k14",
+            "type": "line_angle",
+            "l": 12,
+            "value": 0.0,
+            "param": "d48"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_point",
+              "sketch": 34,
+              "point": "right.center"
+            }
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "j": 1,
+          "k": 14,
+          "l": 12,
+          "p": 1
+        }
+      }
+    },
+    {
+      "id": 39,
+      "name": "Nut pocket M6 (2)",
+      "suppressed": false,
+      "param_names": [
+        "d49"
+      ],
+      "type": "extrude",
+      "sketch": 38,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "5.2",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 40,
+      "name": "Bolt hole M6",
+      "suppressed": false,
+      "param_names": [
+        "d50"
+      ],
+      "participants": [
+        "Mounting plate"
+      ],
+      "type": "hole",
+      "position": [
+        -14.0,
+        0.0,
+        12.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "6.6 mm",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 34,
+        "ids": [
+          "left",
+          "right.center"
+        ]
+      }
+    },
+    {
+      "id": 44,
+      "name": "Nut M6: Hex profile",
+      "suppressed": false,
+      "component": 42,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              2.8867513459394343,
+              4.999999999992265
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -2.886751345939232,
+              4.999999999992315
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -5.773502691880716,
+              6.618239633035943e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -2.886751345944682,
+              -4.999999999984011
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              2.886751345938594,
+              -4.999999999987507
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              5.77350269188067,
+              1.911209793802133e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 5.0,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 5.773502691881131,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 10.0,
+            "param": "d51"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 45,
+      "name": "Nut M6: Hex",
+      "suppressed": false,
+      "body_names": [
+        "Nut M6"
+      ],
+      "param_names": [
+        "d52"
+      ],
+      "component": 42,
+      "type": "extrude",
+      "sketch": 44,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "5.2",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 46,
+      "name": "Nut M6: Bearing chamfer profile",
+      "suppressed": false,
+      "component": 42,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              5.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              5.823502691896258,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              5.823502691896258,
+              0.4754495008446859
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 47,
+      "name": "Nut M6: Bearing chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d53"
+      ],
+      "component": 42,
+      "type": "revolve",
+      "sketch": 46,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "cut",
+      "targets": [
+        "Nut M6"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 48,
+      "name": "Nut M6: Outer chamfer profile",
+      "suppressed": false,
+      "component": 42,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            5.2
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              5.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              5.823502691896258,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              5.823502691896258,
+              0.4754495008446859
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3
+        }
+      }
+    },
+    {
+      "id": 49,
+      "name": "Nut M6: Outer chamfer",
+      "suppressed": false,
+      "param_names": [
+        "d54"
+      ],
+      "component": 42,
+      "type": "revolve",
+      "sketch": 48,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "cut",
+      "targets": [
+        "Nut M6"
+      ],
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 50,
+      "name": "Nut M6: Thread",
+      "suppressed": false,
+      "param_names": [
+        "d55",
+        "d56"
+      ],
+      "component": 42,
+      "face_names": [
+        "F45:start"
+      ],
+      "participants": [
+        "Nut M6"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "diameter": "5 mm",
+      "depth": "5.2",
+      "hole": {
+        "type": "simple"
+      },
+      "thread": "M6"
+    },
+    {
+      "id": 51,
+      "name": "Nut M6: Bearing countersink",
+      "suppressed": false,
+      "param_names": [
+        "d57",
+        "d58",
+        "d59"
+      ],
+      "component": 42,
+      "participants": [
+        "Nut M6"
+      ],
+      "type": "cone",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(6.75 mm) / 2",
+      "top_radius": "(6 mm) / 2",
+      "height": "0.2165063509461096",
+      "operation": "cut"
+    },
+    {
+      "id": 52,
+      "name": "Nut M6: Outer countersink",
+      "suppressed": false,
+      "param_names": [
+        "d60",
+        "d61",
+        "d62"
+      ],
+      "component": 42,
+      "participants": [
+        "Nut M6"
+      ],
+      "type": "cone",
+      "base": [
+        0.0,
+        0.0,
+        5.2
+      ],
+      "axis": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "radius": "(6.75 mm) / 2",
+      "top_radius": "(6 mm) / 2",
+      "height": "0.2165063509461096",
+      "operation": "cut"
+    }
+  ],
+  "next_id": 57,
+  "components": [
+    {
+      "id": 7,
+      "identification_color_index": 0,
+      "name": "Screw M4 x 6 socket",
+      "parent": 15,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4762",
+        "org.techsquid.parts": {
+          "creator": "techsquid-screws",
+          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":6.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":6.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":6.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":6.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "5c63409282719e6cf631148b7885f644b9251d2f2ea4a40fc7d55f4456465405",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "ISO 4762 M4x0.7 x 6"
+      }
+    },
+    {
+      "id": 15,
+      "identification_color_index": 1,
+      "name": "Fasteners",
+      "parent": 0,
+      "metadata": {
+        "bom_type": "phantom"
+      }
+    },
+    {
+      "id": 23,
+      "identification_color_index": 2,
+      "name": "Screw M4 x 8 socket",
+      "parent": 15,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4762",
+        "org.techsquid.parts": {
+          "creator": "techsquid-screws",
+          "product": "{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":8.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":8.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"techsquid-standards\",\"configuration\":{\"drive\":\"HexSocket\",\"head\":\"Socket\",\"hex\":{\"across_flats\":3.0,\"depth\":2.0},\"nominal_length_mm\":8.0,\"phillips\":null,\"resolved\":{\"crown\":\"Flat\",\"head\":{\"Round\":{\"diameter\":7.0,\"height\":4.0}},\"major\":4.0,\"pitch\":0.7,\"tip\":\"Flat\"},\"shank_length_mm\":8.0,\"slot\":null,\"thread_length_mm\":null,\"torx\":null},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"socket\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "7efacab98cf8fb3ca7072efc626f29f27c4f8b36592c607c66a2d58afd389027",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "ISO 4762 M4x0.7 x 8"
+      }
+    },
+    {
+      "id": 42,
+      "identification_color_index": 3,
+      "name": "Nut M6",
+      "parent": 15,
+      "metadata": {
+        "bom_type": "purchased",
+        "description": "ISO 4032",
+        "org.techsquid.parts": {
+          "creator": "techsquid-nuts",
+          "product": "{\"catalog\":\"iso\",\"configuration\":{\"across_flats_mm\":10.0,\"chamfer_max_mm\":0.5,\"countersink_mm\":6.75,\"height_mm\":5.2,\"major_mm\":6.0,\"pitch_mm\":1.0},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"4032\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"iso\",\"configuration\":{\"across_flats_mm\":10.0,\"chamfer_max_mm\":0.5,\"countersink_mm\":6.75,\"height_mm\":5.2,\"major_mm\":6.0,\"pitch_mm\":1.0},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"4032\"},\"revision\":\"1\"}",
+          "site": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "snapshot": {
+            "sha256": "eac42cb507d9a90922fc679998efff9609d8e1d50b3e93da1264ed34b1fec1e5",
+            "version": 2
+          },
+          "version": 1
+        },
+        "part_number": "ISO 4032 M6"
+      }
+    }
+  ],
+  "next_component_color_index": 4,
+  "occurrences": [
+    {
+      "id": 8,
+      "component": 7,
+      "parent": 15,
+      "name": "Screw M4 x 6 socket:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -32.0,
+          18.0,
+          8.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 16,
+      "component": 15,
+      "parent": 0,
+      "name": "Fasteners:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 17,
+      "component": 7,
+      "parent": 15,
+      "name": "Screw M4 x 6 socket:2",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -32.0,
+          -18.0,
+          8.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 24,
+      "component": 23,
+      "parent": 15,
+      "name": "Screw M4 x 8 socket:1",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          18.0,
+          20.0,
+          14.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 31,
+      "component": 23,
+      "parent": 15,
+      "name": "Screw M4 x 8 socket:2",
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          18.0,
+          -20.0,
+          14.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 43,
+      "component": 42,
+      "parent": 15,
+      "name": "Nut M6:1",
+      "transform": [
+        [
+          1.0,
+          -2.958404132897789e-16,
+          0.0,
+          0.0
+        ],
+        [
+          2.958404132897789e-16,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -22.0,
+          1.7763568394002505e-15,
+          6.0,
+          1.0
+        ]
+      ],
+      "grounded": false
+    },
+    {
+      "id": 54,
+      "component": 42,
+      "parent": 15,
+      "name": "Nut M6:2",
+      "transform": [
+        [
+          1.0,
+          -2.958404132897789e-16,
+          0.0,
+          0.0
+        ],
+        [
+          2.958404132897789e-16,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          21.999999999999996,
+          -5.773159728050814e-15,
+          8.800000000000011,
+          1.0
+        ]
+      ],
+      "grounded": false
+    }
+  ],
+  "assembly": {
+    "joints": [
+      {
+        "id": 18,
+        "name": "Screw M4 x 6 socket: Seat 8",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              -23.069916704258556,
+              16.156407571533432,
+              2.22281736854157
+            ],
+            "face": "F6:bore:side:0#1",
+            "end": "F6:cbore:base#1",
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 8,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0
+      },
+      {
+        "id": 19,
+        "name": "Screw M4 x 6 socket: Seat 17",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              -22.873912410707646,
+              -14.263622676437537,
+              2.222817368541568
+            ],
+            "face": "F6:bore:side:0#2",
+            "end": "F6:cbore:base#2",
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 17,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0
+      },
+      {
+        "id": 32,
+        "name": "Screw M4 x 8 socket: Seat 24",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "axis",
+            "axis": {
+              "type": "construction",
+              "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions back"
+            },
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 24,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0
+      },
+      {
+        "id": 33,
+        "name": "Screw M4 x 8 socket: Seat 31",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "axis",
+            "axis": {
+              "type": "construction",
+              "name": "Seat for Screw M4 x 8 socket: Axis Tapped positions front"
+            },
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "b": {
+          "occurrence": 31,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0
+      },
+      {
+        "id": 55,
+        "name": "Nut M6: Seat 43",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              -14.930462081525985,
+              -3.1661080706196145,
+              0.306259869621897
+            ],
+            "face": "F40:bore:side:0#[F37:bottom]",
+            "end": "F37:bottom",
+            "x": {
+              "face": "F37:side:l4"
+            }
+          }
+        },
+        "b": {
+          "occurrence": 43,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0
+      },
+      {
+        "id": 56,
+        "name": "Nut M6: Seat 54",
+        "kind": "rigid",
+        "a": {
+          "occurrence": 0,
+          "snap": {
+            "type": "circle_center",
+            "pick": [
+              13.805538744777806,
+              -3.294265444711108,
+              3.0937401303781087
+            ],
+            "face": "F40:bore:side:0#[F39:bottom]",
+            "end": "F39:bottom",
+            "x": {
+              "face": "F39:side:l4"
+            }
+          }
+        },
+        "b": {
+          "occurrence": 54,
+          "snap": {
+            "type": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "values": [],
+        "limits": [],
+        "flip": true,
+        "offset": 0.0,
+        "offset_xy": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0
+      }
+    ]
+  },
+  "appearances": {
+    "bodies": {
+      "Mounting plate": {
+        "name": "Custom",
+        "color": [
+          146,
+          167,
+          184
+        ],
+        "opacity": 1.0
+      },
+      "Nut M6": {
+        "name": "Custom",
+        "color": [
+          215,
+          175,
+          87
+        ],
+        "opacity": 1.0
+      },
+      "Screw M4 x 6 socket": {
+        "name": "Custom",
+        "color": [
+          218,
+          157,
+          56
+        ],
+        "opacity": 1.0
+      },
+      "Screw M4 x 8 socket": {
+        "name": "Custom",
+        "color": [
+          84,
+          182,
+          169
+        ],
+        "opacity": 1.0
+      }
+    }
+  },
+  "timeline_groups": [
+    {
+      "id": 14,
+      "name": "Screw M4 x 6 socket",
+      "parent": null,
+      "features": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Screw M4 x 8 socket",
+      "parent": null,
+      "features": [
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "id": 41,
+      "name": "Nut pockets M6",
+      "parent": null,
+      "features": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ]
+    },
+    {
+      "id": 53,
+      "name": "Nut M6",
+      "parent": null,
+      "features": [
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52
+      ]
+    }
+  ]
+}

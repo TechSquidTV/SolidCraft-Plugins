@@ -267,4 +267,43 @@ for plugin in (BEARINGS, WHEELS):
     for nested in (False, True):
         activation_case(plugin, nested)
 
+with Headless() as host:
+    # Keep the all-package integration check small enough to pinpoint a conflicting definition.
+    entries = [
+        ('techsquid-screws', 'make-screw', {'create': 'Screw only', 'thread_modeled': False}),
+        ('techsquid-inserts', 'make-insert', {'create': 'Insert only', 'thread_modeled': False}),
+        ('techsquid-nuts', 'make-nut', {'create': 'Nut only', 'thread_modeled': False}),
+        ('techsquid-extrusions', 'make-extrusion', {'length': 40}),
+        (BEARINGS, 'make-bearing', {'size': '625 2RS'}),
+        (WHEELS, 'make-v-wheel', {'size': 'Solid V Wheel', 'assembled': True}),
+    ]
+    host.command('sketch.create', name='Part centers', plane='XY')
+    for index in range(len(entries)):
+        host.command('sketch.point', point=[50 * index, 0], id=f'part{index}')
+    host.command('sketch.finish')
+    records = {}
+    for index, (plugin, entry, params) in enumerate(entries):
+        path = package(plugin)
+        approval = host.command('plugin.inspect', path=path)['approval']
+        reply = host.command('plugin.run', path=path, approval=approval, entry=entry,
+                             params=dict(params, placement=picks('Part centers', f'part{index}')))
+        inserted = reply.get('result', reply)['component']['component']
+        records[plugin] = host.command('component.metadata', component=inserted)['metadata']
+    check('six packages create their own catalog definitions in one design',
+          all(metadata['org.techsquid.parts']['creator'] == plugin for plugin, metadata in records.items()))
+    listed = host.command('component.list')
+    bearing = definition(listed, 'Bearing 625 2RS')
+    core = definition(listed, 'Solid V Wheel assembly')
+    check('mixed-package design shares its loose and nested bearing definition',
+          sum(child['component'] == bearing['id'] for child in core['children']) == 2)
+    bom = host.command('assembly.bom')['rows']
+    counts = {row['part_number']: row['count'] for row in bom}
+    check('mixed-package BOM includes three bearings and one wheel and shim',
+          counts.get('OpenBuilds 30') == 3 and counts.get('OpenBuilds 05') == 1
+          and counts.get('Solid V Wheel') == 1)
+    saved = os.path.join(TMP, 'all-packages.sc')
+    host.command('file.save_as', path=saved)
+    host.command('doc.open', path=saved)
+    check('mixed-package BOM survives reopening', host.command('assembly.bom')['rows'] == bom)
+
 finish()

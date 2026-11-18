@@ -2,7 +2,7 @@
 
 Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). Every radial product has a measured exterior with separate steel rings and sourced closures. CSK presets have separate chamfered rings, cover or seal faces, editable keyways, and recorded references; the [supported-parts table](#supported-bearings-and-csk-presets) distinguishes measured and estimated exteriors.
 
-![Sourced radial bearings and four representative CSK clutches, shown at the same scale](bearings.png)
+![Sourced radial bearings and CSK clutches shown at the same scale](../../examples/bearings-and-clutches/bearings-and-clutches.png)
 
 The preview shows every supported radial bearing and four representative CSK presets,
 all at the same scale. Left to right:
@@ -13,7 +13,7 @@ all at the same scale. Left to right:
 - **Front row — CSK clutches:** CSK8PP, CSK15P, CSK15PP and CSK15-2RS. These show small dual-keyed, inner-keyed, dual-keyed and sealed variants.
 
 Dark faces depict seals; gray closure faces depict shields or dust covers. The open
-B626 shows its balls and raceways. [Open the combined example](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/bearings.json)
+B626 shows its balls and raceways. [Open the combined example](../../examples/bearings-and-clutches/)
 in SolidCraft, or see the [full supported-parts table](#supported-bearings-and-csk-presets)
 and [source references](REFERENCE.md#sources).
 
@@ -51,9 +51,9 @@ See the [reference](REFERENCE.md) for dimensions, part numbers, placement fields
 
 ## CSK example
 
-![Eight CSK exterior models with reference, custom, small keyed and sealed variants](csk-clutches.png)
+![CSK exterior models with reference and custom keyways](../../examples/bearings-and-clutches/clutch-detail.png)
 
-The [CSK walkthrough and saved design](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/csk-clutches.md) show a reference CSK12P, two copies with a 1.2 mm-deep inner keyway, CSK15PP, CSK15P-2RS, keyed 8/10 mm presets, and a fully custom outer-keyed part. The repeated custom part counts twice in the BOM; no supplier is inferred from its reference drawing.
+The [CSK walkthrough](../../examples/bearings-and-clutches/#csk-references-and-overrides) shows reference keyways, a repeated override and a fully custom outer-keyed part.
 
 ## Supported bearings and CSK presets
 

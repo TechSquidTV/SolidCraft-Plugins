@@ -45,12 +45,13 @@
           "additionalProperties": true,
           "properties": {
             "placement": {
-              "description": "Sketch points or circles picked in the view. With none, one sits on the origin.",
+              "description": "Sketch points, circles or circle interiors picked in the view. With none, one sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],
@@ -187,12 +188,13 @@
               "unit": "mm"
             },
             "placement": {
-              "description": "Sketch points or circles picked in the view. With none, one sits on the origin.",
+              "description": "Sketch points, circles or circle interiors picked in the view. With none, one sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],

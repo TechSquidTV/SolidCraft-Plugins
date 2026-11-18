@@ -113,12 +113,13 @@
               "type": "string"
             },
             "placement": {
-              "description": "Picked in the view. Fixed length: the sketch points or circles each rail starts on; with nothing picked, one rail stands on the origin. Sketch driven: 1 to 16 straight lines in one sketch, each a rail; machining may need smaller batches.",
+              "description": "Picked in the view. Fixed length: the sketch points or circles each rail starts on, a circle or its inside meaning its centre; with nothing picked, one rail stands on the origin. Sketch driven: 1 to 16 straight lines in one sketch, each a rail; machining may need smaller batches.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],
@@ -184,12 +185,13 @@
               "type": "string"
             },
             "placement": {
-              "description": "The sketch points or circles to put a nut on, picked in the view: on the rail's face, in the middle of a slot. With nothing picked, one nut sits on the origin.",
+              "description": "The sketch points or circles to put a nut on, picked in the view: on the rail's face, in the middle of a slot. Click a circle or inside it for its centre. With nothing picked, one nut sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],
@@ -198,8 +200,10 @@
             },
             "size": {
               "default": "M5",
-              "description": "The thread the nut is tapped with.",
+              "description": "M3, M4 or M5. The outer shape stays the same within each nut type; Size changes the tapped hole and MISUMI part number.",
               "enum": [
+                "M3",
+                "M4",
                 "M5"
               ],
               "title": "Size",

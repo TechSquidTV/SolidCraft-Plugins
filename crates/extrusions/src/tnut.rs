@@ -111,11 +111,17 @@ pub const POST_ASSEMBLY: TNut = TNut {
 /// The nuts, in the order the dialog lists them.
 pub const NUTS: [TNut; 2] = [PRE_ASSEMBLY, POST_ASSEMBLY];
 
-/// The threads a nut is tapped with. MISUMI sells M3 and M4 too; only the M5 model has
-/// been checked.
-pub const THREADS: [&str; 1] = ["M5"];
+/// MISUMI 2019 US catalog pp. 2710 and 2716: HNTT5 and HNTP5 in carbon steel
+/// are each sold with M3, M4 or M5 taps. Within each family the listed external
+/// dimensions are shared across these thread sizes.
+pub const THREADS: [&str; 3] = ["M3", "M4", "M5"];
 
 impl TNut {
+    /// MISUMI's purchasing code for this nut family and metric thread.
+    pub fn part_number(&self, thread: &str) -> String {
+        format!("{}-{}", self.part, thread.trim_start_matches('M'))
+    }
+
     /// The widest the nut is, across the slot.
     pub fn width(&self) -> f64 {
         2.0 * (self.wing + self.wing_round)
@@ -309,6 +315,24 @@ mod tests {
         assert_eq!(nut.tap_at + ball.from_tap, 13.5);
         assert_eq!(ball.recess * 2.0, 4.2);
         assert_eq!(ball.radius - ball.stands_out - ball.recess_depth, 1.0);
+    }
+
+    /// MISUMI 2019 US catalog pp. 2710 and 2716 list the carbon-steel HNTT5
+    /// and HNTP5 with M3, M4 and M5, using one envelope per family.
+    #[test]
+    fn both_misumi_nut_families_offer_three_threads_with_shared_envelopes() {
+        assert_eq!(THREADS, ["M3", "M4", "M5"]);
+        assert_eq!(
+            (
+                PRE_ASSEMBLY.length,
+                PRE_ASSEMBLY.width(),
+                PRE_ASSEMBLY.height()
+            ),
+            (10.0, 10.0, 4.1)
+        );
+        assert_eq!((POST_ASSEMBLY.length, POST_ASSEMBLY.width()), (17.0, 8.3));
+        assert!(close(POST_ASSEMBLY.height(), 3.9));
+        assert_eq!((PRE_ASSEMBLY.tap_at, POST_ASSEMBLY.tap_at), (5.0, 6.0));
     }
 
     #[test]

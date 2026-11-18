@@ -146,12 +146,13 @@
               "unit": "mm"
             },
             "placement": {
-              "description": "The sketch points or circles to put a screw on, picked in the view. Each gets a screw, and its hole if Create says so. With nothing picked, one screw sits on the origin.",
+              "description": "The sketch points or circles to put a screw on, picked in the view. Click a circle or inside it for its centre. Each gets a screw, and its hole if Create says so. With nothing picked, one screw sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],

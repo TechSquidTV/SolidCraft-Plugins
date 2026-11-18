@@ -128,6 +128,8 @@ modeled end taps, end-relative cross-holes, a picked subset of lines, repeated r
 save/reopen, and the 16-rail limit. Run `python3 tests/sketch_selection_test.py` for the
 focused check that a pick names its sketch by id: two sketches each have a line `l1`, and it
 checks the picked rail’s position and length and refuses lines from both sketches.
+`python3 tests/profile_picks_test.py` checks that the inside of a circle places, in every
+entry, exactly what the circle itself places, and that any other region is refused.
 The plugin estimates its command count before creation;
 complex machining can require smaller batches. Its execution allowance also covers
 fixing copied section geometry, while the host's 256-call and 30-second limits remain.
@@ -224,7 +226,7 @@ Nine standalone examples show the plugins’ parts and editing modes. Each plugi
 | `nut` | `techsquid-nuts` | One M3 nut on the origin | `nut.png` |
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
-| `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
+| `slot-nuts` | `techsquid-extrusions` | An M3 pre-assembly and an M4 post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
 | `bearings` | `techsquid-bearings` | The radial bearing catalog and four representative CSK clutches: keyed and sealed variants at the same scale | `bearings.png` |
 | `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |

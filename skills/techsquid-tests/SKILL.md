@@ -16,7 +16,7 @@ compatibility: Host tests need python3, ./build.sh output and an unsigned, local
 | `plugin-kit`, `parts` or reuse | every `tests/*_test.py` |
 | Agent docs | `python3 tests/skills_test.py` |
 
-Host suites by plugin: screws `screw_references_test.py`, nuts `nut_references_test.py`, extrusions `rail_references_test.py`, `sketch_rails_test.py`, `sketch_selection_test.py`, bearings `bearing_geometry_test.py`, `csk_geometry_test.py`, V-wheels `wheel_geometry_test.py`, shared library `catalog_reuse_test.py`, `parts_library_test.py`, `parts_content_test.py`, `parts_directory_test.py`, `parts_inspection_test.py`.
+Host suites by plugin: screws `screw_references_test.py`, nuts `nut_references_test.py`, extrusions `rail_references_test.py`, `sketch_rails_test.py`, `sketch_selection_test.py`, bearings `bearing_geometry_test.py`, `csk_geometry_test.py`, V-wheels `wheel_geometry_test.py`, the Placement field `profile_picks_test.py`, shared library `catalog_reuse_test.py`, `parts_library_test.py`, `parts_content_test.py`, `parts_directory_test.py`, `parts_inspection_test.py`.
 
 ## Unit tests
 

@@ -39,7 +39,7 @@ in the BOM. Purchasing assignment is
 after creation.
 
 In either dialog, pick sketch points or circles for **Placement** in the view; a
-circle means its centre. Points or circles already selected when the dialog opens
+circle, or a click inside one, means its centre. Points or circles already selected when the dialog opens
 fill the field. With nothing picked, the part sits at the origin. Its centre plane
 sits on the point and its axle follows the sketch normal.
 

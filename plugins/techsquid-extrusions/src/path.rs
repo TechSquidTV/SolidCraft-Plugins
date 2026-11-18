@@ -64,18 +64,20 @@ pub fn parse(v: &Value) -> Result<Option<Input>, FieldError> {
     let mut sketch: Option<Value> = None;
     let mut lines: Vec<String> = Vec::new();
     for pick in place::parse_picks(v, &wanted)? {
-        if !pick.curve {
+        let place::Picked::Curve(id) = pick.what else {
             return Err(FieldError::new(
                 place::FIELD,
-                format!("a sketch-driven rail follows lines; pick {wanted}, not a point"),
+                format!(
+                    "a sketch-driven rail follows lines; pick {wanted}, not a point or a region"
+                ),
             ));
-        }
+        };
         if sketch.as_ref().is_some_and(|s| *s != pick.sketch) {
             return Err(FieldError::new(place::FIELD, format!("pick {wanted}")));
         }
         sketch = Some(pick.sketch);
-        if !lines.contains(&pick.id) {
-            lines.push(pick.id);
+        if !lines.contains(&id) {
+            lines.push(id);
         }
     }
     let sketch = match sketch {

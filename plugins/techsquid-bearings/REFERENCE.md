@@ -91,14 +91,13 @@ the [source ledgers](#sources) identify the exact references used.
 
 ## Placement and reuse
 
-Pick sketch points or circles for **Placement** in the view; a circle means its
-centre. Points or circles already selected when the dialog opens fill the field.
+Pick sketch points or circles for **Placement** in the view; a circle, or a click
+inside one, means its centre. Points or circles already selected when the dialog opens fill the field.
 With nothing picked, insert at the origin. The centre plane sits on the point, with
 local Z along the sketch normal. Up to 32 placements are accepted; complex documents
 may require a smaller batch.
 
-Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name. An edge, face or body is refused against
-Placement.
+Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle, `{"type": "profile", "sketch": 2, "index": 0}` for the inside of one. `sketch` is the sketch's feature id or its name. A region that is not the inside of a circle is refused against Placement, and so is an edge, face or body.
 
 CSK components are named `CSK clutch <designation>` with `custom` appended when
 any dimensions, closure style or keyway configuration differ from the reference. Their bodies are named `Inner ring`, `Outer ring`, and `Cover` or `Seal`

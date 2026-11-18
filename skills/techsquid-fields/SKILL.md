@@ -14,7 +14,7 @@ description: Use this skill when changing what a TechSquid plugin's dialog asks 
 
 Use the shared field names wherever they fit: `size`, `custom_size`, `create`, `placement`, `thread_modeled`. `create` goes through `plugin_kit::create`; `placement` through `place::parse_input`.
 
-`placement` is the one array field an entry has. SolidCraft draws it as a pick field (`x-solidcraft-selection`, accepting `sketch_point` and `sketch_curve`) and sends the picks as selection references; the plugin never reads the app's selection to place a part. The dialog turns Run off for any other array or keyword, which `every_package_declares_the_placement_pick_field` in `place.rs` checks.
+`placement` is the one array field an entry has. SolidCraft draws it as a pick field (`x-solidcraft-selection`, accepting `profile`, `sketch_point` and `sketch_curve`) and sends the picks as selection references: a point, a circle, or the inside of a circle, which `place::resolve_all` turns into the circle's centre point so the part still follows the sketch; the plugin never reads the app's selection to place a part. The dialog turns Run off for any other array or keyword, which `every_package_declares_the_placement_pick_field` in `place.rs` checks.
 
 ## Parsing
 

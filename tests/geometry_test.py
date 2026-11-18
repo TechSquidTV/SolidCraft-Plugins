@@ -519,6 +519,40 @@ loose_nut("t-nut: a post-assembly nut is 17 x 8.3 x 3.9 and its ball", "Post-ass
 
 
 @case
+def nut_thread_sizes(name, kind):
+    """The catalogued thread choices retain the family's outside shape while the
+    tap removes progressively more material as its nominal size increases."""
+    measured_sizes = []
+    for size, suffix in (("M3", "3"), ("M4", "4"), ("M5", "5")):
+        volumes = []
+        for modeled in (False, True):
+            found, reply = plugin_run("techsquid-extrusions", "make-t-nut",
+                                      {"type": kind, "size": size, "thread_modeled": modeled})
+            if found is None:
+                check(name, False, "| " + reply)
+                return
+            nut = list(found.values())[0]
+            box = [nut["bbox"]["max"][i] - nut["bbox"]["min"][i] for i in range(3)]
+            prefix = "HNTT5" if kind == "Pre-assembly" else "HNTP5"
+            if not (len(found) == 1 and nut["closed"]
+                    and reply["part"] == f"{prefix}-{suffix}"
+                    and all(abs(box[i] - NUT_BOX[kind][i]) < 1e-6 for i in range(3))):
+                check(name, False, f"| {size}: box {box}, reply {reply}")
+                return
+            volumes.append(nut["volume_mm3"])
+        if not volumes[0] > volumes[1]:
+            check(name, False, f"| {size}: modeled thread did not remove metal: {volumes}")
+            return
+        measured_sizes.append(volumes[0])
+    check(name, measured_sizes[0] > measured_sizes[1] > measured_sizes[2],
+          f"| cosmetic volumes {[round(v, 3) for v in measured_sizes]}")
+
+
+for kind in ("Pre-assembly", "Post-assembly"):
+    nut_thread_sizes(f"t-nut: M3, M4 and M5 {kind.lower()} products have distinct bores", kind)
+
+
+@case
 def nut_in_slot(name, slot, kind):
     """A nut on a point of the rail's face: under the lips, along the rail, touching
     nothing, and the rail as it was."""

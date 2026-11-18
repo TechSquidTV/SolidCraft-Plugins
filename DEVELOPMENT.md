@@ -143,10 +143,7 @@ The plugin estimates its command count before creation;
 complex machining can require smaller batches. Its execution allowance also covers
 fixing copied section geometry, while the host's 256-call and 30-second limits remain.
 
-[Sketch-driven rails](examples/sketch-driven-rails.json) is a six-rail example with
-editable `Rail_X`, `Rail_Z`, `Rail_Rise` and `Rail_Tilt` parameters. Rebuild and verify it
-with `python3 tests/examples_test.py --update examples/sketch-driven-rails.steps.json`.
-
+The [sketch-driven rail walkthrough](examples/sketch-driven-rails/) has the saved six-rail design and editable parameters.
 
 ### Nut pocket references
 
@@ -177,119 +174,70 @@ Run `SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/screw_references_test.
 
 ## Examples
 
-The [main showcase](examples/plugin-showcase.json) combines all six packages in a
-small rail rack and hardware display. `plugin-showcase.steps.json` rebuilds it with
-the current workflows, including standalone bearings and wheel cores sharing their
-bearing definitions. The example test checks each package's definition count and
-compares saved purchasing/representation records as well as geometry.
+The [gallery](examples/) links to each example folder. The folder contains a
+README, native screenshots, `<name>.json` (open in SolidCraft) and
+`<name>.steps.json` (replay with the test runner). Opening the saved design
+uses its existing geometry. Replaying it requires the built plugins.
 
-![A PCB enclosure with a heat-set insert and a screw in each corner, the lid shown transparent](examples/pcb-enclosure.png)
+A recipe has captioned SolidCraft commands and an `expect` object with its
+measurements. Use `dist/<id>` and `@approval` in plugin steps. The test runner
+loads the built package and supplies its approval at replay time. It checks the
+finished geometry and compares the saved design and catalog records against
+the fresh build. Example-specific checks include seat joints, wheel contact,
+interference and the bill of materials.
 
-![The same enclosure closed: each screw head sits in a recess, flush with the top of the lid](examples/pcb-enclosure-closed.png)
-
-A PCB enclosure. The base is a shelled block with a boss in each corner, filleted where it meets the walls and the floor. One `make-insert` run drills the four bosses and builds four M3 × 5.7 inserts on the points of a sketch on the rim. One `make-screw` run on the points of a sketch on the 5 mm lid drills M3 clearance holes, each with a recess for the screw head, and sets an M3 × 6 socket head screw into each recess, its head flush with the lid. The screws and inserts have modeled threads.
-
-![A frame of T-slot rails on V-slot posts, screwed together](examples/rail-frame.png)
-
-![The frame cut through one side: screws go through the side rails into the ends of a cross rail, and up through the cross rail into the feet of two posts](examples/rail-frame-joint.png)
-
-![A slot nut under the lips of a top rail, its tapped hole showing through the slot](examples/rail-frame-nuts.png)
-
-A 300 mm square frame, 340 mm tall, held together by screws alone, the way a Creality Ender 5 frame is. Five `make-extrusion` runs place twelve rails, already cut for their joints: cross rails with both ends tapped and four screw holes for the posts, side rails with a screw hole at each end, and four V-slot 2040 posts with both ends tapped, standing in the corners. Four `make-screw` runs place 24 M5 socket head screws on the slot floors. Sixteen M5 x 25 go through the cross rails and 11 mm into the ends of the posts. Eight M5 x 20 go through the side rails and 6 mm into the ends of the cross rails, short enough to stop before the post screws that cross those ends. Two `make-t-nut` runs put four M5 post-assembly nuts in the top slots and two M5 pre-assembly nuts in a slot of two posts. Every thread is cut. The only bodies that overlap are the screws and the tapped bores they are in, by the little that two threads cut out of step do.
-
-### Pocketed nuts that follow edits
-
-[Open the edited design](examples/nut-pockets.json) or read the [captioned command sequence](examples/nut-pockets.steps.json). The existing `nut` example stays a standalone M3 nut for the plugin guide's portrait; this companion shows how the pockets and hardware behave in a part.
-
-![Before editing: two M6 nuts flush in their pockets, 28 mm apart](examples/nut-pockets-before.png)
-
-Before the edits, two M6 nuts sit flush in a 12 mm plate. The left center is a sketch point and the right is a circle center. Both pockets are 5.2 mm deep. The section passes through their bolt-hole axes; the gold parts are the nuts.
-
-![After editing: the nuts and holes are 44 mm apart, and the left nut sits deeper on its pocket floor](examples/nut-pockets.png)
-
-The next steps move the centers from x = -14 and 14 to -22 and 22 mm, then change `left_pocket_depth` from 5.2 to 8 mm. The left nut moves down with its floor and ends 2.8 mm below the plate's top. The right nut stays flush. Both bolt holes remain centered under the nuts. Cosmetic threads keep this example quick to rebuild.
-
-The saved design is the final state. To try another edit, open **Nut centers**, move `left` or `right.center`, and finish the sketch. Change the `left_pocket_depth` parameter to move only the left pocket floor and nut. **Left nut pocket** reads that parameter; its seat joint reads the floor, so there is no second offset to adjust. Opening the saved design does not require the plugin.
-
-Each linked hex corner has a directed construction radius derived from the same across-flats dimension. This keeps the hex from folding during a large center move while leaving its width editable. Previously generated pockets keep their old sketch constraints; regenerate those pockets to get the improved construction.
-
-Build and verify both the saved geometry and its alignment with:
+The same runner exercises the [private regression recipes](tests/fixtures/examples/).
+They cover the screw heads, drives and tips, each stock rail profile, all five
+assembled wheel variants, the standalone nut and insert, both slot-nut styles,
+and the full modeled-thread rail frame. Each saves and reopens a temporary design.
+The all-package coexistence and shared bearing checks live in
+[the parts-library suite](tests/parts_library_test.py).
 
 ```sh
-SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py --update examples/nut-pockets.steps.json
-SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py examples/nut-pockets.steps.json
+export SOLIDCRAFT_CLI=/path/to/solidcraft-cli
+./build.sh
+python3 tests/examples_test.py
+python3 tests/examples_test.py --fixtures
+python3 tests/examples_test.py --update examples/v-slot-gantry/v-slot-gantry.steps.json
+python3 tests/examples_test.py examples/v-slot-gantry/v-slot-gantry.steps.json
 ```
 
-The checks compare actual pocket floors, bolt-hole axes, nut bounding boxes, seat-joint frames, and zero interference. The checked-in design must match a fresh build in both volume and position. The before picture comes from the first nine commands, ending with the depth parameter linked at 5.2 mm; the after picture comes from the complete sequence. Both use a section at y = 0, retaining the positive-Y half, with this camera and colors:
+After changing geometry, run `--update` on the affected recipe, rerun it and
+render its screenshots. A recipe that fails its measurements leaves the saved
+design intact. Gallery paths use `examples/<name>/<name>.json`. Scripts and links
+that used the old top-level files need the new paths.
+
+### Render the screenshots
+
+Use native `solidcraft-cli snapshot` from the example folder. For the gantry overview:
 
 ```sh
-solidcraft-cli snapshot --in examples/nut-pockets.json --out examples/nut-pockets.png --width 1280 --height 600 --camera '{"target":[0,0,6],"yaw":0.18,"pitch":0.45,"distance":70}' --section y=0,flip --no-grid --no-axes --quality fine --body 'Plate:color=#708da5' --body 'Nut M6:color=#d7af57'
+solidcraft-cli snapshot --in v-slot-gantry.json --out v-slot-gantry.png --width 1600 --height 960 --camera '{"target":[0,0,12],"yaw":0.28,"pitch":0.44,"distance":220}' --no-grid --no-axes --quality fine --body 'V-slot 2020 x 200:color=#929DA7'
 ```
 
-Nine standalone examples show the plugins’ parts and editing modes. Each plugin's README has a picture rendered from them, kept beside the README in `plugins/<id>/`:
+Use the same grid, axes and quality settings for the other captures. Camera
+angles are radians and distances are millimeters.
 
-| Example | Plugin | What it builds | Picture |
-|---|---|---|---|
-| `screws` | `techsquid-screws` | Ten M5 x 16 screws in a row: every head, every drive, and the point and cup tips | `screws.png` |
-| `insert` | `techsquid-inserts` | One M3 × 5.7 insert on the origin | `insert.png` |
-| `nut` | `techsquid-nuts` | One M3 nut on the origin | `nut.png` |
-| `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
-| `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
-| `slot-nuts` | `techsquid-extrusions` | An M3 pre-assembly and an M4 post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
-| `bearings` | `techsquid-bearings` | The radial bearing catalog and four representative CSK clutches: keyed and sealed variants at the same scale | `bearings.png` |
-| `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
-| `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
+| Capture | Resolution | Target | Yaw | Pitch | Distance | Display options |
+|---|---:|---|---:|---:|---:|---|
+| Gantry axle section | 1280 × 810 | `[-34,0,23]` | −1.52 | 0.15 | 110 | `--section x=-34` |
+| Gantry frame joint | 1120 × 720 | `[-80,0,11]` | −0.12 | 0.11 | 65 | `--section y=0,flip` |
+| Enclosure, open view and closed view | 1280 × 800 | `[0,0,15]` | −0.785 | 0.615 | 150 | `--body Lid:opacity=0.3` for the open view |
+| Enclosure insert detail | 1100 × 780 | `[26,19,23]` | −0.61 | 0.27 | 52 | `--body Lid:opacity=0.22 --body Base:opacity=0.30` |
+| Mounting plate overview | 1440 × 900 | `[0,0,6]` | 0.34 | 0.67 | 155 | |
+| Mounting plate pocket sections | 1280 × 560 | `[0,0,6]` | 0.03 | 0.22 | 100 | `--section y=0,flip` |
+| Sketch-driven rails | 1280 × 800 | `[245,0,140]` | 0.35 | 0.4 | 650 | |
+| Bearings and clutches | 1440 × 1250 | `[0,48,0]` | 0 | 1.12 | 385 | |
+| Clutch detail | 1440 × 720 | `[0,-50,0]` | 0 | 0.95 | 245 | `--section y=7` |
 
-The sketch-driven example uses three plugin runs on one fully constrained six-line
-sketch. The paired rails have different lengths; the 2020 pair has modeled M5 taps,
-and the 4040 and 2080 pairs have cosmetic taps. Change `Rail_Tilt` from `-35 mm`
-to `35 mm`, `Rail_Rise` from `150 mm` to `190 mm`, and the layout origin to
-`Rail_X = 90 mm`, `Rail_Z = 40 mm` to try a combined move, resize and reverse tilt.
-The cross-hole offsets stay 25 mm and 55 mm from the path ends.
+Render the before pocket section from a temporary copy with the initial values
+and nut centers from the [mounting plate walkthrough](examples/editable-mounting-plate/).
 
-A new plugin gets an example like these and a picture in its README.
+Plugin guides link to gallery images in source control. Catalog portraits in the
+`reference/` subfolders come from the corresponding private regression recipes. The package build copies
+those images into each ZIP and points its example links to the GitHub gallery.
 
-Each example comes as two files:
-
-- `examples/pcb-enclosure.json` is the design. Open it in SolidCraft (File > Open). It is saved by SolidCraft 0.42, so an older SolidCraft may refuse it as a newer file. SolidCraft rebuilds it as it opens, which takes a few seconds for the modeled threads. The plugins have already run, so opening it needs none of them installed.
-- `examples/pcb-enclosure.steps.json` builds that design, one SolidCraft command per step, with a `caption` saying what each step does. It is not a design file, so SolidCraft does not open it. A plugin step is a `plugin.run` with `"path": "dist/<id>"` and `"approval": "@approval"`. The approval changes with every build, so the test inspects each package and fills it in. `expect` holds what the finished design must measure.
-
-```
-SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py
-```
-
-It builds every `*.steps.json` and checks the body count (each placement of a fastener or a rail is a body, measured where it is placed) and the bounding boxes. Bearing examples explicitly count their intentional closure surfaces and compare their areas; other bodies must be closed. On the enclosure it checks the insert hole, the clearance hole and the head recess on each corner, and one insert and one screw on each corner. On the frame it checks the box and the volume of every rail, screw and slot nut, and that the only bodies that overlap are the 24 screws and the tapped bores they are in. On the small examples it checks the box and the volume of every part. For every example it checks that the saved design reopens, and that the design next to it matches the fresh build body for body. After a plugin or an example changes, `--update` writes that design from the fresh build. The same signed macOS build skips here as well, because every example runs a plugin.
-
-The pictures are rendered from the designs:
-
-```sh
-solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin-showcase.png --width 1600 --height 1000 --camera '{"target":[0,-12,5],"yaw":0.12,"pitch":0.6,"distance":280}' --no-grid --no-axes --quality fine --body 'Insert M5 x 9.5:color=#c9943a'
-```
-
-```sh
-solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 1100 --camera '{"target":[4.25,85.5,0],"yaw":0,"pitch":0.9,"distance":275}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 800 --camera '{"target":[0.75,25,0],"yaw":0.05,"pitch":0.9,"distance":150}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
-```
-
-The bearing and wheel previews are native CAD captures. Their appearances show
-seals, shields and illustrative clear/black wheel variants; no image synthesis is
-used. Bearing closure surfaces are intentionally open, as the references explain.
-
-
-```
-solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure.png --width 1280 --height 800 --camera '{"target": [0, 0, 15], "yaw": -0.785, "pitch": 0.615, "distance": 150}' --no-grid --no-axes --body Lid:opacity=0.3 --quality fine
-solidcraft-cli snapshot --in examples/pcb-enclosure.json --out examples/pcb-enclosure-closed.png --width 1280 --height 800 --camera '{"target": [0, 0, 15], "yaw": -0.785, "pitch": 0.615, "distance": 150}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame.png --width 1280 --height 800 --camera '{"target": [0, 0, 170], "yaw": 0.5, "pitch": 0.4, "distance": 800}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-joint.png --width 1280 --height 800 --camera '{"target": [140, 105, 30], "yaw": 0.3, "pitch": 0.15, "distance": 190}' --no-grid --no-axes --quality fine --section x=140,flip
-solidcraft-cli snapshot --in examples/rail-frame.json --out examples/rail-frame-nuts.png --width 1280 --height 800 --camera '{"target": [62, -140, 336], "yaw": 0.5, "pitch": 0.7, "distance": 75}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/screws.json --out plugins/techsquid-screws/screws.png --width 1600 --height 700 --camera '{"target": [0, 0, -5], "yaw": 0, "pitch": 0.6, "distance": 92}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/insert.json --out plugins/techsquid-inserts/insert.png --width 1280 --height 800 --camera '{"target": [0, 0, -2.85], "yaw": 0.5, "pitch": 0.55, "distance": 14}' --no-grid --no-axes --quality ultra
-solidcraft-cli snapshot --in examples/nut.json --out plugins/techsquid-nuts/nut.png --width 1280 --height 800 --view iso --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/sketch-driven-rails.json --out plugins/techsquid-extrusions/sketch-driven-rails.png --width 1280 --height 800 --camera '{"target": [245, 0, 140], "yaw": 0.35, "pitch": 0.4, "distance": 650}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/rails.json --out plugins/techsquid-extrusions/rails.png --width 1280 --height 800 --camera '{"target": [80, 0, 20], "yaw": 0.3, "pitch": 0.8, "distance": 330}' --no-grid --no-axes --quality fine
-solidcraft-cli snapshot --in examples/slot-nuts.json --out plugins/techsquid-extrusions/slot-nuts.png --width 1280 --height 800 --camera '{"target": [0, 0, 14], "yaw": 0.45, "pitch": 0.6, "distance": 95}' --no-grid --no-axes --quality fine --body "T-slot 2020 x 80:opacity=0.3"
-```
+## Geometry tests
 
 `tests/geometry_test.py` checks what the plugins cut. It builds a plate, runs a plugin on two sketch points, and compares the plate's volume with the figure worked out by hand: insert holes, screw clearance, counterbored, countersunk and tapped holes, nut pockets, and the head shapes and drive recesses of loose screws. A rail is checked the other way round: its volume must be the area of its section, worked out by hand from the slot sizes, times its length. A tapped or drilled rail is checked against the plain one, a screw hole by the metal it takes out, and a drilled rail, a tapped post and two screws are put together to check that each screw passes the first rail without touching it. A slot nut is put in the slot of a rail: it must be the size MISUMI draws, sit under the lips, touch nothing, and leave the rail and any nut built before it as they were.
 
@@ -336,13 +284,13 @@ The CSK suite checks all 55 presets, measured shoulders/chamfers, closure areas
 and appearance, custom dimensions and keyway presence, exterior estimation
 metadata, BOM quantities, definition
 reuse, invalid-input rollback and save/reopen. It uses the built Bearings package;
-run `./build.sh` first. The [CSK walkthrough](examples/csk-clutches.md) explains the
-example’s seven BOM rows and independent volume expectations. Rebuild and check it
+run `./build.sh` first. The [CSK walkthrough](examples/bearings-and-clutches/#csk-references-and-overrides) explains the
+shared keyway override and the display layout. Rebuild and check it
 with:
 
 ```bash
-python3 tests/examples_test.py --update examples/csk-clutches.steps.json
-python3 tests/examples_test.py examples/csk-clutches.steps.json
+python3 tests/examples_test.py --update examples/bearings-and-clutches/bearings-and-clutches.steps.json
+python3 tests/examples_test.py examples/bearings-and-clutches/bearings-and-clutches.steps.json
 ```
 
 ## Components

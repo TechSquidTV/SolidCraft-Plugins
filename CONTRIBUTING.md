@@ -35,7 +35,7 @@ The signed macOS SolidCraft build is killed when it loads a plugin, so on it the
 | `tools/catalog-tool` | Generates catalog choices and reference tables from the crates |
 | `tools/icons` | Draws each command's icon into `plugins/techsquid-<name>/icons/` |
 | `tests/` | Python tests that build parts through `solidcraft-cli` |
-| `examples/` | Saved designs, the `.steps.json` recipes that build them, and pictures |
+| `examples/` | Example folders with a README, saved design, replay recipe and pictures |
 | `docs/` | Shared contracts and `docs/sources/`, the evidence behind measured dimensions |
 
 The six plugins and the crate each one uses:
@@ -60,7 +60,7 @@ Shared behaviour belongs in a shared crate. A generic helper goes in `plugin-kit
 - `Cargo.toml`, `plugin.json`, `README.md`, `REFERENCE.md` and `src/lib.rs`. Copy `plugins/techsquid-v-wheels`, the smallest plugin.
 - A unit test in `src/lib.rs` that asserts the manifest id.
 - A case in `CASES` in `tests/cli_test.py`, which fails until it has one.
-- A small example in `examples/`, a picture rendered from it beside the README, and a row in the root README's Plugin List and in DEVELOPMENT.md.
+- An example in `examples/` that demonstrates the new plugin, a native image linked from the plugin guide, and a row in the root Plugin List.
 
 The id `techsquid-<name>` is also the folder, the Cargo package and the `dist/` folder. SolidCraft uses it for the install folder, Preferences and plugin data saved in designs, so it can't change once shipped. The [plugins skill](skills/techsquid-plugins/SKILL.md) walks through the steps.
 

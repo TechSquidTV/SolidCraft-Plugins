@@ -4,7 +4,7 @@ Check the [host requirements](../../docs/parts-library.md#host-requirements) bef
 
 Add reusable threaded connections to your printed parts. This [SolidCraft](https://github.com/tangency-labs/solidcraft) plugin places CNC Kitchen heat-set inserts and prepares their holes in one step.
 
-![An M3 heat-set insert with knurled exterior and threaded bore](insert.png)
+![Heat-set inserts and their screws in a transparent enclosure corner](../../examples/pcb-enclosure/insert-detail.png)
 
 - Choose from CNC Kitchen metric and UN sizes, or customize the insert dimensions and thread.
 - Create inserts, holes or both at once across multiple sketch points.

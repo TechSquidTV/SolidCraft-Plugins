@@ -57,4 +57,4 @@ For geometry, add a before/after table of measured values and the hand-worked ex
 
 - **An agent's push token usually lacks the `workflow` scope**, so a push that touches `.github/workflows/` is rejected. Keep workflow edits out of the branch, and put the change in the PR description for a maintainer to apply.
 - **A stacked PR's base is the branch below it.** Say so in the description, and retarget it to `main` once the lower PR merges.
-- **Don't regenerate examples in a PR that doesn't change geometry.** An unexplained diff in `examples/*.json` hides real changes.
+- **Don't regenerate examples in a PR that doesn't change geometry.** An unexplained diff in `examples/*/*.json` hides real changes.

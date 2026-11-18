@@ -35,7 +35,7 @@ Shared helpers belong in `tests/harness.py` and `tests/headless.py`. Expected va
 
 ## Examples and pictures
 
-Every `examples/<name>.json` has a `<name>.steps.json` recipe; `tests/examples_test.py` rebuilds it and checks the saved design matches. After a change that alters geometry or BOM data:
+Every `examples/<name>/` folder contains the README, design, recipe and screenshots. The `<name>.steps.json` recipe builds the saved design; `tests/examples_test.py` rebuilds it and checks the saved design matches. After a change that alters geometry or BOM data:
 
 1. `SOLIDCRAFT_CLI=… python3 tests/examples_test.py --update`
 2. `git diff --stat examples/`: every changed design must be one your change explains.

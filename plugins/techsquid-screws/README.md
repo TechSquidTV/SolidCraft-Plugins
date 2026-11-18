@@ -4,7 +4,7 @@ Check the [host requirements](../../docs/parts-library.md#host-requirements) bef
 
 Add the right screw to your [SolidCraft](https://github.com/tangency-labs/solidcraft) design in a few clicks—from socket heads and countersunk screws to set screws and threaded rod. Create matching holes at the same time, ready for your assembly.
 
-![A selection of screw heads, drives and tips](screws.png)
+![Counterbored and tapped screws on the editable mounting plate](../../examples/editable-mounting-plate/editable-mounting-plate.png)
 
 ## What this adds to SolidCraft's built-in fasteners
 
@@ -35,7 +35,7 @@ The default is an M3 × 12 socket-head screw. Choose **Screw and hole** to drill
 
 **Breaking change:** new screw-and-hole placements are attached. Regenerate previously created placements to add these joints; upgrading the plugin does not attach existing screws. A missing or ambiguous seat is refused.
 
-Try the [attachment test plate](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/examples/screw-attachment-test.md): move counterbored and tapped hole pairs, change the recess depth, then save and reopen to check the seats.
+Try the [editable mounting plate](../../examples/editable-mounting-plate/): move counterbored and tapped hole pairs, change the recess depth, then save and reopen to check the seats.
 
 For all options, supported standards, dimensions and placement details, see the [screw reference](REFERENCE.md).
 

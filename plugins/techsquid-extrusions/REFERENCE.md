@@ -2,7 +2,7 @@
 
 20 mm series T-slot and V-slot aluminium extrusions for [SolidCraft](https://github.com/tangency-labs/solidcraft), cut to any length, and the slot nuts that go in them. Two entries: `make-extrusion` builds a rail, and `make-t-nut` puts a nut in a rail's slot. Fixed-length rails and nuts build a reusable component and place it on every point (see [Components](../../DEVELOPMENT.md#components)). Sketch-driven rails build independent bodies along source lines.
 
-![Every rail it builds, 40 mm long, standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020, 2040, 2060 and 2080 in front](rails.png)
+![Every rail it builds, 40 mm long, standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020, 2040, 2060 and 2080 in front](../../examples/sketch-driven-rails/reference/rail-profiles.png)
 
 Every rail it builds, 40 mm long and standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020 to 2080 in front.
 
@@ -97,7 +97,7 @@ A tapped or drilled rail is a part of its own. Its name says what is cut into it
 
 Plugins > Slot nut puts a nut under the lips of a slot. Sketch on the rail's face, put a point in the middle of the slot where each screw goes, pick the points for Placement, and run it. The nut hangs under the lips with its tapped hole on the point: its shoulders are 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot, which is the lip of each. The form opens on an M5 pre-assembly nut in a T-slot.
 
-![A T-slot 2020 rail, drawn see-through, with an M3 pre-assembly nut and an M4 post-assembly nut under the lips of its top slot](slot-nuts.png)
+![A T-slot 2020 rail, drawn see-through, with an M3 pre-assembly nut and an M4 post-assembly nut under the lips of its top slot](../../examples/v-slot-gantry/reference/slot-nut-styles.png)
 
 An M3 pre-assembly nut on the left and an M4 post-assembly nut on the right in the top slot of a T-slot 2020, the rail drawn see-through.
 

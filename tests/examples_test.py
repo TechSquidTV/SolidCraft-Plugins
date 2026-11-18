@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Build every example in examples/ with the built plugins and measure the result.
 
-    SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py [--update] [example.steps.json ...]
+    SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/examples_test.py [--update | --fixtures] [example.steps.json ...]
 
-An example is `examples/<name>.steps.json`:
+An example is `examples/<name>/<name>.steps.json`:
 {"description", "steps": [{"caption", "command", "params"}], "expect"}.
 A plugin step is a plugin.run whose path is relative to the repository (dist/<id>) and
 whose approval is "@approval". This test inspects each package and fills both in,
@@ -24,21 +24,26 @@ because the approval changes with every build.
     placed     [{label, bbox, volume_mm3?, area_mm2?}] one body with exactly that box and, to one
                part in ten thousand, any specified volume or area. This is for placements that share a
                name, such as the rails of a frame
-    overlaps   {pairs, volume_mm3: [least, most]} exactly that many pairs of bodies
-               overlap, each by a volume in that range, to within 0.1 mm3. Without it
-               nothing is checked for overlap. This is for screws in tapped holes: two
-               threads cut out of step overlap a little
+    overlaps   {pairs, volume_mm3: [least, most], names?} exactly that many pairs
+               overlap, each by a volume in that range, to within 0.1 mm3. When
+               names (a list of body-name pairs) is present only those pairs may overlap
+    contacts   {bodies, against} every cross-pair touches without positive overlap
+    bom        {definition name: quantity} the exact flat BOM, including shared placements
     nut_seats  [{body, at: [x, y], floor_z, bolt_radius}] a pocket floor and bolt-hole
                axis at each center, with a healthy rigid joint holding its nut there
+    screw_seats  [{body, at: [x, y], floor_z, bolt_radius, counterbore_radius?}]
+                 the screw's seat joint and coaxial bore, with its counterbore floor if specified
 
 Only `bodies` and `bbox` are required.
 
 The saved design must also reopen with the same bodies. Each example also keeps the
-design it builds next to it, `examples/<name>.json`, which is what opens in SolidCraft:
+design it builds next to it, `examples/<name>/<name>.json`, which is what opens in SolidCraft:
 the steps file is not a design. That design must match a fresh build, body for body,
 with the same names, volumes and catalog purchasing/representation records.
 `--update` writes it from the fresh build instead,
-after a plugin or an example changes.
+after a plugin or an example changes. Catalog and stress recipes under
+tests/fixtures/examples/ run the same measurements and round trip a temporary
+design. They run by default and can be selected separately with --fixtures.
 
 On the signed macOS build of
 SolidCraft 0.41.0 a plugin run kills the CLI with SIGKILL; that example is reported and
@@ -47,7 +52,7 @@ skipped.
 import glob, json, os, shutil, sys
 from collections import Counter
 
-from harness import ROOT, TMP, check, finish, inspect, killed, package, run, skip
+from harness import ROOT, TMP, Tally, check, finish, inspect, killed, package, run, skip
 
 TOL = 1e-3
 
@@ -119,22 +124,57 @@ def faces(result):
     return result["faces"] if isinstance(result, dict) else result
 
 
-def example(path):
+def pair_counts(pairs):
+    return Counter(tuple(sorted((pair["a"], pair["b"]))) for pair in pairs)
+
+
+def check_joints(name, joints, seats):
+    check(f"{name}: one healthy rigid joint per seat", len(joints) == len(seats)
+          and all(j["type"] == "rigid" and not j["errors"] and not j["conflicts"] for j in joints))
+    for seat in seats:
+        at = [*seat["at"], seat["floor_z"]]
+        check(f"{name}: joined at {at}", sum(
+            all(j[side]["resolves"]
+                and all(near(a, b) for a, b in zip(j[side]["frame"]["origin"], at))
+                and all(near(a, b) for a, b in zip(j[side]["frame"]["z"], [0, 0, 1]))
+                for side in ("a", "b")) for j in joints) == 1)
+
+
+def check_bom(name, report, expected):
+    quantities = Counter()
+    for row in report["rows"]:
+        quantities[row["definition"]] += row["count"]
+    one_definition_per_row = all(len(row["components"]) == 1 for row in report["rows"])
+    check(f"{name}: flat BOM quantities and shared definitions",
+          quantities == expected and one_definition_per_row, str(dict(quantities)))
+
+
+def example(path, fixture=False, update=False):
     name = os.path.relpath(path, ROOT)
+    failed_before = Tally.failed
     with open(path) as f:
         doc = json.load(f)
     expect = doc["expect"]
     steps = commands(doc)
-    seats = expect.get("nut_seats", [])
+    nut_seats = expect.get("nut_seats", [])
+    seats = nut_seats + expect.get("screw_seats", [])
     hole_bodies = sorted({h["body"] for h in expect.get("holes", []) + seats})
     measure_at = len(steps)
     steps.append({"command": "inspect.measure", "params": {}})
     steps += [{"command": "model.faces", "params": {"body": b}} for b in hole_bodies]
-    joint_at = len(steps)
+    saved_checks = {}
     if seats:
-        steps.append({"command": "joint.inspect", "params": {}})
+        saved_checks["joints"] = {"command": "joint.inspect", "params": {}}
+    if "bom" in expect:
+        saved_checks["bom"] = {"command": "assembly.bom", "params": {}}
+    probes = dict(saved_checks)
     if "overlaps" in expect:
-        steps.append({"command": "inspect.interference", "params": {}})
+        probes["overlaps"] = {"command": "inspect.interference", "params": {}}
+    if "contacts" in expect:
+        probes["contacts"] = {"command": "inspect.clearance", "params": {
+            **expect["contacts"], "clearance": 0.01, "min_volume": 1e-6}}
+    probe_at = len(steps)
+    steps.extend(probes.values())
     design = path[: -len(".steps.json")] + ".json"
     # A .json path saves SolidCraft's plain design format, the one kept in examples/.
     saved = os.path.join(TMP, os.path.basename(design))
@@ -153,26 +193,35 @@ def example(path):
         for i, b in enumerate(hole_bodies)
     }
     cylinders = {b: [f["cylinder"] for f in fs if f.get("cylinder")] for b, fs in body_faces.items()}
-
+    reports = dict(zip(probes, results[probe_at:]))
     if seats:
-        joints = results[joint_at]["joints"]
-        check(f"{name}: one healthy rigid joint per pocketed nut", len(joints) == len(seats)
-              and all(j["type"] == "rigid" and not j["errors"] and not j["conflicts"] for j in joints))
+        check_joints(name, reports["joints"]["joints"], seats)
         for seat in seats:
             x, y = seat["at"]
             floor = [x, y, seat["floor_z"]]
-            at_floor = lambda p: all(near(a, b) for a, b in zip(p, floor))
-            check(f"{name}: pocket floor at {floor}", any(
-                f.get("plane_normal") and near(f["plane_normal"][2], 1) and at_floor(f["centroid"])
-                for f in body_faces[seat["body"]]))
+            if seat in nut_seats:
+                check(f"{name}: pocket floor at {floor}", any(
+                    f.get("plane_normal") and near(f["plane_normal"][2], 1)
+                    and all(near(a, b) for a, b in zip(f["centroid"], floor))
+                    for f in body_faces[seat["body"]]))
+            bore = [c for c in cylinders[seat["body"]] if
+                    near(c["origin"][0], x) and near(c["origin"][1], y) and near(abs(c["axis"][2]), 1)]
             check(f"{name}: bolt-hole axis at ({x:g}, {y:g})", any(
-                near(c["radius"], seat["bolt_radius"]) and near(c["origin"][0], x)
-                and near(c["origin"][1], y) and near(abs(c["axis"][2]), 1)
-                for c in cylinders[seat["body"]]))
-            check(f"{name}: nut joint seated at {floor}", sum(
-                all(j[side]["resolves"] and at_floor(j[side]["frame"]["origin"])
-                    and all(near(a, b) for a, b in zip(j[side]["frame"]["z"], [0, 0, 1]))
-                    for side in ("a", "b")) for j in joints) == 1)
+                near(c["radius"], seat["bolt_radius"]) for c in bore))
+            if "counterbore_radius" in seat:
+                check(f"{name}: counterbore floor at {floor}", any(
+                    near(c["radius"], seat["counterbore_radius"]) and near(c["origin"][2], floor[2])
+                    for c in bore))
+    if "bom" in reports:
+        check_bom(name, reports["bom"], expect["bom"])
+    if "contacts" in reports:
+        want = expect["contacts"]
+        expected = Counter(tuple(sorted((a, b))) for a in want["bodies"] for b in want["against"])
+        report = reports["contacts"]
+        check(f"{name}: all {sum(expected.values())} specified contacts",
+              report["pairs_checked"] == sum(expected.values()) and pair_counts(report["near"]) == expected
+              and all(near(hit["distance_mm"], 0) for hit in report["near"])
+              and not report["overlaps"] and not report["unchecked"] and not report["truncated"], str(report))
 
     check(f"{name}: {expect['bodies']} bodies", len(bodies) == expect["bodies"], f"got {len(bodies)}")
     surfaces = expect.get("surface_bodies", 0)
@@ -224,19 +273,24 @@ def example(path):
         check(f"{name}: one {part['label']}", len(found) == 1, f"got {len(found)}")
     if "overlaps" in expect:
         want = expect["overlaps"]
-        report = results[-1]
+        report = reports["overlaps"]
         hits = report.get("interferences", [])
         least, most = want["volume_mm3"]
         check(
             f"{name}: {want['pairs']} pairs overlap, each by {least} to {most} mm3",
-            len(hits) == want["pairs"] and not report.get("unchecked")
+            len(hits) == want["pairs"] and not report["unchecked"] and not report["truncated"]
             and all(least - 0.1 < h["volume_mm3"] < most + 0.1 for h in hits),
             f"got {len(hits)}: {sorted({round(h['volume_mm3'], 2) for h in hits})}",
         )
+        if "names" in want:
+            expected = Counter(tuple(sorted(pair)) for pair in want["names"])
+            check(f"{name}: only the listed mating bodies overlap", pair_counts(hits) == expected,
+                  str(list(pair_counts(hits))))
     wanted = len(expect.get("fasteners", [])) * len(corners) + len(expect.get("placed", []))
     check(f"{name}: no other bodies", len(loose) == wanted, f"{len(loose)} beside the named parts, expected {wanted}")
 
-    code, text, results = run([{"command": "inspect.measure", "params": {}}], inp=saved)
+    reopen = [{"command": "inspect.measure", "params": {}}, *saved_checks.values()]
+    code, text, results = run(reopen, inp=saved)
     reopened = results[0]["bodies"] if results else []
     check(
         f"{name}: the saved design reopens with the same bodies",
@@ -253,16 +307,19 @@ def example(path):
                            for c in built_design.get("components", [])
                            if "org.techsquid.parts" in c.get("metadata", {}))
         check(f"{name}: catalog definition counts", creators == expect["catalog_definitions"], str(dict(creators)))
-    if UPDATE:
-        shutil.copyfile(saved, design)
-        print(f"wrote {os.path.relpath(design, ROOT)}")
+    if fixture:
+        return
+    if update:
+        if failed_before == Tally.failed:
+            shutil.copyfile(saved, design)
+            print(f"wrote {os.path.relpath(design, ROOT)}")
         return
     with open(design) as f:
         kept_design = json.load(f)
     check(f"{name}: saved catalog identities and BOM numbers match a fresh build",
           catalog_records(kept_design) == catalog_records(built_design),
           "regenerate with --update after catalog or snapshot changes")
-    code, text, results = run([{"command": "inspect.measure", "params": {}}], inp=design)
+    code, text, results = run(reopen, inp=design)
     kept = results[0]["bodies"] if code == 0 and results else None
     same = kept is not None and len(kept) == len(reopened) and same_bodies(kept, reopened)
     check(
@@ -271,12 +328,35 @@ def example(path):
         "run with --update to write it" if kept is None else
         f"{len(kept)} bodies kept, {len(reopened)} built; after a plugin or example change, run with --update",
     )
+    if results and saved_checks:
+        kept_checks = dict(zip(saved_checks, results[1:]))
+        if seats:
+            check_joints(f"{name} checked-in design", kept_checks["joints"]["joints"], seats)
+        if "bom" in kept_checks:
+            check_bom(f"{name} checked-in design", kept_checks["bom"], expect["bom"])
 
 
-UPDATE = "--update" in sys.argv[1:]
-paths = [a for a in sys.argv[1:] if a != "--update"] or sorted(glob.glob(os.path.join(ROOT, "examples", "*.steps.json")))
-if not paths:
-    sys.exit("no examples found")
-for path in paths:
-    example(os.path.abspath(path))
-finish()
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--update", action="store_true", help="write verified, saved examples")
+    modes.add_argument("--fixtures", action="store_true", help="run only the private regression recipes")
+    parser.add_argument("paths", nargs="*")
+    args = parser.parse_args()
+    if args.fixtures and args.paths:
+        parser.error("--fixtures selects the fixture directory")
+    if not args.fixtures:
+        paths = args.paths or sorted(glob.glob(os.path.join(ROOT, "examples", "*", "*.steps.json")))
+        if not paths:
+            sys.exit("no examples found")
+        for path in paths:
+            example(os.path.abspath(path), update=args.update)
+    if args.fixtures or (not args.paths and not args.update):
+        paths = sorted(glob.glob(os.path.join(ROOT, "tests", "fixtures", "examples", "*.steps.json")))
+        if not paths:
+            sys.exit("no regression recipes found")
+        for path in paths:
+            example(path, fixture=True)
+    finish()

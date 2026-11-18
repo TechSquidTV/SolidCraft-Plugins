@@ -28,8 +28,26 @@ build_one() {
   # Keep installed guides self-contained while repository links remain navigable.
   python3 - "$out" <<'PY'
 from pathlib import Path
-import json, sys
+import json, re, shutil, sys
 out = Path(sys.argv[1])
+example_links = re.compile(r"(!?\[[^\n\]]*\]\()\.\./\.\./(examples/[^\s)]+)(\))")
+repository = "https://github.com/TechSquidTV/SolidCraft-Plugins"
+
+def package_example_link(match):
+    prefix, target, suffix = match.groups()
+    path, anchor, fragment = target.partition("#")
+    source = Path(path)
+    if not source.exists():
+        raise SystemExit(f"{out.name}: missing example link target {source}")
+    if prefix.startswith("!") and source.suffix == ".png":
+        dest = out / source
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, dest)
+    else:
+        view = "tree" if source.is_dir() else "blob"
+        target = f"{repository}/{view}/main/{source.as_posix()}{anchor}{fragment}"
+    return prefix + target + suffix
+
 # The host limits manifest bytes, not the readable source's indentation.
 source = json.loads((Path("plugins") / out.name / "plugin.json").read_text())
 manifest = json.dumps(source, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -40,14 +58,10 @@ for name in ("README.md", "REFERENCE.md"):
     path = out / name
     text = path.read_text().replace("../../docs/", "docs/").replace("../../LICENSE", "LICENSE")
     text = text.replace("../../DEVELOPMENT.md#components", "docs/parts-library.md")
-    path.write_text(text)
+    path.write_text(example_links.sub(package_example_link, text))
 PY
   # The command icons plugin.json names with x-solidcraft-icon.
   cp -R "plugins/$id/icons" "$out/icons"
-  # The pictures the README shows sit beside it.
-  for png in "plugins/$id/"*.png; do
-    [ -e "$png" ] && cp "$png" "$out/"
-  done
   echo "built $out"
 }
 

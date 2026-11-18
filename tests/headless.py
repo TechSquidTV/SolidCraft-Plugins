@@ -12,9 +12,16 @@ from harness import CLI, ROOT, TMP
 
 
 class Headless:
+    def __init__(self, *, plugins_dir=None):
+        self.plugins_dir = plugins_dir
+
     def __enter__(self):
         self.log = open(os.path.join(TMP, 'headless.log'), 'w+')
-        self.process = subprocess.Popen([CLI, 'mcp', '--headless', '--allow-path', ROOT, '--allow-path', TMP],
+        cmd = [CLI]
+        if self.plugins_dir is not None:
+            cmd.extend(['--plugins-dir', self.plugins_dir])
+        cmd.extend(['mcp', '--headless', '--allow-path', ROOT, '--allow-path', TMP])
+        self.process = subprocess.Popen(cmd,
                                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.log, text=True, bufsize=1)
         self.selector = selectors.DefaultSelector()
         self.selector.register(self.process.stdout, selectors.EVENT_READ)
@@ -58,11 +65,14 @@ class Headless:
         raise TimeoutError('headless host did not reply within 50 seconds')
 
     def command(self, command, allow_error=False, **params):
-        reply = self.rpc('tools/call', {'name':'execute','arguments':{'command':command,'params':params}})
+        return self.tool('execute', {'command':command,'params':params}, allow_error=allow_error)
+
+    def tool(self, name, arguments, allow_error=False):
+        reply = self.rpc('tools/call', {'name':name,'arguments':arguments})
         texts = [b['text'] for b in reply.get('content',[]) if b.get('type') == 'text']
         text = '\n'.join(texts)
         if reply.get('isError'):
             if allow_error:
                 return {'error':text}
-            raise RuntimeError(f'{command}: {text}')
+            raise RuntimeError(f'{arguments.get("command", name)}: {text}')
         return json.loads(text)

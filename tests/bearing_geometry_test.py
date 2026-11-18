@@ -192,4 +192,18 @@ with Headless() as host:
           name == 'Bearing B6203DDU' and again['component']['reused']
           and evidence['provenance']['sources'] == ['misumi-b6203zz'])
 
+# The installed tool applies the manifest's field bounds before calling the plugin.
+with Headless(plugins_dir=Path(ROOT)/'dist') as host:
+    for field in ('match_bore', 'match_diameter', 'match_width'):
+        for invalid in (0, 1001):
+            params = {'size':'By dimensions', 'closure':'Shielded', field:invalid}
+            error = host.tool('techsquid-bearings.make-bearing', params, allow_error=True).get('error', '')
+            check(f'By dimensions reports the range for {field}={invalid}', 'between 0 and 1000 mm' in error, error)
+
+            params['size'] = '608'
+            result = host.tool('techsquid-bearings.make-bearing', params, allow_error=True)
+            component = result.get('result', result).get('component', {}).get('component')
+            check(f'switching to 608 builds B608ZZ with {field}={invalid} still entered',
+                  component == 'Bearing B608ZZ', result.get('error', ''))
+
 finish()

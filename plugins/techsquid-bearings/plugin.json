@@ -57,24 +57,18 @@
             },
             "match_bore": {
               "description": "By dimensions only. Leave blank to match any bore.",
-              "exclusiveMinimum": 0,
-              "maximum": 1000,
               "title": "Bore",
               "type": "number",
               "unit": "mm"
             },
             "match_diameter": {
               "description": "By dimensions only. Leave blank to match any outside diameter.",
-              "exclusiveMinimum": 0,
-              "maximum": 1000,
               "title": "Outside diameter",
               "type": "number",
               "unit": "mm"
             },
             "match_width": {
               "description": "By dimensions only. Leave blank to match any width.",
-              "exclusiveMinimum": 0,
-              "maximum": 1000,
               "title": "Width",
               "type": "number",
               "unit": "mm"

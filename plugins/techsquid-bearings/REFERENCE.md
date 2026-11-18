@@ -87,7 +87,8 @@ after creation, outside this generator's inputs.
 | `match_bore`, `match_diameter`, `match_width` | Empty | Nominal bore, outside diameter and width in mm. Used only with By dimensions. |
 | `placement` | Empty | Sketch picks as described below |
 
-By dimensions needs at least one positive dimension. Every supplied value must match exactly.
+By dimensions needs at least one dimension. Each value must be greater than 0, at most 1000 mm,
+and match the catalog exactly. Switching to a base size ignores the numeric values in these fields.
 A 17 mm bore matches 6003 and 6203. Adding a 40 mm outside diameter selects 6203.
 Multiple or zero matches produce a message during Preview or on Run. Matching and
 choosing the base size directly create the same component.

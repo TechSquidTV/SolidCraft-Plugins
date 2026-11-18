@@ -77,6 +77,11 @@ See the [internal contract](docs/catalog-contract.md) and [shared library](docs/
 `Option` because the sealed 105 has no assigned supplier. Use `catalog_part()`
 for the stable lookup key of either a supplier product or a design specification.
 
+CSK callers should import `bearings::exterior::Basis` in place of
+`bearings::csk::exterior::Basis`. On the `Exterior` returned by
+`bearings::csk::exterior::resolve`, read `exterior.provenance.basis`,
+`exterior.provenance.method` and `exterior.provenance.sources`.
+
 `tools/catalog-tool` generates catalog-owned insertion choices and documentation
 tables from the same data, including the Bearings README and reference table.
 Run `cargo run -p catalog-tool -- --write` after changing them;

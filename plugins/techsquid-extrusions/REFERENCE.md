@@ -6,7 +6,7 @@
 
 Every rail it builds, 40 mm long and standing on end: the T-slot 2020, 2040, 2060, 2080 and 4040 behind, and the V-slot 2020 to 2080 in front.
 
-A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot for M5 hardware. A V-slot is the OpenBuilds rail: the same 20 mm cell and Ø4.2 bore, with the slot faces chamfered at 45° so a wheel can run on them. The two slots are close, and they are not the same. A V-slot is 6.25 mm at the throat, 11 mm wide under a 1.8 mm lip. A T-slot is 6 mm, 12 mm and 2 mm.
+A T-slot is the MISUMI 5 series rail (HFS5, NFS5): a 6 mm slot with an Ø4.2 core bore for M5 end taps. A V-slot is the OpenBuilds rail: the same 20 mm cell and Ø4.2 bore, with the slot faces chamfered at 45° so a wheel can run on them. The two slots are close, and they are not the same. A V-slot is 6.25 mm at the throat, 11 mm wide under a 1.8 mm lip. A T-slot is 6 mm, 12 mm and 2 mm.
 
 ## Use
 
@@ -97,19 +97,19 @@ A tapped or drilled rail is a part of its own. Its name says what is cut into it
 
 Plugins > Slot nut puts a nut under the lips of a slot. Sketch on the rail's face, put a point in the middle of the slot where each screw goes, pick the points for Placement, and run it. The nut hangs under the lips with its tapped hole on the point: its shoulders are 2 mm below the face of a T-slot and 1.8 mm below the face of a V-slot, which is the lip of each. The form opens on an M5 pre-assembly nut in a T-slot.
 
-![A T-slot 2020 rail, drawn see-through, with a pre-assembly nut and a post-assembly nut under the lips of its top slot](slot-nuts.png)
+![A T-slot 2020 rail, drawn see-through, with an M3 pre-assembly nut and an M4 post-assembly nut under the lips of its top slot](slot-nuts.png)
 
-A pre-assembly nut and a post-assembly nut in the top slot of a T-slot 2020, the rail drawn see-through.
+An M3 pre-assembly nut on the left and an M4 post-assembly nut on the right in the top slot of a T-slot 2020, the rail drawn see-through.
 
 The nut does not look for the slot. It goes on the point you give it, and Rail runs along says which sketch axis the slot follows, so the nut lies along it. With nothing picked the nut hangs under the origin, its hole on the Z axis and its length along X.
 
 | Parameter | Default | Meaning |
 |---|---|---|
 | `type` | `Pre-assembly` | `Pre-assembly` slides in from the end of the rail. `Post-assembly` goes in through the slot and has a spring ball under it |
-| `size` | `M5` | The thread. `M5` is the one size |
+| `size` | `M5` | The nut's thread: `M3`, `M4` or `M5` |
 | `slot` | `T-slot` | `T-slot` or `V-slot`, the rail the nut sits in. It sets how far under the face the nut hangs |
 | `along` | `Sketch X` | `Sketch X` or `Sketch Y`, the sketch axis the rail runs along |
-| `thread_modeled` | on | On cuts the thread into the hole. Off drills the 4.2 mm tap hole and lists the thread |
+| `thread_modeled` | on | On cuts the thread into the hole. Off drills the selected thread's tap hole (2.5 mm for M3, 3.3 mm for M4, 4.2 mm for M5) and lists the thread |
 | `placement` | empty | The sketch points or circles to put a nut on, picked in the view; a circle means its centre. Programs pass a list of references, as the dialog does: `{"type": "external_sketch_point", "sketch": 2, "id": "p1"}` for a point, `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` for a circle. `sketch` is the sketch's feature id or its name |
 
 The reply gives `type`, `part` (the MISUMI part number), `thread`, `slot`, `along`, `length`, `width`, `height` and `under_face`, and where the nuts went, as a rail's reply does.
@@ -142,12 +142,16 @@ Both nuts are MISUMI's for the 5 series slot, and both fit a V-slot as well. A n
 
 | Type | MISUMI part | Length | Width | Height | Hole from the end |
 |---|---|---:|---:|---:|---:|
+| Pre-assembly | HNTT5-3 | 10 | 10 | 4.1 | 5 |
+| Pre-assembly | HNTT5-4 | 10 | 10 | 4.1 | 5 |
 | Pre-assembly | HNTT5-5 | 10 | 10 | 4.1 | 5 |
+| Post-assembly | HNTP5-3 | 17 | 8.3 | 3.9 | 6 |
+| Post-assembly | HNTP5-4 | 17 | 8.3 | 3.9 | 6 |
 | Post-assembly | HNTP5-5 | 17 | 8.3 | 3.9 | 6 |
 
 The post-assembly nut has an R2 ball 7.5 mm past its hole, standing 0.8 mm out of the bottom. On a real nut a spring pushes it against the slot floor to hold the nut in place. Here it is part of the body, and in a T-slot it just touches the floor.
 
-MISUMI sells both nuts tapped M3 and M4 too. Only the M5 models have been checked, so M5 is the one size.
+The part number includes the thread size, so each row is a distinct purchase and BOM part. BOM part numbers include the supplier prefix, such as `MISUMI HNTT5-3`. The MISUMI catalog lists M3, M4 and M5 with the same external dimensions within each carbon-steel family. The detailed section and spring-ball shape come from the M5 STEP references; M3 and M4 have no separately measured STEP model here. `thread_modeled` changes the CAD detail, not the supplier part number. These are MISUMI product identities, not a general standard for all 6 mm slot nuts.
 
 What is not here: the closed-face rails (HFSF5, HFST5), the 30 and 40 mm series, the V-slot 40x40 and C-Beam, washers, and brackets, plates and other nuts.
 
@@ -167,6 +171,7 @@ What is not here: the closed-face rails (HFSF5, HFST5), the 30 and 40 mm series,
 | V-slot outline and cavity vertices, and the area of each section | OpenBuilds `V-Slot 20x20.dxf`, `20x40.dxf`, `20x60.dxf` and `20x80.dxf` | `profile::tests::the_v_slot_outline_has_the_dxf_vertices`, `the_v_slot_2040_cavity_has_the_dxf_vertices`, `the_v_slot_areas_are_the_openbuilds_dxf_areas` |
 | Pre-assembly nut: its section, 10 long, the hole in the middle | MISUMI STEP model `HNTT5-5.stp` and the drawing on its product page | `tnut::tests::the_pre_assembly_nut_is_the_misumi_hntt5` |
 | Post-assembly nut: its section, 17 long, the hole 6 from the end, the ball and its recess | MISUMI STEP model `HNTP5-5.stp` and the drawing on its product page | `tnut::tests::the_post_assembly_nut_is_the_misumi_hntp5` |
+| M3, M4 and M5 carbon-steel pre- and post-assembly nuts: part numbers and shared envelopes within each family | MISUMI 2019 US catalog [p. 2710](https://us.misumi-ec.com/pdf/fa/2019/2019_US_2710.pdf) and [p. 2716](https://us.misumi-ec.com/pdf/fa/2019/2019_US_2716.pdf) | `tnut::tests::both_misumi_nut_families_offer_three_threads_with_shared_envelopes`; `provider::tests::each_thread_and_nut_style_has_its_own_supplier_part_number` |
 | Screw holes: 5.5 mm clearance, 9.5 mm access, and the 4.2 mm bore as the M5 tap drill | ISO 273 (medium fit) for the clearance hole, ISO 4762 for the 8.5 mm head with 0.5 mm round it, and the slot rows above for the bore | `machining::tests::the_holes_are_for_an_m5_socket_head_screw` |
 | Both nuts clear the lips, walls and webs of both slots | The slot and nut rows above | `tnut::tests::both_nuts_fit_both_slots` |
 
@@ -191,7 +196,7 @@ In the bill of materials a finished rail is a custom (`normal`) part with a gene
 
 ## Catalog and reuse
 
-Shared internal definitions cover nine stock profiles and the verified MISUMI M5 HNTT5-5/HNTP5-5 slot nuts.
+Shared internal definitions cover nine stock profiles and the six MISUMI HNTT5/HNTP5 slot nuts listed above.
 The package exposes insertion workflows only; catalog discovery is not available. A cut or machined rail is a custom finished configuration with stock-profile provenance. Slot-nut mounting orientation is placement, not a different purchase. Sketch-driven rails remain a separate workflow.
 
 Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
@@ -199,6 +204,8 @@ representations reuse verified native definitions across runs. Renamed component
 remain reusable; edited components are preserved and new insertions create clean
 replacements. See [the library architecture](../../docs/parts-library.md) for BOM
 rules, inspection limits and migration from legacy metadata.
+
+The internal catalog revision is now 2. A script holding a resolved catalog selection from revision 1 must resolve it again before insertion. Ordinary dialog use and saved M5 parts do not require regeneration.
 
 ## Older field names
 

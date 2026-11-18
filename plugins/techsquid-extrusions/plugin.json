@@ -198,8 +198,10 @@
             },
             "size": {
               "default": "M5",
-              "description": "The thread the nut is tapped with.",
+              "description": "M3, M4 or M5. The outer shape stays the same within each nut type; Size changes the tapped hole and MISUMI part number.",
               "enum": [
+                "M3",
+                "M4",
                 "M5"
               ],
               "title": "Size",

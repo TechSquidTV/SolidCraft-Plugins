@@ -25,7 +25,7 @@ Both tools build editable screw components and can attach them to existing bores
 
 ## Get started
 
-Open **Plugins > Screw** and leave **Create** on **Screw only**. To fit a screw in an existing bore, click its rim or its cylindrical wall near the end where you want the head. Choose the size, length, head and drive, check the preview, then press **Run**. A rigid joint holds the screw at that end with its shank pointing into the bore.
+Open **Plugins > Screw** and leave **Create** on **Screw only**. To fit a screw in an existing bore, click its rim or its cylindrical wall near the end where you want the head. If you just moved the part, use **Capture Position** to keep the move before inserting the screw. Choose the size, length, head and drive, check the preview, then press **Run**. A rigid joint holds the screw at that end with its shank pointing into the bore.
 
 To place loose hardware, pick a sketch point or circle for **Placement**. You can pick several locations in one run. Use **Flip direction** to turn the screw over at the same location. An empty selection puts one screw at the origin.
 

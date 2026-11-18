@@ -257,6 +257,44 @@ def test_gantry_track_direction():
               near(bounds["min"][0], lo) and near(bounds["max"][0], hi), str(bounds))
 
 
+def test_bore_on_moved_plate():
+    """A rigid screw follows the captured plate pose. Leave a pending pose to the user."""
+    with Headless() as host:
+        plate = host.command("component.create", name="Plate")["occurrence"]
+        host.command("solid.box", length=40, width=30, height=20, body_name="Block")
+        host.command("solid.hole", position=[20, 15, 20], diameter=6.4)
+        host.command("component.activate", component="root")
+        host.command("occurrence.move", occurrence=plate, capture=False, move_grounded=True,
+                     to_matrix=[0, 0, 1, 100, 0, 1, 0, 0, -1, 0, 0, -100])
+        wall = next(f for f in host.command("model.faces", body="Block")["faces"] if f.get("cylinder"))
+        rim = next(e for e in host.command("model.edges", body="Block")["edges"]
+                   if near(e["mid"][0], 120) and wall["name"] in e["name"].split("|"))
+        pick = {"type": "edge", "body": "Block", "index": rim["index"], "point": rim["mid"]}
+        approval = host.command("plugin.inspect", path=package("techsquid-screws"))["approval"]
+        screw = dict(path=package("techsquid-screws"), approval=approval, entry="make-screw",
+                     params={"size": "M5", "length": 12, "drive": "Torx", "thread_modeled": False,
+                             "placement": [pick]})
+        before = host.command("component.list"), host.command("inspect.measure", summary=True)
+        rejected = host.command("plugin.run", allow_error=True, **screw)
+        check("pending bore move asks for Capture Position",
+              "Placement: use Capture Position" in rejected.get("error", ""), str(rejected))
+        check("refused bore placement leaves the pending move, bodies and joints intact",
+              before == (host.command("component.list"), host.command("inspect.measure", summary=True))
+              and before[0]["pending_moves"] == [plate] and not host.command("joint.inspect")["joints"])
+        host.command("component.capture_position")
+        result = host.command("plugin.run", **screw)["result"]
+        joint, = host.command("joint.inspect")["joints"]
+        screw_body = next(b for b in host.command("inspect.measure", summary=True)["bodies"]
+                          if b["name"] == result["component"]["component"])
+        check("captured bore seats the Torx screw in the rotated world pose",
+              same(screw_body["bbox"]["min"], [108, 10.75, -124.25])
+              and same(screw_body["bbox"]["max"], [125, 19.25, -115.75])
+              and joint["type"] == "rigid" and not joint["errors"] and not joint["conflicts"]
+              and joint["a"]["occurrence"] == plate
+              and all(joint[side]["resolves"] and same(joint[side]["frame"]["origin"], [120, 15, -120])
+                      and same(joint[side]["frame"]["z"], [1, 0, 0]) for side in ["a", "b"]))
+
+
 def test_gantry_bore_seats():
     """Seat the same custom screw at opposite ends, from a rim edge and a bore wall."""
     track = "V-slot 2020 x 200"
@@ -318,6 +356,7 @@ def test_gantry_bore_seats():
 if __name__ == "__main__":
     test_gantry_track_direction()
     test_gantry_bore_seats()
+    test_bore_on_moved_plate()
     test_thin_countersunk_seat()
     test_copied_tapped_seat_is_refused()
     for kind in ("clearance", "counterbore", "countersink", "tapped"):

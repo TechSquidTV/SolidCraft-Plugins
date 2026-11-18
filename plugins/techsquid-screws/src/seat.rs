@@ -92,6 +92,12 @@ pub fn picked_bores<R: Runner>(
     if reply.seats.is_empty() {
         return Err("placement: pick a bore rim or wall".into());
     }
+    // A pick uses the displayed pose. A rigid joint solves in the captured pose.
+    // The host gives the exact path, including ancestors of a nested copy.
+    let components = r.run("component.list", json!({"compact": true}))?;
+    let pending = components["pending_moves"]
+        .as_array()
+        .ok_or("component.list: missing pending moves")?;
     let mut ordered: Vec<_> = spots
         .iter()
         .map(|spot| (picks.sketch_indices[spot.pick_index], spot.place, None))
@@ -103,6 +109,12 @@ pub fn picked_bores<R: Runner>(
             .ok_or("parts.seats: invalid pick index")?;
         if !end.origin.is_object() {
             return Err("parts.seats: missing bore joint origin".into());
+        }
+        if end.origin["path"]
+            .as_array()
+            .is_some_and(|path| path.iter().any(|id| pending.contains(id)))
+        {
+            return Err("placement: use Capture Position to keep the picked part's move, or Revert Position to undo it. In an exploded view, return to the assembled view before picking the bore.".into());
         }
         let frame = Placement {
             point: end.point,
@@ -358,6 +370,43 @@ mod tests {
     use serde_json::json;
 
     #[test]
+    fn only_pending_moves_on_the_picked_occurrence_path_block_a_bore_seat() {
+        struct Host {
+            origin: Value,
+            pending: Vec<u64>,
+        }
+        impl Runner for Host {
+            fn run(&mut self, command: &str, _: Value) -> Result<Value, String> {
+                match command {
+                    "parts.seats" => Ok(json!({"seats": [{"pick_index": 0, "origin": self.origin,
+                        "point": [0,0,0], "normal": [0,0,1], "x_dir": [1,0,0], "shank_offset": 0}]})),
+                    "component.list" => Ok(json!({"pending_moves": self.pending})),
+                    _ => panic!("unexpected {command}"),
+                }
+            }
+        }
+        let p = crate::screw::parse(
+            &json!({"placement": [{"type":"edge", "body":"Block", "index":4}]}),
+        )
+        .unwrap();
+        for (origin, pending, blocked) in [
+            (json!({"occurrence": 0}), vec![9], false),
+            (json!({"occurrence": 12, "path": [12]}), vec![12], true),
+            (json!({"occurrence": 12, "path": [9, 12]}), vec![9], true),
+            (json!({"occurrence": 12, "path": [15, 12]}), vec![9], false),
+        ] {
+            let mut host = Host { origin, pending };
+            let error = picked_bores(&mut host, &p, &[], 3.0).err();
+            if blocked {
+                let error = error.expect("a pending host move must block the screw");
+                assert!(error.starts_with("placement: ") && error.contains("Capture Position"));
+            } else {
+                assert_eq!(error, None);
+            }
+        }
+    }
+
+    #[test]
     fn native_seats_preserve_mixed_order_and_countersink_alignment() {
         struct Bores(Vec<(String, Value)>);
         impl Runner for Bores {
@@ -368,6 +417,7 @@ mod tests {
                         {"pick_index": 0, "point": [40, 0, 0], "normal": [1, 0, 0], "x_dir": [0, 1, 0],
                          "shank_offset": -0.25, "origin": {"circle": "wall", "end": "mouth", "occurrence": 12, "path": [9, 12]}}
                     ]}),
+                    "component.list" => json!({"pending_moves": []}),
                     "joint.create" => json!({"joint": 1, "errors": [], "conflicts": []}),
                     _ => panic!("unexpected {command}"),
                 })
@@ -408,7 +458,7 @@ mod tests {
                 .unwrap()
                 .attach(&mut host, 21, "Screw")
                 .unwrap();
-            let joint = &host.0[1].1;
+            let joint = &host.0[2].1;
             assert_eq!(joint["a"]["end"], "mouth");
             assert_eq!(joint["a"]["path"], json!([9, 12]));
             assert_eq!(joint["b"]["point"], json!([40.0, 0.0, 0.0]));

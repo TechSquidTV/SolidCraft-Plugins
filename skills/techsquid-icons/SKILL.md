@@ -62,7 +62,7 @@ Feedback on one detail of an accepted icon (bigger balls, slanted knurl) needs n
 It reads the SVG with its own small parser and leaves out an icon it refuses, logging why; the command then shows the generic plugin icon and nothing fails. `draw.py` checks the same rules in both modes (`refused`), so use its helpers rather than writing markup.
 
 - `viewBox="0 0 64 64"`, no `width` or `height`. Keep the drawing inside about 4 to 60, centred on 32, 32.
-- Paths only, with absolute `M L C Q A Z`. No transforms, styles, classes, text, images or `<use>`. `fill-rule="evenodd"` works, for a ring with a hole.
+- These icons use paths only, with absolute `M L C Q A Z` (SolidCraft also takes circles, groups, masks and clip paths; `refused` would need widening first). No transforms, styles, classes, text, images or `<use>`. `fill-rule="evenodd"` works, for a ring with a hole.
 - Every colour is one of the icon palette's role colours, so the icon follows the theme. Strokes need a width and round joins and caps. At most 64 KiB a file and 64 images a package.
 
 | Constant | Role | Use it for |

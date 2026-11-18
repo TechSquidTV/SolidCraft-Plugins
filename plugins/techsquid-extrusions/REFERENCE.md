@@ -99,7 +99,7 @@ Plugins > Slot nut puts a nut under the lips of a slot. Sketch on the rail's fac
 
 ![A T-slot 2020 rail, drawn see-through, with an M3 pre-assembly nut and an M4 post-assembly nut under the lips of its top slot](slot-nuts.png)
 
-An M3 pre-assembly nut and an M4 post-assembly nut in the top slot of a T-slot 2020, the rail drawn see-through.
+An M3 pre-assembly nut on the left and an M4 post-assembly nut on the right in the top slot of a T-slot 2020, the rail drawn see-through.
 
 The nut does not look for the slot. It goes on the point you give it, and Rail runs along says which sketch axis the slot follows, so the nut lies along it. With nothing picked the nut hangs under the origin, its hole on the Z axis and its length along X.
 

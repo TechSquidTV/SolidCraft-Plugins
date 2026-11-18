@@ -261,227 +261,227 @@
             },
             "size": {
               "default": "CSK12P",
-              "description": "Choose an editable reference preset or Custom dimensions. Measured/estimated describes the exterior ring profile, not internal construction.",
+              "description": "Choose an editable reference preset or Custom dimensions.",
               "oneOf": [
                 {
                   "const": "CSK8",
-                  "title": "CSK8 — 8 × 22 × 9 mm; measured"
+                  "title": "CSK8 — 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK8P",
-                  "title": "CSK8P — 8 × 22 × 9 mm; inner 3 × 0.5; estimated"
+                  "title": "CSK8P — 8 × 22 × 9 mm; inner 3 × 0.5"
                 },
                 {
                   "const": "CSK8PP",
-                  "title": "CSK8PP — 8 × 22 × 9 mm; inner 3 × 0.5; outer 2 × 0.5; estimated"
+                  "title": "CSK8PP — 8 × 22 × 9 mm; inner 3 × 0.5; outer 2 × 0.5"
                 },
                 {
                   "const": "CSK8-2RS",
-                  "title": "CSK8-2RS — 8 × 22 × 9 mm; estimated"
+                  "title": "CSK8-2RS — 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK8P-2RS",
-                  "title": "CSK8P-2RS — 8 × 22 × 9 mm; inner 3 × 0.5; estimated"
+                  "title": "CSK8P-2RS — 8 × 22 × 9 mm; inner 3 × 0.5"
                 },
                 {
                   "const": "CSK10",
-                  "title": "CSK10 — 10 × 30 × 9 mm; estimated"
+                  "title": "CSK10 — 10 × 30 × 9 mm"
                 },
                 {
                   "const": "CSK10P",
-                  "title": "CSK10P — 10 × 30 × 9 mm; inner 3 × 0.6; estimated"
+                  "title": "CSK10P — 10 × 30 × 9 mm; inner 3 × 0.6"
                 },
                 {
                   "const": "CSK10PP",
-                  "title": "CSK10PP — 10 × 30 × 9 mm; inner 3 × 0.6; outer 2 × 0.5; estimated"
+                  "title": "CSK10PP — 10 × 30 × 9 mm; inner 3 × 0.6; outer 2 × 0.5"
                 },
                 {
                   "const": "CSK12",
-                  "title": "CSK12 — 12 × 32 × 10 mm; estimated"
+                  "title": "CSK12 — 12 × 32 × 10 mm"
                 },
                 {
                   "const": "CSK12P",
-                  "title": "CSK12P — 12 × 32 × 10 mm; inner 4 × 1.8; estimated"
+                  "title": "CSK12P — 12 × 32 × 10 mm; inner 4 × 1.8"
                 },
                 {
                   "const": "CSK12PP",
-                  "title": "CSK12PP — 12 × 32 × 10 mm; inner 4 × 1.2; outer 2 × 0.6; estimated"
+                  "title": "CSK12PP — 12 × 32 × 10 mm; inner 4 × 1.2; outer 2 × 0.6"
                 },
                 {
                   "const": "CSK12-2RS",
-                  "title": "CSK12-2RS — 12 × 32 × 14 mm; measured"
+                  "title": "CSK12-2RS — 12 × 32 × 14 mm"
                 },
                 {
                   "const": "CSK12P-2RS",
-                  "title": "CSK12P-2RS — 12 × 32 × 14 mm; inner 4 × 1.8; estimated"
+                  "title": "CSK12P-2RS — 12 × 32 × 14 mm; inner 4 × 1.8"
                 },
                 {
                   "const": "CSK15",
-                  "title": "CSK15 — 15 × 35 × 11 mm; estimated"
+                  "title": "CSK15 — 15 × 35 × 11 mm"
                 },
                 {
                   "const": "CSK15P",
-                  "title": "CSK15P — 15 × 35 × 11 mm; inner 5 × 1.2; measured"
+                  "title": "CSK15P — 15 × 35 × 11 mm; inner 5 × 1.2"
                 },
                 {
                   "const": "CSK15PP",
-                  "title": "CSK15PP — 15 × 35 × 11 mm; inner 5 × 1.2; outer 2 × 0.6; measured"
+                  "title": "CSK15PP — 15 × 35 × 11 mm; inner 5 × 1.2; outer 2 × 0.6"
                 },
                 {
                   "const": "CSK15-2RS",
-                  "title": "CSK15-2RS — 15 × 35 × 16 mm; measured"
+                  "title": "CSK15-2RS — 15 × 35 × 16 mm"
                 },
                 {
                   "const": "CSK15P-2RS",
-                  "title": "CSK15P-2RS — 15 × 35 × 16 mm; inner 5 × 1.2; estimated"
+                  "title": "CSK15P-2RS — 15 × 35 × 16 mm; inner 5 × 1.2"
                 },
                 {
                   "const": "CSK15PP-2RS",
-                  "title": "CSK15PP-2RS — 15 × 35 × 16 mm; inner 5 × 1.2; outer 2 × 0.6; estimated"
+                  "title": "CSK15PP-2RS — 15 × 35 × 16 mm; inner 5 × 1.2; outer 2 × 0.6"
                 },
                 {
                   "const": "CSK17",
-                  "title": "CSK17 — 17 × 40 × 12 mm; estimated"
+                  "title": "CSK17 — 17 × 40 × 12 mm"
                 },
                 {
                   "const": "CSK17P",
-                  "title": "CSK17P — 17 × 40 × 12 mm; inner 5 × 1.2; estimated"
+                  "title": "CSK17P — 17 × 40 × 12 mm; inner 5 × 1.2"
                 },
                 {
                   "const": "CSK17PP",
-                  "title": "CSK17PP — 17 × 40 × 12 mm; inner 5 × 1.2; outer 2 × 1; estimated"
+                  "title": "CSK17PP — 17 × 40 × 12 mm; inner 5 × 1.2; outer 2 × 1"
                 },
                 {
                   "const": "CSK17-2RS",
-                  "title": "CSK17-2RS — 17 × 40 × 17 mm; estimated"
+                  "title": "CSK17-2RS — 17 × 40 × 17 mm"
                 },
                 {
                   "const": "CSK17P-2RS",
-                  "title": "CSK17P-2RS — 17 × 40 × 17 mm; inner 5 × 1.2; estimated"
+                  "title": "CSK17P-2RS — 17 × 40 × 17 mm; inner 5 × 1.2"
                 },
                 {
                   "const": "CSK17PP-2RS",
-                  "title": "CSK17PP-2RS — 17 × 40 × 17 mm; inner 5 × 1.2; outer 2 × 1; estimated"
+                  "title": "CSK17PP-2RS — 17 × 40 × 17 mm; inner 5 × 1.2; outer 2 × 1"
                 },
                 {
                   "const": "CSK20",
-                  "title": "CSK20 — 20 × 47 × 14 mm; estimated"
+                  "title": "CSK20 — 20 × 47 × 14 mm"
                 },
                 {
                   "const": "CSK20P",
-                  "title": "CSK20P — 20 × 47 × 14 mm; inner 6 × 1.6; estimated"
+                  "title": "CSK20P — 20 × 47 × 14 mm; inner 6 × 1.6"
                 },
                 {
                   "const": "CSK20PP",
-                  "title": "CSK20PP — 20 × 47 × 14 mm; inner 6 × 1.6; outer 3 × 1.5; estimated"
+                  "title": "CSK20PP — 20 × 47 × 14 mm; inner 6 × 1.6; outer 3 × 1.5"
                 },
                 {
                   "const": "CSK20-2RS",
-                  "title": "CSK20-2RS — 20 × 47 × 19 mm; estimated"
+                  "title": "CSK20-2RS — 20 × 47 × 19 mm"
                 },
                 {
                   "const": "CSK20P-2RS",
-                  "title": "CSK20P-2RS — 20 × 47 × 19 mm; inner 6 × 1.6; estimated"
+                  "title": "CSK20P-2RS — 20 × 47 × 19 mm; inner 6 × 1.6"
                 },
                 {
                   "const": "CSK20PP-2RS",
-                  "title": "CSK20PP-2RS — 20 × 47 × 19 mm; inner 6 × 1.6; outer 3 × 1.5; estimated"
+                  "title": "CSK20PP-2RS — 20 × 47 × 19 mm; inner 6 × 1.6; outer 3 × 1.5"
                 },
                 {
                   "const": "CSK25",
-                  "title": "CSK25 — 25 × 52 × 15 mm; estimated"
+                  "title": "CSK25 — 25 × 52 × 15 mm"
                 },
                 {
                   "const": "CSK25P",
-                  "title": "CSK25P — 25 × 52 × 15 mm; inner 8 × 2; estimated"
+                  "title": "CSK25P — 25 × 52 × 15 mm; inner 8 × 2"
                 },
                 {
                   "const": "CSK25PP",
-                  "title": "CSK25PP — 25 × 52 × 15 mm; inner 8 × 2; outer 6 × 2; estimated"
+                  "title": "CSK25PP — 25 × 52 × 15 mm; inner 8 × 2; outer 6 × 2"
                 },
                 {
                   "const": "CSK25-2RS",
-                  "title": "CSK25-2RS — 25 × 52 × 20 mm; estimated"
+                  "title": "CSK25-2RS — 25 × 52 × 20 mm"
                 },
                 {
                   "const": "CSK25P-2RS",
-                  "title": "CSK25P-2RS — 25 × 52 × 20 mm; inner 8 × 2; estimated"
+                  "title": "CSK25P-2RS — 25 × 52 × 20 mm; inner 8 × 2"
                 },
                 {
                   "const": "CSK25PP-2RS",
-                  "title": "CSK25PP-2RS — 25 × 52 × 20 mm; inner 8 × 2; outer 6 × 2; estimated"
+                  "title": "CSK25PP-2RS — 25 × 52 × 20 mm; inner 8 × 2; outer 6 × 2"
                 },
                 {
                   "const": "CSK30",
-                  "title": "CSK30 — 30 × 62 × 16 mm; estimated"
+                  "title": "CSK30 — 30 × 62 × 16 mm"
                 },
                 {
                   "const": "CSK30P",
-                  "title": "CSK30P — 30 × 62 × 16 mm; inner 8 × 2; estimated"
+                  "title": "CSK30P — 30 × 62 × 16 mm; inner 8 × 2"
                 },
                 {
                   "const": "CSK30PP",
-                  "title": "CSK30PP — 30 × 62 × 16 mm; inner 8 × 2; outer 6 × 2; estimated"
+                  "title": "CSK30PP — 30 × 62 × 16 mm; inner 8 × 2; outer 6 × 2"
                 },
                 {
                   "const": "CSK30-2RS",
-                  "title": "CSK30-2RS — 30 × 62 × 21 mm; estimated"
+                  "title": "CSK30-2RS — 30 × 62 × 21 mm"
                 },
                 {
                   "const": "CSK30P-2RS",
-                  "title": "CSK30P-2RS — 30 × 62 × 21 mm; inner 8 × 2; estimated"
+                  "title": "CSK30P-2RS — 30 × 62 × 21 mm; inner 8 × 2"
                 },
                 {
                   "const": "CSK30PP-2RS",
-                  "title": "CSK30PP-2RS — 30 × 62 × 21 mm; inner 8 × 2; outer 6 × 2; estimated"
+                  "title": "CSK30PP-2RS — 30 × 62 × 21 mm; inner 8 × 2; outer 6 × 2"
                 },
                 {
                   "const": "CSK35",
-                  "title": "CSK35 — 35 × 72 × 17 mm; estimated"
+                  "title": "CSK35 — 35 × 72 × 17 mm"
                 },
                 {
                   "const": "CSK35P",
-                  "title": "CSK35P — 35 × 72 × 17 mm; inner 10 × 2.4; estimated"
+                  "title": "CSK35P — 35 × 72 × 17 mm; inner 10 × 2.4"
                 },
                 {
                   "const": "CSK35PP",
-                  "title": "CSK35PP — 35 × 72 × 17 mm; inner 10 × 2.4; outer 8 × 2.5; estimated"
+                  "title": "CSK35PP — 35 × 72 × 17 mm; inner 10 × 2.4; outer 8 × 2.5"
                 },
                 {
                   "const": "CSK35-2RS",
-                  "title": "CSK35-2RS — 35 × 72 × 22 mm; estimated"
+                  "title": "CSK35-2RS — 35 × 72 × 22 mm"
                 },
                 {
                   "const": "CSK35P-2RS",
-                  "title": "CSK35P-2RS — 35 × 72 × 22 mm; inner 10 × 2.4; estimated"
+                  "title": "CSK35P-2RS — 35 × 72 × 22 mm; inner 10 × 2.4"
                 },
                 {
                   "const": "CSK35PP-2RS",
-                  "title": "CSK35PP-2RS — 35 × 72 × 22 mm; inner 10 × 2.4; outer 8 × 2.5; estimated"
+                  "title": "CSK35PP-2RS — 35 × 72 × 22 mm; inner 10 × 2.4; outer 8 × 2.5"
                 },
                 {
                   "const": "CSK40",
-                  "title": "CSK40 — 40 × 80 × 22 mm; estimated"
+                  "title": "CSK40 — 40 × 80 × 22 mm"
                 },
                 {
                   "const": "CSK40P",
-                  "title": "CSK40P — 40 × 80 × 22 mm; inner 12 × 3.3; measured"
+                  "title": "CSK40P — 40 × 80 × 22 mm; inner 12 × 3.3"
                 },
                 {
                   "const": "CSK40PP",
-                  "title": "CSK40PP — 40 × 80 × 22 mm; inner 12 × 3.3; outer 10 × 3; measured"
+                  "title": "CSK40PP — 40 × 80 × 22 mm; inner 12 × 3.3; outer 10 × 3"
                 },
                 {
                   "const": "CSK40-2RS",
-                  "title": "CSK40-2RS — 40 × 80 × 27 mm; measured"
+                  "title": "CSK40-2RS — 40 × 80 × 27 mm"
                 },
                 {
                   "const": "CSK40P-2RS",
-                  "title": "CSK40P-2RS — 40 × 80 × 27 mm; inner 12 × 3.3; estimated"
+                  "title": "CSK40P-2RS — 40 × 80 × 27 mm; inner 12 × 3.3"
                 },
                 {
                   "const": "CSK40PP-2RS",
-                  "title": "CSK40PP-2RS — 40 × 80 × 27 mm; inner 12 × 3.3; outer 10 × 3; estimated"
+                  "title": "CSK40PP-2RS — 40 × 80 × 27 mm; inner 12 × 3.3; outer 10 × 3"
                 },
                 {
                   "const": "Custom",

@@ -129,7 +129,7 @@ macro_rules! products {
         $size:ident, $closure:ident, [$inner:literal, $outer:literal, $recess:expr, $edge:literal]; )*) => {
         #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
         pub enum Bearing { $( #[serde(rename = $id)] $variant, )* }
-        pub const ALL: [Bearing; 16] = [$(Bearing::$variant,)*];
+        pub const ALL: [Bearing; [$(Bearing::$variant,)*].len()] = [$(Bearing::$variant,)*];
         impl Bearing {
             fn product(self) -> Product {
                 match self { $(Self::$variant => Product {

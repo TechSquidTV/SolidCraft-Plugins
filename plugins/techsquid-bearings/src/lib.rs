@@ -1,7 +1,7 @@
 pub mod csk;
 pub mod provider;
 
-use bearings::{Bearing, Closure, EnvelopeFilter, EnvelopeMatch, Size};
+use bearings::{Bearing, Closure, Envelope, EnvelopeFilter, EnvelopeMatch, Size};
 use plugin_kit::{
     component::{self, Library},
     input, place, FieldError, Runner,
@@ -43,6 +43,29 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 }
 
 fn by_dimensions(v: &Value, closure: Closure) -> Result<Bearing, FieldError> {
+    let candidates = bearings::ALL.into_iter().filter(|b| b.closure() == closure);
+    let (field, selection) =
+        match_dimensions(v, candidates, |b| (b.size().label(), b.dimensions()))?;
+    match selection {
+        EnvelopeMatch::One(bearing) => Ok(bearing),
+        EnvelopeMatch::None if closure == Closure::Open => Err(FieldError::new(
+            "closure",
+            "Open is available only for size 626 (6 × 19 × 6 mm)",
+        )),
+        EnvelopeMatch::None => Err(FieldError::new(
+            field,
+            "no bearing matches these nominal dimensions and closure",
+        )),
+        EnvelopeMatch::Ambiguous(reason) => Err(FieldError::new(field, reason)),
+    }
+}
+
+/// Read the three search fields only when the user selects By dimensions.
+fn match_dimensions<T: Copy>(
+    v: &Value,
+    candidates: impl Iterator<Item = T>,
+    describe: impl Fn(T) -> (&'static str, Envelope),
+) -> Result<(&'static str, EnvelopeMatch<T>), FieldError> {
     let length = |key| {
         let value = input::optional_length(v, key)?;
         if let Some(x) = value {
@@ -67,19 +90,7 @@ fn by_dimensions(v: &Value, closure: Closure) -> Result<Bearing, FieldError> {
             "enter at least one nominal dimension in mm",
         ));
     };
-    let candidates = bearings::ALL.into_iter().filter(|b| b.closure() == closure);
-    match filter.select(candidates, |b| (b.size().label(), b.dimensions())) {
-        EnvelopeMatch::One(bearing) => Ok(bearing),
-        EnvelopeMatch::None if closure == Closure::Open => Err(FieldError::new(
-            "closure",
-            "Open is available only for size 626 (6 × 19 × 6 mm)",
-        )),
-        EnvelopeMatch::None => Err(FieldError::new(
-            field,
-            "no bearing matches these nominal dimensions and closure",
-        )),
-        EnvelopeMatch::Ambiguous(reason) => Err(FieldError::new(field, reason)),
-    }
+    Ok((field, filter.select(candidates, describe)))
 }
 
 pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {

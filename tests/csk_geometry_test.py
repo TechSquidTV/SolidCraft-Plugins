@@ -2,7 +2,7 @@
 """CSK exterior geometry against the independent manufacturer catalog dimensions."""
 import math
 
-from harness import TMP, check, finish, package
+from harness import ROOT, TMP, check, finish, package
 from pathlib import Path
 from headless import Headless
 
@@ -41,7 +41,10 @@ for sku, bore, od, width in SIZES:
 
 with Headless() as host:
     path = package('techsquid-bearings')
-    approval = host.command('plugin.inspect', path=path)['approval']
+    info = host.command('plugin.inspect', path=path)
+    approval = info['approval']
+    entry = next(e for e in info['manifest']['runtime']['entries'] if e['name'] == 'make-csk')
+    titles = {opt['const']:opt['title'] for opt in entry['input_schema']['properties']['size']['oneOf']}
     for sku, bore, od, width, keyed, outer in CASES:
         result = host.command('plugin.run', path=path, approval=approval,
                               entry='make-csk', params={'size': sku})
@@ -107,6 +110,8 @@ with Headless() as host:
         check(sku + ': measured/estimated evidence is explicit',
               spec['exterior']['basis'] == ('measured' if sku in source_dimensions else 'estimated')
               and all(len(source['sha256']) == 64 for source in spec['exterior']['sources']))
+        check(sku + ': dialog shows the recorded exterior basis',
+              spec['exterior']['basis'].capitalize() + ' exterior' in titles[sku])
         if sku in source_dimensions:
             ri,ro,ic,ia,oc,oa = source_dimensions[sku]
             check(sku + ': measured ring shoulders',
@@ -251,5 +256,50 @@ with Headless() as host:
         check('clocking: '+label+' rotates independently',all(any(
             all(math.isclose(a,b,abs_tol=1e-6) for a,b in zip(p,target)) for p in vertices)
             for target in [(x,y,z) for y in (-half,half) for z in (-5.5,5.5)]))
+
+# Run through the installed tool so the host also validates the generated dialog schema.
+with Headless(plugins_dir=Path(ROOT)/'dist') as host:
+    tool = 'techsquid-bearings.make-csk'
+    before = host.command('document.inspect', measure=False)
+    for filters, reasons in [
+        ({'match_bore':15, 'match_width':11}, ['CSK15 (', 'CSK15P (', 'CSK15PP (']),
+        ({'match_bore':10, 'closure':'Lip seals'}, ['no CSK preset']),
+        ({'match_bore':0}, ['1000 mm']),
+    ]:
+        error = host.tool(tool, {'size':'By dimensions', **filters}, allow_error=True).get('error','')
+        check(f'CSK search {filters} explains refusal before editing',
+              all(reason in error for reason in reasons) and host.command('document.inspect', measure=False) == before, error)
+
+    for designation, filters, basis in [
+        ('CSK15PP', {'match_bore':15, 'match_width':11, 'outer_keyway':'Enabled'}, 'measured'),
+        ('CSK20P', {'match_diameter':47, 'closure':'Dust covers', 'inner_keyway':'Enabled', 'outer_keyway':'None'}, 'estimated'),
+    ]:
+        matched = host.tool(tool, {'size':'By dimensions', **filters})['result']['component']
+        name = 'CSK clutch '+designation
+        check(designation+' is built by dimensions', matched['component'] == name)
+        meta = host.command('component.metadata', component=name)['metadata']['org.techsquid.specification']
+        exterior = meta['exterior']
+        check(name+' records its baseline and exterior evidence',
+              meta['geometry']['designation'] == designation and not meta['reference']['customized']
+              and exterior['basis'] == basis and exterior['method'] and exterior['sources']
+              and all(s['file'] and len(s['sha256']) == 64 for s in exterior['sources']))
+        saved = str(Path(TMP)/'matched-csk.json')
+        host.command('file.save_as', path=saved)
+        host.command('doc.open', path=saved)
+        direct = host.tool(tool, {'size':designation, 'match_bore':0})['result']['component']
+        check(name+' reuses by designation with an inactive invalid filter after reopening',
+              direct['reused'] and direct['component'] == name
+              and host.command('component.metadata', component=name)['metadata']['org.techsquid.specification'] == meta)
+
+    changed = host.tool(tool, {'size':'By dimensions', 'match_bore':15, 'match_width':11,
+                               'outer_keyway':'Enabled', 'custom_width':12})['result']['component']
+    spec = host.command('component.metadata', component=changed['component'])['metadata']['org.techsquid.specification']
+    check('a customized match records the original baseline and estimates the edited exterior',
+          spec['reference']['baseline']['width'] == 11 and spec['geometry']['width'] == 12
+          and spec['geometry']['designation'] == 'CSK15PP' and spec['reference']['customized']
+          and spec['exterior']['basis'] == 'estimated')
+    custom = host.tool(tool, {'size':'Custom', 'match_bore':0, 'custom_bore':15,
+                              'custom_diameter':35, 'custom_width':11})['result']['specification']
+    check('fully custom dimensions retain an unassigned designation', custom['designation'] is None)
 
 finish()

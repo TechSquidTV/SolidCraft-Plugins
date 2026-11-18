@@ -137,11 +137,7 @@ fn run() -> Result<(), String> {
     }
     for csk in bearings::csk::ALL {
         let d = csk.dimensions();
-        let basis = bearings::csk::exterior::resolve(&csk.geometry())
-            .expect("valid CSK preset")
-            .provenance
-            .basis
-            .label();
+        let basis = csk_exterior_basis(csk).label();
         bearings_table.push_str(&format!(
             "| {} | Unassigned | — | {} × {} × {} | {} ([reference]({})) | {basis} |\n",
             csk.designation(),
@@ -182,6 +178,13 @@ fn run() -> Result<(), String> {
         )?;
     }
     Ok(())
+}
+
+fn csk_exterior_basis(csk: bearings::csk::Csk) -> bearings::exterior::Basis {
+    bearings::csk::exterior::resolve(&csk.geometry())
+        .expect("valid CSK preset")
+        .provenance
+        .basis
 }
 
 fn update_table(path: &Path, table: &str, write: bool) -> Result<(), String> {
@@ -228,13 +231,11 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
             let mut options: Vec<_> = bearings::csk::ALL
                 .into_iter()
                 .map(|csk| {
-                    let d = csk.dimensions();
                     let mut title = format!(
-                        "{} — {} × {} × {} mm",
+                        "{} — {} mm — {} exterior",
                         csk.designation(),
-                        d.bore,
-                        d.diameter,
-                        d.width
+                        csk.dimensions(),
+                        csk_exterior_basis(csk).label()
                     );
                     let (inner, outer) = csk.keyways();
                     for (label, key) in [("inner", inner), ("outer", outer)] {
@@ -245,6 +246,7 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                     json!({"const":csk.designation(), "title":title})
                 })
                 .collect();
+            options.push(json!({"const":"By dimensions","title":"By dimensions — narrow by closure or keyways"}));
             options
                 .push(json!({"const":"Custom", "title":"Custom — enter dimensions and keyways"}));
             property["oneOf"] = json!(options);

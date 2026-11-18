@@ -67,7 +67,7 @@ mod tests {
                     bearing.supplier().name,
                     bearing.sku()
                 ),
-                url: bearing.product_url().into(),
+                url: bearing.product_url(),
             }];
             if bearing == Bearing::OpenBuilds105zz {
                 sources.push(Source {

@@ -200,9 +200,14 @@ profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
 
 ## Breaking changes
 
+Catalog revision 10 rejects `catalog_selection` payloads pinned to earlier revisions,
+including revisions 8 and 9, for both radial bearings and CSK clutches. Internal
+callers must resolve those selections again before insertion. Ordinary dialog
+inputs do not carry this precondition, and existing model geometry and product
+representation identities are unchanged by this catalog expansion.
+
 CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
-there is no old-route alias. Catalog revision 8 requires refreshing saved resolved
-selections. Previous supplier-identified CSK definitions are not reused as the new
+there is no old-route alias. Previous supplier-identified CSK definitions are not reused as the new
 source-neutral specifications. Their existing geometry is preserved. Ring details
 in the Rust `Dimensions` API live under `section`.
 

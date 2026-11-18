@@ -45,7 +45,7 @@
           "additionalProperties": true,
           "properties": {
             "placement": {
-              "description": "Pick sketch points or circles; empty places one at the origin.",
+              "description": "Sketch points or circles picked in the view. With none, one sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
@@ -97,7 +97,7 @@
           "additionalProperties": true,
           "properties": {
             "bore": {
-              "description": "Blank uses preset. Required for Custom.",
+              "description": "Blank keeps the preset value. Required for Custom.",
               "exclusiveMinimum": 0,
               "maximum": 1000,
               "title": "Bore",
@@ -106,7 +106,7 @@
             },
             "closure": {
               "default": "Preset",
-              "description": "Choose covers or seals without changing width. Custom uses dust covers.",
+              "description": "Keep the preset, or choose visible covers or seals. Custom defaults to dust covers. Width does not change with it.",
               "enum": [
                 "Preset",
                 "Dust covers",
@@ -117,7 +117,7 @@
               "type": "string"
             },
             "diameter": {
-              "description": "Blank uses preset. Required for Custom.",
+              "description": "Blank keeps the preset value. Required for Custom.",
               "exclusiveMinimum": 0,
               "maximum": 1000,
               "title": "Outside diameter",
@@ -126,7 +126,7 @@
             },
             "inner_keyway": {
               "default": "Preset",
-              "description": "Keep, add or remove a keyway. Adding requires width and depth.",
+              "description": "Keep the preset, add a keyway, or remove it. Added keyways require width and depth.",
               "enum": [
                 "Preset",
                 "Enabled",
@@ -136,20 +136,20 @@
               "type": "string"
             },
             "inner_keyway_angle": {
-              "description": "Counterclockwise from local +Y, viewed from +Z. Blank uses preset; new slots start at 0°.",
+              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer slots at 180°.",
               "title": "Inner keyway angle",
               "type": "number",
               "unit": "deg"
             },
             "inner_keyway_depth": {
-              "description": "Blank uses preset. Required for a new keyway.",
+              "description": "Blank keeps the existing value. Needed to add a keyway.",
               "exclusiveMinimum": 0,
               "title": "Inner keyway depth override",
               "type": "number",
               "unit": "mm"
             },
             "inner_keyway_width": {
-              "description": "Blank uses preset. Required for a new keyway.",
+              "description": "Blank keeps the existing value. Needed to add a keyway.",
               "exclusiveMinimum": 0,
               "title": "Inner keyway width override",
               "type": "number",
@@ -157,7 +157,7 @@
             },
             "outer_keyway": {
               "default": "Preset",
-              "description": "Keep, add or remove a keyway. Adding requires width and depth.",
+              "description": "Keep the preset, add a keyway, or remove it. Added keyways require width and depth.",
               "enum": [
                 "Preset",
                 "Enabled",
@@ -167,27 +167,27 @@
               "type": "string"
             },
             "outer_keyway_angle": {
-              "description": "Counterclockwise from local +Y, viewed from +Z. Blank uses preset; new slots start at 180°.",
+              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer slots at 180°.",
               "title": "Outer keyway angle",
               "type": "number",
               "unit": "deg"
             },
             "outer_keyway_depth": {
-              "description": "Blank uses preset. Required for a new keyway.",
+              "description": "Blank keeps the existing value. Needed to add a keyway.",
               "exclusiveMinimum": 0,
               "title": "Outer keyway depth override",
               "type": "number",
               "unit": "mm"
             },
             "outer_keyway_width": {
-              "description": "Blank uses preset. Required for a new keyway.",
+              "description": "Blank keeps the existing value. Needed to add a keyway.",
               "exclusiveMinimum": 0,
               "title": "Outer keyway width override",
               "type": "number",
               "unit": "mm"
             },
             "placement": {
-              "description": "Pick sketch points or circles; empty places one at the origin.",
+              "description": "Sketch points or circles picked in the view. With none, one sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
@@ -201,7 +201,7 @@
             },
             "size": {
               "default": "CSK12P",
-              "description": "Editable preset or Custom. Measured/estimated describes exterior rings only.",
+              "description": "Choose an editable reference preset or Custom dimensions. Measured/estimated describes the exterior ring profile, not internal construction.",
               "oneOf": [
                 {
                   "const": "CSK8",
@@ -432,7 +432,7 @@
               "type": "string"
             },
             "width": {
-              "description": "Blank uses preset. Required for Custom.",
+              "description": "Blank keeps the preset value. Required for Custom.",
               "exclusiveMinimum": 0,
               "maximum": 1000,
               "title": "Width",

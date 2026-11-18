@@ -58,7 +58,7 @@ baseline and source evidence still needed before adding purchasable variants.
 
 ## Build
 
-You need Rust with the `wasm32-unknown-unknown` target, [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools), and Python 3 for packaging the guides.
+You need Rust with the `wasm32-unknown-unknown` target, [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools), and Python 3 for packaging manifests and guides.
 
 ```
 cargo test
@@ -73,11 +73,20 @@ measurements and assembly members. These descriptors remain the single source fo
 insertion and reuse; packages do not export a `catalog` entry or query handler.
 See the [internal contract](docs/catalog-contract.md) and [shared library](docs/parts-library.md).
 
+**Rust API change:** `Bearing::product_url()` returns `String`, constructed from
+the supplier family and the existing SKU. Rust callers expecting `&'static str`
+must accept the owned string or borrow it for the duration of use. Product URLs
+and purchasing identities remain the same.
+
 `tools/catalog-tool` generates catalog-owned insertion choices and documentation
 tables from the same data, including the Bearings README and reference table.
 Run `cargo run -p catalog-tool -- --write` after changing them;
 `./build.sh` runs `--check` and refuses drift. Workflow controls remain hand-authored.
-The package and guest both use that manifest. The generator must not add API entries.
+Source manifests stay formatted for review; `build.sh` writes compact UTF-8 JSON
+to each package and enforces the host's 16 KiB limit on those bytes. All fields,
+choices and help text are preserved. The guest reads the same source content;
+`tests/cli_test.py` checks that the packaged JSON equals it and fits the limit.
+The generator must not add API entries.
 
 The internal resolver's `catalog_selection` precondition pins the protocol version,
 catalog revision and representation for provider round-trip tests. The ordinary

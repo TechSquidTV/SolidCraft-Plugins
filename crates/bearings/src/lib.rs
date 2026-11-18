@@ -181,54 +181,31 @@ impl Bearing {
         }
     }
 
-    pub fn product_url(self) -> &'static str {
-        match self {
+    pub fn product_url(self) -> String {
+        let family = match self {
             Self::OpenBuilds6252rs | Self::OpenBuilds105zz => {
-                "https://builds.openbuilds.com/builds/openbuilds-sphinx-1050-20-x-40.7196/"
+                return "https://builds.openbuilds.com/builds/openbuilds-sphinx-1050-20-x-40.7196/"
+                    .into();
             }
-            Self::MisumiB626 => {
-                "https://us.misumi-ec.com/vona2/detail/110302273540/?HissuCode=B626"
-            }
-            Self::MisumiB626zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B626ZZ"
-            }
-            Self::MisumiB626ddu => {
-                "https://us.misumi-ec.com/vona2/detail/110302273630/?HissuCode=B626DDU"
-            }
-            Self::MisumiB608zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B608ZZ"
-            }
-            Self::MisumiB6000zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6000ZZ"
-            }
-            Self::MisumiB6001zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6001ZZ"
-            }
-            Self::MisumiB6002zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6002ZZ"
-            }
-            Self::MisumiB6003zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6003ZZ"
-            }
-            Self::MisumiB6004zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6004ZZ"
-            }
-            Self::MisumiB6200zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6200ZZ"
-            }
-            Self::MisumiB6201zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6201ZZ"
-            }
-            Self::MisumiB6202zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6202ZZ"
-            }
-            Self::MisumiB6203zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6203ZZ"
-            }
-            Self::MisumiB6204zz => {
-                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6204ZZ"
-            }
-        }
+            Self::MisumiB626 => "110302273540",
+            Self::MisumiB626ddu => "110302273630",
+            Self::MisumiB626zz
+            | Self::MisumiB608zz
+            | Self::MisumiB6000zz
+            | Self::MisumiB6001zz
+            | Self::MisumiB6002zz
+            | Self::MisumiB6003zz
+            | Self::MisumiB6004zz
+            | Self::MisumiB6200zz
+            | Self::MisumiB6201zz
+            | Self::MisumiB6202zz
+            | Self::MisumiB6203zz
+            | Self::MisumiB6204zz => "110300107560",
+        };
+        format!(
+            "https://us.misumi-ec.com/vona2/detail/{family}/?HissuCode={}",
+            self.sku()
+        )
     }
 
     /// Exact supplier part number; the underlying bearing manufacturer may differ.
@@ -461,6 +438,24 @@ mod tests {
                     section.closure_recess.unwrap()
                 ],
                 expected
+            );
+        }
+    }
+
+    #[test]
+    fn misumi_product_urls_match_source_ledger() {
+        let sources: Vec<serde_json::Value> =
+            serde_json::from_str(include_str!("../../../docs/sources/misumi-files.json")).unwrap();
+        for source in sources {
+            let sku = source["file"]
+                .as_str()
+                .unwrap()
+                .strip_suffix(".stp")
+                .unwrap();
+            let bearing = ALL.into_iter().find(|b| b.sku() == sku).unwrap();
+            assert_eq!(
+                bearing.product_url(),
+                source["product_url"].as_str().unwrap()
             );
         }
     }

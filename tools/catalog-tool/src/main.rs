@@ -284,12 +284,12 @@ mod tests {
                 continue;
             }
             let text = fs::read_to_string(&manifest).unwrap();
+            let value: Value = serde_json::from_str(&text).unwrap();
             assert!(
-                text.len() <= 16 * 1024,
-                "{} exceeds the host's 16 KiB manifest limit",
+                serde_json::to_vec(&value).unwrap().len() <= 16 * 1024,
+                "{} exceeds the host's 16 KiB limit after packaging as compact JSON",
                 manifest.display()
             );
-            let value: Value = serde_json::from_str(&text).unwrap();
             let entries = value["runtime"]["entries"].as_array().unwrap();
             assert!(!entries.is_empty());
             for entry in entries {

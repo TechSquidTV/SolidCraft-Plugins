@@ -174,7 +174,7 @@ with Headless() as host:
           and host.command('component.metadata', component=component['id'])['metadata'] == record)
     before = host.command('document.inspect', measure=False)
     for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1},
-                   {'bore':32}, {'width':0}, {'closure':'invalid'},
+                   {'custom_bore':32}, {'custom_width':0}, {'closure':'invalid'},
                    {'size':'CSK12PP','inner_keyway_depth':7,'outer_keyway_depth':2.5}, {'outer_keyway':'Enabled'}, {'size':'Custom'},
                    {'part_number': 'CL-12'}, {'purchase_supplier': 'Seller'}]:
         result = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
@@ -188,7 +188,7 @@ with Headless() as host:
     # All envelope dimensions changed, inner removed, outer added; then a
     # reference-free counterpart. Independently check cylindrical radii and slot vertices.
     for size in ('CSK8P', 'Custom'):
-        params = {'size':size, 'bore':9, 'diameter':25, 'width':12,
+        params = {'size':size, 'custom_bore':9, 'custom_diameter':25, 'custom_width':12,
                   'inner_keyway':'None', 'outer_keyway':'Enabled',
                   'outer_keyway_width':2, 'outer_keyway_depth':0.7}
         result = host.command('plugin.run', path=path, approval=approval, entry='make-csk', params=params)
@@ -222,7 +222,7 @@ with Headless() as host:
 with Headless() as host:
     path = package('techsquid-bearings')
     approval = host.command('plugin.inspect',path=path)['approval']
-    params = {'size':'CSK20P','inner_keyway_depth':7,'width':0.5,'closure':'Lip seals'}
+    params = {'size':'CSK20P','inner_keyway_depth':7,'custom_width':0.5,'closure':'Lip seals'}
     result = host.command('plugin.run',path=path,approval=approval,entry='make-csk',params=params)
     result = result.get('result',result)
     component = next(c for c in host.command('component.list')['components'] if c['name'] == result['component']['component'])

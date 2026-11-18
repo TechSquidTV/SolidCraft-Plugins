@@ -15,9 +15,9 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         Geometry {
             designation: None,
             closure: Closure::DustCovers,
-            bore: required_length(v, "bore")?,
-            diameter: required_length(v, "diameter")?,
-            width: required_length(v, "width")?,
+            bore: required_length(v, "custom_bore")?,
+            diameter: required_length(v, "custom_diameter")?,
+            width: required_length(v, "custom_width")?,
             inner_keyway: None,
             outer_keyway: None,
         }
@@ -36,9 +36,9 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         _ => return Err(FieldError::new("closure", "choose a listed closure style")),
     };
     for (field, dimension) in [
-        ("bore", &mut geometry.bore),
-        ("diameter", &mut geometry.diameter),
-        ("width", &mut geometry.width),
+        ("custom_bore", &mut geometry.bore),
+        ("custom_diameter", &mut geometry.diameter),
+        ("custom_width", &mut geometry.width),
     ] {
         if let Some(value) = input::optional_length(v, field)? {
             input::check_length(field, value)?;
@@ -99,9 +99,9 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     }
     geometry.validate().map_err(|e| {
         let field = match e.part {
-            csk::Part::Bore => "bore",
-            csk::Part::Diameter => "diameter",
-            csk::Part::Width => "width",
+            csk::Part::Bore => "custom_bore",
+            csk::Part::Diameter => "custom_diameter",
+            csk::Part::Width => "custom_width",
             csk::Part::InnerKeyway => "inner_keyway",
             csk::Part::OuterKeyway => "outer_keyway",
         };
@@ -146,8 +146,10 @@ mod tests {
                 .geometry;
             assert_eq!(geometry, preset.geometry());
             assert!(!geometry.customized());
-            let explicit = parse(&json!({"size":preset.designation(), "bore":geometry.bore,
-                "diameter":geometry.diameter, "width":geometry.width}))
+            let explicit = parse(
+                &json!({"size":preset.designation(), "custom_bore":geometry.bore,
+                "custom_diameter":geometry.diameter, "custom_width":geometry.width}),
+            )
             .unwrap()
             .geometry;
             assert_eq!(
@@ -159,7 +161,7 @@ mod tests {
     #[test]
     fn envelope_and_keyway_presence_are_editable() {
         let g = parse(
-            &json!({"size":"CSK8P", "bore":8.1, "diameter":23, "width":10,
+            &json!({"size":"CSK8P", "custom_bore":8.1, "custom_diameter":23, "custom_width":10,
             "inner_keyway":"None", "outer_keyway":"Enabled", "outer_keyway_width":2,
             "outer_keyway_depth":0.5}),
         )
@@ -184,7 +186,7 @@ mod tests {
     #[test]
     fn custom_requires_dimensions_and_has_no_reference_designation() {
         let g = parse(
-            &json!({"size":"Custom", "bore":9, "diameter":25, "width":12,
+            &json!({"size":"Custom", "custom_bore":9, "custom_diameter":25, "custom_width":12,
             "inner_keyway":"Enabled", "inner_keyway_width":3, "inner_keyway_depth":0.7}),
         )
         .unwrap()
@@ -217,7 +219,7 @@ mod tests {
             .as_object()
             .unwrap();
         for (v, field) in [
-            (json!({"size":"CSK8P", "bore":30}), "bore"),
+            (json!({"size":"CSK8P", "custom_bore":30}), "custom_bore"),
             (
                 json!({"size":"CSK8P", "inner_keyway":"Enabled", "inner_keyway_width":9,
                     "inner_keyway_depth":1}),
@@ -257,7 +259,7 @@ mod tests {
     fn invalid_geometry_and_purchasing_fields_are_rejected_before_host_edits() {
         for value in [
             json!({"size":"Custom"}),
-            json!({"size":"Custom","bore":9,"diameter":25}),
+            json!({"size":"Custom","custom_bore":9,"custom_diameter":25}),
             json!({"size":"CSK12P","inner_keyway_depth":0}),
             json!({"size":"CSK12P","inner_keyway_width":12}),
             json!({"size":"CSK12P","inner_keyway_depth":20}),
@@ -266,9 +268,9 @@ mod tests {
             json!({"size":"CSK12P","inner_keyway":"None","inner_keyway_depth":1}),
             json!({"size":"CSK12P","inner_keyway":"invalid"}),
             json!({"size":"CSK15PP","inner_keyway_depth":8,"outer_keyway_depth":3}),
-            json!({"size":"CSK12P","bore":32}),
-            json!({"size":"CSK12P","width":-1}),
-            json!({"size":"CSK12P","diameter":1001}),
+            json!({"size":"CSK12P","custom_bore":32}),
+            json!({"size":"CSK12P","custom_width":-1}),
+            json!({"size":"CSK12P","custom_diameter":1001}),
             json!({"size":"CSK12P","part_number":"CL-12"}),
             json!({"size":"CSK12P","purchase_supplier":"Seller"}),
             json!({"size":"CSK50"}),

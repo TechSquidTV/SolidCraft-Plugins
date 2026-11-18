@@ -29,7 +29,7 @@ All listed T-slot and V-slot sizes are supported.
 Edit the source sketch to move, tilt or resize each rail independently. **Length**
 is ignored in this mode. The section and machining share planes derived from the
 path, so taps and cross-holes follow without referring to generated rail faces.
-**Hole distances from** chooses Start or End for all screw-hole offsets in that run.
+**Measure holes from** chooses Start or End for all screw-hole offsets in that run.
 Start and End follow the line's drawing direction.
 
 Sketch-driven rails are separate bodies in the active component, grouped in the

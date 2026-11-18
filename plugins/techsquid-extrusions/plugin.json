@@ -75,27 +75,27 @@
                 "+X",
                 "-X"
               ],
-              "title": "Holes from",
+              "title": "Hole face",
               "type": "string"
             },
             "holes": {
-              "description": "Optional M5 screw-hole distances in mm, such as 10, 290. Measured from Start, or the chosen endpoint in Sketch driven mode. Each cuts a 9.5 mm access hole and a 5.5 mm clearance hole. A face name applies to following distances: +X 10, 290 -Y 150.",
+              "description": "Optional M5 screw-hole distances in mm, such as 10, 290. Measured from Start, or in Sketch driven mode from the end chosen in Measure holes from. Each cuts a 9.5 mm access hole and a 5.5 mm clearance hole. A face name applies to following distances: +X 10, 290 -Y 150.",
               "title": "Screw holes",
               "type": "string"
             },
             "holes_from": {
               "default": "Start",
-              "description": "Sketch driven only: measure screw-hole distances from this end of each path line. The offsets follow later length changes.",
+              "description": "Used in Sketch driven mode: measure screw-hole distances from this end of each path line. The offsets follow later length changes.",
               "enum": [
                 "Start",
                 "End"
               ],
-              "title": "Hole distances from",
+              "title": "Measure holes from",
               "type": "string"
             },
             "length": {
               "default": 500,
-              "description": "Fixed length only. Sketch-driven rails take their lengths from the path lines.",
+              "description": "Used in Fixed length mode. Sketch driven rails take their lengths from the path lines.",
               "exclusiveMinimum": 0,
               "maximum": 6000,
               "title": "Length",
@@ -157,8 +157,10 @@
             }
           },
           "required": [
+            "mode",
             "slot",
-            "size"
+            "size",
+            "length"
           ],
           "type": "object",
           "x-solidcraft-icon": "icons/make-extrusion.svg"
@@ -228,7 +230,7 @@
             },
             "type": {
               "default": "Pre-assembly",
-              "description": "Pre-assembly is MISUMI HNTT5, 10 mm long, which slides in from the end of the rail. Post-assembly is MISUMI HNTP5, 17 mm long, which goes in through the slot and has a spring ball under it.",
+              "description": "Pre-assembly is the MISUMI HNTT5 nut, 10 mm long, which slides in from the end of the rail. Post-assembly is the HNTP5 nut, 17 mm long, which goes in through the slot and has a spring ball under it. Size picks the M3, M4 or M5 version.",
               "enum": [
                 "Pre-assembly",
                 "Post-assembly"

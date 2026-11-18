@@ -121,7 +121,9 @@ def on_plate(name, plugin_id, entry, params, removed_each, thickness=10, loose=F
 @case
 def refused(name, plugin_id, entry, params, words, before=()):
     found, reply = plugin_run(plugin_id, entry, params, before)
-    check(name, found is None and words in reply, "| " + str(reply)[:160])
+    # SolidCraft 0.44 names the field by its key ("size: ..."), newer hosts by its title
+    # ("Extrusions: Size: ..."), so the case of the words is not part of the check.
+    check(name, found is None and words.lower() in str(reply).lower(), "| " + str(reply)[:160])
 
 
 @case

@@ -512,7 +512,11 @@ mod tests {
         let entry = &entries[0];
         assert_eq!(entry["name"], "make-extrusion");
         let schema = &entry["input_schema"];
-        assert_eq!(schema["required"], json!(["slot", "size"]));
+        // Required fields lead the dialog in this order; the rest follow by key.
+        assert_eq!(
+            schema["required"],
+            json!(["mode", "slot", "size", "length"])
+        );
         let sizes: Vec<Value> = SIZES.iter().map(|(name, _)| json!(name)).collect();
         assert_eq!(schema["properties"]["size"]["enum"], json!(sizes));
         assert_eq!(

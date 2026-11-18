@@ -60,23 +60,72 @@
             },
             "size": {
               "default": "625 2RS",
-              "enum": [
-                "625 2RS",
-                "105ZZ",
-                "B626",
-                "B626ZZ",
-                "B626DDU",
-                "B608ZZ",
-                "B6000ZZ",
-                "B6001ZZ",
-                "B6002ZZ",
-                "B6003ZZ",
-                "B6004ZZ",
-                "B6200ZZ",
-                "B6201ZZ",
-                "B6202ZZ",
-                "B6203ZZ",
-                "B6204ZZ"
+              "description": "A fixed OpenBuilds or MISUMI radial bearing. Each choice gives bore x outside diameter x width and how the bearing is closed.",
+              "oneOf": [
+                {
+                  "const": "625 2RS",
+                  "title": "625 2RS — OpenBuilds, 5 × 16 × 5 mm, sealed"
+                },
+                {
+                  "const": "105ZZ",
+                  "title": "105ZZ — OpenBuilds, 5 × 10 × 4 mm, shielded"
+                },
+                {
+                  "const": "B626",
+                  "title": "B626 — MISUMI, 6 × 19 × 6 mm, open"
+                },
+                {
+                  "const": "B626ZZ",
+                  "title": "B626ZZ — MISUMI, 6 × 19 × 6 mm, shielded"
+                },
+                {
+                  "const": "B626DDU",
+                  "title": "B626DDU — MISUMI, 6 × 19 × 6 mm, sealed"
+                },
+                {
+                  "const": "B608ZZ",
+                  "title": "B608ZZ — MISUMI, 8 × 22 × 7 mm, shielded"
+                },
+                {
+                  "const": "B6000ZZ",
+                  "title": "B6000ZZ — MISUMI, 10 × 26 × 8 mm, shielded"
+                },
+                {
+                  "const": "B6001ZZ",
+                  "title": "B6001ZZ — MISUMI, 12 × 28 × 8 mm, shielded"
+                },
+                {
+                  "const": "B6002ZZ",
+                  "title": "B6002ZZ — MISUMI, 15 × 32 × 9 mm, shielded"
+                },
+                {
+                  "const": "B6003ZZ",
+                  "title": "B6003ZZ — MISUMI, 17 × 35 × 10 mm, shielded"
+                },
+                {
+                  "const": "B6004ZZ",
+                  "title": "B6004ZZ — MISUMI, 20 × 42 × 12 mm, shielded"
+                },
+                {
+                  "const": "B6200ZZ",
+                  "title": "B6200ZZ — MISUMI, 10 × 30 × 9 mm, shielded"
+                },
+                {
+                  "const": "B6201ZZ",
+                  "title": "B6201ZZ — MISUMI, 12 × 32 × 10 mm, shielded"
+                },
+                {
+                  "const": "B6202ZZ",
+                  "title": "B6202ZZ — MISUMI, 15 × 35 × 11 mm, shielded"
+                },
+                {
+                  "const": "B6203ZZ",
+                  "title": "B6203ZZ — MISUMI, 17 × 40 × 12 mm, shielded"
+                },
+                {
+                  "const": "B6204ZZ",
+                  "title": "B6204ZZ — MISUMI, 20 × 47 × 14 mm, shielded"
+                }
               ],
               "title": "Part",
               "type": "string"
@@ -98,17 +147,9 @@
         "input_schema": {
           "additionalProperties": true,
           "properties": {
-            "bore": {
-              "description": "Blank keeps the preset value. Required for Custom.",
-              "exclusiveMinimum": 0,
-              "maximum": 1000,
-              "title": "Bore",
-              "type": "number",
-              "unit": "mm"
-            },
             "closure": {
               "default": "Preset",
-              "description": "Keep the preset, or choose visible covers or seals. Custom defaults to dust covers. Width does not change with it.",
+              "description": "Preset keeps what the designation has, or choose visible covers or seals. Custom starts with dust covers. The width does not change with it.",
               "enum": [
                 "Preset",
                 "Dust covers",
@@ -118,17 +159,33 @@
               "title": "Closure",
               "type": "string"
             },
-            "diameter": {
-              "description": "Blank keeps the preset value. Required for Custom.",
+            "custom_bore": {
+              "description": "Optional. Leave empty for the value of the chosen CSK designation. Custom needs all three.",
               "exclusiveMinimum": 0,
               "maximum": 1000,
-              "title": "Outside diameter",
+              "title": "Custom bore",
+              "type": "number",
+              "unit": "mm"
+            },
+            "custom_diameter": {
+              "description": "Optional. Leave empty for the value of the chosen CSK designation. Custom needs all three.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Custom outside diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "custom_width": {
+              "description": "Optional. Leave empty for the value of the chosen CSK designation. Custom needs all three.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Custom width",
               "type": "number",
               "unit": "mm"
             },
             "inner_keyway": {
               "default": "Preset",
-              "description": "Keep the preset, add a keyway, or remove it. Added keyways require width and depth.",
+              "description": "Preset keeps what the designation has. Enabled adds a keyway and needs its width and depth. None removes it.",
               "enum": [
                 "Preset",
                 "Enabled",
@@ -144,22 +201,22 @@
               "unit": "deg"
             },
             "inner_keyway_depth": {
-              "description": "Blank keeps the existing value. Needed to add a keyway.",
+              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
               "exclusiveMinimum": 0,
-              "title": "Inner keyway depth override",
+              "title": "Inner keyway depth",
               "type": "number",
               "unit": "mm"
             },
             "inner_keyway_width": {
-              "description": "Blank keeps the existing value. Needed to add a keyway.",
+              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
               "exclusiveMinimum": 0,
-              "title": "Inner keyway width override",
+              "title": "Inner keyway width",
               "type": "number",
               "unit": "mm"
             },
             "outer_keyway": {
               "default": "Preset",
-              "description": "Keep the preset, add a keyway, or remove it. Added keyways require width and depth.",
+              "description": "Preset keeps what the designation has. Enabled adds a keyway and needs its width and depth. None removes it.",
               "enum": [
                 "Preset",
                 "Enabled",
@@ -175,16 +232,16 @@
               "unit": "deg"
             },
             "outer_keyway_depth": {
-              "description": "Blank keeps the existing value. Needed to add a keyway.",
+              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
               "exclusiveMinimum": 0,
-              "title": "Outer keyway depth override",
+              "title": "Outer keyway depth",
               "type": "number",
               "unit": "mm"
             },
             "outer_keyway_width": {
-              "description": "Blank keeps the existing value. Needed to add a keyway.",
+              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
               "exclusiveMinimum": 0,
-              "title": "Outer keyway width override",
+              "title": "Outer keyway width",
               "type": "number",
               "unit": "mm"
             },
@@ -433,14 +490,6 @@
               ],
               "title": "CSK designation",
               "type": "string"
-            },
-            "width": {
-              "description": "Blank keeps the preset value. Required for Custom.",
-              "exclusiveMinimum": 0,
-              "maximum": 1000,
-              "title": "Width",
-              "type": "number",
-              "unit": "mm"
             }
           },
           "required": [

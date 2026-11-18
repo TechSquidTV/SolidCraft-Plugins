@@ -160,7 +160,8 @@ if killed(code):
 else:
     check("a region that is not the inside of a circle is refused",
           code != 0 and "the region picked in Holes is not the inside of a circle" in text
-          and "invalid input placement" in text, text[-800:] if code == 0 else "")
+          # SolidCraft 0.44 says "invalid input placement", newer hosts "Screws: Placement:".
+          and ("invalid input placement" in text or "Placement: " in text), text[-800:])
 
 code, text, _ = run([make("make-extrusion", by_profile, mode="Sketch driven")], inp=saved)
 if killed(code):

@@ -4,7 +4,7 @@ import json
 import math
 import os
 
-from harness import TMP, check, finish, inspect, killed, package, picks, run, skip
+from harness import ROOT, TMP, check, finish, inspect, killed, package, picks, run, skip
 from headless import Headless
 
 
@@ -229,7 +229,36 @@ def test_copied_tapped_seat_is_refused():
               (host.command('document.inspect', measure=False), host.command('component.list')) == before)
 
 
+def test_gantry_track_direction():
+    """The gantry's track section points +X into the extrusion at x = -100."""
+    _, _, info = inspect("techsquid-screws")
+    gantry = os.path.join(ROOT, "examples", "v-slot-gantry", "v-slot-gantry.json")
+    boxes = {False: [-112, -95], True: [-105, -88]}
+    for flip, (lo, hi) in boxes.items():
+        label = f"gantry track, flip={flip}"
+        code, text, results = run([
+            cmd("plugin.run", path=package("techsquid-screws"), approval=info["approval"],
+                entry="make-screw", params={"size": "M5", "length": 12, "thread_modeled": False,
+                                            "flip": flip, "placement": picks("Track section", "track")}),
+            cmd("inspect.measure", bodies=["Screw M5 x 12 socket"]),
+        ], inp=gantry)
+        if killed(code):
+            skip(label, "host killed while loading plugin")
+            continue
+        check(label + ": build", code == 0, text[-1200:])
+        if code:
+            continue
+        result, measure = results
+        bounds = measure["bodies"][0]["bbox"]
+        check(label + ": same anchor and expected head direction",
+              same(result["at"], [-100, 0, 20]) and same(result["normal"], [-1 if flip else 1, 0, 0]))
+        # A 5 mm head and 12 mm shank must trade sides of the same seating plane.
+        check(label + ": actual screw spans head to tip",
+              near(bounds["min"][0], lo) and near(bounds["max"][0], hi), str(bounds))
+
+
 if __name__ == "__main__":
+    test_gantry_track_direction()
     test_thin_countersunk_seat()
     test_copied_tapped_seat_is_refused()
     for kind in ("clearance", "counterbore", "countersink", "tapped"):

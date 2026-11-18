@@ -23,11 +23,13 @@ Use this plugin when you need detailed screw geometry, custom dimensions, or scr
 
 Both tools produce editable timeline features and reusable components, and both can keep screws seated with native rigid joints. The plugin adds the combined screw-and-hole workflow described below.
 
-For placing standard hardware in existing holes, the built-in tool offers a live preview, direct hole picking, and **Change Part Size**. It also includes inch and GOST catalogs, nuts, washers, pins and bearings. This plugin focuses on configurable screws: pick sketch points or circles in the view for its **Placement** field. It has no live preview, and its generated components do not use the built-in **Change Part Size** workflow.
+For placing standard hardware in existing holes, the built-in tool offers a live preview, direct hole picking, and **Change Part Size**. It also includes inch and GOST catalogs, nuts, washers, pins and bearings. This plugin focuses on configurable screws placed on sketch points or circles.
 
 ## Get started
 
 Open **Plugins > Screw** and pick one or more sketch points or circles for **Placement** in the view; clicking inside a circle picks it too. Points or circles already selected when the dialog opens fill the field. Choose a size, length and head, then press **Run**. With nothing picked, a loose screw is placed at the origin.
+
+In **Screw only** mode, check **Flip direction** if the preview shows the screw head facing into the part.
 
 The default is an M3 × 12 socket-head screw. Choose **Screw and hole** to drill the part at your picked points, or **Hole only** to create just the holes. Countersunk screws, set screws and threaded rod use overall length; other headed screws are measured under the head.
 

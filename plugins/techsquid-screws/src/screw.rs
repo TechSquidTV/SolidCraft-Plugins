@@ -237,8 +237,10 @@ pub struct Params {
     pub thread_length: Option<f64>,
     /// `solid.thread`'s `modeled`. The dialog calls this `thread_modeled`.
     pub modeled: bool,
-    /// Where the top of the shank sits. Both empty uses the selection, or the origin.
+    /// Where the top of the shank sits. No picks uses the origin.
     pub place: PlaceInput,
+    /// Turn each loose screw over about the placement frame's X axis.
+    pub flip: bool,
     /// ISO 10664 recess. Set when `drive` is Torx.
     pub recess: Option<Recess>,
     /// Straight slot. Set when `drive` is Slotted.
@@ -264,6 +266,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let thread_length = input::optional_length(v, "thread_length")?;
     let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
+    let flip = input::flag(v, "flip", false)?;
     let create = CREATE.parse(v)?;
     // The drive comes first: a head is sized from the standard of its drive.
     let major = metric::parse_metric(&designation)
@@ -398,6 +401,7 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         thread_length,
         modeled,
         place,
+        flip,
         recess,
         slot,
         phillips,
@@ -423,6 +427,12 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 }
 
 pub fn validate(p: &Params) -> Result<(), FieldError> {
+    if p.flip && p.create.cut() {
+        return Err(FieldError::new(
+            "flip",
+            "choose Screw only to flip the screw",
+        ));
+    }
     designation::check_designation(&p.designation)
         .map_err(|err| err.moved("size", p.size_field))?;
     input::check_length("length", p.nominal_length)?;

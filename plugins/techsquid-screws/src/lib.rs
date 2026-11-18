@@ -1,10 +1,11 @@
 //! Screw generator for SolidCraft.
 //!
 //! One entry, `make-screw`. The top of the shank sits on a sketch point, or on the origin
-//! when nothing is selected. The head stands on the outer side of that plane and the shank
-//! runs the other way. A socket or cheese head is a cylinder, a button or pan head is its
-//! half profile revolved, a countersunk head is a 90° cone with the land a flat head has
-//! above it, and a hex head is a six-sided sketch with its top chamfered. A countersunk
+//! when nothing is selected. By default the head follows the sketch normal and the shank
+//! runs the other way. Flip direction turns a loose screw over at the same point.
+//! A socket or cheese head is a cylinder, a button or pan head is its half profile
+//! revolved, a countersunk head is a 90° cone with the land a flat head has above it,
+//! and a hex head is a six-sided sketch with its top chamfered. A countersunk
 //! screw's length includes the head, as its standards measure it. A Torx drive cuts an ISO 10664
 //! recess into the outer face. A slotted drive cuts a straight slot across that face.
 //! A Phillips drive cuts an ISO 4757 type H recess, sunk to the depth for that head.
@@ -65,7 +66,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     // Screw and hole with nothing selected still makes the screw. Only a run that
     // would make nothing but a hole is refused.
     let mut skipped = false;
-    let places: Vec<Placement> = if spots.is_empty() {
+    let mut places: Vec<Placement> = if spots.is_empty() {
         skipped = screw::CREATE.nothing_selected(p.create)?;
         vec![Placement::on_origin()]
     } else {
@@ -89,6 +90,13 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             })
             .collect()
     };
+    if p.flip {
+        for place in &mut places {
+            // A half turn about sketch X reverses the normal and keeps a right-handed frame.
+            place.normal = opposite(place.normal);
+            place.y_dir = opposite(place.y_dir);
+        }
+    }
     // Resolve the hole ends before building hardware, so its own cylindrical
     // faces cannot be mistaken for the seats.
     let seats = if p.create.part() && !spots.is_empty() {
@@ -1823,6 +1831,31 @@ mod tests {
         assert_eq!(summary["create"], "Screw only");
         assert_eq!(summary["standard"], "ISO 4762");
         assert_eq!(summary["hole"], Value::Null);
+    }
+
+    #[test]
+    fn flip_direction_keeps_each_seat_and_rotates_the_screw() {
+        let (summary, calls) = on_plate(json!({"flip": true}), json!(["Plate"]));
+        let summary = summary.unwrap();
+        assert_eq!(summary["normal"], json!([0.0, 0.0, -1.0]));
+        assert_eq!(placed_at(&calls), [[10.0, 10.0, 10.0], [30.0, 10.0, 10.0]]);
+        let movement = args(&calls, "occurrence.move");
+        assert_eq!(
+            movement["to_matrix"],
+            json!([
+                [1.0, 0.0, 0.0, 10.0],
+                [0.0, -1.0, 0.0, 10.0],
+                [0.0, 0.0, -1.0, 10.0]
+            ])
+        );
+    }
+
+    #[test]
+    fn flip_direction_is_for_screw_only() {
+        for create in ["Screw and hole", "Hole only"] {
+            let err = screw::parse(&json!({"create": create, "flip": true})).unwrap_err();
+            assert_eq!(err.field, "flip");
+        }
     }
 
     #[test]

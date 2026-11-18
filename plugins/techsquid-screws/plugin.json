@@ -93,6 +93,12 @@
               "title": "Drive size",
               "type": "string"
             },
+            "flip": {
+              "default": false,
+              "description": "For Screw only. Turn each screw over at its placement point if the preview shows the head facing into the part.",
+              "title": "Flip direction",
+              "type": "boolean"
+            },
             "head": {
               "default": "Socket head",
               "description": "The head is sized from the standard for the chosen Size and Drive: a slotted or Phillips pan or countersunk head is not the same size as a hex socket one. Set screw and Threaded rod have no head. Where a head has no standard for a size, set both custom head dimensions.",

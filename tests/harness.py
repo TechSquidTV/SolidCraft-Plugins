@@ -1,5 +1,6 @@
 """What the CLI tests share: running a script through solidcraft-cli and reporting checks."""
 import atexit, json, os, shutil, signal, subprocess, sys, tempfile
+from copy import deepcopy
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLI = os.environ.get("SOLIDCRAFT_CLI", "solidcraft-cli")
@@ -104,3 +105,24 @@ def inspect(plugin_id):
     """plugin.inspect of a built package: (exit code, output text, its reply or None)."""
     code, text, results = run([{"command": "plugin.inspect", "params": {"path": package(plugin_id)}}])
     return code, text, results[0] if results else None
+
+
+_approvals = {}
+
+
+def recipe_commands(recipe):
+    """Resolve repository package paths and approvals in an example's steps."""
+    steps = []
+    for step in recipe["steps"]:
+        params = deepcopy(step["params"])
+        if step["command"] == "plugin.run":
+            plugin_id = os.path.basename(params["path"])
+            if plugin_id not in _approvals:
+                code, text, info = inspect(plugin_id)
+                if code != 0 or not info:
+                    sys.exit(f"plugin.inspect of dist/{plugin_id} failed, run ./build.sh first: {text[-500:]}")
+                _approvals[plugin_id] = info["approval"]
+            params["path"] = package(plugin_id)
+            params["approval"] = _approvals[plugin_id]
+        steps.append({"command": step["command"], "params": params})
+    return steps

@@ -40,7 +40,7 @@ Every `examples/<name>/` folder contains the README, design, recipe and screensh
 1. `SOLIDCRAFT_CLI=… python3 tests/examples_test.py --update`
 2. `git diff --stat examples/`: every changed design must be one your change explains.
 3. Run `examples_test.py` again without `--update`; it must pass.
-4. Re-render the pictures of changed designs with their commands in [DEVELOPMENT.md](../../DEVELOPMENT.md#examples).
+4. Run `SOLIDCRAFT_CLI=… python3 tests/render_examples.py` to regenerate all gallery screenshots, including the mounting plate's before view and the catalog portraits. [Rendering workflow](../../DEVELOPMENT.md#render-the-screenshots)
 
 ## Gotchas
 

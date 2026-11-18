@@ -86,7 +86,7 @@ The id `techsquid-<name>` is also the folder, the Cargo package and the `dist/` 
 | Agent docs | `python3 tests/skills_test.py` |
 | Host tests | `SOLIDCRAFT_CLI=… python3 tests/<suite>_test.py`, after `./build.sh` |
 
-CI runs the cargo checks and `./build.sh`, so run `skills_test.py` and the suites for the area you changed and list their results in the PR. Every saved design in `examples/` has a `.steps.json` recipe that `tests/examples_test.py` rebuilds and measures. After a change that alters geometry, run `examples_test.py --update`, then render the pictures again with the commands in [DEVELOPMENT.md](DEVELOPMENT.md#examples).
+CI runs the cargo checks and `./build.sh`, so run `skills_test.py` and the suites for the area you changed and list their results in the PR. Every saved design in `examples/` has a `.steps.json` recipe that `tests/examples_test.py` rebuilds and measures. After a change that alters geometry, run `examples_test.py --update`, then [regenerate the screenshots](DEVELOPMENT.md#render-the-screenshots).
 
 ## Sending a change
 

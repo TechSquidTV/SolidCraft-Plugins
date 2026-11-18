@@ -52,7 +52,7 @@ skipped.
 import glob, json, os, shutil, sys
 from collections import Counter
 
-from harness import ROOT, TMP, Tally, check, finish, inspect, killed, package, run, skip
+from harness import ROOT, TMP, Tally, check, finish, killed, recipe_commands, run, skip
 
 TOL = 1e-3
 
@@ -95,31 +95,6 @@ def whole(bodies):
     }
 
 
-APPROVALS = {}
-
-
-def approval(plugin_id):
-    if plugin_id not in APPROVALS:
-        code, text, info = inspect(plugin_id)
-        if code != 0 or not info:
-            sys.exit(f"plugin.inspect of dist/{plugin_id} failed, run ./build.sh first: {text[-500:]}")
-        APPROVALS[plugin_id] = info["approval"]
-    return APPROVALS[plugin_id]
-
-
-def commands(doc):
-    """The example's steps as a script, with each plugin step's path and approval filled in."""
-    steps = []
-    for step in doc["steps"]:
-        params = json.loads(json.dumps(step["params"]))
-        if step["command"] == "plugin.run":
-            plugin_id = os.path.basename(params["path"])
-            params["path"] = package(plugin_id)
-            params["approval"] = approval(plugin_id)
-        steps.append({"command": step["command"], "params": params})
-    return steps
-
-
 def faces(result):
     return result["faces"] if isinstance(result, dict) else result
 
@@ -155,7 +130,7 @@ def example(path, fixture=False, update=False):
     with open(path) as f:
         doc = json.load(f)
     expect = doc["expect"]
-    steps = commands(doc)
+    steps = recipe_commands(doc)
     nut_seats = expect.get("nut_seats", [])
     seats = nut_seats + expect.get("screw_seats", [])
     hole_bodies = sorted({h["body"] for h in expect.get("holes", []) + seats})

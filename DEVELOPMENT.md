@@ -209,33 +209,23 @@ that used the old top-level files need the new paths.
 
 ### Render the screenshots
 
-Use native `solidcraft-cli snapshot` from the example folder. For the gantry overview:
+After building the packages with `./build.sh`, regenerate every gallery screenshot
+with an unsigned SolidCraft CLI. Run this from the repository root.
 
 ```sh
-solidcraft-cli snapshot --in v-slot-gantry.json --out v-slot-gantry.png --width 1600 --height 960 --camera '{"target":[0,0,12],"yaw":0.28,"pitch":0.44,"distance":220}' --no-grid --no-axes --quality fine --body 'V-slot 2020 x 200:color=#929DA7'
+SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/render_examples.py
 ```
 
-Use the same grid, axes and quality settings for the other captures. Camera
-angles are radians and distances are millimeters.
+The renderer uses the CPU backend for repeatable captures with the same CLI
+version. It reads the saved example designs, applies the mounting plate's
+initial parameters and nut centers for the before shot, and builds temporary
+models from the private regression recipes for the catalog portraits. It stages
+all captures before updating the checked-in PNGs.
 
-| Capture | Resolution | Target | Yaw | Pitch | Distance | Display options |
-|---|---:|---|---:|---:|---:|---|
-| Gantry axle section | 1280 × 810 | `[-34,0,23]` | −1.52 | 0.15 | 110 | `--section x=-34` |
-| Gantry frame joint | 1120 × 720 | `[-80,0,11]` | −0.12 | 0.11 | 65 | `--section y=0,flip` |
-| Enclosure, open view and closed view | 1280 × 800 | `[0,0,15]` | −0.785 | 0.615 | 150 | `--body Lid:opacity=0.3` for the open view |
-| Enclosure insert detail | 1100 × 780 | `[26,19,23]` | −0.61 | 0.27 | 52 | `--body Lid:opacity=0.22 --body Base:opacity=0.30` |
-| Mounting plate overview | 1440 × 900 | `[0,0,6]` | 0.34 | 0.67 | 155 | |
-| Mounting plate pocket sections | 1280 × 560 | `[0,0,6]` | 0.03 | 0.22 | 100 | `--section y=0,flip` |
-| Sketch-driven rails | 1280 × 800 | `[245,0,140]` | 0.35 | 0.4 | 650 | |
-| Bearings and clutches | 1440 × 1250 | `[0,48,0]` | 0 | 1.12 | 385 | |
-| Clutch detail | 1440 × 720 | `[0,-50,0]` | 0 | 0.95 | 245 | `--section y=7` |
-
-Render the before pocket section from a temporary copy with the initial values
-and nut centers from the [mounting plate walkthrough](examples/editable-mounting-plate/).
-
-Plugin guides link to gallery images in source control. Catalog portraits in the
-`reference/` subfolders come from the corresponding private regression recipes. The package build copies
-those images into each ZIP and points its example links to the GitHub gallery.
+Camera, resolution and section settings live in the
+[render script](tests/render_examples.py). Add new gallery screenshots there.
+The package build copies the images linked by plugin guides into each ZIP and
+points example links to the GitHub gallery.
 
 ## Geometry tests
 

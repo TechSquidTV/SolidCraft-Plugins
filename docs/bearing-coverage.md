@@ -24,25 +24,27 @@ shield, material or manufacturer variant is covered.
 
 Audit date: 2026-11-17. MISUMI's catalog identifies all ten target part numbers and
 their nominal envelopes. The [catalog evidence record](sources/misumi.md#catalog-evidence-for-the-coverage-expansion)
-records the exact PDF revision and what it establishes. No matching source CAD or
-section measurements are recorded in the repository for these products.
+records the exact PDF revision and what it establishes. Four supplier STEP samples
+were received and measured on 2026-11-17; the other six still need detail dimensions.
 
-Start with B6000ZZ and B6200ZZ to check the measurement and build process, then
-complete the remaining rows. Every row needs its own geometry reference; scaling
-an existing bearing or copying another size's shield recess is not sufficient.
+The four samples share one parametric section; the existing closed-bearing builder
+can use their measured dimensions. The [sample comparison](sources/misumi.md#shared-section-and-inference-limits)
+records why their detail dimensions cannot yet be derived reliably for other sizes.
+A supplier dimension table or documented family formula can also supply the missing
+values; a separate CAD file is not mandatory for every row.
 
 | Base size | MISUMI target | Bore x OD x width, mm | Product / envelope evidence | Exterior CAD or section drawing | Measurements | Native model / catalog | Validation |
 |---|---|---|---|---|---|---|---|
-| 6000 | B6000ZZ | 10 x 26 x 8 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6000 | B6000ZZ | 10 x 26 x 8 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | Pending | Pending |
 | 6001 | B6001ZZ | 12 x 28 x 8 | Catalog confirmed | Needed | Pending | Pending | Pending |
 | 6002 | B6002ZZ | 15 x 32 x 9 | Catalog confirmed | Needed | Pending | Pending | Pending |
-| 6003 | B6003ZZ | 17 x 35 x 10 | Catalog confirmed | Needed | Pending | Pending | Pending |
-| 6004 | B6004ZZ | 20 x 42 x 12 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6003 | B6003ZZ | 17 x 35 x 10 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | Pending | Pending |
+| 6004 | B6004ZZ | 20 x 42 x 12 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | Pending | Pending |
 | 6200 | B6200ZZ | 10 x 30 x 9 | Catalog confirmed | Needed | Pending | Pending | Pending |
 | 6201 | B6201ZZ | 12 x 32 x 10 | Catalog confirmed | Needed | Pending | Pending | Pending |
 | 6202 | B6202ZZ | 15 x 35 x 11 | Catalog confirmed | Needed | Pending | Pending | Pending |
 | 6203 | B6203ZZ | 17 x 40 x 12 | Catalog confirmed | Needed | Pending | Pending | Pending |
-| 6204 | B6204ZZ | 20 x 47 x 14 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6204 | B6204ZZ | 20 x 47 x 14 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | Pending | Pending |
 
 Replace each status with a link to its evidence or completion record as work lands.
 "Catalog confirmed" establishes the historical supplier designation and envelope,
@@ -52,12 +54,15 @@ for the same product.
 
 ## References to acquire
 
-For each target, acquire a supplier STEP download, preferably retaining its original
-ZIP, or a dimensioned section drawing tied to that exact part number. Request the
-ten SKUs in the table through MISUMI's
+For the six remaining targets, acquire a supplier STEP download, preferably retaining
+its original ZIP, or a dimensioned section/table tied to the exact part number. A
+documented supplier sizing rule is also sufficient if it determines the missing
+section values for those products. Request B6001ZZ, B6002ZZ, B6200ZZ, B6201ZZ,
+B6202ZZ and B6203ZZ through MISUMI's
 [double-shielded bearing selector](https://us.misumi-ec.com/vona2/detail/110300107560/).
-The B6000ZZ and B6200ZZ configured pages could not be read through the text browser
-during this audit; no new CAD download was acquired.
+The initial web audit could not read the configured pages. The user subsequently
+supplied B6000ZZ, B6003ZZ, B6004ZZ and B6204ZZ STEP archives; their revisions and
+measurements are now recorded in the supplier ledger.
 
 The reference package must establish:
 
@@ -71,7 +76,8 @@ The reference package must establish:
   supply these nominal CAD measurements.
 - **Independent checks:** imported bounds, body layout, volume where meaningful,
   section vertices and analytic radii. A dimensioned drawing can replace STEP if
-  it specifies the complete visible section; derive expected geometry from it.
+  it specifies the complete visible section. A table or documented rule must supply
+  the same parameters; derive expected geometry from that evidence.
 
 The existing [MISUMI evidence ledger](sources/misumi.md) and
 [OpenBuilds ledger](sources/openbuilds.md) remain valid for their recorded products.

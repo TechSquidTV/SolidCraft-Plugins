@@ -1,7 +1,7 @@
 ---
 name: techsquid-tests
 description: Use this skill when proving a TechSquid plugin change works - writing Rust unit tests, running the Python host tests through solidcraft-cli, regenerating saved examples and their .steps.json recipes, rendering README pictures, or deciding which suites a change needs. Use it before reporting any change to geometry as done, and whenever tests SKIP, a saved example no longer matches, or someone asks "does it still build the same parts?".
-compatibility: Host tests need python3, ./build.sh output and an unsigned, locally built solidcraft-cli.
+compatibility: Host tests need python3, ./build.sh output and an unsigned, locally built solidcraft-cli. Rendering the README banner also needs Chrome or Chromium.
 ---
 
 # Tests, examples and pictures
@@ -40,7 +40,7 @@ Every `examples/<name>/` folder contains the README, design, recipe and screensh
 1. `SOLIDCRAFT_CLI=… python3 tests/examples_test.py --update`
 2. `git diff --stat examples/`: every changed design must be one your change explains.
 3. Run `examples_test.py` again without `--update`; it must pass.
-4. Run `SOLIDCRAFT_CLI=… python3 tests/render_examples.py` to regenerate all gallery screenshots, including the mounting plate's before view and the catalog portraits. [Rendering workflow](../../DEVELOPMENT.md#render-the-screenshots)
+4. Run `SOLIDCRAFT_CLI=… python3 tests/render_examples.py` to regenerate the gallery screenshots and README banner. [Rendering workflow](../../DEVELOPMENT.md#render-the-screenshots)
 
 ## Gotchas
 

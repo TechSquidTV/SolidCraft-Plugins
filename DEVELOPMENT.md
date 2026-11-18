@@ -209,21 +209,28 @@ that used the old top-level files need the new paths.
 
 ### Render the screenshots
 
-After building the packages with `./build.sh`, regenerate every gallery screenshot
-with an unsigned SolidCraft CLI. Run this from the repository root.
+After building the packages with `./build.sh`, regenerate the gallery screenshots
+and README banner from the repository root. The command uses an unsigned
+SolidCraft CLI and Chrome or Chromium. Set `CHROME` if the browser executable
+is outside the usual installation paths.
 
 ```sh
 SOLIDCRAFT_CLI=/path/to/solidcraft-cli python3 tests/render_examples.py
 ```
 
-The renderer uses the CPU backend for repeatable captures with the same CLI
-version. It reads the saved example designs, applies the mounting plate's
-initial parameters and nut centers for the before shot, and builds temporary
-models from the private regression recipes for the catalog portraits. It stages
-all captures before updating the checked-in PNGs.
+The SolidCraft renderer uses the CPU backend. It reads the saved example designs,
+applies the mounting plate's initial parameters and nut centers for the before
+shot, and builds temporary models from the private regression recipes for the
+catalog portraits. Chrome
+composes the README banner from three native captures, including a temporary
+enclosure view with the brass inserts highlighted. The command stages all
+images before updating the checked-in PNGs. Use the same SolidCraft and browser
+builds and system fonts for byte-for-byte comparisons.
 
 Camera, resolution and section settings live in the
-[render script](tests/render_examples.py). Add new gallery screenshots there.
+[render script](tests/render_examples.py). The
+[banner layout](tests/fixtures/examples/readme-banner.html) defines the panel crops
+and captions.
 The package build copies the images linked by plugin guides into each ZIP and
 points example links to the GitHub gallery.
 

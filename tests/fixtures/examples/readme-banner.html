@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>SolidCraft plugins README banner</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; }
+  body {
+    padding: 16px;
+    background: #18212d;
+    color: #ecf2f9;
+    font-family: -apple-system, "Helvetica Neue", sans-serif;
+  }
+  main {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 64fr 36fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+  }
+  figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #243142;
+  }
+  .hero { grid-row: 1 / span 2; }
+  .view { flex: 1 1 0; min-height: 0; overflow: hidden; background: #dce4ee; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .hero img { object-position: 50% 48%; transform: scale(1.02); }
+  .wheel img { object-position: 50% 49%; transform: scale(1.12); }
+  .insert img { object-position: 49% 57%; }
+  figcaption {
+    flex: none;
+    height: 51px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 570;
+    letter-spacing: -0.25px;
+  }
+  .hero figcaption { height: 58px; padding: 0 24px; font-size: 28px; }
+</style>
+<main>
+  <figure class="hero">
+    <div class="view">
+      <img src="../v-slot-gantry/v-slot-gantry.png" alt="Blue gantry plate on a V-slot rail with two cross-drilled T-slot feet">
+    </div>
+    <figcaption>Bolted V-slot gantry</figcaption>
+  </figure>
+  <figure class="wheel">
+    <div class="view">
+      <img src="../v-slot-gantry/axle-section.png" alt="Axle cutaway with bearings, internal shims, mounting screws and hex nuts">
+    </div>
+    <figcaption>Wheel and bearing stack</figcaption>
+  </figure>
+  <figure class="insert">
+    <div class="view">
+      <img src="insert-detail.png" alt="Heat-set inserts and recessed screws in a transparent enclosure corner">
+    </div>
+    <figcaption>Heat-set inserts and recessed screws</figcaption>
+  </figure>
+</main>
+</html>

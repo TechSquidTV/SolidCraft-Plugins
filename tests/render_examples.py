@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate the native screenshots in examples/ with the built plugins."""
+"""Regenerate the native screenshots and README banner with the built plugins."""
 
 import json
 import os
@@ -16,6 +16,8 @@ FIXTURES = Path(ROOT) / "tests" / "fixtures" / "examples"
 CPU_RENDERER = {**os.environ, "SOLIDCRAFT_GPU": "cpu"}
 POCKET_CAMERA = ([0, 0, 6], 0.03, 0.22, 100)
 POCKET_SECTION = ("--section", "y=0,flip")
+INSERT_DETAIL_SIZE = (1100, 780)
+INSERT_DETAIL_CAMERA = ([26, 19, 23], -0.61, 0.27, 52)
 
 
 def snapshot(model, output, size, camera=None, *, options=(), quality="fine", script=None):
@@ -83,7 +85,7 @@ def render_gallery(staging):
         "pcb-enclosure": [
             ("pcb-enclosure", (1280, 800), enclosure_camera, {"options": ("--body", "Lid:opacity=0.3")}),
             ("pcb-enclosure-closed", (1280, 800), enclosure_camera, {}),
-            ("insert-detail", (1100, 780), ([26, 19, 23], -0.61, 0.27, 52),
+            ("insert-detail", INSERT_DETAIL_SIZE, INSERT_DETAIL_CAMERA,
              {"options": ("--body", "Lid:opacity=0.22", "--body", "Base:opacity=0.30")}),
         ],
         plate: [
@@ -127,13 +129,52 @@ def render_catalog(staging):
         snapshot(model, staging / output, size, camera, **settings)
 
 
+def chrome_binary():
+    configured = os.environ.get("CHROME")
+    candidates = (configured,) if configured else (
+        "google-chrome", "chromium", "chromium-browser", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    )
+    for candidate in candidates:
+        if browser := shutil.which(candidate):
+            return browser
+    sys.exit("Install Chrome or Chromium, or set CHROME to its executable path to render the README banner.")
+
+
+def render_banner(staging, browser):
+    output = staging / "readme-banner.png"
+    with tempfile.TemporaryDirectory(prefix="banner-", dir=staging) as directory:
+        work = Path(directory)
+        layout = work / "readme-banner.html"
+        shutil.copyfile(FIXTURES / layout.name, layout)
+
+        colors = work / "insert-appearance.json"
+        colors.write_text(json.dumps([
+            {"command": "appearance.assign", "params": {"components": ["Insert M3 x 5.7"], "color": "#CDA058"}},
+        ]))
+        snapshot(EXAMPLES / "pcb-enclosure" / "pcb-enclosure.json", work / "insert-detail.png",
+                 INSERT_DETAIL_SIZE, INSERT_DETAIL_CAMERA, script=colors,
+                 options=("--body", "Lid:opacity=0.18", "--body", "Base:opacity=0.20"))
+
+        command = [
+            browser, "--headless", "--no-first-run", "--no-default-browser-check", "--disable-background-networking",
+            "--force-color-profile=srgb", "--force-device-scale-factor=1", "--hide-scrollbars",
+            "--window-size=1600,800", f"--user-data-dir={work / 'chrome-profile'}",
+            f"--screenshot={output}", layout.as_uri(),
+        ]
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode != 0 or not output.is_file():
+            sys.exit(f"Could not render the README banner:\n{result.stderr or result.stdout}")
+
+
 def main():
     if not shutil.which(CLI):
         sys.exit("Set SOLIDCRAFT_CLI to the path of an unsigned, locally built solidcraft-cli.")
+    browser = chrome_binary()
     # Stage all captures before replacing any published PNGs, on the same filesystem.
     with tempfile.TemporaryDirectory(prefix=".screenshots-", dir=EXAMPLES) as directory:
         staging = Path(directory)
         render_gallery(staging)
+        render_banner(staging, browser)
         render_catalog(staging)
         captures = sorted(staging.rglob("*.png"))
         updated = 0

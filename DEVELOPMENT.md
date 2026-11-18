@@ -247,7 +247,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 ```
 
 ```sh
-solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 1100 --camera '{"target":[4,85.5,0],"yaw":0,"pitch":0.9,"distance":275}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 1100 --camera '{"target":[4.25,85.5,0],"yaw":0,"pitch":0.9,"distance":275}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 800 --camera '{"target":[0.75,25,0],"yaw":0.05,"pitch":0.9,"distance":150}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
@@ -307,8 +307,10 @@ inspector. Run `./build.sh` first for the rail check. A zero-thickness closure i
 representation, not a seal cross-section or a mass model. The assembly and cross-plugin reuse checks live in `tests/parts_library_test.py`.
 The bearing suite separately verifies MISUMI ring volumes against the STEP ledgers,
 bore/shoulder radii, closure recesses and colours, the open bearing's race depths,
-section vertices and eight spheres, and purchase/reuse
-behavior through the installed workflow.
+eight spheres, and every closed product's complete section vertices and rounded
+edges, plus purchase/reuse behavior through the installed workflow. The
+[coverage tracker](docs/bearing-coverage.md) links each added product to its
+source, measurements and validation record.
 
 The CSK suite checks all 55 presets, measured shoulders/chamfers, closure areas
 and appearance, custom dimensions and keyway presence, exterior estimation

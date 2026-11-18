@@ -1,13 +1,13 @@
 # Bearings
 
-Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). The radial bearings have separate steel rings and sourced closures. CSK presets have separate chamfered rings, cover or seal faces, editable keyways, and recorded references. Supplied STEP files establish eight exterior profiles; other presets use estimates based on those measurements.
+Place fixed OpenBuilds and MISUMI bearing products or customizable CSK one-way clutches in [SolidCraft](https://github.com/tangency-labs/solidcraft). Every radial product has a measured exterior with separate steel rings and sourced closures. CSK presets have separate chamfered rings, cover or seal faces, editable keyways, and recorded references; the [supported-parts table](#supported-bearings-and-csk-presets) distinguishes measured and estimated exteriors.
 
 ![Sourced radial bearings and four representative CSK clutches, shown at the same scale](bearings.png)
 
 The preview shows every supported radial bearing and four representative CSK presets,
 all at the same scale. Left to right:
 
-- **Back row:** MISUMI B6200ZZ, B6202ZZ, B6203ZZ and B6204ZZ.
+- **Back row:** MISUMI B6200ZZ through B6204ZZ.
 - **Second row:** MISUMI B6000ZZ through B6004ZZ.
 - **Third row:** OpenBuilds 625 2RS and 105ZZ; MISUMI B626, B626ZZ, B626DDU and B608ZZ.
 - **Front row — CSK clutches:** CSK8PP, CSK15P, CSK15PP and CSK15-2RS. These show small dual-keyed, inner-keyed, dual-keyed and sealed variants.
@@ -75,6 +75,7 @@ CSK presets are reference geometry, with no purchasing identity. Envelope dimens
 | B6003ZZ | MISUMI | B6003ZZ | 17 × 35 × 10 | Metal shields, both sides | Measured |
 | B6004ZZ | MISUMI | B6004ZZ | 20 × 42 × 12 | Metal shields, both sides | Measured |
 | B6200ZZ | MISUMI | B6200ZZ | 10 × 30 × 9 | Metal shields, both sides | Measured |
+| B6201ZZ | MISUMI | B6201ZZ | 12 × 32 × 10 | Metal shields, both sides | Measured |
 | B6202ZZ | MISUMI | B6202ZZ | 15 × 35 × 11 | Metal shields, both sides | Measured |
 | B6203ZZ | MISUMI | B6203ZZ | 17 × 40 × 12 | Metal shields, both sides | Measured |
 | B6204ZZ | MISUMI | B6204ZZ | 20 × 47 × 14 | Metal shields, both sides | Measured |

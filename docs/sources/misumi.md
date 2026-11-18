@@ -1,7 +1,7 @@
 # MISUMI bearing geometry evidence
 
 Measured on 2026-11-15 from the original four user-supplied MISUMI STEP archives,
-and on 2026-11-17 from nine further coverage references.
+and on 2026-11-17 from ten further coverage references.
 [misumi-files.json](misumi-files.json) records exact filenames, SHA-256 hashes, byte
 counts and product links. [misumi-measurements.json](misumi-measurements.json)
 records imported native bounds/volumes, section vertices and analytic surface radii.
@@ -39,6 +39,7 @@ the source's analytic values rather than fitting polygonal approximations.
 | [B6003ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6003ZZ) | 17 × 35 × 10 | 10.7 | 15.4 | 0.435 | 0.3 |
 | [B6004ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6004ZZ) | 20 × 42 × 12 | 13.2 | 18.4 | 0.435 | 0.6 |
 | [B6200ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6200ZZ) | 10 × 30 × 9 | 8.15 | 12.45 | 0.435 | 0.6 |
+| [B6201ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6201ZZ) | 12 × 32 × 10 | 8.7 | 13.4 | 0.435 | 0.6 |
 | [B6202ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6202ZZ) | 15 × 35 × 11 | 9.85 | 15.45 | 0.34 | 0.6 |
 | [B6203ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6203ZZ) | 17 × 40 × 12 | 11.5 | 17.6 | 0.34 | 0.6 |
 | [B6204ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6204ZZ) | 20 × 47 × 14 | 14 | 20.8 | 0.53 | 1 |
@@ -85,11 +86,10 @@ products and the two OpenBuilds bearings.
 
 ## Shared section and inference limits
 
-The initial 2026-11-17 samples B6000ZZ, B6003ZZ, B6004ZZ and B6204ZZ, and the
-subsequent B6001ZZ, B6002ZZ, B6200ZZ, B6202ZZ and B6203ZZ references, share the
-existing closed MISUMI section structure: rounded bore and OD
-edges, straight ring shoulders, and a recessed annulus on each side. All nine
-imports have six cylindrical faces, four toroidal faces and six planar faces.
+The ten coverage references B6000ZZ through B6004ZZ and B6200ZZ through B6204ZZ
+share the existing closed MISUMI section structure: rounded bore and OD edges,
+straight ring shoulders, and a recessed annulus on each side. All ten imports
+have six cylindrical faces, four toroidal faces and six planar faces.
 Their sections are symmetric about the width centre. One shared generator can
 construct this geometry from the envelope and four section parameters in the table;
 no product-specific geometry algorithm is needed for these samples.
@@ -110,13 +110,12 @@ from bore, OD and width. B6003ZZ and B6004ZZ share a 0.435 mm shield recess desp
 their different widths. Their inner-ring radial thicknesses are 2.2 and 3.2 mm,
 respectively: about 24.4% and 29.1% of the available radial span `(OD - bore) / 2`.
 A constant proportional section therefore does not reproduce both references.
-The edge radii also change discretely. A fitted formula could match these four
-samples without predicting the remaining sizes correctly.
+The edge radii also change discretely. A fitted formula could match these
+samples without predicting other sizes correctly.
 
-B6201ZZ remains the only missing baseline product. It still needs evidence for its
-shoulder radii, shield recesses and actual edge profiles. An exact-product drawing, dimension table or documented
-supplier family formula is sufficient; a separate STEP is only the most convenient
-way to obtain and independently check those values. Standard envelopes remain
+All baseline products now have exact STEP references. For future variants, an
+exact-product drawing, dimension table or documented supplier family formula is
+also sufficient if it supplies the complete section. Standard envelopes remain
 usable for accurate placement/clearance, while inferred ring and shield details
 would need to be identified as estimates.
 
@@ -136,18 +135,17 @@ not the right-hand stainless SB-series table.
 
 The B6000ZZ through B6004ZZ and B6200ZZ through B6204ZZ rows confirm the exact
 catalog designations, double-shielded closure family and bore/OD/width in the
-[completion tracker](../bearing-coverage.md#missing-radial-bearings). They provide
+[completion tracker](../bearing-coverage.md#radial-bearing-coverage). They provide
 an independent envelope cross-check for incoming CAD. The historical catalog does
 not establish current stock or availability. No supplier STEP files were acquired
-in the initial web audit; nine references were subsequently supplied and measured as
+in the initial web audit; ten references were subsequently supplied and measured as
 recorded above.
 
 The drawing labels `Ds`, `dh` and `R` as installation dimensions; these are not
 the visible ring shoulder radii or shield boundaries. Its `r (min)` is a minimum
 bearing chamfer allowance, not a measured nominal CAD fillet. The catalog does not
-dimension the shield recesses or complete visible ring sections. The remaining
-targets still need the section parameters established by STEP, a detailed drawing,
-a supplier dimension table or a documented family sizing rule.
+dimension the shield recesses or complete visible ring sections. The supplied STEP
+references establish those section parameters for every target in this expansion.
 
 Existing B626ZZ and B608ZZ measurements illustrate the required evidence format,
 but do not establish dimensions for the larger products. Reuse the measurement

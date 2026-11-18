@@ -43,6 +43,8 @@ pub enum Bearing {
     MisumiB6004zz,
     #[serde(rename = "misumi-b6200zz")]
     MisumiB6200zz,
+    #[serde(rename = "misumi-b6201zz")]
+    MisumiB6201zz,
     #[serde(rename = "misumi-b6202zz")]
     MisumiB6202zz,
     #[serde(rename = "misumi-b6203zz")]
@@ -51,7 +53,7 @@ pub enum Bearing {
     MisumiB6204zz,
 }
 
-pub const ALL: [Bearing; 15] = [
+pub const ALL: [Bearing; 16] = [
     Bearing::OpenBuilds6252rs,
     Bearing::OpenBuilds105zz,
     Bearing::MisumiB626,
@@ -64,6 +66,7 @@ pub const ALL: [Bearing; 15] = [
     Bearing::MisumiB6003zz,
     Bearing::MisumiB6004zz,
     Bearing::MisumiB6200zz,
+    Bearing::MisumiB6201zz,
     Bearing::MisumiB6202zz,
     Bearing::MisumiB6203zz,
     Bearing::MisumiB6204zz,
@@ -168,6 +171,7 @@ impl Bearing {
             | Self::MisumiB6003zz
             | Self::MisumiB6004zz
             | Self::MisumiB6200zz
+            | Self::MisumiB6201zz
             | Self::MisumiB6202zz
             | Self::MisumiB6203zz
             | Self::MisumiB6204zz => Supplier {
@@ -212,6 +216,9 @@ impl Bearing {
             Self::MisumiB6200zz => {
                 "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6200ZZ"
             }
+            Self::MisumiB6201zz => {
+                "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6201ZZ"
+            }
             Self::MisumiB6202zz => {
                 "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6202ZZ"
             }
@@ -239,6 +246,7 @@ impl Bearing {
             Self::MisumiB6003zz => "B6003ZZ",
             Self::MisumiB6004zz => "B6004ZZ",
             Self::MisumiB6200zz => "B6200ZZ",
+            Self::MisumiB6201zz => "B6201ZZ",
             Self::MisumiB6202zz => "B6202ZZ",
             Self::MisumiB6203zz => "B6203ZZ",
             Self::MisumiB6204zz => "B6204ZZ",
@@ -258,6 +266,7 @@ impl Bearing {
             | Self::MisumiB6003zz
             | Self::MisumiB6004zz
             | Self::MisumiB6200zz
+            | Self::MisumiB6201zz
             | Self::MisumiB6202zz
             | Self::MisumiB6203zz
             | Self::MisumiB6204zz => Closure::MetalShields,
@@ -289,6 +298,7 @@ impl Bearing {
             Self::MisumiB6003zz => (17.0, 35.0, 10.0, Some((10.7, 15.4, Some(0.435), 0.3))),
             Self::MisumiB6004zz => (20.0, 42.0, 12.0, Some((13.2, 18.4, Some(0.435), 0.6))),
             Self::MisumiB6200zz => (10.0, 30.0, 9.0, Some((8.15, 12.45, Some(0.435), 0.6))),
+            Self::MisumiB6201zz => (12.0, 32.0, 10.0, Some((8.7, 13.4, Some(0.435), 0.6))),
             Self::MisumiB6202zz => (15.0, 35.0, 11.0, Some((9.85, 15.45, Some(0.34), 0.6))),
             Self::MisumiB6203zz => (17.0, 40.0, 12.0, Some((11.5, 17.6, Some(0.34), 0.6))),
             Self::MisumiB6204zz => (20.0, 47.0, 14.0, Some((14.0, 20.8, Some(0.53), 1.0))),
@@ -526,6 +536,12 @@ mod tests {
             (
                 Bearing::MisumiB6200zz,
                 [10.0, 30.0, 9.0, 8.15, 12.45, 0.6],
+                Some(0.435),
+                Closure::MetalShields,
+            ),
+            (
+                Bearing::MisumiB6201zz,
+                [12.0, 32.0, 10.0, 8.7, 13.4, 0.6],
                 Some(0.435),
                 Closure::MetalShields,
             ),

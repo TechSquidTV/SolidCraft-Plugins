@@ -45,6 +45,6 @@ Every `examples/<name>.json` has a `<name>.steps.json` recipe; `tests/examples_t
 ## Gotchas
 
 - **The signed macOS SolidCraft is SIGKILLed when it loads a plugin**, and the suites print SKIP. A run that is all SKIP checked nothing; never report it as passing.
-- **A stale `dist/` tests the old code.** Run `./build.sh` after every change before a host suite.
+- **A stale `dist/` tests the old code.** Run `./build.sh` after every change before a host suite. Keep packages stable while host suites run: rebuilding can invalidate cached approvals. If that happens, rerun the affected suite against the finished package.
 - **Floating-point boxes differ in the last digits** between hosts; compare with a small absolute tolerance, as the suites do, not with `==`.
 - **Report every file with its pass, fail and skip counts** in the PR, and say which suites you didn't run.

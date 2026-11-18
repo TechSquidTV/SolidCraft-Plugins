@@ -11,8 +11,8 @@ lists thirteen envelopes. This is a dated comparison baseline, not a runtime tab
 or evidence of a particular manufacturer's ring or seal geometry.
 
 The original products cover 625, 626 and 608. The completed rows below expand
-that coverage; B6201ZZ is the remaining baseline gap. OpenBuilds 105ZZ is additional
-coverage used by mini wheels. The [generated product table](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/plugins/techsquid-bearings/REFERENCE.md#presets-and-reference-dimensions)
+that coverage to all thirteen baseline envelopes. OpenBuilds 105ZZ is additional
+coverage used by mini wheels. The [generated product table](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/plugins/techsquid-bearings/REFERENCE.md#presets-and-reference-dimensions)
 is authoritative for products currently included.
 
 The initial expansion targets one sourced, double-shielded MISUMI product for each
@@ -21,18 +21,19 @@ by B626ZZ and B608ZZ. Completion means all thirteen baseline envelopes have at
 least one implemented and validated supplier product; it does not mean every seal,
 shield, material or manufacturer variant is covered.
 
-## Missing radial bearings
+## Radial bearing coverage
 
 Audit date: 2026-11-17. MISUMI's catalog identifies all ten target part numbers and
 their nominal envelopes. The [catalog evidence record](sources/misumi.md#catalog-evidence-for-the-coverage-expansion)
-records the exact PDF revision and what it establishes. Nine supplier STEP files
-were received and measured on 2026-11-17; only B6201ZZ still needs detail dimensions.
+records the exact PDF revision and what it establishes. All ten supplier STEP files
+were received and measured on 2026-11-17; no further references are needed for
+this baseline expansion.
 
 The supplied references share one parametric section. The new products use the
 existing closed-bearing builder with their measured dimensions. The [sample comparison](sources/misumi.md#shared-section-and-inference-limits)
 records why their detail dimensions cannot yet be derived reliably for other sizes.
-A supplier dimension table or documented family formula can also supply the missing
-values; a separate CAD file is not mandatory for every row.
+For future products, a supplier dimension table or documented family formula can
+also supply these values; a separate CAD file is not mandatory for every row.
 
 | Base size | MISUMI target | Bore x OD x width, mm | Product / envelope evidence | Exterior CAD or section drawing | Measurements | Native model / catalog | Validation |
 |---|---|---|---|---|---|---|---|
@@ -42,7 +43,7 @@ values; a separate CAD file is not mandatory for every row.
 | 6003 | B6003ZZ | 17 x 35 x 10 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
 | 6004 | B6004ZZ | 20 x 42 x 12 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
 | 6200 | B6200ZZ | 10 x 30 x 9 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
-| 6201 | B6201ZZ | 12 x 32 x 10 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6201 | B6201ZZ | 12 x 32 x 10 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
 | 6202 | B6202ZZ | 15 x 35 x 11 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
 | 6203 | B6203ZZ | 17 x 40 x 12 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
 | 6204 | B6204ZZ | 20 x 47 x 14 | Catalog confirmed | [STEP received](sources/misumi-files.json) | [Measured](sources/misumi-measurements.json) | [Implemented](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/feat/bearings/close-radial-coverage/crates/bearings/src/lib.rs) | [Passed](https://github.com/TechSquidTV/SolidCraft-Plugins/pull/19) |
@@ -53,18 +54,10 @@ not current availability or verified exterior geometry. Keep the target SKU on t
 download or drawing so another brand, closure or stainless variant is not mistaken
 for the same product.
 
-## References to acquire
+## Reference requirements
 
-B6201ZZ is the only outstanding target. Its nominal envelope is 12 x 32 x 10 mm;
-we still need its two shoulder radii, shield recesses and actual edge profiles.
-Acquire a supplier STEP download, preferably retaining its original ZIP, or a
-dimensioned section/table tied to that exact part number. A documented supplier
-sizing rule is also sufficient if it determines the missing section values.
-Use MISUMI's [double-shielded bearing selector](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6201ZZ).
-
-The user supplied the other nine STEP archives; their revisions and measurements
-are recorded in the supplier ledger. B6201ZZ is omitted from the generator until
-its detail dimensions are established.
+All ten target STEP archives are recorded in the supplier ledger. The reference
+requirements below remain applicable when adding future products.
 
 The reference package must establish:
 
@@ -101,34 +94,33 @@ only when its identity and geometry source are established.
 
 ## Completion checklist
 
-Apply this checklist to each required row; unchecked boxes describe the work still
-needed for B6201ZZ. The table records progress; measured
-dimensions belong in the supplier evidence records and the domain crate.
+The table records per-product completion. Measured dimensions belong in the
+supplier evidence records and the domain crate.
 
-- [ ] Acquire and identify the reference; retain original files outside Git and
+- [x] Acquire and identify the reference; retain original files outside Git and
   record STEP revisions/hashes in `docs/sources/misumi-files.json`. Record a drawing
   revision/hash in the supplier ledger when a drawing supplies the section.
-- [ ] Record STEP measurements in `docs/sources/misumi-measurements.json` and describe
+- [x] Record STEP measurements in `docs/sources/misumi-measurements.json` and describe
   discrepancies or representation limits in the supplier ledger. Use
   `tools/measure_parts.py` with an unsigned SolidCraft CLI after checking the
   file's units and axis against the tool's assumptions. Record drawing-derived
   measurements and calculations in the supplier ledger if no STEP is supplied.
-- [ ] Add the product to `crates/bearings`, reusing its section builder and product
+- [x] Add the product to `crates/bearings`, reusing its section builder and product
   identity methods. Add independent source-table tests. Expand the builder only
   where an acquired reference requires a new section shape.
-- [ ] Regenerate choices and product tables with
+- [x] Regenerate choices and product tables with
   `cargo run -p catalog-tool -- --write`; update affected guide text.
-- [ ] Extend `tests/bearing_geometry_test.py` with source-derived bounds, ring
+- [x] Extend `tests/bearing_geometry_test.py` with source-derived bounds, ring
   sections, shield areas/recesses, meaningful volumes, purchasing identity, reuse
   and command-budget checks. Run the applicable host suites listed in
   [DEVELOPMENT.md](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/DEVELOPMENT.md).
-- [ ] Regenerate affected examples and pictures and rerun their checks; verify
+- [x] Regenerate affected examples and pictures and rerun their checks; verify
   existing bearings and V-wheel assemblies still retain their product identities.
-- [ ] Pass formatting, native/wasm clippy, workspace tests and `./build.sh` before
+- [x] Pass formatting, native/wasm clippy, workspace tests and `./build.sh` before
   committing. Mark Validation complete only after required host checks pass with
   no skips and the example/picture work is complete.
 
-The planned additions do not require changing existing product IDs or definitions.
+The additions preserve existing product IDs and definitions.
 **Breaking-change warning:** if reference review requires correcting an existing
 definition, bump its representation/provider revision and document that existing
 saved instances are not migrated. Regenerate affected examples; do not introduce

@@ -89,5 +89,12 @@
     "sha256": "36355271229f9649645ecc056decb983c5347f4e5b207df002fa42a0f6b45230",
     "bytes": 28560,
     "product_url": "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6203ZZ"
+  },
+  {
+    "file": "B6201ZZ.stp",
+    "archive": "B6201ZZ_STEP.zip",
+    "sha256": "3436b3fe3fcacd6f8a5e5118d609fefad9706172722c4ee25aab1fd4aabe006b",
+    "bytes": 28525,
+    "product_url": "https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B6201ZZ"
   }
 ]

@@ -1,6 +1,6 @@
 //! Discovery delegates dimensions and identity to the shared bearing factory.
 
-pub const REVISION: &str = "9";
+pub const REVISION: &str = "10";
 
 #[cfg(test)]
 mod tests {

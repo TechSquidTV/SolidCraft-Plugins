@@ -28,6 +28,8 @@ Try the [screw attachment test plate](examples/screw-attachment-test.md) to move
 
 Try the [combined radial-bearing and CSK example](examples/bearings.json) to inspect seals, shields and keyways, or the [wheel assemblies](examples/v-wheels.json) to inspect shared components. The [CSK clutch walkthrough](examples/csk-clutches.md) demonstrates reference keyways, custom dimensions and repeated placements.
 
+The [bearing coverage tracker](docs/bearing-coverage.md) records the sourced products covering the main app's nominal bearing sizes and the optional variants still to consider.
+
 Packages expose their insertion tools only. Parts share definitions, identity, verified reuse and composition through one [parts-library foundation](docs/parts-library.md). Catalog discovery is internal; there are no Catalog menu entries or public discovery API. [Developer reference](DEVELOPMENT.md) covers builds, tests and example rendering.
 
 ## License

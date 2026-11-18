@@ -83,9 +83,11 @@ after creation, outside this generator's inputs.
 `make-bearing` accepts `size` (default `625 2RS`) and `placement`.
 It inserts fixed supplier products and rejects dimensional overrides. OpenBuilds
 and MISUMI purchasing identities remain explicit for these catalog products.
-Their separate rings and source-measured seals, shields or exposed raceways are
-unchanged. Closed variants omit hidden balls; open B626 includes eight sourced
-balls. Cages and closure thickness are not inferred.
+Every radial product has a measured exterior: separate rings and sourced seals,
+shields or exposed raceways. Closed variants omit hidden balls; open B626 includes
+eight sourced balls. Cages and closure thickness are not inferred. Matching a
+standard envelope does not establish another product's ring or closure details;
+the [source ledgers](#sources) identify the exact references used.
 
 ## Placement and reuse
 
@@ -123,6 +125,7 @@ replacement. See [verified reuse](../../docs/parts-library.md).
 | B6003ZZ | MISUMI | B6003ZZ | 17 × 35 × 10 | Metal shields, both sides | Measured |
 | B6004ZZ | MISUMI | B6004ZZ | 20 × 42 × 12 | Metal shields, both sides | Measured |
 | B6200ZZ | MISUMI | B6200ZZ | 10 × 30 × 9 | Metal shields, both sides | Measured |
+| B6201ZZ | MISUMI | B6201ZZ | 12 × 32 × 10 | Metal shields, both sides | Measured |
 | B6202ZZ | MISUMI | B6202ZZ | 15 × 35 × 11 | Metal shields, both sides | Measured |
 | B6203ZZ | MISUMI | B6203ZZ | 17 × 40 × 12 | Metal shields, both sides | Measured |
 | B6204ZZ | MISUMI | B6204ZZ | 20 × 47 × 14 | Metal shields, both sides | Measured |

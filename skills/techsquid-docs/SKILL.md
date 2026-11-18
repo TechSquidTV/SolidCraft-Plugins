@@ -38,3 +38,4 @@ Write in plain, direct sentences like the existing docs: one idea per sentence, 
 - **Packaged guides are rewritten.** `build.sh` turns `../../docs/` into `docs/` and `../../DEVELOPMENT.md#components` into `docs/parts-library.md`. A plugin guide that links elsewhere in the repository breaks once installed; link to GitHub for those.
 - **Generated tables aren't hand-edited.** The Bearings tables come from `catalog-tool`; `./build.sh` fails when they drift.
 - **Counts go stale.** Preset counts, size ranges and test counts in prose were wrong after changes more than once. Prefer a link to the table over a number, and grep for the old number when one changes.
+- **Evidence links must survive branch deletion.** Pin implementation evidence and PR preview images to a commit; use relative or default-branch links for current guides. Do not leave permanent documentation pointing to a temporary feature branch.

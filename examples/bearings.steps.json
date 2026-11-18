@@ -1,5 +1,5 @@
 {
-  "description": "Six sourced radial bearings above four representative CSK clutches: CSK8PP, CSK15P, CSK15PP and CSK15-2RS, all at the same scale. Shows small keyed, inner-keyed, dual-keyed and sealed clutch variants.",
+  "description": "Sourced radial bearings and four representative CSK clutches at the same scale. From back to front: 6200 through 6204 double-shielded products, 6000 through 6004 double-shielded products, small OpenBuilds and MISUMI bearings, and CSK8PP/CSK15P/CSK15PP/CSK15-2RS clutches.",
   "steps": [
     {
       "caption": "Lay out the axle centres",
@@ -117,6 +117,116 @@
           0
         ],
         "id": "csk3"
+      }
+    },
+    {
+      "caption": "B6000ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -110,
+          105
+        ],
+        "id": "b6000zz"
+      }
+    },
+    {
+      "caption": "B6001ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -55,
+          105
+        ],
+        "id": "b6001zz"
+      }
+    },
+    {
+      "caption": "B6002ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          0,
+          105
+        ],
+        "id": "b6002zz"
+      }
+    },
+    {
+      "caption": "B6003ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          55,
+          105
+        ],
+        "id": "b6003zz"
+      }
+    },
+    {
+      "caption": "B6004ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          110,
+          105
+        ],
+        "id": "b6004zz"
+      }
+    },
+    {
+      "caption": "B6200ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -110,
+          165
+        ],
+        "id": "b6200zz"
+      }
+    },
+    {
+      "caption": "B6201ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          -55,
+          165
+        ],
+        "id": "b6201zz"
+      }
+    },
+    {
+      "caption": "B6202ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          0,
+          165
+        ],
+        "id": "b6202zz"
+      }
+    },
+    {
+      "caption": "B6203ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          55,
+          165
+        ],
+        "id": "b6203zz"
+      }
+    },
+    {
+      "caption": "B6204ZZ centre",
+      "command": "sketch.point",
+      "params": {
+        "point": [
+          110,
+          165
+        ],
+        "id": "b6204zz"
       }
     },
     {
@@ -239,6 +349,196 @@
       }
     },
     {
+      "caption": "B6000ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6000ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6000zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6001ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6001ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6001zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6002ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6002ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6002zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6003ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6003ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6003zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6004ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6004ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6004zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6200ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6200ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6200zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6201ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6201ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6201zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6202ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6202ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6202zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6203ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6203ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6203zz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caption": "B6204ZZ",
+      "command": "plugin.run",
+      "params": {
+        "path": "dist/techsquid-bearings",
+        "approval": "@approval",
+        "entry": "make-bearing",
+        "params": {
+          "size": "B6204ZZ",
+          "placement": [
+            {
+              "type": "external_sketch_point",
+              "sketch": "Bearing centres",
+              "id": "b6204zz"
+            }
+          ]
+        }
+      }
+    },
+    {
       "caption": "CSK8PP",
       "command": "plugin.run",
       "params": {
@@ -324,17 +624,17 @@
     }
   ],
   "expect": {
-    "bodies": 46,
-    "surface_bodies": 18,
+    "bodies": 86,
+    "surface_bodies": 38,
     "bbox": {
       "min": [
-        -73,
+        -125,
         -17.5,
         -8
       ],
       "max": [
-        77.5,
-        56,
+        133.5,
+        188.5,
         8
       ]
     },
@@ -1086,10 +1386,630 @@
           ]
         },
         "area_mm2": 346.19408564763444
+      },
+      {
+        "body": "Bearing B6000ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -116.95,
+            98.05,
+            -4.0
+          ],
+          "max": [
+            -103.05,
+            111.95,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6000ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -123.0,
+            92.0,
+            -4.0
+          ],
+          "max": [
+            -97.0,
+            118.0,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6000ZZ Shield front",
+        "bbox": {
+          "min": [
+            -121.1,
+            93.9,
+            3.67
+          ],
+          "max": [
+            -98.9,
+            116.1,
+            3.67
+          ]
+        },
+        "area_mm2": 235.3288516987774
+      },
+      {
+        "body": "Bearing B6000ZZ Shield back",
+        "bbox": {
+          "min": [
+            -121.1,
+            93.9,
+            -3.67
+          ],
+          "max": [
+            -98.9,
+            116.1,
+            -3.67
+          ]
+        },
+        "area_mm2": 235.3288516987774
+      },
+      {
+        "body": "Bearing B6001ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -63.15,
+            96.85,
+            -4.0
+          ],
+          "max": [
+            -46.85,
+            113.15,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6001ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -69.0,
+            91.0,
+            -4.0
+          ],
+          "max": [
+            -41.0,
+            119.0,
+            4.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6001ZZ Shield front",
+        "bbox": {
+          "min": [
+            -67.45,
+            92.55,
+            3.565
+          ],
+          "max": [
+            -42.55,
+            117.45,
+            3.565
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6001ZZ Shield back",
+        "bbox": {
+          "min": [
+            -67.45,
+            92.55,
+            -3.565
+          ],
+          "max": [
+            -42.55,
+            117.45,
+            -3.565
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6002ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -9.65,
+            95.35,
+            -4.5
+          ],
+          "max": [
+            9.65,
+            114.65,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6002ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -16.0,
+            89.0,
+            -4.5
+          ],
+          "max": [
+            16.0,
+            121.0,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6002ZZ Shield front",
+        "bbox": {
+          "min": [
+            -13.95,
+            91.05,
+            4.065
+          ],
+          "max": [
+            13.95,
+            118.95,
+            4.065
+          ]
+        },
+        "area_mm2": 318.8088224862922
+      },
+      {
+        "body": "Bearing B6002ZZ Shield back",
+        "bbox": {
+          "min": [
+            -13.95,
+            91.05,
+            -4.065
+          ],
+          "max": [
+            13.95,
+            118.95,
+            -4.065
+          ]
+        },
+        "area_mm2": 318.8088224862922
+      },
+      {
+        "body": "Bearing B6003ZZ Inner ring",
+        "bbox": {
+          "min": [
+            44.3,
+            94.3,
+            -5.0
+          ],
+          "max": [
+            65.7,
+            115.7,
+            5.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6003ZZ Outer ring",
+        "bbox": {
+          "min": [
+            37.5,
+            87.5,
+            -5.0
+          ],
+          "max": [
+            72.5,
+            122.5,
+            5.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6003ZZ Shield front",
+        "bbox": {
+          "min": [
+            39.6,
+            89.6,
+            4.565
+          ],
+          "max": [
+            70.4,
+            120.4,
+            4.565
+          ]
+        },
+        "area_mm2": 385.37917081586005
+      },
+      {
+        "body": "Bearing B6003ZZ Shield back",
+        "bbox": {
+          "min": [
+            39.6,
+            89.6,
+            -4.565
+          ],
+          "max": [
+            70.4,
+            120.4,
+            -4.565
+          ]
+        },
+        "area_mm2": 385.37917081586005
+      },
+      {
+        "body": "Bearing B6004ZZ Inner ring",
+        "bbox": {
+          "min": [
+            96.8,
+            91.8,
+            -6.0
+          ],
+          "max": [
+            123.2,
+            118.2,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6004ZZ Outer ring",
+        "bbox": {
+          "min": [
+            89.0,
+            84.0,
+            -6.0
+          ],
+          "max": [
+            131.0,
+            126.0,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6004ZZ Shield front",
+        "bbox": {
+          "min": [
+            91.6,
+            86.6,
+            5.565
+          ],
+          "max": [
+            128.4,
+            123.4,
+            5.565
+          ]
+        },
+        "area_mm2": 516.2265048378747
+      },
+      {
+        "body": "Bearing B6004ZZ Shield back",
+        "bbox": {
+          "min": [
+            91.6,
+            86.6,
+            -5.565
+          ],
+          "max": [
+            128.4,
+            123.4,
+            -5.565
+          ]
+        },
+        "area_mm2": 516.2265048378747
+      },
+      {
+        "body": "Bearing B6200ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -118.15,
+            156.85,
+            -4.5
+          ],
+          "max": [
+            -101.85,
+            173.15,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6200ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -125.0,
+            150.0,
+            -4.5
+          ],
+          "max": [
+            -95.0,
+            180.0,
+            4.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6200ZZ Shield front",
+        "bbox": {
+          "min": [
+            -122.45,
+            152.55,
+            4.065
+          ],
+          "max": [
+            -97.55,
+            177.45,
+            4.065
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6200ZZ Shield back",
+        "bbox": {
+          "min": [
+            -122.45,
+            152.55,
+            -4.065
+          ],
+          "max": [
+            -97.55,
+            177.45,
+            -4.065
+          ]
+        },
+        "area_mm2": 278.2822772549838
+      },
+      {
+        "body": "Bearing B6201ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -63.7,
+            156.3,
+            -5
+          ],
+          "max": [
+            -46.3,
+            173.7,
+            5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6201ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -71,
+            149,
+            -5
+          ],
+          "max": [
+            -39,
+            181,
+            5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6201ZZ Shield front",
+        "bbox": {
+          "min": [
+            -68.4,
+            151.6,
+            4.565
+          ],
+          "max": [
+            -41.6,
+            178.4,
+            4.565
+          ]
+        },
+        "area_mm2": 326.3172289283719
+      },
+      {
+        "body": "Bearing B6201ZZ Shield back",
+        "bbox": {
+          "min": [
+            -68.4,
+            151.6,
+            -4.565
+          ],
+          "max": [
+            -41.6,
+            178.4,
+            -4.565
+          ]
+        },
+        "area_mm2": 326.3172289283719
+      },
+      {
+        "body": "Bearing B6202ZZ Inner ring",
+        "bbox": {
+          "min": [
+            -9.850000000000001,
+            155.15,
+            -5.5
+          ],
+          "max": [
+            9.850000000000001,
+            174.85,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6202ZZ Outer ring",
+        "bbox": {
+          "min": [
+            -17.5,
+            147.5,
+            -5.5
+          ],
+          "max": [
+            17.5,
+            182.5,
+            5.5
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6202ZZ Shield front",
+        "bbox": {
+          "min": [
+            -15.450000000000003,
+            149.55,
+            5.16
+          ],
+          "max": [
+            15.45,
+            180.45,
+            5.16
+          ]
+        },
+        "area_mm2": 445.1008471606019
+      },
+      {
+        "body": "Bearing B6202ZZ Shield back",
+        "bbox": {
+          "min": [
+            -15.450000000000003,
+            149.55,
+            -5.16
+          ],
+          "max": [
+            15.45,
+            180.45,
+            -5.16
+          ]
+        },
+        "area_mm2": 445.1008471606019
+      },
+      {
+        "body": "Bearing B6203ZZ Inner ring",
+        "bbox": {
+          "min": [
+            43.5,
+            153.5,
+            -6.0
+          ],
+          "max": [
+            66.5,
+            176.5,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6203ZZ Outer ring",
+        "bbox": {
+          "min": [
+            35.0,
+            145.0,
+            -6.0
+          ],
+          "max": [
+            75.0,
+            185.0,
+            6.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6203ZZ Shield front",
+        "bbox": {
+          "min": [
+            37.4,
+            147.4,
+            5.66
+          ],
+          "max": [
+            72.6,
+            182.6,
+            5.66
+          ]
+        },
+        "area_mm2": 557.6641119387243
+      },
+      {
+        "body": "Bearing B6203ZZ Shield back",
+        "bbox": {
+          "min": [
+            37.4,
+            147.4,
+            -5.66
+          ],
+          "max": [
+            72.6,
+            182.6,
+            -5.66
+          ]
+        },
+        "area_mm2": 557.6641119387243
+      },
+      {
+        "body": "Bearing B6204ZZ Inner ring",
+        "bbox": {
+          "min": [
+            96.0,
+            151,
+            -7.0
+          ],
+          "max": [
+            124.0,
+            179,
+            7.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6204ZZ Outer ring",
+        "bbox": {
+          "min": [
+            86.5,
+            141.5,
+            -7.0
+          ],
+          "max": [
+            133.5,
+            188.5,
+            7.0
+          ]
+        }
+      },
+      {
+        "body": "Bearing B6204ZZ Shield front",
+        "bbox": {
+          "min": [
+            89.2,
+            144.2,
+            6.47
+          ],
+          "max": [
+            130.8,
+            185.8,
+            6.47
+          ]
+        },
+        "area_mm2": 743.4264855454887
+      },
+      {
+        "body": "Bearing B6204ZZ Shield back",
+        "bbox": {
+          "min": [
+            89.2,
+            144.2,
+            -6.47
+          ],
+          "max": [
+            130.8,
+            185.8,
+            -6.47
+          ]
+        },
+        "area_mm2": 743.4264855454887
       }
     ],
     "catalog_definitions": {
-      "techsquid-bearings": 10
+      "techsquid-bearings": 20
     }
   }
 }

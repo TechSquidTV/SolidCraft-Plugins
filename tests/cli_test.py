@@ -14,7 +14,10 @@ and 5.2 high, a V-slot 2040 rail 20 across and 120 long. On the signed macOS bui
 kills the CLI with SIGKILL (hardened runtime, no JIT entitlement), and that case is
 reported and skipped.
 """
-from harness import check, finish, inspect, killed, package, plugin_ids, run, skip
+import json
+from pathlib import Path
+
+from harness import ROOT, check, finish, inspect, killed, package, plugin_ids, run, skip
 
 TOL = 1e-3
 
@@ -83,6 +86,10 @@ for plugin_id in PLUGINS:
         continue
     entry, params, label, (across, height) = CASES[plugin_id]
     path = package(plugin_id)
+    manifest = (Path(path) / "plugin.json").read_bytes()
+    source = json.loads((Path(ROOT) / "plugins" / plugin_id / "plugin.json").read_text())
+    check(f"{plugin_id}: packaged manifest preserves every source field", json.loads(manifest) == source)
+    check(f"{plugin_id}: packaged manifest fits the host limit", len(manifest) <= 16 * 1024)
     code, text, info = inspect(plugin_id)
     check(f"{plugin_id}: inspect", code == 0 and info, text[-500:])
     if code != 0 or not info:

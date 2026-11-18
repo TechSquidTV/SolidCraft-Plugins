@@ -10,7 +10,7 @@ TechSquid's plugins for [SolidCraft](https://github.com/tangency-labs/solidcraft
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | `techsquid-inserts` | Fasteners | CNC Kitchen heat-set inserts, metric and UN: the straight or stepped hole drilled into the part, and the knurled insert as its own body |
 | [Hexagon nuts](plugins/techsquid-nuts/README.md) | `techsquid-nuts` | Fasteners | ISO 4032 hexagon nuts on picked sketch points, and optionally a hexagonal pocket with a bolt hole |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | `techsquid-extrusions` | Extrusions | 20 mm series T-slot (MISUMI 5 series) and V-slot (OpenBuilds) rails, 2020 to 2080 and 4040, cut to any length, with tapped ends and screw holes so they screw together, and the MISUMI M5 slot nuts that go in them |
-| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings and clutches | Six sourced OpenBuilds and MISUMI radial bearings, plus 55 CSK presets with editable envelopes, keyway configuration and source references |
+| [Bearings](plugins/techsquid-bearings/README.md) | `techsquid-bearings` | Bearings and clutches | Sourced OpenBuilds and MISUMI radial bearings, plus 55 CSK presets with editable envelopes, keyway configuration and source references |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | `techsquid-v-wheels` | Wheels | Five OpenBuilds products, bare or composed with bearings and an internal shim |
 
 Each plugin's README links to its detailed reference for dialog fields, standards and naming. Each release has one zip per plugin.
@@ -58,7 +58,7 @@ baseline and source evidence still needed before adding purchasable variants.
 
 ## Build
 
-You need Rust with the `wasm32-unknown-unknown` target, [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools), and Python 3 for packaging the guides.
+You need Rust with the `wasm32-unknown-unknown` target, [`wasm-tools`](https://github.com/bytecodealliance/wasm-tools), and Python 3 for packaging manifests and guides.
 
 ```
 cargo test
@@ -73,11 +73,20 @@ measurements and assembly members. These descriptors remain the single source fo
 insertion and reuse; packages do not export a `catalog` entry or query handler.
 See the [internal contract](docs/catalog-contract.md) and [shared library](docs/parts-library.md).
 
+**Rust API change:** `Bearing::product_url()` returns `String`, constructed from
+the supplier family and the existing SKU. Rust callers expecting `&'static str`
+must accept the owned string or borrow it for the duration of use. Product URLs
+and purchasing identities remain the same.
+
 `tools/catalog-tool` generates catalog-owned insertion choices and documentation
 tables from the same data, including the Bearings README and reference table.
 Run `cargo run -p catalog-tool -- --write` after changing them;
 `./build.sh` runs `--check` and refuses drift. Workflow controls remain hand-authored.
-The package and guest both use that manifest. The generator must not add API entries.
+Source manifests stay formatted for review; `build.sh` writes compact UTF-8 JSON
+to each package and enforces the host's 16 KiB limit on those bytes. All fields,
+choices and help text are preserved. The guest reads the same source content;
+`tests/cli_test.py` checks that the packaged JSON equals it and fits the limit.
+The generator must not add API entries.
 
 The internal resolver's `catalog_selection` precondition pins the protocol version,
 catalog revision and representation for provider round-trip tests. The ordinary
@@ -218,7 +227,7 @@ Nine standalone examples show the plugins’ parts and editing modes. Each plugi
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
 | `slot-nuts` | `techsquid-extrusions` | An M3 pre-assembly and an M4 post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
-| `bearings` | `techsquid-bearings` | Six radial bearings and four representative CSK clutches: keyed and sealed variants at the same scale | `bearings.png` |
+| `bearings` | `techsquid-bearings` | The radial bearing catalog and four representative CSK clutches: keyed and sealed variants at the same scale | `bearings.png` |
 | `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |
 
@@ -249,7 +258,7 @@ solidcraft-cli snapshot --in examples/plugin-showcase.json --out examples/plugin
 ```
 
 ```sh
-solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 850 --camera '{"target":[2.25,20,0],"yaw":0,"pitch":0.9,"distance":105}' --no-grid --no-axes --quality fine
+solidcraft-cli snapshot --in examples/bearings.json --out plugins/techsquid-bearings/bearings.png --width 1600 --height 1100 --camera '{"target":[4.25,85.5,0],"yaw":0,"pitch":0.9,"distance":275}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/csk-clutches.json --out plugins/techsquid-bearings/csk-clutches.png --width 1600 --height 800 --camera '{"target":[0.75,25,0],"yaw":0.05,"pitch":0.9,"distance":150}' --no-grid --no-axes --quality fine
 solidcraft-cli snapshot --in examples/v-wheels.json --out plugins/techsquid-v-wheels/v-wheels.png --width 1600 --height 600 --camera '{"target":[-2,0,0],"yaw":0.05,"pitch":0.75,"distance":80}' --no-grid --no-axes --quality fine
 ```
@@ -309,8 +318,10 @@ inspector. Run `./build.sh` first for the rail check. A zero-thickness closure i
 representation, not a seal cross-section or a mass model. The assembly and cross-plugin reuse checks live in `tests/parts_library_test.py`.
 The bearing suite separately verifies MISUMI ring volumes against the STEP ledgers,
 bore/shoulder radii, closure recesses and colours, the open bearing's race depths,
-section vertices and eight spheres, and purchase/reuse
-behavior through the installed workflow.
+eight spheres, and every closed product's complete section vertices and rounded
+edges, plus purchase/reuse behavior through the installed workflow. The
+[coverage tracker](docs/bearing-coverage.md) links each added product to its
+source, measurements and validation record.
 
 The CSK suite checks all 55 presets, measured shoulders/chamfers, closure areas
 and appearance, custom dimensions and keyway presence, exterior estimation

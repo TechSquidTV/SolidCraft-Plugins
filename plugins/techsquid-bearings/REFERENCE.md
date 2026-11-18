@@ -83,9 +83,11 @@ after creation, outside this generator's inputs.
 `make-bearing` accepts `size` (default `625 2RS`) and `placement`.
 It inserts fixed supplier products and rejects dimensional overrides. OpenBuilds
 and MISUMI purchasing identities remain explicit for these catalog products.
-Their separate rings and source-measured seals, shields or exposed raceways are
-unchanged. Closed variants omit hidden balls; open B626 includes eight sourced
-balls. Cages and closure thickness are not inferred.
+Every radial product has a measured exterior: separate rings and sourced seals,
+shields or exposed raceways. Closed variants omit hidden balls; open B626 includes
+eight sourced balls. Cages and closure thickness are not inferred. Matching a
+standard envelope does not establish another product's ring or closure details;
+the [source ledgers](#sources) identify the exact references used.
 
 ## Placement and reuse
 
@@ -116,6 +118,16 @@ replacement. See [verified reuse](../../docs/parts-library.md).
 | B626ZZ | MISUMI | B626ZZ | 6 × 19 × 6 | Metal shields, both sides | Measured |
 | B626DDU | MISUMI | B626DDU | 6 × 19 × 6 | Rubber seals, both sides | Measured |
 | B608ZZ | MISUMI | B608ZZ | 8 × 22 × 7 | Metal shields, both sides | Measured |
+| B6000ZZ | MISUMI | B6000ZZ | 10 × 26 × 8 | Metal shields, both sides | Measured |
+| B6001ZZ | MISUMI | B6001ZZ | 12 × 28 × 8 | Metal shields, both sides | Measured |
+| B6002ZZ | MISUMI | B6002ZZ | 15 × 32 × 9 | Metal shields, both sides | Measured |
+| B6003ZZ | MISUMI | B6003ZZ | 17 × 35 × 10 | Metal shields, both sides | Measured |
+| B6004ZZ | MISUMI | B6004ZZ | 20 × 42 × 12 | Metal shields, both sides | Measured |
+| B6200ZZ | MISUMI | B6200ZZ | 10 × 30 × 9 | Metal shields, both sides | Measured |
+| B6201ZZ | MISUMI | B6201ZZ | 12 × 32 × 10 | Metal shields, both sides | Measured |
+| B6202ZZ | MISUMI | B6202ZZ | 15 × 35 × 11 | Metal shields, both sides | Measured |
+| B6203ZZ | MISUMI | B6203ZZ | 17 × 40 × 12 | Metal shields, both sides | Measured |
+| B6204ZZ | MISUMI | B6204ZZ | 20 × 47 × 14 | Metal shields, both sides | Measured |
 | CSK8 | Unassigned | — | 8 × 22 × 9 | Unkeyed ([reference](https://www.formsprag.com/-/media/Project/Altramotion/shared/files/Literature/brand/formsprag-clutch/catalogs/p-1352-fc.pdf)) | Measured |
 | CSK8P | Unassigned | — | 8 × 22 × 9 | Inner keyway ([reference](https://www.peakbearings.com/keywaysize.htm)) | Estimated |
 | CSK8PP | Unassigned | — | 8 × 22 × 9 | Inner and outer keyways ([reference](https://www.peakbearings.com/keywaysize.htm)) | Estimated |
@@ -187,9 +199,14 @@ profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
 
 ## Breaking changes
 
+Catalog revision 10 rejects `catalog_selection` payloads pinned to earlier revisions,
+including revisions 8 and 9, for both radial bearings and CSK clutches. Internal
+callers must resolve those selections again before insertion. Ordinary dialog
+inputs do not carry this precondition, and existing model geometry and product
+representation identities are unchanged by this catalog expansion.
+
 CSK insertion now uses `make-csk`. `make-bearing` accepts radial bearings only;
-there is no old-route alias. Catalog revision 8 requires refreshing saved resolved
-selections. Previous supplier-identified CSK definitions are not reused as the new
+there is no old-route alias. Previous supplier-identified CSK definitions are not reused as the new
 source-neutral specifications. Their existing geometry is preserved. Ring details
 in the Rust `Dimensions` API live under `section`.
 

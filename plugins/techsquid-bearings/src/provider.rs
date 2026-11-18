@@ -1,6 +1,6 @@
 //! Discovery delegates dimensions and identity to the shared bearing factory.
 
-pub const REVISION: &str = "8";
+pub const REVISION: &str = "10";
 
 #[cfg(test)]
 mod tests {
@@ -67,7 +67,7 @@ mod tests {
                     bearing.supplier().name,
                     bearing.sku()
                 ),
-                url: bearing.product_url().into(),
+                url: bearing.product_url(),
             }];
             if bearing == Bearing::OpenBuilds105zz {
                 sources.push(Source {

@@ -168,7 +168,8 @@
             "hole_depth",
             "hole_adjust"
           ],
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-insert.svg"
         },
         "name": "make-insert",
         "slots": [

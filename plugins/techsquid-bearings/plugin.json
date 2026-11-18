@@ -82,7 +82,8 @@
               "type": "string"
             }
           },
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-bearing.svg"
         },
         "name": "make-bearing",
         "slots": [
@@ -445,7 +446,8 @@
           "required": [
             "size"
           ],
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-csk.svg"
         },
         "name": "make-csk",
         "slots": [

@@ -160,7 +160,8 @@
             "create",
             "pocket_adjust"
           ],
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-nut.svg"
         },
         "name": "make-nut",
         "slots": [

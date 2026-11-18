@@ -214,7 +214,8 @@
             "create",
             "hole_type"
           ],
-          "type": "object"
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-screw.svg"
         },
         "name": "make-screw",
         "slots": [

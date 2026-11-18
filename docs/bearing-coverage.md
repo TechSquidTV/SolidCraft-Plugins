@@ -1,60 +1,129 @@
-# Bearing coverage and source checklist
+# Bearing coverage and completion tracker
 
 Parity means covering the main app's nominal bearing sizes with identified,
-purchasable products. It does not mean copying a generic envelope and inventing its
-seal details. A base size, a supplier part number and a CAD representation are
-different things in the shared catalog contract.
+purchasable products. A base size, a supplier part number and a CAD representation
+are different things in the shared catalog contract.
 
-## App baseline
+## Scope and baseline
 
 The [SolidCraft bearing table at commit 0930970](https://github.com/tangency-labs/solidcraft/blob/0930970ce03b43f8d9e6477cb0903d4a713f17f4/crates/engine/src/cmd/parts.rs#L235)
 lists thirteen envelopes. This is a dated comparison baseline, not a runtime table
 or evidence of a particular manufacturer's ring or seal geometry.
 
-| Base size | Bore × outside diameter × width, mm | Plugin coverage |
-|---|---|---|
-| 625 | 5 × 16 × 5 | OpenBuilds 30, 625 2RS |
-| 626 | 6 × 19 × 6 | MISUMI B626, B626ZZ, B626DDU |
-| 608 | 8 × 22 × 7 | MISUMI B608ZZ |
-| 6000 | 10 × 26 × 8 | Awaiting product reference |
-| 6001 | 12 × 28 × 8 | Awaiting product reference |
-| 6002 | 15 × 32 × 9 | Awaiting product reference |
-| 6003 | 17 × 35 × 10 | Awaiting product reference |
-| 6004 | 20 × 42 × 12 | Awaiting product reference |
-| 6200 | 10 × 30 × 9 | Awaiting product reference |
-| 6201 | 12 × 32 × 10 | Awaiting product reference |
-| 6202 | 15 × 35 × 11 | Awaiting product reference |
-| 6203 | 17 × 40 × 12 | Awaiting product reference |
-| 6204 | 20 × 47 × 14 | Awaiting product reference |
+The included products cover 625, 626 and 608. OpenBuilds 105ZZ is additional
+coverage used by mini wheels. The [generated product table](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/plugins/techsquid-bearings/REFERENCE.md#presets-and-reference-dimensions)
+is authoritative for products currently included.
 
-OpenBuilds 800, 105ZZ (5 × 10 × 4 mm), is additional coverage used by mini wheels.
-The generated table in each Bearings reference guide is authoritative for products
-currently included. The three covered base sizes are 625, 626 and 608. Next prioritize
-the 6000 and 6200 families, and sealed 608 if wanted.
+The initial expansion targets one sourced, double-shielded MISUMI product for each
+missing envelope below. This matches the supplier and closure family already used
+by B626ZZ and B608ZZ. Completion means all thirteen baseline envelopes have at
+least one implemented and validated supplier product; it does not mean every seal,
+shield, material or manufacturer variant is covered.
+
+## Missing radial bearings
+
+Audit date: 2026-11-17. MISUMI's catalog identifies all ten target part numbers and
+their nominal envelopes. The [catalog evidence record](sources/misumi.md#catalog-evidence-for-the-coverage-expansion)
+records the exact PDF revision and what it establishes. No matching source CAD or
+section measurements are recorded in the repository for these products.
+
+Start with B6000ZZ and B6200ZZ to check the measurement and build process, then
+complete the remaining rows. Every row needs its own geometry reference; scaling
+an existing bearing or copying another size's shield recess is not sufficient.
+
+| Base size | MISUMI target | Bore x OD x width, mm | Product / envelope evidence | Exterior CAD or section drawing | Measurements | Native model / catalog | Validation |
+|---|---|---|---|---|---|---|---|
+| 6000 | B6000ZZ | 10 x 26 x 8 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6001 | B6001ZZ | 12 x 28 x 8 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6002 | B6002ZZ | 15 x 32 x 9 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6003 | B6003ZZ | 17 x 35 x 10 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6004 | B6004ZZ | 20 x 42 x 12 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6200 | B6200ZZ | 10 x 30 x 9 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6201 | B6201ZZ | 12 x 32 x 10 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6202 | B6202ZZ | 15 x 35 x 11 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6203 | B6203ZZ | 17 x 40 x 12 | Catalog confirmed | Needed | Pending | Pending | Pending |
+| 6204 | B6204ZZ | 20 x 47 x 14 | Catalog confirmed | Needed | Pending | Pending | Pending |
+
+Replace each status with a link to its evidence or completion record as work lands.
+"Catalog confirmed" establishes the historical supplier designation and envelope,
+not current availability or verified exterior geometry. Keep the target SKU on the
+download or drawing so another brand, closure or stainless variant is not mistaken
+for the same product.
 
 ## References to acquire
 
-For each variant, retain its exact manufacturer/supplier part number, product URL,
-and a STEP model or drawing showing the visible rings and closures. Cross-check the
-bore, outside diameter and width. Record the source revision and hash as with the
-OpenBuilds references. Boundary dimensions alone do not establish closure recesses,
-ring shoulders or edge profiles.
+For each target, acquire a supplier STEP download, preferably retaining its original
+ZIP, or a dimensioned section drawing tied to that exact part number. Request the
+ten SKUs in the table through MISUMI's
+[double-shielded bearing selector](https://us.misumi-ec.com/vona2/detail/110300107560/).
+The B6000ZZ and B6200ZZ configured pages could not be read through the text browser
+during this audit; no new CAD download was acquired.
 
-The supplied MISUMI selector and subsequent STEP archives establish this status:
+The reference package must establish:
 
-| Product | Purpose | Status |
-|---|---|---|
-| [MISUMI B626ZZ](https://us.misumi-ec.com/vona2/detail/110300107560/?HissuCode=B626ZZ) | Double metal shields | Supplied STEP measured; included |
-| [MISUMI B626DDU](https://us.misumi-ec.com/vona2/detail/110302273630/?HissuCode=B626DDU) | Rubber seals | Supplied STEP measured; included |
-| [NTN 626Z](https://us.misumi-ec.com/vona2/detail/221000058378/?HissuCode=626Z) | Optional single shield | Awaiting exact CAD/drawing |
-| [MISUMI B626](https://us.misumi-ec.com/vona2/detail/110302273540/?HissuCode=B626) | Open, visible balls | Supplied STEP measured; included |
+- **Identity:** supplier, exact SKU and closure on both sides, product/download URL,
+  source date or revision, original filename, byte count and SHA-256.
+- **Envelope:** bore, outside diameter and overall width, cross-checked against
+  the catalog row. Resolve any disagreement before building.
+- **Visible section:** inner-ring outer radius, outer-ring inner radius, shield
+  recess on each side, and actual edge radii/chamfers. Preserve asymmetry if
+  present. The catalog's mounting dimensions and minimum chamfer allowance do not
+  supply these nominal CAD measurements.
+- **Independent checks:** imported bounds, body layout, volume where meaningful,
+  section vertices and analytic radii. A dimensioned drawing can replace STEP if
+  it specifies the complete visible section; derive expected geometry from it.
 
-B608ZZ is also included from its supplied STEP. The [MISUMI evidence ledger](sources/misumi.md)
-records exact revisions and representation limits. Current stock is not verified.
-The supplier pages' dynamically loaded CAD details were not independently accessible;
-geometry comes from the supplied files. Keep suffixes attached to the source's
-brand; do not infer that different brands' seals or rings share geometry because
-their envelope sizes match.
+The existing [MISUMI evidence ledger](sources/misumi.md) and
+[OpenBuilds ledger](sources/openbuilds.md) remain valid for their recorded products.
+No new references are needed for those unchanged models. A catalog envelope,
+product photo or generic bearing STEP alone cannot establish an exact SKU's
+visible ring and closure geometry. Keep suffixes attached to the source's brand.
+
+## Optional variants after envelope coverage
+
+These do not block the initial expansion. Add each as a separate tracked product
+only when its identity and geometry source are established.
+
+| Candidate | Additional reference needed |
+|---|---|
+| Sealed 608 | Exact supplier SKU and sealed-product STEP or dimensioned section; B608ZZ does not establish seal geometry |
+| Open or rubber-sealed versions of the ten target sizes | Exact supplier SKU and distinct section for each closure; exposed raceways and balls also need evidence for open products |
+| [NTN 626Z](https://us.misumi-ec.com/vona2/detail/221000058378/?HissuCode=626Z), single shield | Exact CAD/drawing, including the exposed side; existing MISUMI 626 products are different purchasing identities |
+| Supplied 8 x 16 x 5 and inch-bearing candidates | Exact supplier designation and closure evidence, as recorded in the [OpenBuilds ledger](sources/openbuilds.md#bearings-and-the-mini-width-correction) |
+
+## Completion checklist
+
+Apply this checklist to each required row. The table records progress; measured
+dimensions belong in the supplier evidence records and the domain crate.
+
+- [ ] Acquire and identify the reference; retain original files outside Git and
+  record STEP revisions/hashes in `docs/sources/misumi-files.json`. Record a drawing
+  revision/hash in the supplier ledger when a drawing supplies the section.
+- [ ] Record STEP measurements in `docs/sources/misumi-measurements.json` and describe
+  discrepancies or representation limits in the supplier ledger. Use
+  `tools/measure_parts.py` with an unsigned SolidCraft CLI after checking the
+  file's units and axis against the tool's assumptions. Record drawing-derived
+  measurements and calculations in the supplier ledger if no STEP is supplied.
+- [ ] Add the product to `crates/bearings`, reusing its section builder and product
+  identity methods. Add independent source-table tests. Expand the builder only
+  where an acquired reference requires a new section shape.
+- [ ] Regenerate choices and product tables with
+  `cargo run -p catalog-tool -- --write`; update affected guide text.
+- [ ] Extend `tests/bearing_geometry_test.py` with source-derived bounds, ring
+  sections, shield areas/recesses, meaningful volumes, purchasing identity, reuse
+  and command-budget checks. Run the applicable host suites listed in
+  [DEVELOPMENT.md](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/DEVELOPMENT.md).
+- [ ] Regenerate affected examples and pictures and rerun their checks; verify
+  existing bearings and V-wheel assemblies still retain their product identities.
+- [ ] Pass formatting, native/wasm clippy, workspace tests and `./build.sh` before
+  committing. Mark Validation complete only after required host checks pass with
+  no skips and the example/picture work is complete.
+
+The planned additions do not require changing existing product IDs or definitions.
+**Breaking-change warning:** if reference review requires correcting an existing
+definition, bump its representation/provider revision and document that existing
+saved instances are not migrated. Regenerate affected examples; do not introduce
+compatibility aliases or silently reuse the old geometry.
 
 ## Adding products without duplication
 

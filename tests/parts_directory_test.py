@@ -13,9 +13,9 @@ with Headless() as host:
     path = package('techsquid-bearings')
     approval = host.command('plugin.inspect', path=path)['approval']
 
-    def insert(size='625 2RS', allow_error=False):
+    def insert(size='625', closure='Sealed', allow_error=False):
         reply = host.command('plugin.run', path=path, approval=approval,
-                             entry='make-bearing', params={'size':size}, allow_error=allow_error)
+                             entry='make-bearing', params={'size':size, 'closure':closure}, allow_error=allow_error)
         return reply.get('result', reply)
 
     def directory():
@@ -63,7 +63,7 @@ with Headless() as host:
     check('old snapshot definition is preserved unchanged',
           host.command('component.metadata', component=current)['metadata'][RECORD] == record)
 
-    shield = insert('105ZZ')
+    shield = insert('105', 'Shielded')
     shield_id = component(shield)
     shield_before = host.command('component.metadata', component=shield_id)
     index = directory()

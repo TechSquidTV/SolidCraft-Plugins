@@ -4,7 +4,7 @@ import json
 import math
 from pathlib import Path
 
-from harness import ROOT, check, finish, package
+from harness import ROOT, TMP, check, finish, package
 from headless import Headless
 
 sources = {s['file']: s for s in json.loads((Path(ROOT)/'docs/sources/misumi-measurements.json').read_text())}
@@ -32,9 +32,11 @@ for sku, bore, od, width, ri, ro, recess, closure in [
     with Headless() as host:
         path = package('techsquid-bearings')
         approval = host.command('plugin.inspect', path=path)['approval']
+        size = sku[1:].removesuffix('ZZ').removesuffix('DDU')
+        style = {None:'Open','Shield':'Shielded','Seal':'Sealed'}[closure]
         def insert():
             result = host.command('plugin.run', path=path, approval=approval,
-                                  entry='make-bearing', params={'size':sku})
+                                  entry='make-bearing', params={'size':size, 'closure':style})
             return result.get('result', result)
         first = insert()
         component = next(c for c in host.command('component.list')['components']
@@ -112,5 +114,82 @@ for sku, bore, od, width, ri, ro, recess, closure in [
         check(sku+': one purchase per occurrence', len(rows) == 1
               and rows[0]['part_number'] == 'MISUMI '+sku and rows[0]['count'] == 2)
         check(sku+': commands remain within budget', first['library']['host_calls'] < 248)
+
+# Each new variant copies the matching measured section. Compare native solids and
+# surfaces against that donor and independently check the catalog/BOM identity.
+for size, closure, designation, donor, donor_id in [
+    ('105', 'Sealed', '105 sealed', '105ZZ', 'openbuilds-105zz'),
+    ('625', 'Shielded', 'B625ZZ', '625 2RS', 'openbuilds-625-2rs'),
+    *[(str(n), 'Sealed', f'B{n}DDU', f'B{n}ZZ', f'misumi-b{n}zz')
+      for n in (608, 6000, 6001, 6002, 6003, 6004, 6200, 6201, 6202, 6203, 6204)],
+]:
+    with Headless() as host:
+        path = package('techsquid-bearings')
+        approval = host.command('plugin.inspect', path=path)['approval']
+        def insert(style):
+            result = host.command('plugin.run', path=path, approval=approval, entry='make-bearing',
+                                  params={'size':size, 'closure':style})
+            return result.get('result', result)
+        insert('Sealed' if closure == 'Shielded' else 'Shielded')
+        result = insert(closure)
+        name = 'Bearing '+designation
+        definition = next(c for c in host.command('component.list')['components'] if c['name'] == name)
+        meta = host.command('component.metadata', component=definition['id'])['metadata']
+        evidence = meta['org.techsquid.bearing.exterior']['provenance']
+        check(name+' records the estimated exterior and its measured donor',
+              evidence['basis'] == 'estimated' and evidence['sources'] == [donor_id])
+        bodies = {b['name']:b for b in host.command('inspect.measure',summary=True)['bodies']}
+        faces = host.command('appearance.list')['bodies']
+        label, other = ('Seal','Shield') if closure == 'Sealed' else ('Shield','Seal')
+        for part in ('Inner ring', 'Outer ring', label+' front', label+' back'):
+            b = bodies[name+' '+part]
+            reference = bodies['Bearing '+donor+' '+part.replace(label, other)]
+            check(name+' '+part+' matches donor geometry',
+                  b['closed'] == reference['closed'] and b['face_types'] == reference['face_types']
+                  and close(b['area_mm2'],reference['area_mm2'])
+                  and close(b['volume_mm3'] or 0,reference['volume_mm3'] or 0)
+                  and all(close(x,y) for end in ('min','max') for x,y in zip(b['bbox'][end],reference['bbox'][end])))
+            if part.startswith(label):
+                check(name+' '+part+' uses the selected closure colour',
+                      faces[b['name']]['color'] == ('#404040' if closure == 'Sealed' else '#a0a0a0'))
+        check(name+' reuses its own definition',insert(closure)['component']['reused'] and not result['component']['reused'])
+        rows = host.command('assembly.bom')['rows']
+        row = next(r for r in rows if r['count'] == 2)
+        expected_number = None if size == '105' else 'MISUMI '+designation
+        check(name+' has its own BOM row and correct purchase assignment',
+              len(rows) == 2 and (row.get('part_number') or None) == expected_number
+              and meta['bom_type'] == ('normal' if size == '105' else 'purchased'))
+
+with Headless() as host:
+    path = package('techsquid-bearings')
+    approval = host.command('plugin.inspect', path=path)['approval']
+    def select(params, allow_error=False):
+        result = host.command('plugin.run', path=path, approval=approval, entry='make-bearing',
+                              params=params, allow_error=allow_error)
+        return result.get('result', result)
+
+    default = select({})
+    check('untouched dialog builds the measured B608ZZ',default['component']['component'] == 'Bearing B608ZZ')
+    before = host.command('document.inspect', measure=False)
+    for params, reasons in [
+        ({'size':'By dimensions','match_bore':17}, ['6003 (17 × 35 × 10 mm)', '6203 (17 × 40 × 12 mm)', 'outside diameter']),
+        ({'size':'By dimensions','match_bore':17,'match_diameter':41}, ['no bearing matches']),
+        ({'size':'By dimensions'}, ['enter at least one']),
+        ({'size':'608','closure':'Open'}, ['only for size 626']),
+        ({'size':'B6203ZZ'}, ['choose a base size']),
+    ]:
+        error = select(params, allow_error=True).get('error','')
+        check(f'{params} explains refusal without editing',all(reason in error for reason in reasons)
+              and host.command('document.inspect',measure=False) == before,error)
+    found = select({'size':'By dimensions','match_diameter':40,'closure':'Sealed'})
+    name = found['component']['component']
+    saved = str(Path(TMP)/'estimated-bearing.json')
+    host.command('file.save_as',path=saved)
+    host.command('doc.open',path=saved)
+    again = select({'size':'6203','closure':'Sealed'})
+    evidence = host.command('component.metadata',component=name)['metadata']['org.techsquid.bearing.exterior']
+    check('dimension match reopens and reuses by size with its exterior evidence',
+          name == 'Bearing B6203DDU' and again['component']['reused']
+          and evidence['provenance']['sources'] == ['misumi-b6203zz'])
 
 finish()

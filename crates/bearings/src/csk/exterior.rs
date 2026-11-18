@@ -1,6 +1,7 @@
 //! Exterior sections measured from supplied STEP files, with explicit estimation.
 //! Hidden raceways and internals are omitted. See docs/sources/csk.md.
 use super::{Csk, Geometry};
+use crate::exterior::{Basis, Provenance};
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
@@ -37,18 +38,10 @@ pub struct Evidence<'a> {
 }
 
 #[derive(Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Basis {
-    Measured,
-    Estimated,
-}
-
-#[derive(Serialize)]
 pub struct Exterior {
     pub section: Section,
-    pub basis: Basis,
-    pub method: &'static str,
-    pub sources: Vec<Evidence<'static>>,
+    #[serde(flatten)]
+    pub provenance: Provenance<Vec<Evidence<'static>>>,
     pub adapted_for_keyways: bool,
 }
 
@@ -152,20 +145,22 @@ pub fn resolve(g: &Geometry) -> Result<Exterior, String> {
     };
     Ok(Exterior {
         section,
-        basis: if exact.is_some() && !adapted {
-            Basis::Measured
-        } else {
-            Basis::Estimated
-        },
-        method: if exact.is_some() && !adapted {
-            "Exterior section measured from the supplied STEP reference"
-        } else {
-            "Normalized radial interpolation by bore; nearest proportions outside 8–40 mm; chamfers limited for thin parts; rings widened for keyways"
-        },
-        sources: if low.bore == high.bore {
-            vec![evidence(low)]
-        } else {
-            vec![evidence(low), evidence(high)]
+        provenance: Provenance {
+            basis: if exact.is_some() && !adapted {
+                Basis::Measured
+            } else {
+                Basis::Estimated
+            },
+            method: if exact.is_some() && !adapted {
+                "Exterior section measured from the supplied STEP reference"
+            } else {
+                "Normalized radial interpolation by bore; nearest proportions outside 8–40 mm; chamfers limited for thin parts; rings widened for keyways"
+            },
+            sources: if low.bore == high.bore {
+                vec![evidence(low)]
+            } else {
+                vec![evidence(low), evidence(high)]
+            },
         },
         adapted_for_keyways,
     })
@@ -210,7 +205,7 @@ mod tests {
             let g = r.designation.geometry();
             assert_eq!([g.bore, g.diameter, g.width], [r.bore, r.diameter, r.width]);
             let exterior = resolve(&g).unwrap();
-            assert!(matches!(exterior.basis, Basis::Measured));
+            assert!(matches!(exterior.provenance.basis, Basis::Measured));
             assert_eq!(exterior.section, r.section);
             assert_eq!(r.sha256.len(), 64);
         }
@@ -230,7 +225,10 @@ mod tests {
     #[test]
     fn inference_and_keyway_adaptation_are_explicit() {
         let mut g = Csk::Csk20P.geometry();
-        assert!(matches!(resolve(&g).unwrap().basis, Basis::Estimated));
+        assert!(matches!(
+            resolve(&g).unwrap().provenance.basis,
+            Basis::Estimated
+        ));
         g.inner_keyway.as_mut().unwrap().depth = 7.0;
         assert!(resolve(&g).unwrap().adapted_for_keyways);
         g.width = 0.5;

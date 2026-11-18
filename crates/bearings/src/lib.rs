@@ -1,15 +1,7 @@
-//! Supplier products, not arbitrary bore/diameter/width combinations.
-//!
-//! Sources and measured CAD revisions: docs/sources/{openbuilds,misumi,csk}.md. External rings
-//! are solid envelopes; closures are annular faces at the measured recess. Hidden
-//! seal thickness and cages are deliberately not inferred. Open B626 includes
-//! its exposed, sourced raceways and balls; closed bearings omit hidden balls.
+//! Radial bearings selected by nominal envelope and closure. Supplier identity and
+//! the evidence for a modeled exterior are independent. See docs/bearing-coverage.md.
+//! Open B626 includes measured raceways and balls. Closed bearings omit hidden internals.
 //! CSK reference presets and customizable design specifications live in `csk`.
-//!
-//! A radial bearing is a row of `products!`: a supplier's part number for one base
-//! `Size` with one `Closure`, and the visible section measured from that product.
-//! The envelope belongs to the size, so it is written once however many closures
-//! or suppliers a size has. `build` holds what radial bearings and CSK clutches share.
 
 use plugin_kit::{name::part, revolve::Section, Placement, Runner};
 use serde::{Deserialize, Serialize};
@@ -17,16 +9,12 @@ use serde_json::json;
 
 pub mod build;
 pub mod csk;
+pub mod exterior;
 mod profile;
+mod selection;
 
 pub use build::Envelope;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Closure {
-    Open,
-    RubberSeals,
-    MetalShields,
-}
+pub use selection::{Closure, EnvelopeFilter, EnvelopeMatch, Size};
 
 /// Stable catalog namespace kept separate from the supplier's display name.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -44,56 +32,8 @@ pub const MISUMI: Supplier = Supplier {
     name: "MISUMI",
 };
 
-/// A base size: the envelope every closure and supplier of that size shares.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Size {
-    S105,
-    S625,
-    S626,
-    S608,
-    S6000,
-    S6001,
-    S6002,
-    S6003,
-    S6004,
-    S6200,
-    S6201,
-    S6202,
-    S6203,
-    S6204,
-}
-
-impl Size {
-    /// Bore, outside diameter and width in millimetres. Each row agrees with the supplier
-    /// STEP of every product of that size: docs/sources/{openbuilds,misumi}-measurements.json.
-    /// 105 is 4 mm wide, not the 4.2 mm first published: docs/sources/openbuilds.md.
-    pub fn envelope(self) -> Envelope {
-        let (bore, diameter, width) = match self {
-            Self::S105 => (5.0, 10.0, 4.0),
-            Self::S625 => (5.0, 16.0, 5.0),
-            Self::S626 => (6.0, 19.0, 6.0),
-            Self::S608 => (8.0, 22.0, 7.0),
-            Self::S6000 => (10.0, 26.0, 8.0),
-            Self::S6001 => (12.0, 28.0, 8.0),
-            Self::S6002 => (15.0, 32.0, 9.0),
-            Self::S6003 => (17.0, 35.0, 10.0),
-            Self::S6004 => (20.0, 42.0, 12.0),
-            Self::S6200 => (10.0, 30.0, 9.0),
-            Self::S6201 => (12.0, 32.0, 10.0),
-            Self::S6202 => (15.0, 35.0, 11.0),
-            Self::S6203 => (17.0, 40.0, 12.0),
-            Self::S6204 => (20.0, 47.0, 14.0),
-        };
-        Envelope {
-            bore,
-            diameter,
-            width,
-        }
-    }
-}
-
-/// Source-backed visible ring geometry of one product, in millimetres.
-#[derive(Clone, Copy, Debug, PartialEq)]
+/// Modeled visible ring geometry, in millimetres.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub struct RingSection {
     pub inner_ring_radius: f64,
     pub outer_ring_radius: f64,
@@ -112,33 +52,44 @@ struct OpenRace {
 
 /// Everything that tells one product from another.
 struct Product {
-    supplier: Supplier,
-    /// Exact supplier part number; the underlying bearing manufacturer may differ.
-    sku: &'static str,
+    supplier: Option<Supplier>,
+    /// Supplier number or a local catalog key for a design specification.
+    part: &'static str,
     designation: &'static str,
     size: Size,
     closure: Closure,
-    section: RingSection,
+    section: SectionSource,
 }
 
-/// One row per product: identity, supplier, part number, designation, size, closure, and
-/// the section as [inner ring outer radius, outer ring inner radius, closure recess,
-/// edge radius]. The identity is stored in saved designs and never changes.
+enum SectionSource {
+    Measured(RingSection),
+    FromBearing(Bearing),
+}
+
+/// A catalog key doubles as its display designation unless a row gives a (key, designation)
+/// pair. A measured section lists the two shoulder radii, face recess and edge radius.
+/// An estimated section names its measured donor. Serialized identities belong to saved designs.
 macro_rules! products {
-    ($( $variant:ident, $id:literal, $supplier:ident, $sku:literal, $designation:literal,
-        $size:ident, $closure:ident, [$inner:literal, $outer:literal, $recess:expr, $edge:literal]; )*) => {
+    (@names ($part:literal, $designation:literal)) => { ($part, $designation) };
+    (@names $part:literal) => { ($part, $part) };
+    (@section [$inner:literal, $outer:literal, $recess:expr, $edge:literal]) => {
+        SectionSource::Measured(RingSection {
+            inner_ring_radius: $inner, outer_ring_radius: $outer,
+            closure_recess: $recess, edge_radius: $edge,
+        })
+    };
+    (@section $donor:ident) => { SectionSource::FromBearing(Bearing::$donor) };
+    ($( $variant:ident, $id:literal, $supplier:expr, $names:tt,
+        $size:ident, $closure:ident, $section:tt; )*) => {
         #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
         pub enum Bearing { $( #[serde(rename = $id)] $variant, )* }
         pub const ALL: [Bearing; [$(Bearing::$variant,)*].len()] = [$(Bearing::$variant,)*];
         impl Bearing {
             fn product(self) -> Product {
-                match self { $(Self::$variant => Product {
-                    supplier: $supplier, sku: $sku, designation: $designation,
-                    size: Size::$size, closure: Closure::$closure,
-                    section: RingSection {
-                        inner_ring_radius: $inner, outer_ring_radius: $outer,
-                        closure_recess: $recess, edge_radius: $edge,
-                    },
+                match self { $(Self::$variant => {
+                    let (part, designation) = products!(@names $names);
+                    Product { supplier: $supplier, part, designation, size: Size::$size,
+                        closure: Closure::$closure, section: products!(@section $section) }
                 },)* }
             }
         }
@@ -147,31 +98,49 @@ macro_rules! products {
 
 // Exact supplier STEP sections: docs/sources/{openbuilds,misumi}-measurements.json.
 products! {
-    OpenBuilds6252rs, "openbuilds-625-2rs", OPENBUILDS, "30", "625 2RS", S625, RubberSeals, [4.3, 6.8, Some(0.3), 0.0];
-    OpenBuilds105zz, "openbuilds-105zz", OPENBUILDS, "800", "105ZZ", S105, MetalShields, [3.1, 4.6, Some(0.3), 0.0];
-    MisumiB626, "misumi-b626", MISUMI, "B626", "B626", S626, Open, [5.06, 7.55, None, 0.3];
-    MisumiB626zz, "misumi-b626zz", MISUMI, "B626ZZ", "B626ZZ", S626, MetalShields, [4.75, 8.15, Some(0.5), 0.3];
-    MisumiB626ddu, "misumi-b626ddu", MISUMI, "B626DDU", "B626DDU", S626, RubberSeals, [4.215, 8.1775, Some(0.11), 0.3];
-    MisumiB608zz, "misumi-b608zz", MISUMI, "B608ZZ", "B608ZZ", S608, MetalShields, [6.1, 9.65, Some(0.6), 0.3];
-    MisumiB6000zz, "misumi-b6000zz", MISUMI, "B6000ZZ", "B6000ZZ", S6000, MetalShields, [6.95, 11.1, Some(0.33), 0.3];
-    MisumiB6001zz, "misumi-b6001zz", MISUMI, "B6001ZZ", "B6001ZZ", S6001, MetalShields, [8.15, 12.45, Some(0.435), 0.3];
-    MisumiB6002zz, "misumi-b6002zz", MISUMI, "B6002ZZ", "B6002ZZ", S6002, MetalShields, [9.65, 13.95, Some(0.435), 0.3];
-    MisumiB6003zz, "misumi-b6003zz", MISUMI, "B6003ZZ", "B6003ZZ", S6003, MetalShields, [10.7, 15.4, Some(0.435), 0.3];
-    MisumiB6004zz, "misumi-b6004zz", MISUMI, "B6004ZZ", "B6004ZZ", S6004, MetalShields, [13.2, 18.4, Some(0.435), 0.6];
-    MisumiB6200zz, "misumi-b6200zz", MISUMI, "B6200ZZ", "B6200ZZ", S6200, MetalShields, [8.15, 12.45, Some(0.435), 0.6];
-    MisumiB6201zz, "misumi-b6201zz", MISUMI, "B6201ZZ", "B6201ZZ", S6201, MetalShields, [8.7, 13.4, Some(0.435), 0.6];
-    MisumiB6202zz, "misumi-b6202zz", MISUMI, "B6202ZZ", "B6202ZZ", S6202, MetalShields, [9.85, 15.45, Some(0.34), 0.6];
-    MisumiB6203zz, "misumi-b6203zz", MISUMI, "B6203ZZ", "B6203ZZ", S6203, MetalShields, [11.5, 17.6, Some(0.34), 0.6];
-    MisumiB6204zz, "misumi-b6204zz", MISUMI, "B6204ZZ", "B6204ZZ", S6204, MetalShields, [14.0, 20.8, Some(0.53), 1.0];
+    OpenBuilds6252rs, "openbuilds-625-2rs", Some(OPENBUILDS), ("30", "625 2RS"), S625, RubberSeals, [4.3, 6.8, Some(0.3), 0.0];
+    OpenBuilds105zz, "openbuilds-105zz", Some(OPENBUILDS), ("800", "105ZZ"), S105, MetalShields, [3.1, 4.6, Some(0.3), 0.0];
+    MisumiB626, "misumi-b626", Some(MISUMI), "B626", S626, Open, [5.06, 7.55, None, 0.3];
+    MisumiB626zz, "misumi-b626zz", Some(MISUMI), "B626ZZ", S626, MetalShields, [4.75, 8.15, Some(0.5), 0.3];
+    MisumiB626ddu, "misumi-b626ddu", Some(MISUMI), "B626DDU", S626, RubberSeals, [4.215, 8.1775, Some(0.11), 0.3];
+    MisumiB608zz, "misumi-b608zz", Some(MISUMI), "B608ZZ", S608, MetalShields, [6.1, 9.65, Some(0.6), 0.3];
+    MisumiB6000zz, "misumi-b6000zz", Some(MISUMI), "B6000ZZ", S6000, MetalShields, [6.95, 11.1, Some(0.33), 0.3];
+    MisumiB6001zz, "misumi-b6001zz", Some(MISUMI), "B6001ZZ", S6001, MetalShields, [8.15, 12.45, Some(0.435), 0.3];
+    MisumiB6002zz, "misumi-b6002zz", Some(MISUMI), "B6002ZZ", S6002, MetalShields, [9.65, 13.95, Some(0.435), 0.3];
+    MisumiB6003zz, "misumi-b6003zz", Some(MISUMI), "B6003ZZ", S6003, MetalShields, [10.7, 15.4, Some(0.435), 0.3];
+    MisumiB6004zz, "misumi-b6004zz", Some(MISUMI), "B6004ZZ", S6004, MetalShields, [13.2, 18.4, Some(0.435), 0.6];
+    MisumiB6200zz, "misumi-b6200zz", Some(MISUMI), "B6200ZZ", S6200, MetalShields, [8.15, 12.45, Some(0.435), 0.6];
+    MisumiB6201zz, "misumi-b6201zz", Some(MISUMI), "B6201ZZ", S6201, MetalShields, [8.7, 13.4, Some(0.435), 0.6];
+    MisumiB6202zz, "misumi-b6202zz", Some(MISUMI), "B6202ZZ", S6202, MetalShields, [9.85, 15.45, Some(0.34), 0.6];
+    MisumiB6203zz, "misumi-b6203zz", Some(MISUMI), "B6203ZZ", S6203, MetalShields, [11.5, 17.6, Some(0.34), 0.6];
+    MisumiB6204zz, "misumi-b6204zz", Some(MISUMI), "B6204ZZ", S6204, MetalShields, [14.0, 20.8, Some(0.53), 1.0];
+
+    // Catalog identities and same-size exterior donors: docs/sources/misumi.md.
+    MisumiB625zz, "misumi-b625zz", Some(MISUMI), "B625ZZ", S625, MetalShields, OpenBuilds6252rs;
+    Sealed105, "105-sealed", None, ("105-sealed", "105 sealed"), S105, RubberSeals, OpenBuilds105zz;
+    MisumiB608ddu, "misumi-b608ddu", Some(MISUMI), "B608DDU", S608, RubberSeals, MisumiB608zz;
+    MisumiB6000ddu, "misumi-b6000ddu", Some(MISUMI), "B6000DDU", S6000, RubberSeals, MisumiB6000zz;
+    MisumiB6001ddu, "misumi-b6001ddu", Some(MISUMI), "B6001DDU", S6001, RubberSeals, MisumiB6001zz;
+    MisumiB6002ddu, "misumi-b6002ddu", Some(MISUMI), "B6002DDU", S6002, RubberSeals, MisumiB6002zz;
+    MisumiB6003ddu, "misumi-b6003ddu", Some(MISUMI), "B6003DDU", S6003, RubberSeals, MisumiB6003zz;
+    MisumiB6004ddu, "misumi-b6004ddu", Some(MISUMI), "B6004DDU", S6004, RubberSeals, MisumiB6004zz;
+    MisumiB6200ddu, "misumi-b6200ddu", Some(MISUMI), "B6200DDU", S6200, RubberSeals, MisumiB6200zz;
+    MisumiB6201ddu, "misumi-b6201ddu", Some(MISUMI), "B6201DDU", S6201, RubberSeals, MisumiB6201zz;
+    MisumiB6202ddu, "misumi-b6202ddu", Some(MISUMI), "B6202DDU", S6202, RubberSeals, MisumiB6202zz;
+    MisumiB6203ddu, "misumi-b6203ddu", Some(MISUMI), "B6203DDU", S6203, RubberSeals, MisumiB6203zz;
+    MisumiB6204ddu, "misumi-b6204ddu", Some(MISUMI), "B6204DDU", S6204, RubberSeals, MisumiB6204zz;
 }
 
 impl Bearing {
     pub fn representation(self) -> parts::Representation<Self> {
         parts::Representation {
             product: parts::Product {
-                catalog: self.supplier().catalog.into(),
-                part: self.sku().into(),
-                kind: parts::ProductKind::SupplierProduct,
+                catalog: self
+                    .supplier()
+                    .map_or("techsquid-specifications", |s| s.catalog)
+                    .into(),
+                part: self.catalog_part().into(),
+                kind: self.kind(),
                 configuration: self,
                 members: vec![],
             },
@@ -188,18 +157,33 @@ impl Bearing {
         creator: &str,
     ) -> Result<plugin_kit::component::Handle, String> {
         let name = format!("Bearing {}", self.designation());
-        let number = format!("{} {}", self.supplier().name, self.sku());
+        let number = self
+            .supplier()
+            .map(|s| format!("{} {}", s.name, self.catalog_part()));
         library.ensure(
             &plugin_kit::component::Definition {
                 plugin: creator,
                 base: &name,
                 description: self.designation(),
-                bom_type: "purchased",
+                bom_type: if number.is_some() { "purchased" } else { "normal" },
                 site: plugin_kit::component::Site::Origin,
             },
-            &number,
+            number.as_deref().unwrap_or(""),
             &self.representation(),
-            |library, name, frame| library.geometry(name, |mut r| self.build(&mut r, name, frame)),
+            |library, name, frame| library.geometry(name, |mut r| {
+                self.build(&mut r, name, frame)?;
+                if let SectionSource::FromBearing(donor) = self.product().section {
+                    let provenance = exterior::Provenance {
+                        basis: exterior::Basis::Estimated,
+                        method: "Copied the measured exterior of the same size with the other closure",
+                        sources: [donor],
+                    };
+                    r.run("component.metadata.set", json!({"component":name,"values":{
+                        "org.techsquid.bearing.exterior": {"version":1,"section":self.section(),"provenance":provenance}
+                    }}))?;
+                }
+                Ok(())
+            }),
         )
     }
 
@@ -207,13 +191,32 @@ impl Bearing {
         self.product().designation
     }
 
-    pub fn supplier(self) -> Supplier {
+    pub fn supplier(self) -> Option<Supplier> {
         self.product().supplier
     }
 
     /// Exact supplier part number; the underlying bearing manufacturer may differ.
-    pub fn sku(self) -> &'static str {
-        self.product().sku
+    pub fn sku(self) -> Option<&'static str> {
+        self.supplier().map(|_| self.catalog_part())
+    }
+
+    pub fn catalog_part(self) -> &'static str {
+        self.product().part
+    }
+
+    pub fn kind(self) -> parts::ProductKind {
+        if self.supplier().is_some() {
+            parts::ProductKind::SupplierProduct
+        } else {
+            parts::ProductKind::DesignSpecification
+        }
+    }
+
+    pub fn basis(self) -> exterior::Basis {
+        match self.product().section {
+            SectionSource::Measured(_) => exterior::Basis::Measured,
+            SectionSource::FromBearing(_) => exterior::Basis::Estimated,
+        }
     }
 
     pub fn size(self) -> Size {
@@ -229,25 +232,29 @@ impl Bearing {
     }
 
     pub fn section(self) -> RingSection {
-        self.product().section
+        match self.product().section {
+            SectionSource::Measured(section) => section,
+            SectionSource::FromBearing(donor) => donor.section(),
+        }
     }
 
     /// OpenBuilds publishes one build page. MISUMI lists each closure of its deep groove
     /// bearings as one family, and the part number selects the size within it.
-    pub fn product_url(self) -> String {
-        if self.supplier() == OPENBUILDS {
-            return "https://builds.openbuilds.com/builds/openbuilds-sphinx-1050-20-x-40.7196/"
-                .into();
+    pub fn product_url(self) -> Option<String> {
+        if self.supplier()? == OPENBUILDS {
+            return Some(
+                "https://builds.openbuilds.com/builds/openbuilds-sphinx-1050-20-x-40.7196/".into(),
+            );
         }
         let family = match self.closure() {
             Closure::Open => "110302273540",
             Closure::RubberSeals => "110302273630",
             Closure::MetalShields => "110300107560",
         };
-        format!(
+        Some(format!(
             "https://us.misumi-ec.com/vona2/detail/{family}/?HissuCode={}",
-            self.sku()
-        )
+            self.catalog_part()
+        ))
     }
 
     fn open_race(self) -> Option<OpenRace> {
@@ -260,7 +267,7 @@ impl Bearing {
     }
 
     /// The axle is +Z and the origin is the bearing's centre plane. A bearing is
-    /// one purchased component; its bodies are not separately purchased parts.
+    /// one component with its own BOM identity.
     pub fn build(self, r: &mut impl Runner, base: &str, frame: &Placement) -> Result<(), String> {
         let d = self.dimensions();
         let half = d.width / 2.0;
@@ -308,7 +315,7 @@ impl Bearing {
         };
         let recess = section
             .closure_recess
-            .ok_or("closed bearing has no sourced recess")?;
+            .ok_or("closure: closed bearing needs a face recess")?;
         let shoulders = [section.inner_ring_radius, section.outer_ring_radius];
         let mut closures = Vec::new();
         for (side, sign) in [("front", 1.0), ("back", -1.0)] {
@@ -390,21 +397,116 @@ mod tests {
                 .unwrap()
                 .strip_suffix(".stp")
                 .unwrap();
-            let bearing = ALL.into_iter().find(|b| b.sku() == sku).unwrap();
+            let bearing = ALL.into_iter().find(|b| b.sku() == Some(sku)).unwrap();
             assert_eq!(
-                bearing.product_url(),
-                source["product_url"].as_str().unwrap()
+                bearing.product_url().as_deref(),
+                source["product_url"].as_str()
             );
         }
     }
 
     #[test]
     fn supplier_variants_do_not_conflate_closure_or_identity() {
-        assert_eq!(Bearing::OpenBuilds6252rs.sku(), "30");
+        assert_eq!(Bearing::OpenBuilds6252rs.sku(), Some("30"));
         assert_eq!(Bearing::OpenBuilds6252rs.closure(), Closure::RubberSeals);
-        assert_eq!(Bearing::OpenBuilds105zz.sku(), "800");
+        assert_eq!(Bearing::OpenBuilds105zz.sku(), Some("800"));
         assert_eq!(Bearing::OpenBuilds105zz.closure(), Closure::MetalShields);
         assert!(serde_json::from_str::<Bearing>("\"openbuilds-5x10x4.2\"").is_err());
+    }
+
+    #[test]
+    fn estimated_catalog_envelopes_and_donors() {
+        // MISUMI 2014 pp. 1003–1004 (DDU) and 2019 p. 1028 (B625ZZ).
+        // 105 sealed is a design specification using the OpenBuilds 105ZZ envelope.
+        use Bearing::*;
+        let expected = [
+            (
+                MisumiB625zz,
+                Some("B625ZZ"),
+                [5., 16., 5.],
+                OpenBuilds6252rs,
+            ),
+            (Sealed105, None, [5., 10., 4.], OpenBuilds105zz),
+            (MisumiB608ddu, Some("B608DDU"), [8., 22., 7.], MisumiB608zz),
+            (
+                MisumiB6000ddu,
+                Some("B6000DDU"),
+                [10., 26., 8.],
+                MisumiB6000zz,
+            ),
+            (
+                MisumiB6001ddu,
+                Some("B6001DDU"),
+                [12., 28., 8.],
+                MisumiB6001zz,
+            ),
+            (
+                MisumiB6002ddu,
+                Some("B6002DDU"),
+                [15., 32., 9.],
+                MisumiB6002zz,
+            ),
+            (
+                MisumiB6003ddu,
+                Some("B6003DDU"),
+                [17., 35., 10.],
+                MisumiB6003zz,
+            ),
+            (
+                MisumiB6004ddu,
+                Some("B6004DDU"),
+                [20., 42., 12.],
+                MisumiB6004zz,
+            ),
+            (
+                MisumiB6200ddu,
+                Some("B6200DDU"),
+                [10., 30., 9.],
+                MisumiB6200zz,
+            ),
+            (
+                MisumiB6201ddu,
+                Some("B6201DDU"),
+                [12., 32., 10.],
+                MisumiB6201zz,
+            ),
+            (
+                MisumiB6202ddu,
+                Some("B6202DDU"),
+                [15., 35., 11.],
+                MisumiB6202zz,
+            ),
+            (
+                MisumiB6203ddu,
+                Some("B6203DDU"),
+                [17., 40., 12.],
+                MisumiB6203zz,
+            ),
+            (
+                MisumiB6204ddu,
+                Some("B6204DDU"),
+                [20., 47., 14.],
+                MisumiB6204zz,
+            ),
+        ];
+        assert_eq!(
+            ALL.iter()
+                .filter(|b| b.basis() == exterior::Basis::Estimated)
+                .count(),
+            expected.len()
+        );
+        for (b, sku, dims, donor) in expected {
+            let d = b.dimensions();
+            assert_eq!([d.bore, d.diameter, d.width], dims);
+            assert_eq!(b.sku(), sku);
+            assert_eq!(b.supplier(), sku.map(|_| MISUMI));
+            assert!(
+                matches!(b.product().section,SectionSource::FromBearing(source) if source==donor)
+            );
+            assert_eq!(donor.basis(), exterior::Basis::Measured);
+            assert_eq!(b.section(), donor.section());
+            assert_ne!(b.closure(), donor.closure());
+        }
     }
 
     #[test]

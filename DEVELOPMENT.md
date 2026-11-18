@@ -73,10 +73,9 @@ measurements and assembly members. These descriptors remain the single source fo
 insertion and reuse; packages do not export a `catalog` entry or query handler.
 See the [internal contract](docs/catalog-contract.md) and [shared library](docs/parts-library.md).
 
-**Rust API change:** `Bearing::product_url()` returns `String`, constructed from
-the supplier family and the existing SKU. Rust callers expecting `&'static str`
-must accept the owned string or borrow it for the duration of use. Product URLs
-and purchasing identities remain the same.
+**Rust API change.** `Bearing::supplier()`, `sku()` and `product_url()` now return
+`Option` because the sealed 105 has no assigned supplier. Use `catalog_part()`
+for the stable lookup key of either a supplier product or a design specification.
 
 `tools/catalog-tool` generates catalog-owned insertion choices and documentation
 tables from the same data, including the Bearings README and reference table.
@@ -272,8 +271,8 @@ inspector. Run `./build.sh` first for the rail check. A zero-thickness closure i
 representation, not a seal cross-section or a mass model. The assembly and cross-plugin reuse checks live in `tests/parts_library_test.py`.
 The bearing suite separately verifies MISUMI ring volumes against the STEP ledgers,
 bore/shoulder radii, closure recesses and colours, the open bearing's race depths,
-eight spheres, and every closed product's complete section vertices and rounded
-edges, plus purchase/reuse behavior through the installed workflow. The
+eight spheres, and the measured profiles' section vertices and rounded edges. It checks each
+estimated exterior against its donor, including purchase and reuse behavior through the installed workflow. The
 [coverage tracker](docs/bearing-coverage.md) links each added product to its
 source, measurements and validation record.
 

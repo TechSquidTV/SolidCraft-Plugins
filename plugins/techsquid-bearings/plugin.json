@@ -44,6 +44,41 @@
         "input_schema": {
           "additionalProperties": true,
           "properties": {
+            "closure": {
+              "default": "Shielded",
+              "description": "Open is available only for 626. All 626 exteriors are measured. The shielded 625 and the sealed variants of the remaining sizes use estimated exteriors.",
+              "enum": [
+                "Shielded",
+                "Sealed",
+                "Open"
+              ],
+              "title": "Closure",
+              "type": "string"
+            },
+            "match_bore": {
+              "description": "By dimensions only. Leave blank to match any bore.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Bore",
+              "type": "number",
+              "unit": "mm"
+            },
+            "match_diameter": {
+              "description": "By dimensions only. Leave blank to match any outside diameter.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Outside diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "match_width": {
+              "description": "By dimensions only. Leave blank to match any width.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "title": "Width",
+              "type": "number",
+              "unit": "mm"
+            },
             "placement": {
               "description": "Sketch points, circles or circle interiors picked in the view. With none, one sits on the origin.",
               "maxItems": 32,
@@ -59,78 +94,78 @@
               }
             },
             "size": {
-              "default": "625 2RS",
-              "description": "A fixed OpenBuilds or MISUMI radial bearing. Each choice gives bore x outside diameter x width and how the bearing is closed.",
+              "default": "608",
+              "description": "Choose a nominal size or find a bearing by dimensions.",
               "oneOf": [
                 {
-                  "const": "625 2RS",
-                  "title": "625 2RS — OpenBuilds, 5 × 16 × 5 mm, sealed"
+                  "const": "105",
+                  "title": "105 — 5 × 10 × 4 mm"
                 },
                 {
-                  "const": "105ZZ",
-                  "title": "105ZZ — OpenBuilds, 5 × 10 × 4 mm, shielded"
+                  "const": "608",
+                  "title": "608 — 8 × 22 × 7 mm"
                 },
                 {
-                  "const": "B626",
-                  "title": "B626 — MISUMI, 6 × 19 × 6 mm, open"
+                  "const": "625",
+                  "title": "625 — 5 × 16 × 5 mm"
                 },
                 {
-                  "const": "B626ZZ",
-                  "title": "B626ZZ — MISUMI, 6 × 19 × 6 mm, shielded"
+                  "const": "626",
+                  "title": "626 — 6 × 19 × 6 mm"
                 },
                 {
-                  "const": "B626DDU",
-                  "title": "B626DDU — MISUMI, 6 × 19 × 6 mm, sealed"
+                  "const": "6000",
+                  "title": "6000 — 10 × 26 × 8 mm"
                 },
                 {
-                  "const": "B608ZZ",
-                  "title": "B608ZZ — MISUMI, 8 × 22 × 7 mm, shielded"
+                  "const": "6001",
+                  "title": "6001 — 12 × 28 × 8 mm"
                 },
                 {
-                  "const": "B6000ZZ",
-                  "title": "B6000ZZ — MISUMI, 10 × 26 × 8 mm, shielded"
+                  "const": "6002",
+                  "title": "6002 — 15 × 32 × 9 mm"
                 },
                 {
-                  "const": "B6001ZZ",
-                  "title": "B6001ZZ — MISUMI, 12 × 28 × 8 mm, shielded"
+                  "const": "6003",
+                  "title": "6003 — 17 × 35 × 10 mm"
                 },
                 {
-                  "const": "B6002ZZ",
-                  "title": "B6002ZZ — MISUMI, 15 × 32 × 9 mm, shielded"
+                  "const": "6004",
+                  "title": "6004 — 20 × 42 × 12 mm"
                 },
                 {
-                  "const": "B6003ZZ",
-                  "title": "B6003ZZ — MISUMI, 17 × 35 × 10 mm, shielded"
+                  "const": "6200",
+                  "title": "6200 — 10 × 30 × 9 mm"
                 },
                 {
-                  "const": "B6004ZZ",
-                  "title": "B6004ZZ — MISUMI, 20 × 42 × 12 mm, shielded"
+                  "const": "6201",
+                  "title": "6201 — 12 × 32 × 10 mm"
                 },
                 {
-                  "const": "B6200ZZ",
-                  "title": "B6200ZZ — MISUMI, 10 × 30 × 9 mm, shielded"
+                  "const": "6202",
+                  "title": "6202 — 15 × 35 × 11 mm"
                 },
                 {
-                  "const": "B6201ZZ",
-                  "title": "B6201ZZ — MISUMI, 12 × 32 × 10 mm, shielded"
+                  "const": "6203",
+                  "title": "6203 — 17 × 40 × 12 mm"
                 },
                 {
-                  "const": "B6202ZZ",
-                  "title": "B6202ZZ — MISUMI, 15 × 35 × 11 mm, shielded"
+                  "const": "6204",
+                  "title": "6204 — 20 × 47 × 14 mm"
                 },
                 {
-                  "const": "B6203ZZ",
-                  "title": "B6203ZZ — MISUMI, 17 × 40 × 12 mm, shielded"
-                },
-                {
-                  "const": "B6204ZZ",
-                  "title": "B6204ZZ — MISUMI, 20 × 47 × 14 mm, shielded"
+                  "const": "By dimensions",
+                  "title": "By dimensions"
                 }
               ],
-              "title": "Part",
+              "title": "Size",
               "type": "string"
             }
           },
+          "required": [
+            "size",
+            "closure"
+          ],
           "type": "object",
           "x-solidcraft-icon": "icons/make-bearing.svg"
         },

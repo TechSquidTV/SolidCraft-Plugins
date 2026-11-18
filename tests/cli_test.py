@@ -24,7 +24,7 @@ TOL = 1e-3
 # Plugin id: (entry, params, what the run builds, its size as (across, height)).
 CASES = {
     "techsquid-bearings": (
-        "make-bearing", {"size": "625 2RS"}, "builds a sealed 625 bearing", (16.0, 5.0),
+        "make-bearing", {"size": "625", "closure": "Sealed"}, "builds a sealed 625 bearing", (16.0, 5.0),
     ),
     "techsquid-v-wheels": (
         "make-v-wheel", {"size": "Solid V Wheel", "assembled": False}, "builds a bare Solid V wheel", (23.9, 10.2),

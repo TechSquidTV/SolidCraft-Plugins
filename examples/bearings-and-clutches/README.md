@@ -1,6 +1,6 @@
 # Bearings and clutches
 
-The radial lineup shows the OpenBuilds bearings and the MISUMI open, shielded and sealed products at a common scale. B626 exposes the balls and raceways. The two rows below it show keyed, sealed and custom CSK clutch profiles.
+The radial lineup shows the OpenBuilds bearings and the MISUMI open, shielded and sealed products at a common scale. B626 exposes the balls and raceways. The third radial row begins with the supplier-neutral sealed 105 and ends with MISUMI B6203DDU. Both use estimated exteriors. The recipe selects B6203DDU by its 17 mm bore, 40 mm outside diameter and sealed closure. The two rows below it show keyed, sealed and custom CSK clutch profiles.
 
 ![Radial bearings and CSK clutches arranged at one scale](bearings-and-clutches.png)
 

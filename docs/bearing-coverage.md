@@ -57,7 +57,7 @@ for the same product.
 ## Reference requirements
 
 All ten target STEP archives are recorded in the supplier ledger. The reference
-requirements below remain applicable when adding future products.
+requirements below apply to products advertised with measured exteriors. See [Closure coverage](#closure-coverage) for estimated variants.
 
 The reference package must establish:
 
@@ -80,17 +80,19 @@ No new references are needed for those unchanged models. A catalog envelope,
 product photo or generic bearing STEP alone cannot establish an exact SKU's
 visible ring and closure geometry. Keep suffixes attached to the source's brand.
 
-## Optional variants after envelope coverage
+## Closure coverage
 
-These do not block the initial expansion. Add each as a separate tracked product
-only when its identity and geometry source are established.
+All fourteen base sizes offer Shielded and Sealed. The additional thirteen closed
+variants use the other closure's measured section at the same size. Classify the
+entire exterior as estimated and record its donor. Assign a supplier number only
+when the catalog confirms the exact closure and envelope. The sealed 105 is a
+supplier-neutral specification. The [MISUMI ledger](sources/misumi.md#catalog-identities-for-estimated-closure-variants)
+records the catalog evidence and the limits of this estimate.
 
-| Candidate | Additional reference needed |
-|---|---|
-| Sealed 608 | Exact supplier SKU and sealed-product STEP or dimensioned section; B608ZZ does not establish seal geometry |
-| Open or rubber-sealed versions of the ten target sizes | Exact supplier SKU and distinct section for each closure; exposed raceways and balls also need evidence for open products |
-| [NTN 626Z](https://us.misumi-ec.com/vona2/detail/221000058378/?HissuCode=626Z), single shield | Exact CAD/drawing, including the exposed side; existing MISUMI 626 products are different purchasing identities |
-| Supplied 8 x 16 x 5 and inch-bearing candidates | Exact supplier designation and closure evidence, as recorded in the [OpenBuilds ledger](sources/openbuilds.md#bearings-and-the-mini-width-correction) |
+Open requires evidence for the exposed rings, raceways and balls. Only B626
+qualifies. A single-sided shield such as [NTN 626Z](https://us.misumi-ec.com/vona2/detail/221000058378/?HissuCode=626Z) also requires a source for its exposed side.
+The [OpenBuilds ledger](sources/openbuilds.md#bearings-and-the-mini-width-correction)
+records the outstanding references for the 8 x 16 x 5 and inch-bearing candidates.
 
 ## Completion checklist
 
@@ -131,12 +133,11 @@ compatibility aliases or silently reuse the old geometry.
 `crates/bearings` remains the owner of product identity, closure type, measurements
 and native geometry. Both the Bearings workflow and wheel recipes use its factory.
 A product is one row of `products!` in `crates/bearings/src/lib.rs`: its saved identity,
-supplier, part number, base size, closure and measured section. The envelope is one row
-of `Size::envelope` per base size, shared by every closure and supplier of that size.
+optional supplier, catalog key, base size, closure and measured section or donor.
+The `sizes!` table in `crates/bearings/src/selection.rs` defines each supported envelope once.
 `crates/bearings/src/build.rs` builds the rings and closure faces for radial bearings
 and CSK clutches alike.
-Reuse a section across variants only when their references establish the match;
-retain separate purchasing identities for different sourced products. Extend the
+Keep measured and estimated exteriors distinct in the catalog and retain each sourced purchasing identity. Extend the
 catalog-generated choices/reference table and independent geometry tests together.
 Visible balls are included for sourced open bearings; sealed and shielded variants
 omit hidden balls. Cages remain outside this representation. Never fill an open

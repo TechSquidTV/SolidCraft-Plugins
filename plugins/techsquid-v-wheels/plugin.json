@@ -2,7 +2,7 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Insert fixed catalog parts as reusable native components.",
+  "description": "OpenBuilds V-wheels. Pick sketch points or circles: each gets a wheel, with its bearings and shim if you want them. With nothing picked, one wheel sits on the origin.",
   "id": "techsquid-v-wheels",
   "name": "V-wheels",
   "runtime": {
@@ -43,6 +43,7 @@
           "properties": {
             "assembled": {
               "default": true,
+              "description": "On adds the two bearings and the shim between them, as one component with the wheel. Off builds the bare wheel.",
               "title": "Include bearings and internal shim",
               "type": "boolean"
             },
@@ -62,6 +63,7 @@
             },
             "size": {
               "default": "Solid V Wheel",
+              "description": "The OpenBuilds wheel to place.",
               "enum": [
                 "Solid V Wheel",
                 "Xtreme Solid V Wheel",

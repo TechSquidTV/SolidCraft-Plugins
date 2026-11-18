@@ -246,6 +246,33 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
             options
                 .push(json!({"const":"Custom", "title":"Custom — enter dimensions and keyways"}));
             property["oneOf"] = json!(options);
+        } else if entry == "make-bearing" && field == "size" {
+            // The designation alone says little: show who makes it, its size and its closure.
+            property
+                .as_object_mut()
+                .ok_or("missing bearing size property")?
+                .remove("enum");
+            let options: Vec<_> = bearings::ALL
+                .into_iter()
+                .map(|bearing| {
+                    let d = bearing.dimensions();
+                    let closure = match bearing.closure() {
+                        bearings::Closure::Open => "open",
+                        bearings::Closure::RubberSeals => "sealed",
+                        bearings::Closure::MetalShields => "shielded",
+                    };
+                    let title = format!(
+                        "{} — {}, {} × {} × {} mm, {closure}",
+                        bearing.designation(),
+                        bearing.supplier().name,
+                        d.bore,
+                        d.diameter,
+                        d.width
+                    );
+                    json!({"const":bearing.designation(), "title":title})
+                })
+                .collect();
+            property["oneOf"] = json!(options);
         } else {
             property["enum"] = json!(choices);
         }

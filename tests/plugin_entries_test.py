@@ -60,8 +60,12 @@ for plugin in plugin_ids():
                    'techsquid-inserts': 'modeled'}.get(plugin, 'typo_size')
         bad = host.command('plugin.run', path=package(plugin), approval=approval, entry=entry['name'],
                            params={**params, retired: 'invalid'}, allow_error=True)
+        # SolidCraft 0.44 passes the plugin's "<key>: unsupported field" through. Newer hosts
+        # swap a key for its title and drop a key the form does not have, leaving the reason.
+        error = bad.get('error', '')
         check(f'{plugin}: retired or unknown fields still fail without edits',
-              retired in bad.get('error', '') and state() == before)
+              (retired in error or 'unsupported field' in error) and state() == before,
+              error[-300:])
         inserted = host.command('plugin.run', path=package(plugin), approval=approval,
                                 entry=entry['name'], params=params)
         inserted = inserted.get('result', inserted)

@@ -15,7 +15,7 @@ The resulting part does not claim to be a purchase from the reference publisher.
 | Field | Default | Meaning |
 |---|---|---|
 | `size` | `CSK12P` | One of 55 documented presets, or `Custom` |
-| `bore` / `diameter` / `width` | Preset value | Editable millimetres; all three required for Custom |
+| `custom_bore` / `custom_diameter` / `custom_width` | Preset value | Bore, outside diameter and width in millimetres; all three required for Custom |
 | `inner_keyway` / `outer_keyway` | `Preset` | `Preset`, `Enabled`, or `None`; Custom starts without slots |
 | `inner_keyway_width` / `inner_keyway_depth` | Existing value | Positive millimetres; both required when adding an inner slot |
 | `outer_keyway_width` / `outer_keyway_depth` | Existing value | Positive millimetres; both required when adding an outer slot |

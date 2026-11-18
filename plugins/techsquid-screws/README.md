@@ -21,17 +21,17 @@ Use this plugin when you need detailed screw geometry, custom dimensions, or scr
 | Threaded length | Uses the selected family's thread-length rules. | Uses standard thread lengths where available, with an explicit override for partial or full threading. |
 | Reuse across runs | One component is shared across the placements in an insertion. A later insertion creates another component. | Reuses an identical screw definition across later runs, while giving each attached screw its own joint. |
 
-Both tools produce editable timeline features and reusable components, and both can keep screws seated with native rigid joints. The plugin adds the combined screw-and-hole workflow described below.
-
-For placing standard hardware in existing holes, the built-in tool offers a live preview, direct hole picking, and **Change Part Size**. It also includes inch and GOST catalogs, nuts, washers, pins and bearings. This plugin focuses on configurable screws: pick sketch points or circles in the view for its **Placement** field. It has no live preview, and its generated components do not use the built-in **Change Part Size** workflow.
+Both tools build editable screw components and can attach them to existing bores with rigid joints. The built-in tool also offers **Change Part Size**, inch and GOST catalogs, nuts, washers, pins and bearings.
 
 ## Get started
 
-Open **Plugins > Screw** and pick one or more sketch points or circles for **Placement** in the view; clicking inside a circle picks it too. Points or circles already selected when the dialog opens fill the field. Choose a size, length and head, then press **Run**. With nothing picked, a loose screw is placed at the origin.
+Open **Plugins > Screw** and leave **Create** on **Screw only**. To fit a screw in an existing bore, click its rim or its cylindrical wall near the end where you want the head. If you just moved the part, use **Capture Position** to keep the move before inserting the screw. Choose the size, length, head and drive, check the preview, then press **Run**. A rigid joint holds the screw at that end with its shank pointing into the bore.
+
+To place loose hardware, pick a sketch point or circle for **Placement**. You can pick several locations in one run. Use **Flip direction** to turn the screw over at the same location. An empty selection puts one screw at the origin.
 
 The default is an M3 × 12 socket-head screw. Choose **Screw and hole** to drill the part at your picked points, or **Hole only** to create just the holes. Countersunk screws, set screws and threaded rod use overall length; other headed screws are measured under the head.
 
-**Screw and hole** attaches each screw to its hole with a rigid joint. Moving the source point moves the screw, and changing a counterbore's depth moves its head with the floor. The attachment is saved in the design and works without the plugin installed. **Screw only** creates loose hardware.
+**Screw and hole** attaches each screw to its hole with a rigid joint. Moving the source point moves the screw, and changing a counterbore's depth moves its head with the floor. The attachment is saved in the design and works without the plugin installed.
 
 **Breaking change:** new screw-and-hole placements are attached. Regenerate previously created placements to add these joints; upgrading the plugin does not attach existing screws. A missing or ambiguous seat is refused.
 

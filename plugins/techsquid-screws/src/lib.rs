@@ -1,10 +1,11 @@
 //! Screw generator for SolidCraft.
 //!
 //! One entry, `make-screw`. The top of the shank sits on a sketch point, or on the origin
-//! when nothing is selected. The head stands on the outer side of that plane and the shank
-//! runs the other way. A socket or cheese head is a cylinder, a button or pan head is its
-//! half profile revolved, a countersunk head is a 90° cone with the land a flat head has
-//! above it, and a hex head is a six-sided sketch with its top chamfered. A countersunk
+//! when nothing is selected. By default the head follows the sketch normal and the shank
+//! runs the other way. Flip direction turns a loose screw over at the same point.
+//! A socket or cheese head is a cylinder, a button or pan head is its half profile
+//! revolved, a countersunk head is a 90° cone with the land a flat head has above it,
+//! and a hex head is a six-sided sketch with its top chamfered. A countersunk
 //! screw's length includes the head, as its standards measure it. A Torx drive cuts an ISO 10664
 //! recess into the outer face. A slotted drive cuts a straight slot across that face.
 //! A Phillips drive cuts an ISO 4757 type H recess, sunk to the depth for that head.
@@ -51,54 +52,25 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         .resolved
         .major
         .ok_or_else(|| format!("{}: {NO_DIAMETER}", p.size_field))?;
-    let spots = place::resolve_all(r, &p.place)?;
-    let axes = if p.create.part()
-        && p.hole
-            .as_ref()
-            .is_some_and(|h| matches!(h.kind, HoleKind::Tapped { .. }))
-    {
-        seat::tap_axes(r, &spots, &body_base(p))?
-    } else {
-        Vec::new()
-    };
-    let mut drilled: Vec<String> = Vec::new();
-    // Screw and hole with nothing selected still makes the screw. Only a run that
-    // would make nothing but a hole is refused.
-    let mut skipped = false;
-    let places: Vec<Placement> = if spots.is_empty() {
-        skipped = screw::CREATE.nothing_selected(p.create)?;
-        vec![Placement::on_origin()]
-    } else {
-        // The holes go first: the screw would otherwise be a body under the point too.
-        let sink = match &p.hole {
-            Some(hole) => {
-                for (sketch, points) in place::by_sketch(&spots) {
-                    let reply = r.run("solid.hole", hole_args(p, hole, sketch, &points))?;
-                    add_new(&mut drilled, cut_bodies(&reply, "to drill", "Screw only")?);
-                }
-                hole.sink
-            }
-            None => 0.0,
-        };
-        // A recessed head sits below the surface, so its top ends flush.
-        spots
-            .iter()
-            .map(|spot| Placement {
-                point: spot.place.along(-sink),
-                ..spot.place
-            })
-            .collect()
-    };
-    // Resolve the hole ends before building hardware, so its own cylindrical
-    // faces cannot be mistaken for the seats.
-    let seats = if p.create.part() && !spots.is_empty() {
-        match &p.hole {
-            Some(hole) => seat::find_all(r, &drilled, &places, &axes, hole, major)?,
-            None => Vec::new(),
+    let spots = place::resolve_all(r, &p.place.sketches)?;
+    let mut layout = if p.place.has_bores() {
+        let (places, seats) = seat::picked_bores(r, p, &spots, major)?;
+        Layout {
+            places,
+            seats,
+            drilled: Vec::new(),
+            skipped: false,
         }
     } else {
-        Vec::new()
+        sketch_layout(r, p, &spots, major)?
     };
+    if p.flip {
+        for place in &mut layout.places {
+            // A half turn about sketch X reverses the normal and keeps a right-handed frame.
+            place.normal = opposite(place.normal);
+            place.y_dir = opposite(place.y_dir);
+        }
+    }
     let mut library_report = Value::Null;
     let placed = if p.create.part() {
         let base = body_base(p);
@@ -121,7 +93,7 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
         let (placed, report) = fasten::insert(
             r,
             creation,
-            &places,
+            &layout.places,
             FOLDER,
             |library| {
                 library.ensure_built(&def, &number, &representation, |mut r, site, name| {
@@ -129,8 +101,10 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
                 })
             },
             |mut r, placed| {
-                for (seat, occurrence) in seats.iter().zip(&placed.occurrences) {
-                    seat.attach(&mut r, *occurrence, &base)?;
+                for (seat, occurrence) in layout.seats.iter().zip(&placed.occurrences) {
+                    if let Some(seat) = seat {
+                        seat.attach(&mut r, *occurrence, &base)?;
+                    }
                 }
                 Ok(())
             },
@@ -140,9 +114,86 @@ pub fn make_screw<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     } else {
         None
     };
-    let mut reply = summary(p, &places, &drilled, skipped, placed.as_ref());
+    let mut reply = summary(
+        p,
+        &layout.places,
+        &layout.drilled,
+        layout.skipped,
+        placed.as_ref(),
+    );
     reply["library"] = library_report;
     Ok(reply)
+}
+
+struct Layout {
+    places: Vec<Placement>,
+    seats: Vec<Option<seat::Attachment>>,
+    drilled: Vec<String>,
+    skipped: bool,
+}
+
+fn sketch_layout<R: Runner>(
+    r: &mut R,
+    p: &Params,
+    spots: &[place::Spot],
+    major: f64,
+) -> Result<Layout, String> {
+    let axes = if p.create.part()
+        && p.hole
+            .as_ref()
+            .is_some_and(|h| matches!(h.kind, HoleKind::Tapped { .. }))
+    {
+        seat::tap_axes(r, spots, &body_base(p))?
+    } else {
+        Vec::new()
+    };
+    let mut drilled: Vec<String> = Vec::new();
+    // Screw and hole with nothing selected still makes the screw. Only a run that
+    // would make nothing but a hole is refused.
+    let mut skipped = false;
+    let places: Vec<Placement> = if spots.is_empty() {
+        skipped = screw::CREATE.nothing_selected(p.create)?;
+        vec![Placement::on_origin()]
+    } else {
+        // The holes go first: the screw would otherwise be a body under the point too.
+        let sink = match &p.hole {
+            Some(hole) => {
+                for (sketch, points) in place::by_sketch(spots) {
+                    let reply = r.run("solid.hole", hole_args(p, hole, sketch, &points))?;
+                    add_new(&mut drilled, cut_bodies(&reply, "to drill", "Screw only")?);
+                }
+                hole.sink
+            }
+            None => 0.0,
+        };
+        // A recessed head sits below the surface, so its top ends flush.
+        spots
+            .iter()
+            .map(|spot| Placement {
+                point: spot.place.along(-sink),
+                ..spot.place
+            })
+            .collect()
+    };
+    // Resolve the hole ends before building hardware, so its own cylindrical
+    // faces cannot be mistaken for the seats.
+    let seats = if p.create.part() && !spots.is_empty() {
+        match &p.hole {
+            Some(hole) => seat::find_all(r, &drilled, &places, &axes, hole, major)?
+                .into_iter()
+                .map(Some)
+                .collect(),
+            None => Vec::new(),
+        }
+    } else {
+        Vec::new()
+    };
+    Ok(Layout {
+        places,
+        seats,
+        drilled,
+        skipped,
+    })
 }
 
 /// The body name before any number: what the screw is, its size, then its head, as a
@@ -1823,6 +1874,31 @@ mod tests {
         assert_eq!(summary["create"], "Screw only");
         assert_eq!(summary["standard"], "ISO 4762");
         assert_eq!(summary["hole"], Value::Null);
+    }
+
+    #[test]
+    fn flip_direction_keeps_each_seat_and_rotates_the_screw() {
+        let (summary, calls) = on_plate(json!({"flip": true}), json!(["Plate"]));
+        let summary = summary.unwrap();
+        assert_eq!(summary["normal"], json!([0.0, 0.0, -1.0]));
+        assert_eq!(placed_at(&calls), [[10.0, 10.0, 10.0], [30.0, 10.0, 10.0]]);
+        let movement = args(&calls, "occurrence.move");
+        assert_eq!(
+            movement["to_matrix"],
+            json!([
+                [1.0, 0.0, 0.0, 10.0],
+                [0.0, -1.0, 0.0, 10.0],
+                [0.0, 0.0, -1.0, 10.0]
+            ])
+        );
+    }
+
+    #[test]
+    fn flip_direction_is_for_screw_only() {
+        for create in ["Screw and hole", "Hole only"] {
+            let err = screw::parse(&json!({"create": create, "flip": true})).unwrap_err();
+            assert_eq!(err.field, "flip");
+        }
     }
 
     #[test]

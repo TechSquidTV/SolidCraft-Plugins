@@ -103,7 +103,7 @@ pub fn body_base(p: &Params) -> String {
 
 /// The MISUMI part number: `HNTT5-5`.
 pub fn part(p: &Params) -> String {
-    format!("{}-{}", p.nut.part, p.thread.trim_start_matches('M'))
+    p.nut.part_number(&p.thread)
 }
 
 /// What the bill of materials says a nut is.
@@ -430,6 +430,31 @@ mod tests {
         assert_eq!(ball[0]["center"], json!([x + 7.5, y, -2.0]));
         assert_eq!(summary["part"], "HNTP5-5");
         assert_eq!(summary["length"], 17.0);
+    }
+
+    #[test]
+    fn each_listed_size_taps_the_matching_hole_without_changing_the_nut_body() {
+        for kind in ["Pre-assembly", "Post-assembly"] {
+            let mut envelopes = Vec::new();
+            for (size, suffix) in [("M3", "3"), ("M4", "4"), ("M5", "5")] {
+                let (summary, calls) = commands(json!({"type": kind, "size": size}));
+                let hole = all(&calls, "solid.hole");
+                assert_eq!(hole.len(), 1);
+                assert_eq!(hole[0]["thread"], size);
+                let expected = if kind == "Pre-assembly" {
+                    format!("HNTT5-{suffix}")
+                } else {
+                    format!("HNTP5-{suffix}")
+                };
+                assert_eq!(summary["part"], expected);
+                envelopes.push((
+                    summary["length"].clone(),
+                    summary["width"].clone(),
+                    summary["height"].clone(),
+                ));
+            }
+            assert!(envelopes.windows(2).all(|pair| pair[0] == pair[1]));
+        }
     }
 
     #[test]

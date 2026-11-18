@@ -215,7 +215,7 @@ Nine standalone examples show the plugins’ parts and editing modes. Each plugi
 | `nut` | `techsquid-nuts` | One M3 nut on the origin | `nut.png` |
 | `rails` | `techsquid-extrusions` | Every T-slot and V-slot size, 40 mm long, standing on end | `rails.png` |
 | `sketch-driven-rails` | `techsquid-extrusions` | Paired T-slot 2020/4040 and V-slot 2080 rails with editable paths, end taps and cross-holes | `sketch-driven-rails.png` |
-| `slot-nuts` | `techsquid-extrusions` | A pre-assembly and a post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
+| `slot-nuts` | `techsquid-extrusions` | An M3 pre-assembly and an M4 post-assembly nut in the top slot of a T-slot 2020 | `slot-nuts.png` |
 | `bearings` | `techsquid-bearings` | Six radial bearings and four representative CSK clutches: keyed and sealed variants at the same scale | `bearings.png` |
 | `csk-clutches` | `techsquid-bearings` | Eight CSK exteriors: separate rings and closures, repeated custom keyways, small keyed presets and custom dimensions | `csk-clutches.png` |
 | `v-wheels` | `techsquid-v-wheels` | Five wheel cores, each with two bearings and an internal shim | `v-wheels.png` |

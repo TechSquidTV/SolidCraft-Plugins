@@ -96,6 +96,22 @@ for plugin, entry, params, custom in CASES:
         check(f'{label}: insertion stays within the command budget',
               max(cosmetic['library']['host_calls'], modeled['library']['host_calls'], fresh['library']['host_calls']) < 248)
 
+
+with Headless() as host:
+    plugin = 'techsquid-extrusions'
+    approval = host.command('plugin.inspect', path=package(plugin))['approval']
+    for style, prefix in [('Pre-assembly', 'HNTT5'), ('Post-assembly', 'HNTP5')]:
+        for size, suffix in [('M3', '3'), ('M4', '4'), ('M5', '5')]:
+            host.command('plugin.run', path=package(plugin), approval=approval,
+                         entry='make-t-nut', params={'type': style, 'size': size,
+                                                     'thread_modeled': False})
+    rows = host.command('assembly.bom')['rows']
+    actual = {row['part_number']: row['count'] for row in rows}
+    expected = {f'MISUMI {prefix}-{suffix}': 1 for prefix in ('HNTT5', 'HNTP5')
+                for suffix in ('3', '4', '5')}
+    check('slot nuts: six thread and style combinations keep separate purchase rows',
+          actual == expected, f'| {actual}')
+
 def renamed_definition_case(plugin, entry, params):
     # No sibling representation: its numbered body name would accidentally reserve
     # the original prefix and hide the feature-name collision after both renames.

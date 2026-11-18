@@ -5,7 +5,7 @@ use extrusions::{machining::Face, slot::T5};
 use parts::detail::ThreadDetail;
 use parts::{Product, ProductKind, Representation};
 use serde::{Deserialize, Serialize};
-pub const REVISION: &str = "1";
+pub const REVISION: &str = "2";
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
@@ -76,7 +76,7 @@ mod tests {
     };
     use parts::catalog::{
         CatalogInfo, Dimension, Frame, Insertion, PartDescription, PartSummary, Provenance,
-        ResolvedPart, Route,
+        ResolvedPart, Route, Source,
     };
     use parts::detail::ThreadDetail;
     use parts::{Catalog, CatalogError, ProductKind};
@@ -96,11 +96,7 @@ mod tests {
                 Self::Rail(slot, size) => {
                     format!("{}-{size}", if slot == T5 { "t-slot" } else { "v-slot" })
                 }
-                Self::Nut(nut, thread) => format!(
-                    "{}-{}",
-                    nut.part.to_lowercase(),
-                    thread.trim_start_matches('M')
-                ),
+                Self::Nut(nut, thread) => nut.part_number(thread).to_lowercase(),
             }
         }
         fn summary(self) -> PartSummary {
@@ -111,7 +107,7 @@ mod tests {
                     ProductKind::Custom,
                 ),
                 Self::Nut(nut, thread) => (
-                    format!("MISUMI {}-{}", nut.part, thread.trim_start_matches('M')),
+                    format!("MISUMI {}", nut.part_number(thread)),
                     "slot-nuts",
                     ProductKind::SupplierProduct,
                 ),
@@ -191,11 +187,11 @@ mod tests {
             },
             Item::Nut(nut,thread)=>(
                 vec![Dimension::mm("length",nut.length),Dimension::mm("width",nut.width()),Dimension::mm("height",nut.height())],
-                Provenance {supplier:Some("MISUMI".into()),supplier_part_number:Some(format!("{}-{}",nut.part,thread.trim_start_matches('M'))),..Provenance::default()},
+                Provenance {supplier:Some("MISUMI".into()),supplier_part_number:Some(nut.part_number(thread)),..Provenance::default()},
                 json!({"type":"object","additionalProperties":false,"properties":{
                     "detail":{"type":"string","enum":ThreadDetail::CHOICES,"default":"cosmetic"}}}),
                 vec![Frame::axial("shoulder-seat",0.0)],"make-t-nut",
-                vec!["Profile and spring-ball dimensions measured from MISUMI HNTT5-5/HNTP5-5 STEP references. Only the verified M5 products are published.".into()]),
+                vec!["The MISUMI 2019 US catalog pp. 2710 and 2716 lists HNTT5 and HNTP5 in M3, M4 and M5 with shared external dimensions within each family. Section and spring-ball details follow the HNTT5-5/HNTP5-5 STEP references; M3/M4 variants do not have separate STEP measurements.".into()]),
         };
         PartDescription {
             part: item.summary(),
@@ -207,7 +203,18 @@ mod tests {
                 plugin: crate::PLUGIN.into(),
                 entry: entry.into(),
             },
-            sources: vec![],
+            sources: match item {
+                Item::Rail(..) => vec![],
+                Item::Nut(nut, _) => vec![Source {
+                    title: format!("MISUMI {} 5-series slot nut catalog", nut.part),
+                    url: if nut == NUTS[0] {
+                        "https://us.misumi-ec.com/pdf/fa/2019/2019_US_2710.pdf"
+                    } else {
+                        "https://us.misumi-ec.com/pdf/fa/2019/2019_US_2716.pdf"
+                    }
+                    .into(),
+                }],
+            },
             details: ThreadDetail::CHOICES
                 .into_iter()
                 .map(str::to_string)
@@ -278,7 +285,7 @@ mod tests {
     }
     #[test]
     fn all_profiles_and_verified_nuts_resolve() {
-        assert_eq!(Extrusions.summaries().len(), 11);
+        assert_eq!(Extrusions.summaries().len(), 15);
         for item in Extrusions.summaries() {
             let part = Extrusions.resolve(&item.id, &json!({})).unwrap();
             let actual = if part.insertion.entry == "make-extrusion" {
@@ -289,7 +296,33 @@ mod tests {
             assert_eq!(actual, part.representation);
         }
         assert!(Extrusions.describe("v-slot-4040").is_err());
-        assert!(Extrusions.describe("hntt5-3").is_err());
+        assert!(Extrusions.describe("hntt5-6").is_err());
+    }
+
+    #[test]
+    fn each_thread_and_nut_style_has_its_own_supplier_part_number() {
+        for (style, prefix) in [("Pre-assembly", "HNTT5"), ("Post-assembly", "HNTP5")] {
+            for (size, suffix) in [("M3", "3"), ("M4", "4"), ("M5", "5")] {
+                let p = tnut::parse(&json!({"type": style, "size": size})).unwrap();
+                let expected = format!("{prefix}-{suffix}");
+                assert_eq!(tnut::part(&p), expected);
+                let representation = nut_representation(&p);
+                assert_eq!(representation.product.part, expected);
+                assert_eq!(representation.product.kind, ProductKind::SupplierProduct);
+                let item = Extrusions.describe(&expected.to_lowercase()).unwrap();
+                assert_eq!(
+                    item.provenance.supplier_part_number.as_deref(),
+                    Some(expected.as_str())
+                );
+                assert_eq!(item.sources.len(), 1);
+                assert!(item.sources[0].url.ends_with(if prefix == "HNTT5" {
+                    "2019_US_2710.pdf"
+                } else {
+                    "2019_US_2716.pdf"
+                }));
+                assert!(item.provenance.standards.is_empty());
+            }
+        }
     }
     #[test]
     fn machining_changes_the_part_but_slot_mounting_does_not() {

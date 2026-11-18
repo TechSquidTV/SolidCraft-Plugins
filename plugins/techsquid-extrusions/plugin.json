@@ -200,6 +200,8 @@
               "default": "M5",
               "description": "The thread the nut is tapped with.",
               "enum": [
+                "M3",
+                "M4",
                 "M5"
               ],
               "title": "Size",

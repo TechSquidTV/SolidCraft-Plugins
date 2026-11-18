@@ -1,9 +1,10 @@
 //! Where a part sits.
 //!
 //! The point is a sketch point, or the centre of a circle in a sketch, picked in the
-//! dialog's Placement field. The sketch plane is the surface. Its normal points to the
-//! outside. For a screw, the head stands on that side and the shank runs the other way, and
-//! the top of the shank, where the head begins, is the point itself.
+//! dialog's Placement field: click the point, the circle, or anywhere inside the circle
+//! (its profile, as Extrude takes it). The sketch plane is the surface. Its normal points
+//! to the outside. For a screw, the head stands on that side and the shank runs the other
+//! way, and the top of the shank, where the head begins, is the point itself.
 //!
 //! With nothing picked, the point is the origin and the normal is +Z, so the head stands on
 //! the XY plane.
@@ -44,14 +45,27 @@ pub struct Placement {
     pub source: Source,
 }
 
-/// A sketch point or curve from the Placement field, as SolidCraft sends it:
-/// `{"type": "external_sketch_point", "sketch": 2, "id": "p3"}`. The sketch is its feature
-/// id; a program calling the plugin may name it instead.
+/// What was picked in a sketch.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Picked {
+    /// A point, by its id.
+    Point(String),
+    /// A curve, by its id: a circle or an arc stands for its centre, a line for a rail's path.
+    Curve(String),
+    /// A closed region, by its index in the sketch: the inside of a circle stands for its
+    /// centre.
+    Profile(u64),
+}
+
+/// A pick from the Placement field, as SolidCraft sends it:
+/// `{"type": "external_sketch_point", "sketch": 2, "id": "p3"}`,
+/// `{"type": "external_sketch_curve", "sketch": 2, "id": "c1"}` or
+/// `{"type": "profile", "sketch": 2, "index": 0}`. The sketch is its feature id; a program
+/// calling the plugin may name it instead.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Pick {
     pub sketch: Value,
-    pub id: String,
-    pub curve: bool,
+    pub what: Picked,
 }
 
 /// The picks from the dialog. None means the origin.
@@ -114,9 +128,8 @@ pub fn parse_picks(v: &Value, wanted: &str) -> Result<Vec<Pick>, FieldError> {
 }
 
 fn pick(item: &Value, wanted: &str) -> Result<Pick, FieldError> {
-    let curve = match item.get("type").and_then(Value::as_str) {
-        Some("external_sketch_point") => false,
-        Some("external_sketch_curve") => true,
+    let kind = match item.get("type").and_then(Value::as_str) {
+        Some(kind @ ("external_sketch_point" | "external_sketch_curve" | "profile")) => kind,
         _ => {
             return Err(FieldError::new(
                 FIELD,
@@ -134,17 +147,27 @@ fn pick(item: &Value, wanted: &str) -> Result<Pick, FieldError> {
             ))
         }
     };
-    let id = item
-        .get("id")
-        .and_then(Value::as_str)
-        .map(str::trim)
-        .filter(|id| !id.is_empty())
-        .ok_or_else(|| FieldError::new(FIELD, "each pick names a point or a curve id"))?;
-    Ok(Pick {
-        sketch,
-        id: id.to_string(),
-        curve,
-    })
+    let what = if kind == "profile" {
+        let index = item
+            .get("index")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| FieldError::new(FIELD, "each picked profile names its index"))?;
+        Picked::Profile(index)
+    } else {
+        let id = item
+            .get("id")
+            .and_then(Value::as_str)
+            .map(str::trim)
+            .filter(|id| !id.is_empty())
+            .ok_or_else(|| FieldError::new(FIELD, "each pick names a point or a curve id"))?
+            .to_string();
+        if kind == "external_sketch_curve" {
+            Picked::Curve(id)
+        } else {
+            Picked::Point(id)
+        }
+    };
+    Ok(Pick { sketch, what })
 }
 
 /// One placed point, with the sketch and the point id a host command can name.
@@ -156,8 +179,9 @@ pub struct Spot {
     pub place: Placement,
 }
 
-/// Every picked point, in pick order, each once. A picked circle or arc is its centre.
-/// Nothing picked is an empty list, which the caller may put on the origin.
+/// Every picked point, in pick order, each once. A picked circle or arc is its centre, and
+/// so is the inside of a circle. Nothing picked is an empty list, which the caller may put
+/// on the origin.
 pub fn resolve_all<R: Runner>(r: &mut R, input: &PlaceInput) -> Result<Vec<Spot>, String> {
     let mut inspected: Vec<(Value, String, Value)> = Vec::new();
     let mut spots: Vec<Spot> = Vec::new();
@@ -177,15 +201,18 @@ pub fn resolve_all<R: Runner>(r: &mut R, input: &PlaceInput) -> Result<Vec<Spot>
             .iter()
             .find(|(key, _, _)| *key == pick.sketch)
             .expect("inspected above");
-        let point = if pick.curve {
-            curve_center(inspect, &pick.id).ok_or_else(|| {
+        let point = match &pick.what {
+            Picked::Point(id) => id.as_str(),
+            Picked::Curve(id) => curve_center(inspect, id).ok_or_else(|| {
                 format!(
-                    "{FIELD}: {} in {sketch} is not a circle or an arc; pick a point or a circle",
-                    pick.id
+                    "{FIELD}: {id} in {sketch} is not a circle or an arc; pick a point or a circle"
                 )
-            })?
-        } else {
-            pick.id.as_str()
+            })?,
+            Picked::Profile(index) => profile_center(inspect, *index).ok_or_else(|| {
+                format!(
+                    "{FIELD}: the region picked in {sketch} is not the inside of a circle; pick a point or a circle"
+                )
+            })?,
         }
         .to_string();
         if spots
@@ -281,6 +308,21 @@ fn curve_center<'a>(inspect: &'a Value, id: &str) -> Option<&'a str> {
         .find(|curve| curve.get("id").and_then(Value::as_str) == Some(id))
         .and_then(|curve| curve.get("center"))
         .and_then(Value::as_str)
+}
+
+/// The centre point of the circle that alone bounds profile `index`: the disc inside a
+/// circle, or the ring between it and the holes in it. A region with any other outline has
+/// no one centre, so it places nothing.
+fn profile_center(inspect: &Value, index: u64) -> Option<&str> {
+    let profile = inspect
+        .get("profiles")
+        .and_then(Value::as_array)?
+        .iter()
+        .find(|profile| profile.get("index").and_then(Value::as_u64) == Some(index))?;
+    match profile.get("curves").and_then(Value::as_array)?.as_slice() {
+        [outline] => curve_center(inspect, outline.as_str()?),
+        _ => None,
+    }
 }
 
 fn xyz(v: &Value) -> Option<[f64; 3]> {
@@ -426,6 +468,13 @@ mod tests {
                 {"id": "c1", "center": "c1.center"},
                 {"id": "c2", "center": "c2.center"},
                 {"id": "l1", "type": "line"}
+            ],
+            // A plate outline with c1 as a hole in it, the disc inside c1, and the ring
+            // between c2 and a smaller circle.
+            "profiles": [
+                {"index": 0, "curves": ["l1", "l2", "l3", "l4"], "holes": [["c1"]]},
+                {"index": 1, "curves": ["c1"], "holes": []},
+                {"index": 2, "curves": ["c2"], "holes": [["c3"]]}
             ]
         })
     }
@@ -499,6 +548,41 @@ mod tests {
     }
 
     #[test]
+    fn the_inside_of_a_circle_is_its_centre() {
+        let mut rec = rec();
+        let input = parse_input(&json!({"placement": [
+            {"type": "profile", "sketch": 7, "index": 1},
+            {"type": "external_sketch_curve", "sketch": 7, "id": "c1"},
+            {"type": "profile", "sketch": 7, "index": 2}
+        ]}))
+        .unwrap();
+        assert_eq!(input.picks[0].what, Picked::Profile(1));
+        let spots = resolve_all(&mut rec, &input).unwrap();
+        // The disc and its own circle are one spot; a ring is its outer circle's centre.
+        let points: Vec<&str> = spots.iter().map(|spot| spot.point.as_str()).collect();
+        assert_eq!(points, ["c1.center", "c2.center"]);
+        assert_eq!(spots[0].place.point, [12.0, 10.0, 8.0]);
+        assert_eq!(spots[0].place.source, Source::Picked);
+        assert_eq!(rec.calls.len(), 1);
+    }
+
+    #[test]
+    fn a_region_that_is_not_a_circle_is_refused() {
+        // Profile 0 is the plate around the hole; profile 9 is not in the sketch.
+        for index in [0, 9] {
+            let mut rec = rec();
+            let input = parse_input(&json!({"placement": [
+                {"type": "profile", "sketch": 7, "index": index}
+            ]}))
+            .unwrap();
+            assert_eq!(
+                resolve_all(&mut rec, &input).unwrap_err(),
+                "placement: the region picked in Holes is not the inside of a circle; pick a point or a circle"
+            );
+        }
+    }
+
+    #[test]
     fn anything_but_a_sketch_pick_is_refused_against_the_field() {
         for bad in [
             json!({"placement": [{"type": "body", "name": "Plate"}]}),
@@ -506,6 +590,9 @@ mod tests {
             json!({"placement": [{"type": "external_sketch_point", "id": "p1"}]}),
             json!({"placement": [{"type": "external_sketch_point", "sketch": 2}]}),
             json!({"placement": [{"type": "external_sketch_point", "sketch": -1, "id": "p1"}]}),
+            json!({"placement": [{"type": "profile", "sketch": 2}]}),
+            json!({"placement": [{"type": "profile", "sketch": 2, "index": "0"}]}),
+            json!({"placement": [{"type": "face", "body": "Plate", "index": 1}]}),
             json!({"placement": "Holes"}),
         ] {
             assert_eq!(parse_input(&bad).unwrap_err().field, "placement", "{bad}");
@@ -554,7 +641,7 @@ mod tests {
                 );
                 assert_eq!(
                     field["x-solidcraft-selection"],
-                    json!({"version": 1, "accept": ["sketch_point", "sketch_curve"]})
+                    json!({"version": 1, "accept": ["profile", "sketch_point", "sketch_curve"]})
                 );
                 assert_eq!(field["maxItems"], json!(32));
                 checked += 1;

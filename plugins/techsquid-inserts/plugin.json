@@ -104,12 +104,13 @@
               "type": "string"
             },
             "placement": {
-              "description": "The sketch points or circles to put an insert on, picked in the view. Each gets the hole for an insert, and the insert if Create says so. With nothing picked, one loose insert sits on the origin.",
+              "description": "The sketch points or circles to put an insert on, picked in the view. Click a circle or inside it for its centre. Each gets the hole for an insert, and the insert if Create says so. With nothing picked, one loose insert sits on the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
               "x-solidcraft-selection": {
                 "accept": [
+                  "profile",
                   "sketch_point",
                   "sketch_curve"
                 ],

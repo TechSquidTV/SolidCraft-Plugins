@@ -13,7 +13,7 @@ Add ISO 4032 hex nuts to your [SolidCraft](https://github.com/tangency-labs/soli
 
 ## Get started
 
-Open **Plugins > Hex nut** and pick one or more sketch points or circles for **Placement** in the view. Points or circles already selected when the dialog opens fill the field. Choose a size and press **Run**. With nothing picked, a loose nut is placed at the origin.
+Open **Plugins > Hex nut** and pick one or more sketch points or circles for **Placement** in the view; clicking inside a circle picks it too. Points or circles already selected when the dialog opens fill the field. Choose a size and press **Run**. With nothing picked, a loose nut is placed at the origin.
 
 The default is an M3 nut. To recess it into a part, pick points on the part and choose **Nut and pocket**. The pocket holds the nut flush with the surface. A rigid joint keeps it centered on the bolt hole and seated on the floor as the sketch or pocket depth changes. `Nut only` placements keep their initial position.
 

@@ -119,6 +119,8 @@ modeled end taps, end-relative cross-holes, a picked subset of lines, repeated r
 save/reopen, and the 16-rail limit. Run `python3 tests/sketch_selection_test.py` for the
 focused check that a pick names its sketch by id: two sketches each have a line `l1`, and it
 checks the picked rail’s position and length and refuses lines from both sketches.
+`python3 tests/profile_picks_test.py` checks that the inside of a circle places, in every
+entry, exactly what the circle itself places, and that any other region is refused.
 The plugin estimates its command count before creation;
 complex machining can require smaller batches. Its execution allowance also covers
 fixing copied section geometry, while the host's 256-call and 30-second limits remain.

@@ -13,7 +13,7 @@ Add reusable threaded connections to your printed parts. This [SolidCraft](https
 
 ## Get started
 
-Sketch on your part's face with a point or circle for each insert. Open **Plugins > Heat-set insert**, pick the points or circles for **Placement** in the view, choose a size and press **Run**. Points or circles already selected when the dialog opens fill the field. The default is an M3 × 5.7 insert with a straight, blind hole.
+Sketch on your part's face with a point or circle for each insert. Open **Plugins > Heat-set insert**, pick the points or circles for **Placement** in the view (clicking inside a circle picks it too), choose a size and press **Run**. Points or circles already selected when the dialog opens fill the field. The default is an M3 × 5.7 insert with a straight, blind hole.
 
 Use **Create** to make the hole and insert together, or either one separately. A hole needs a part under the picked points; with nothing picked, the plugin can place a loose insert at the origin.
 

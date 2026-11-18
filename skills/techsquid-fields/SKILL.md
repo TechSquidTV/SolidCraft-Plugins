@@ -13,7 +13,7 @@ description: Use this skill when changing what a TechSquid plugin's dialog asks 
 
 Use the shared field names wherever they fit: `size`, `custom_size`, `create`, `placement`, `thread_modeled`. `create` goes through `plugin_kit::create`; `placement` through `place::parse_input`.
 
-`placement` is the one array field an entry has. SolidCraft draws it as a pick field (`x-solidcraft-selection`, accepting `sketch_point` and `sketch_curve`) and sends the picks as selection references; the plugin never reads the app's selection to place a part. The dialog turns Run off for any other array or keyword, which `every_package_declares_the_placement_pick_field` in `place.rs` checks.
+`placement` is the one array field an entry has. SolidCraft draws it as a pick field (`x-solidcraft-selection`, accepting `profile`, `sketch_point` and `sketch_curve`) and sends the picks as selection references: a point, a circle, or the inside of a circle, which `place::resolve_all` turns into the circle's centre point so the part still follows the sketch; the plugin never reads the app's selection to place a part. The dialog turns Run off for any other array or keyword, which `every_package_declares_the_placement_pick_field` in `place.rs` checks.
 
 ## Parsing
 
@@ -38,6 +38,7 @@ A renamed or retired key is refused, never aliased or given a fallback. List the
 - **An entry without `slots` shows its id.** The menu said `make-bearing` until the entry got `"slots": [{"kind": "menu", "name": "Bearing"}]`.
 - **A field key in an error must be a field the dialog has.** `parts:` errors showed nowhere; they now use `placement:`.
 - **A blank dropdown is its default**, through `input::choice`. Don't treat `""` as an error.
+- **The Bearings manifest is within a few bytes of the host's 16 KiB limit.** A longer description there fails `generation_keeps_packages_insertion_only`; shorten another to make room.
 - **Line and point ids repeat between sketches.** A pick carries its sketch's feature id; compare sketches by that, not by an id within one.
 - **A new entry needs a case in `tests/cli_test.py`.** The Bearings case failed on `main` when `make-csk` was added beside `make-bearing`.
 - **`catalog-tool --write` refuses a field the manifest lacks.** Add the field to `plugin.json` first.

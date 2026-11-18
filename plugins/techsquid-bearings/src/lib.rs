@@ -44,8 +44,11 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
 
 fn by_dimensions(v: &Value, closure: Closure) -> Result<Bearing, FieldError> {
     let candidates = bearings::ALL.into_iter().filter(|b| b.closure() == closure);
-    let (field, selection) =
-        match_dimensions(v, candidates, |b| (b.size().label(), b.dimensions()))?;
+    let (field, selection) = match_dimensions(
+        |key| input::optional_length(v, key),
+        candidates,
+        |b| (b.size().label(), b.dimensions()),
+    )?;
     match selection {
         EnvelopeMatch::One(bearing) => Ok(bearing),
         EnvelopeMatch::None if closure == Closure::Open => Err(FieldError::new(
@@ -62,12 +65,12 @@ fn by_dimensions(v: &Value, closure: Closure) -> Result<Bearing, FieldError> {
 
 /// Read the three search fields only when the user selects By dimensions.
 fn match_dimensions<T: Copy>(
-    v: &Value,
+    read_length: impl Fn(&str) -> Result<Option<f64>, FieldError>,
     candidates: impl Iterator<Item = T>,
     describe: impl Fn(T) -> (&'static str, Envelope),
 ) -> Result<(&'static str, EnvelopeMatch<T>), FieldError> {
     let length = |key| {
-        let value = input::optional_length(v, key)?;
+        let value = read_length(key)?;
         if let Some(x) = value {
             input::check_length(key, x)?;
         }

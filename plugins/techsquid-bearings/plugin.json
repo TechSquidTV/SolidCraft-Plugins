@@ -178,7 +178,7 @@
           "properties": {
             "closure": {
               "default": "Preset",
-              "description": "By dimensions filters presets by this closure. Preset accepts any. For a named or Custom clutch, this sets the closure independently of width.",
+              "description": "Sets the finished clutch closure independently of width. Preset keeps the selected closure.",
               "enum": [
                 "Preset",
                 "Dust covers",
@@ -214,7 +214,7 @@
             },
             "inner_keyway": {
               "default": "Preset",
-              "description": "By dimensions filters presets by keyway presence. Preset accepts either. On a named or Custom clutch, Enabled adds a slot and None removes it.",
+              "description": "Preset keeps the selected geometry. Enabled adds a slot and None removes it.",
               "enum": [
                 "Preset",
                 "Enabled",
@@ -244,26 +244,57 @@
               "unit": "mm"
             },
             "match_bore": {
-              "description": "By dimensions only. Leave blank to match any bore.",
-              "title": "Bore",
-              "type": "number",
-              "unit": "mm"
+              "description": "By dimensions only. Enter the nominal bore in millimetres, or leave blank to match any value.",
+              "title": "Bore (mm)",
+              "type": "string"
+            },
+            "match_closure": {
+              "default": "Any",
+              "description": "By dimensions only. Limit the search by closure.",
+              "enum": [
+                "Any",
+                "Dust covers",
+                "Lip seals",
+                "Single lip seal"
+              ],
+              "title": "Match closure",
+              "type": "string"
             },
             "match_diameter": {
-              "description": "By dimensions only. Leave blank to match any outside diameter.",
-              "title": "Outside diameter",
-              "type": "number",
-              "unit": "mm"
+              "description": "By dimensions only. Enter the nominal outside diameter in millimetres, or leave blank to match any value.",
+              "title": "Outside diameter (mm)",
+              "type": "string"
+            },
+            "match_inner_keyway": {
+              "default": "Any",
+              "description": "By dimensions only. Limit the search by inner keyway.",
+              "enum": [
+                "Any",
+                "Enabled",
+                "None"
+              ],
+              "title": "Match inner keyway",
+              "type": "string"
+            },
+            "match_outer_keyway": {
+              "default": "Any",
+              "description": "By dimensions only. Limit the search by outer keyway.",
+              "enum": [
+                "Any",
+                "Enabled",
+                "None"
+              ],
+              "title": "Match outer keyway",
+              "type": "string"
             },
             "match_width": {
-              "description": "By dimensions only. Leave blank to match any width.",
-              "title": "Width",
-              "type": "number",
-              "unit": "mm"
+              "description": "By dimensions only. Enter the nominal width in millimetres, or leave blank to match any value.",
+              "title": "Width (mm)",
+              "type": "string"
             },
             "outer_keyway": {
               "default": "Preset",
-              "description": "By dimensions filters presets by keyway presence. Preset accepts either. On a named or Custom clutch, Enabled adds a slot and None removes it.",
+              "description": "Preset keeps the selected geometry. Enabled adds a slot and None removes it.",
               "enum": [
                 "Preset",
                 "Enabled",

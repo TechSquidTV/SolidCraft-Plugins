@@ -26,7 +26,7 @@ Download `techsquid-bearings-0.3.0.zip` from the repository's releases. In Solid
 Choose a workflow:
 
 - **Plugins > Bearing** (`make-bearing` in scripts) defaults to 608 Shielded. Choose a base size and closure, or select **By dimensions** and enter the dimensions you know. A 17 mm bore and 40 mm outside diameter select 6203. Open is available for 626.
-- **Plugins > CSK clutch** (`make-csk` in scripts) starts at CSK12P. Choose a designation or use **By dimensions** to find one by bore, outside diameter or width. Closure and keyways narrow the matches. A 15 mm bore, 11 mm width and an enabled outer keyway select CSK15PP, which has a measured exterior. Edit a preset’s dimensions and keyways, or choose **Custom** to define a clutch from scratch.
+- **Plugins > CSK clutch** (`make-csk` in scripts) starts at CSK12P. Choose a designation or use **By dimensions** to find one by bore, outside diameter or width. A 15 mm bore, 11 mm width and **Match outer keyway** set to **Enabled** select CSK15PP, which has a measured exterior. Edit a preset’s dimensions and keyways, or choose **Custom** to define a clutch from scratch.
 
 CSK parts have no assigned manufacturer, supplier or BOM part number. Drawing
 references remain separate from geometry. Custom and unsourced parts still count

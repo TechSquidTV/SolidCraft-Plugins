@@ -16,7 +16,9 @@ The resulting part does not claim to be a purchase from the reference publisher.
 | Field | Default | Meaning |
 |---|---|---|
 | `size` | `CSK12P` | A listed CSK designation, `By dimensions`, or `Custom` |
-| `match_bore` / `match_diameter` / `match_width` | Empty | By dimensions only. Enter one or more nominal dimensions in mm. |
+| `match_bore` / `match_diameter` / `match_width` | Empty | By dimensions only. Enter one or more nominal dimensions as text in mm, for example `"15"`. |
+| `match_closure` | `Any` | Search for dust covers, lip seals or a single lip seal. |
+| `match_inner_keyway` / `match_outer_keyway` | `Any` | Search for presets with (`Enabled`) or without (`None`) a keyway. |
 | `custom_bore` / `custom_diameter` / `custom_width` | Preset value | Bore, outside diameter and width in millimetres; all three required for Custom |
 | `inner_keyway` / `outer_keyway` | `Preset` | `Preset`, `Enabled`, or `None`; Custom starts without slots |
 | `inner_keyway_width` / `inner_keyway_depth` | Existing value | Positive millimetres; both required when adding an inner slot |
@@ -25,16 +27,16 @@ The resulting part does not claim to be a purchase from the reference publisher.
 | `closure` | `Preset` | `Preset`, `Dust covers`, `Lip seals`, or `Single lip seal`; Custom starts with dust covers. Width is edited separately. |
 | `placement` | Empty | Placement, as described below |
 
-**By dimensions** searches the reference envelopes. Leave Closure and either keyway on
-Preset to allow any value for that field. An explicit closure or keyway choice filters
-the candidates. A 15 mm bore and 11 mm width fit CSK15, CSK15P and CSK15PP. Setting
-Outer keyway to Enabled selects CSK15PP. Preview and Run list ambiguous matches and
-report a search with no match. Use Custom for an unlisted clutch.
+**By dimensions** searches the reference envelopes. Leave a **Match** filter on **Any**
+to include all values for that field. A 15 mm bore and 11 mm width fit CSK15, CSK15P
+and CSK15PP. Setting **Match outer keyway** to **Enabled** selects CSK15PP. Preview
+and Run list ambiguous matches and report a search with no match. Use Custom for an
+unlisted clutch.
 
 A match starts from the same designation, source and geometry as picking it directly.
-Custom dimensions and keyway dimensions or angles edit that baseline after selection.
-The saved exterior record describes the resulting section. A base designation or Custom
-ignores the three match dimensions.
+Closure, keyway and custom dimension overrides edit that baseline after selection.
+The saved exterior record describes the resulting section. Switching to a named
+designation or Custom ignores every search field, including unfinished dimensions.
 
 To add a slot to an unkeyed preset, choose Enabled and provide width and depth.
 To remove a slot, choose None and clear its dimension overrides. A disabled slot

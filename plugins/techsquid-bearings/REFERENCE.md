@@ -1,47 +1,58 @@
 # Bearings reference
 
-The package offers two insertion workflows:
+| Dialog | Entry | Use |
+|---|---|---|
+| Bearing | `make-bearing` | Pick a radial size and closure |
+| CSK clutch | `make-csk` | Insert or edit a CSK preset, or start from scratch |
+| Bearing by dimensions | `make-bearing-by-dimensions` | Match a radial bearing by nominal dimensions and closure |
+| CSK clutch by dimensions | `make-csk-by-dimensions` | Match a CSK designation by dimensions, closure and keyways |
 
-- `make-bearing`: radial bearings selected by base size or nominal dimensions and closure.
-- `make-csk`: CSK design specifications with editable keyways and recorded references.
+## Radial preset selection
 
-## CSK workflow
+**Bearing** takes `size` (default `"608"`) and `closure` (default `"Shielded"`).
+The closure choices are `Shielded`, `Sealed` and `Open`. Only 626 supports Open.
+The **Size** list shows the designation followed by bore, outside diameter and width.
+The dialog takes optional [Placement](#placement-and-reuse) picks.
 
-Choose a designation, find a reference preset with **By dimensions**, or select **Custom**.
-Each named choice shows the exterior basis of its reference preset. Blank custom dimensions
-retain the selected reference values. Overrides change the geometry.
-For example, CSK12P with `inner_keyway_depth: 1.2` changes its default 1.8 mm depth.
-The resulting part does not claim to be a purchase from the reference publisher.
+## Match by dimensions
 
 | Field | Default | Meaning |
 |---|---|---|
-| `size` | `CSK12P` | A listed CSK designation, `By dimensions`, or `Custom` |
-| `match_bore` / `match_diameter` / `match_width` | Empty | By dimensions only. Enter one or more nominal dimensions as text in mm, for example `"15"`. |
-| `match_closure` | `Any` | Search for dust covers, lip seals or a single lip seal. |
-| `match_inner_keyway` / `match_outer_keyway` | `Any` | Search for presets with (`Enabled`) or without (`None`) a keyway. |
-| `custom_bore` / `custom_diameter` / `custom_width` | Preset value | Bore, outside diameter and width in millimetres; all three required for Custom |
-| `inner_keyway` / `outer_keyway` | `Preset` | `Preset`, `Enabled`, or `None`; Custom starts without slots |
-| `inner_keyway_width` / `inner_keyway_depth` | Existing value | Positive millimetres; both required when adding an inner slot |
-| `outer_keyway_width` / `outer_keyway_depth` | Existing value | Positive millimetres; both required when adding an outer slot |
-| `inner_keyway_angle` / `outer_keyway_angle` | 0° / 180° | Optional independent clocking in degrees; values wrap at 360°. Requires an enabled keyway. |
-| `closure` | `Preset` | `Preset`, `Dust covers`, `Lip seals`, or `Single lip seal`; Custom starts with dust covers. Width is edited separately. |
-| `placement` | Empty | Placement, as described below |
+| `match_bore`, `match_diameter`, `match_width` | Empty | Nominal bore, outside diameter and width as numbers in mm |
+| `narrow_by_closure` | `Shielded` for radial, `Any` for CSK | Radial choices are the same as **Bearing**. CSK choices are `Any`, `Dust covers`, `Lip seals` or `Single lip seal`. |
+| `narrow_by_inner_keyway`, `narrow_by_outer_keyway` | `Any` | CSK only. **Present** sends `Enabled`; **Absent** sends `None`. |
+| `placement` | Empty | [Placement](#placement-and-reuse) picks |
 
-**By dimensions** searches the reference envelopes. Leave a **Match** filter on **Any**
-to include all values for that field. A 15 mm bore and 11 mm width fit CSK15, CSK15P
-and CSK15PP. Setting **Match outer keyway** to **Enabled** selects CSK15PP. Preview
-and Run list ambiguous matches and report a search with no match. Use Custom for an
-unlisted clutch.
+Enter at least one dimension. Leave the others blank to match any value. Each
+entered value must be greater than 0, at most 1000 mm, and match the catalog exactly.
+A 17 mm bore and 40 mm outside diameter select radial size 6203. A 15 mm bore and
+11 mm width with **Outer keyway** set to **Present** select CSK15PP. Preview and Run
+report missing or ambiguous matches. A unique match uses the same component
+definition as direct preset selection.
 
-A match starts from the same designation, source and geometry as picking it directly.
-Closure, keyway and custom dimension overrides edit that baseline after selection.
-The saved exterior record describes the resulting section. Switching to a named
-designation or Custom ignores every search field, including unfinished dimensions.
+## CSK clutch
+
+**Starting preset** shows the designation, inherited closure and dimensions.
+Keep the defaults to insert that preset, edit it, or choose **From scratch**.
+To modify a preset found by dimensions, select its designation here.
+
+A closure override keeps the current dimensions. To get the catalog dimensions
+of a sealed variant, choose its designation, such as CSK12P-2RS, as the starting preset.
+
+| Field | Default | Meaning |
+|---|---|---|
+| `size` | `CSK12P` | Listed CSK designation or `From scratch` |
+| `closure` | `Preset` | **Use starting preset** sends `Preset`. Other choices are `Dust covers`, `Lip seals`, and `Single lip seal`. From scratch starts with dust covers. Width is edited separately. |
+| `custom_bore`, `custom_diameter`, `custom_width` | Preset value | Bore, outside diameter and width in mm. From scratch requires all three. |
+| `inner_keyway`, `outer_keyway` | `Preset` | **Use starting preset** sends `Preset`. Other choices are `Enabled` and `None`. From scratch starts without slots. |
+| `inner_keyway_width`, `inner_keyway_depth` | Existing value | Positive millimetres. Both are required when adding an inner slot. |
+| `outer_keyway_width`, `outer_keyway_depth` | Existing value | Positive millimetres. Both are required when adding an outer slot. |
+| `inner_keyway_angle`, `outer_keyway_angle` | 0° / 180° | Clocking in degrees. Values wrap at 360°. Requires an enabled keyway. |
+| `placement` | Empty | [Placement](#placement-and-reuse) picks |
 
 To add a slot to an unkeyed preset, choose Enabled and provide width and depth.
 To remove a slot, choose None and clear its dimension overrides. A disabled slot
-rejects dimensions rather than silently ignoring them. Custom mode requires bore,
-outside diameter and width; no arbitrary default envelope is supplied.
+rejects width, depth and angle overrides.
 
 Keyways pass through the full width. Inner slots default to +Y (0°), outer slots
 to -Y (180°), matching the supplied 15PP/40PP references. Angles are independent
@@ -54,7 +65,7 @@ runs before host edits.
 
 Presets cover documented combinations, not every product sold under CSK names.
 The 10 mm sealed family and 8/12 mm PP-2RS combinations lack a fully verified
-baseline here; use Custom or edit a documented preset using your part drawing.
+baseline here. Use **CSK clutch** and the part drawing to define one.
 Each CSK has two separate chamfered steel rings and two annular cover/seal faces.
 Keyways cut only their respective ring. The supplied CAD has flush closure faces;
 no recess is invented. Colours distinguish covers from rubber seals but do not
@@ -93,20 +104,7 @@ Purchasing assignment remains
 [future work for a shared component workflow](../../docs/parts-library.md#future-component-purchasing-workflow)
 after creation, outside this generator's inputs.
 
-## Radial bearing workflow
-
-| Field | Default | Meaning |
-|---|---|---|
-| `size` | `608` | Base size as a string, or `By dimensions` |
-| `closure` | `Shielded` | `Shielded`, `Sealed` or `Open`. Only 626 supports Open. |
-| `match_bore`, `match_diameter`, `match_width` | Empty | Nominal bore, outside diameter and width in mm. Used only with By dimensions. |
-| `placement` | Empty | Sketch picks as described below |
-
-By dimensions needs at least one dimension. Each value must be greater than 0, at most 1000 mm,
-and match the catalog exactly. Switching to a base size ignores the numeric values in these fields.
-A 17 mm bore matches 6003 and 6203. Adding a 40 mm outside diameter selects 6203.
-Multiple or zero matches produce a message during Preview or on Run. Matching and
-choosing the base size directly create the same component.
+## Radial bearing geometry
 
 All sizes offer shielded and sealed closures. For the thirteen new closed variants,
 both rings, edge radii and the closure recess come from the measured variant of
@@ -241,6 +239,17 @@ profiles; the [OpenBuilds ledger](../../docs/sources/openbuilds.md) includes the
 
 ## Breaking changes
 
+### Older field names
+
+- In the dimension searches, use `narrow_by_closure` in place of radial `closure`
+  or CSK `match_closure`. In the CSK search, use `narrow_by_inner_keyway` and
+  `narrow_by_outer_keyway` in place of `match_inner_keyway` and `match_outer_keyway`.
+- Replace the former `make-custom-csk` entry with `make-csk` and its `preset` key
+  with `size`. Use `From scratch` for the former `Custom` choice.
+
+See the [dialog migration](https://github.com/TechSquidTV/SolidCraft-Plugins/blob/main/release-notes/v0.3.0.md#bearings-dialog-migration)
+for the replacement entry IDs and numeric CSK search inputs.
+
 **Breaking change for radial scripts.** Replace product-valued `size` with a base size
 and closure. For example, `{"size":"B6203ZZ"}` becomes
 `{"size":"6203","closure":"Shielded"}`. Old values are rejected. To reproduce the old
@@ -257,4 +266,4 @@ Earlier PR revisions accepted `part_number` and `purchase_*` fields in `make-csk
 These inputs are now rejected without aliases. Old saved definitions remain intact
 but are not adopted as current definitions.
 
-Both workflows: `sketch` and `sketch_point` are retired and rejected as unsupported fields. Use `placement`, a list of picked sketch points or curves; typed comma-separated ids are gone.
+Replace retired `sketch` and `sketch_point` inputs with `placement`, a list of picked sketch points or curves.

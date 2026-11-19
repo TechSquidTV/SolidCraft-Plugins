@@ -1,4 +1,6 @@
-//! Update only catalog-owned manifest fields; workflow fields stay hand-authored.
+//! Generate catalog choices, the Bearings dialog schemas and reference tables.
+
+mod bearings_manifest;
 
 use std::{env, fs, path::Path, process::ExitCode};
 
@@ -37,35 +39,6 @@ fn run() -> Result<(), String> {
                     .map(str::to_string)
                     .collect(),
             )],
-        ),
-        (
-            "techsquid-bearings",
-            vec![
-                (
-                    "make-bearing",
-                    "size",
-                    bearings::Size::ALL
-                        .iter()
-                        .map(|s| s.label().to_string())
-                        .collect(),
-                ),
-                (
-                    "make-bearing",
-                    "closure",
-                    bearings::Closure::ALL
-                        .into_iter()
-                        .map(|c| c.label().to_string())
-                        .collect(),
-                ),
-                (
-                    "make-csk",
-                    "size",
-                    bearings::csk::ALL
-                        .into_iter()
-                        .map(|c| c.designation().to_string())
-                        .collect(),
-                ),
-            ],
         ),
         (
             "techsquid-v-wheels",
@@ -117,6 +90,14 @@ fn run() -> Result<(), String> {
             write,
         )?;
     }
+    update_manifest(
+        &root.join("plugins/techsquid-bearings/plugin.json"),
+        write,
+        |manifest| {
+            manifest["runtime"]["entries"] = json!(bearings_manifest::entries());
+            Ok(())
+        },
+    )?;
     let mut bearings_table = String::from(
         "| Designation | Supplier | Part number | Bore × OD × width (mm) | Closure / mounting | Exterior |\n|---|---|---|---|---|---|\n",
     );
@@ -221,85 +202,59 @@ fn update_table(path: &Path, table: &str, write: bool) -> Result<(), String> {
 }
 
 fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> Result<(), String> {
-    let original = fs::read_to_string(path).map_err(|e| e.to_string())?;
-    let mut manifest: Value = serde_json::from_str(&original).map_err(|e| e.to_string())?;
-    let entries = manifest["runtime"]["entries"]
-        .as_array_mut()
-        .ok_or("plugin manifest has no entry list")?;
-    for (entry, field, choices) in fields {
-        let workflow = entries
-            .iter_mut()
-            .find(|e| e["name"] == entry)
-            .ok_or("manifest has no insertion workflow")?;
-        let property = workflow["input_schema"]["properties"]
-            .get_mut(field)
-            .ok_or_else(|| format!("{entry} has no {field} field"))?;
-        if entry == "make-csk" && field == "size" {
-            property
-                .as_object_mut()
-                .ok_or("missing CSK size property")?
-                .remove("enum");
-            let mut options: Vec<_> = bearings::csk::ALL
-                .into_iter()
-                .map(|csk| {
-                    let mut title = format!(
-                        "{} — {} mm — {} exterior",
-                        csk.designation(),
-                        csk.dimensions(),
-                        csk_exterior_basis(csk).label()
-                    );
-                    let (inner, outer) = csk.keyways();
-                    for (label, key) in [("inner", inner), ("outer", outer)] {
-                        if let Some(key) = key {
-                            title.push_str(&format!("; {label} {} × {}", key.width, key.depth));
+    update_manifest(path, write, |manifest| {
+        let entries = manifest["runtime"]["entries"]
+            .as_array_mut()
+            .ok_or("plugin manifest has no entry list")?;
+        for (entry, field, choices) in fields {
+            let workflow = entries
+                .iter_mut()
+                .find(|e| e["name"] == entry)
+                .ok_or("manifest has no insertion workflow")?;
+            let property = workflow["input_schema"]["properties"]
+                .get_mut(field)
+                .ok_or_else(|| format!("{entry} has no {field} field"))?;
+            if entry == "make-nut" && field == "size" {
+                property
+                    .as_object_mut()
+                    .ok_or("missing nut size property")?
+                    .remove("enum");
+                let lock_sizes: std::collections::BTreeSet<_> = fasteners::lock_nut::sizes()
+                    .map(|row| format!("M{}", fasteners::metric::number(row.nominal)))
+                    .collect();
+                let options: Vec<_> = choices
+                    .into_iter()
+                    .map(|size| {
+                        if lock_sizes.contains(&size) {
+                            json!({"const": size})
+                        } else {
+                            json!({"const": size, "title": format!("{size} (plain hex only)")})
                         }
-                    }
-                    json!({"const":csk.designation(), "title":title})
-                })
-                .collect();
-            options.push(json!({"const":"By dimensions","title":"By dimensions — narrow by closure or keyways"}));
-            options
-                .push(json!({"const":"Custom", "title":"Custom — enter dimensions and keyways"}));
-            property["oneOf"] = json!(options);
-        } else if entry == "make-bearing" && field == "size" {
-            property
-                .as_object_mut()
-                .ok_or("missing bearing size property")?
-                .remove("enum");
-            let mut options: Vec<_> = bearings::Size::ALL.iter().map(|size| {
-                json!({"const":size.label(), "title":format!("{} — {} mm",size.label(),size.envelope())})
-            }).collect();
-            options.push(json!({"const":"By dimensions","title":"By dimensions"}));
-            property["oneOf"] = json!(options);
-        } else if entry == "make-nut" && field == "size" {
-            property
-                .as_object_mut()
-                .ok_or("missing nut size property")?
-                .remove("enum");
-            let lock_sizes: std::collections::BTreeSet<_> = fasteners::lock_nut::sizes()
-                .map(|row| format!("M{}", fasteners::metric::number(row.nominal)))
-                .collect();
-            let options: Vec<_> = choices
-                .into_iter()
-                .map(|size| {
-                    if lock_sizes.contains(&size) {
-                        json!({"const": size})
-                    } else {
-                        json!({"const": size, "title": format!("{size} (plain hex only)")})
-                    }
-                })
-                .collect();
-            property["oneOf"] = json!(options);
-        } else {
-            property["enum"] = json!(choices);
+                    })
+                    .collect();
+                property["oneOf"] = json!(options);
+            } else {
+                property["enum"] = json!(choices);
+            }
         }
-    }
+        Ok(())
+    })
+}
+
+fn update_manifest(
+    path: &Path,
+    write: bool,
+    edit: impl FnOnce(&mut Value) -> Result<(), String>,
+) -> Result<(), String> {
+    let original = fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let current: Value = serde_json::from_str(&original).map_err(|e| e.to_string())?;
+    let mut manifest = current.clone();
+    edit(&mut manifest)?;
     let mut commands: std::collections::BTreeSet<String> =
         serde_json::from_value(manifest["runtime"]["commands"].clone())
             .map_err(|e| e.to_string())?;
     commands.extend(plugin_kit::component::commands().map(str::to_string));
     manifest["runtime"]["commands"] = json!(commands);
-    let current: Value = serde_json::from_str(&original).map_err(|e| e.to_string())?;
     if manifest != current {
         if !write {
             return Err(

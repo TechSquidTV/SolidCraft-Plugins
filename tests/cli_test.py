@@ -58,7 +58,9 @@ CASES = {
 
 # The entries a plugin lists beside the one its case runs.
 OTHER_ENTRIES = {
-    "techsquid-bearings": ["make-csk"],
+    "techsquid-bearings": [
+        "make-csk", "make-bearing-by-dimensions", "make-csk-by-dimensions",
+    ],
     "techsquid-extrusions": ["make-t-nut"],
 }
 

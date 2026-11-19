@@ -43,14 +43,17 @@ with Headless() as host:
     path = package('techsquid-bearings')
     info = host.command('plugin.inspect', path=path)
     approval = info['approval']
-    entry = next(e for e in info['manifest']['runtime']['entries'] if e['name'] == 'make-csk')
-    schema = entry['input_schema']
-    for field in ('match_bore', 'match_diameter', 'match_width'):
-        definition = schema['properties'][field]
-        check(f'the CSK form accepts unfinished text in {field}',
-              definition['type'] == 'string' and field not in schema['required']
-              and not {'pattern','enum','oneOf','minLength','maxLength','format'}.intersection(definition))
-    titles = {opt['const']:opt['title'] for opt in schema['properties']['size']['oneOf']}
+    entries = {entry['name']: entry['input_schema'] for entry in info['manifest']['runtime']['entries']}
+    fields = entries['make-csk']['properties']
+    titles = {opt['const']:opt['title'] for opt in fields['size']['oneOf']}
+    check('one CSK clutch dialog lists all presets plus From scratch',
+          'make-custom-csk' not in entries and titles.get('From scratch') == 'From scratch — Dust covers by default'
+          and set(titles) == {'From scratch', *(case[0] for case in CASES)})
+    for field in ('closure', 'inner_keyway', 'outer_keyway'):
+        definition = fields[field]
+        check(f'{field} labels the inherited default',
+              definition['default'] == 'Preset'
+              and {'const':'Preset', 'title':'Use starting preset'} in definition['oneOf'])
     for sku, bore, od, width, keyed, outer in CASES:
         result = host.command('plugin.run', path=path, approval=approval,
                               entry='make-csk', params={'size': sku})
@@ -116,8 +119,11 @@ with Headless() as host:
         check(sku + ': measured/estimated evidence is explicit',
               spec['exterior']['basis'] == ('measured' if sku in source_dimensions else 'estimated')
               and all(len(source['sha256']) == 64 for source in spec['exterior']['sources']))
-        check(sku + ': dialog shows the recorded exterior basis',
-              spec['exterior']['basis'].capitalize() + ' exterior' in titles[sku])
+        closure = 'Dust covers'
+        if sku.endswith('-2RS'):
+            closure = 'Single lip seal' if bore == 8 else 'Lip seals'
+        check(sku + ': option title gives the inherited closure and nominal envelope',
+              titles[sku] == f'{sku} — {closure} · {bore} × {od} × {width} mm')
         if sku in source_dimensions:
             ri,ro,ic,ia,oc,oa = source_dimensions[sku]
             check(sku + ': measured ring shoulders',
@@ -186,7 +192,7 @@ with Headless() as host:
     before = host.command('document.inspect', measure=False)
     for params in [{'inner_keyway_width': 12}, {'inner_keyway_depth': 20}, {'outer_keyway_depth': 1},
                    {'custom_bore':32}, {'custom_width':0}, {'closure':'invalid'},
-                   {'size':'CSK12PP','inner_keyway_depth':7,'outer_keyway_depth':2.5}, {'outer_keyway':'Enabled'}, {'size':'Custom'},
+                   {'size':'CSK12PP','inner_keyway_depth':7,'outer_keyway_depth':2.5}, {'outer_keyway':'Enabled'}, {'size':'From scratch'},
                    {'part_number': 'CL-12'}, {'purchase_supplier': 'Seller'}]:
         result = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
                               params={'size': 'CSK12P', **params}, allow_error=True)
@@ -198,7 +204,7 @@ with Headless() as host:
     approval = host.command('plugin.inspect', path=path)['approval']
     # All envelope dimensions changed, inner removed, outer added; then a
     # reference-free counterpart. Independently check cylindrical radii and slot vertices.
-    for size in ('CSK8P', 'Custom'):
+    for size in ('CSK8P', 'From scratch'):
         params = {'size':size, 'custom_bore':9, 'custom_diameter':25, 'custom_width':12,
                   'inner_keyway':'None', 'outer_keyway':'Enabled',
                   'outer_keyway_width':2, 'outer_keyway_depth':0.7}
@@ -220,7 +226,7 @@ with Headless() as host:
         spec = record['org.techsquid.specification']
         check(size + ': removed inner keyway is recorded', spec['geometry']['inner_keyway'] is None)
         check(size + ': reference remains truthful',
-              spec['reference'] is None if size == 'Custom' else
+              spec['reference'] is None if size == 'From scratch' else
               spec['reference']['baseline']['bore'] == 8 and spec['reference']['customized'])
         saved = str(Path(TMP) / ('csk-' + size + '.sc'))
         host.command('file.save_as', path=saved)
@@ -264,21 +270,37 @@ with Headless() as host:
             for target in [(x,y,z) for y in (-half,half) for z in (-5.5,5.5)]))
 
 def check_dimension_search(host, run):
+    search = 'make-csk-by-dimensions'
+    named = 'make-csk'
     before = host.command('document.inspect', measure=False)
     for filters, reasons in [
-        ({'match_bore':'15', 'match_width':'11'}, ['CSK15 (', 'CSK15P (', 'CSK15PP (']),
-        ({'match_bore':'10', 'match_closure':'Lip seals'}, ['no CSK preset']),
-        ({'match_bore':'0'}, ['1000 mm']),
+        ({}, ['enter at least one']),
+        ({'match_bore':15, 'match_width':11}, ['CSK15 (', 'CSK15P (', 'CSK15PP (']),
+        ({'match_bore':10, 'narrow_by_closure':'Lip seals'}, ['no CSK preset']),
     ]:
-        error = run({'size':'By dimensions', **filters}, allow_error=True).get('error','')
+        error = run(search, filters, allow_error=True).get('error','')
         check(f'CSK search {filters} explains refusal before editing',
               all(reason in error for reason in reasons) and host.command('document.inspect', measure=False) == before, error)
+    for entry, params in [
+        (search, {'match_bore':0}),
+        (search, {'match_bore':'15'}),
+        (search, {'match_bore':15, 'match_outer_keyway':'Enabled'}),
+        (search, {'match_bore':15, 'custom_width':12}),
+        (named, {'size':'CSK15P', 'match_bore':15}),
+        (named, {'size':'CSK15P', 'preset':'CSK15P'}),
+        (named, {'size':'By dimensions'}),
+        (named, {'size':'Custom'}),
+        (named, {'size':'From scratch'}),
+    ]:
+        error = run(entry, params, allow_error=True).get('error','')
+        check(f'{entry} rejects {params} without editing',
+              bool(error) and host.command('document.inspect', measure=False) == before, error)
 
     for designation, filters, basis in [
-        ('CSK15PP', {'match_bore':'15', 'match_width':'11', 'match_outer_keyway':'Enabled'}, 'measured'),
-        ('CSK20P', {'match_diameter':'47', 'match_closure':'Dust covers', 'match_inner_keyway':'Enabled', 'match_outer_keyway':'None'}, 'estimated'),
+        ('CSK15PP', {'match_bore':15, 'match_width':11, 'narrow_by_outer_keyway':'Enabled'}, 'measured'),
+        ('CSK20P', {'match_diameter':47, 'narrow_by_closure':'Dust covers', 'narrow_by_inner_keyway':'Enabled', 'narrow_by_outer_keyway':'None'}, 'estimated'),
     ]:
-        matched = run({'size':'By dimensions', **filters})['component']
+        matched = run(search, filters)['component']
         name = 'CSK clutch '+designation
         check(designation+' is built by dimensions', matched['component'] == name)
         meta = host.command('component.metadata', component=name)['metadata']['org.techsquid.specification']
@@ -290,62 +312,48 @@ def check_dimension_search(host, run):
         saved = str(Path(TMP)/'matched-csk.json')
         host.command('file.save_as', path=saved)
         host.command('doc.open', path=saved)
-        direct = run({'size':designation, 'match_bore':'0'})['component']
-        check(name+' reuses by designation with an inactive invalid filter after reopening',
+        direct = run(named, {'size':designation})['component']
+        check(name+' reuses by designation after reopening',
               direct['reused'] and direct['component'] == name
               and host.command('component.metadata', component=name)['metadata']['org.techsquid.specification'] == meta)
 
-    changed = run({'size':'By dimensions', 'match_bore':'15', 'match_width':'11',
-                   'match_outer_keyway':'Enabled', 'custom_width':12})['component']
+    changed = run(named, {'size':'CSK15PP', 'custom_width':12})['component']
     spec = host.command('component.metadata', component=changed['component'])['metadata']['org.techsquid.specification']
-    check('a customized match records the original baseline and estimates the edited exterior',
+    check('CSK clutch records the original baseline and estimates the edited exterior',
           spec['reference']['baseline']['width'] == 11 and spec['geometry']['width'] == 12
           and spec['geometry']['designation'] == 'CSK15PP' and spec['reference']['customized']
           and spec['exterior']['basis'] == 'estimated')
-    custom = run({'size':'Custom', 'match_bore':'0', 'custom_bore':15,
-                  'custom_diameter':35, 'custom_width':11})['specification']
-    check('fully custom dimensions retain an unassigned designation', custom['designation'] is None)
 
-    params = {'size':'By dimensions', 'match_bore':'15', 'match_width':'11', 'match_inner_keyway':'None'}
-    found = run(params)['component']
+    filters = {'match_bore':15, 'match_width':11, 'narrow_by_inner_keyway':'None'}
+    found = run(search, filters)['component']
     check('an absent inner keyway matches CSK15', found['component'] == 'CSK clutch CSK15')
-    params['size'] = 'CSK15P'
-    keyed = run(params)['component']['component']
-    spec = host.command('component.metadata', component=keyed)['metadata']['org.techsquid.specification']
-    check('switching to CSK15P preserves its 5 × 1.2 mm keyway',
-          keyed == 'CSK clutch CSK15P' and not spec['reference']['customized']
-          and spec['geometry']['inner_keyway'] == {'width':5, 'depth':1.2, 'angle_degrees':0})
-
-    for field, label in [('match_bore','Bore'), ('match_diameter','Outside diameter'), ('match_width','Width')]:
-        params = {'size':'By dimensions', field:'1e'}
-        before = host.command('document.inspect', measure=False)
-        error = run(params, allow_error=True).get('error','')
-        check(f'unfinished {field} is refused during search without editing',
-              label in error and 'enter a complete dimension' in error
-              and host.command('document.inspect', measure=False) == before, error)
-        params['size'] = 'CSK15P'
-        direct = run(params)['component']
-        check(f'switching to CSK15P with unfinished {field} reuses the named preset',
-              direct['reused'] and direct['component'] == keyed)
 
 
 with Headless() as host:
     path = package('techsquid-bearings')
     approval = host.command('plugin.inspect', path=path)['approval']
 
-    def run_plugin(params, allow_error=False):
-        reply = host.command('plugin.run', path=path, approval=approval, entry='make-csk',
+    def run_plugin(entry, params, allow_error=False):
+        reply = host.command('plugin.run', path=path, approval=approval, entry=entry,
                              params=params, allow_error=allow_error)
         return reply.get('result', reply)
 
+    retired = run_plugin('make-custom-csk', {'preset':'CSK12P'}, allow_error=True)
+    check('the former Configure entry is rejected', 'unknown entry' in retired.get('error', ''), retired.get('error', ''))
     check_dimension_search(host, run_plugin)
     has_plugin_tools = any(c['id'] == 'plugin.tools' for c in host.tool('list_commands', {'filter':'plugin.tools'}))
 
 # Hosts that publish installed plugins as tools also validate the generated input schema.
 if has_plugin_tools:
     with Headless(plugins_dir=Path(ROOT)/'dist') as host:
-        def run_tool(params, allow_error=False):
-            reply = host.tool('techsquid-bearings.make-csk', params, allow_error=allow_error)
+        def run_tool(entry, params, allow_error=False):
+            try:
+                reply = host.tool(f'techsquid-bearings.{entry}', params, allow_error=allow_error)
+            except RuntimeError as error:
+                # Schema failures can arrive as JSON-RPC Invalid params before the guest runs.
+                if allow_error and str(error).startswith("{'code': -32602,"):
+                    return {'error': str(error)}
+                raise
             return reply.get('result', reply)
 
         print('Checking CSK search through the generated tool')

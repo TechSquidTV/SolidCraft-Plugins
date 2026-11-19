@@ -27,7 +27,9 @@ CARDS = {
     "techsquid-inserts/make-insert": ("Heat-set inserts", "Brass inserts & mounting holes"),
     "techsquid-extrusions/make-extrusion": ("Extrusions", "T-slot & V-slot profiles"),
     "techsquid-bearings/make-bearing": ("Bearings", "Radial bearings"),
-    "techsquid-bearings/make-csk": ("CSK clutches", "One-way clutch exteriors"),
+    "techsquid-bearings/make-csk": ("CSK clutches", "Presets and custom clutches"),
+    "techsquid-bearings/make-bearing-by-dimensions": ("Bearing by dimensions", "Match a radial bearing"),
+    "techsquid-bearings/make-csk-by-dimensions": ("CSK clutch by dimensions", "Match a CSK preset"),
     "techsquid-extrusions/make-t-nut": ("Slot nuts", "Pre- & post-assembly"),
     "techsquid-v-wheels/make-v-wheel": ("V-wheels", "Bare wheels & core assemblies"),
 }

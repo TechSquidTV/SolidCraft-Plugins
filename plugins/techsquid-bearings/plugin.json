@@ -2,7 +2,7 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Place radial bearings or create CSK clutches with editable dimensions, keyways and recorded references.",
+  "description": "Insert radial bearings and CSK one-way clutches.",
   "id": "techsquid-bearings",
   "name": "Bearings",
   "runtime": {
@@ -46,35 +46,25 @@
           "properties": {
             "closure": {
               "default": "Shielded",
-              "description": "Open is available only for 626. All 626 exteriors are measured. The shielded 625 and the sealed variants of the remaining sizes use estimated exteriors.",
-              "enum": [
-                "Shielded",
-                "Sealed",
-                "Open"
+              "oneOf": [
+                {
+                  "const": "Shielded",
+                  "title": "Shielded"
+                },
+                {
+                  "const": "Sealed",
+                  "title": "Sealed"
+                },
+                {
+                  "const": "Open",
+                  "title": "Open (626 only)"
+                }
               ],
               "title": "Closure",
               "type": "string"
             },
-            "match_bore": {
-              "description": "By dimensions only. Leave blank to match any bore.",
-              "title": "Bore",
-              "type": "number",
-              "unit": "mm"
-            },
-            "match_diameter": {
-              "description": "By dimensions only. Leave blank to match any outside diameter.",
-              "title": "Outside diameter",
-              "type": "number",
-              "unit": "mm"
-            },
-            "match_width": {
-              "description": "By dimensions only. Leave blank to match any width.",
-              "title": "Width",
-              "type": "number",
-              "unit": "mm"
-            },
             "placement": {
-              "description": "Sketch points, circles or circle interiors picked in the view. With none, one sits on the origin.",
+              "description": "Pick sketch points, circles or circle interiors. With none selected, place one at the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
@@ -89,7 +79,6 @@
             },
             "size": {
               "default": "608",
-              "description": "Choose a nominal size or find a bearing by dimensions.",
               "oneOf": [
                 {
                   "const": "105",
@@ -146,10 +135,6 @@
                 {
                   "const": "6204",
                   "title": "6204 — 20 × 47 × 14 mm"
-                },
-                {
-                  "const": "By dimensions",
-                  "title": "By dimensions"
                 }
               ],
               "title": "Size",
@@ -178,153 +163,127 @@
           "properties": {
             "closure": {
               "default": "Preset",
-              "description": "Sets the finished clutch closure independently of width. Preset keeps the selected closure.",
-              "enum": [
-                "Preset",
-                "Dust covers",
-                "Lip seals",
-                "Single lip seal"
+              "description": "Use the starting preset’s closure or choose an override. Overrides keep the current dimensions. From scratch uses dust covers by default.",
+              "oneOf": [
+                {
+                  "const": "Preset",
+                  "title": "Use starting preset"
+                },
+                {
+                  "const": "Dust covers"
+                },
+                {
+                  "const": "Lip seals"
+                },
+                {
+                  "const": "Single lip seal"
+                }
               ],
               "title": "Closure",
               "type": "string"
             },
             "custom_bore": {
-              "description": "Optional. Leave empty for the value of the chosen CSK designation. Custom needs all three.",
+              "description": "Leave blank to use the preset. From scratch requires all three dimensions.",
               "exclusiveMinimum": 0,
-              "maximum": 1000,
-              "title": "Custom bore",
+              "maximum": 1000.0,
+              "title": "Bore",
               "type": "number",
               "unit": "mm"
             },
             "custom_diameter": {
-              "description": "Optional. Leave empty for the value of the chosen CSK designation. Custom needs all three.",
+              "description": "Leave blank to use the preset. From scratch requires all three dimensions.",
               "exclusiveMinimum": 0,
-              "maximum": 1000,
-              "title": "Custom outside diameter",
+              "maximum": 1000.0,
+              "title": "Outside diameter",
               "type": "number",
               "unit": "mm"
             },
             "custom_width": {
-              "description": "Optional. Leave empty for the value of the chosen CSK designation. Custom needs all three.",
+              "description": "Leave blank to use the preset. From scratch requires all three dimensions.",
               "exclusiveMinimum": 0,
-              "maximum": 1000,
-              "title": "Custom width",
+              "maximum": 1000.0,
+              "title": "Width",
               "type": "number",
               "unit": "mm"
             },
             "inner_keyway": {
               "default": "Preset",
-              "description": "Preset keeps the selected geometry. Enabled adds a slot and None removes it.",
-              "enum": [
-                "Preset",
-                "Enabled",
-                "None"
+              "description": "Use the starting preset’s keyway or choose an override. To remove a keyway, choose None and clear its angle, depth and width.",
+              "oneOf": [
+                {
+                  "const": "Preset",
+                  "title": "Use starting preset"
+                },
+                {
+                  "const": "Enabled"
+                },
+                {
+                  "const": "None"
+                }
               ],
               "title": "Inner keyway",
               "type": "string"
             },
             "inner_keyway_angle": {
-              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer slots at 180°.",
+              "description": "Counterclockwise from local +Y viewed from +Z. A new keyway starts at 0°.",
               "title": "Inner keyway angle",
               "type": "number",
               "unit": "deg"
             },
             "inner_keyway_depth": {
-              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
+              "description": "Leave blank to use the preset. A new keyway needs both width and depth.",
               "exclusiveMinimum": 0,
               "title": "Inner keyway depth",
               "type": "number",
               "unit": "mm"
             },
             "inner_keyway_width": {
-              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
+              "description": "Leave blank to use the preset. A new keyway needs both width and depth.",
               "exclusiveMinimum": 0,
               "title": "Inner keyway width",
               "type": "number",
               "unit": "mm"
             },
-            "match_bore": {
-              "description": "By dimensions only. Enter the nominal bore in millimetres, or leave blank to match any value.",
-              "title": "Bore (mm)",
-              "type": "string"
-            },
-            "match_closure": {
-              "default": "Any",
-              "description": "By dimensions only. Limit the search by closure.",
-              "enum": [
-                "Any",
-                "Dust covers",
-                "Lip seals",
-                "Single lip seal"
-              ],
-              "title": "Match closure",
-              "type": "string"
-            },
-            "match_diameter": {
-              "description": "By dimensions only. Enter the nominal outside diameter in millimetres, or leave blank to match any value.",
-              "title": "Outside diameter (mm)",
-              "type": "string"
-            },
-            "match_inner_keyway": {
-              "default": "Any",
-              "description": "By dimensions only. Limit the search by inner keyway.",
-              "enum": [
-                "Any",
-                "Enabled",
-                "None"
-              ],
-              "title": "Match inner keyway",
-              "type": "string"
-            },
-            "match_outer_keyway": {
-              "default": "Any",
-              "description": "By dimensions only. Limit the search by outer keyway.",
-              "enum": [
-                "Any",
-                "Enabled",
-                "None"
-              ],
-              "title": "Match outer keyway",
-              "type": "string"
-            },
-            "match_width": {
-              "description": "By dimensions only. Enter the nominal width in millimetres, or leave blank to match any value.",
-              "title": "Width (mm)",
-              "type": "string"
-            },
             "outer_keyway": {
               "default": "Preset",
-              "description": "Preset keeps the selected geometry. Enabled adds a slot and None removes it.",
-              "enum": [
-                "Preset",
-                "Enabled",
-                "None"
+              "description": "Use the starting preset’s keyway or choose an override. To remove a keyway, choose None and clear its angle, depth and width.",
+              "oneOf": [
+                {
+                  "const": "Preset",
+                  "title": "Use starting preset"
+                },
+                {
+                  "const": "Enabled"
+                },
+                {
+                  "const": "None"
+                }
               ],
               "title": "Outer keyway",
               "type": "string"
             },
             "outer_keyway_angle": {
-              "description": "Degrees counterclockwise from local +Y seen from +Z. Blank keeps the preset; new inner slots start at 0°, outer slots at 180°.",
+              "description": "Counterclockwise from local +Y viewed from +Z. A new keyway starts at 180°.",
               "title": "Outer keyway angle",
               "type": "number",
               "unit": "deg"
             },
             "outer_keyway_depth": {
-              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
+              "description": "Leave blank to use the preset. A new keyway needs both width and depth.",
               "exclusiveMinimum": 0,
               "title": "Outer keyway depth",
               "type": "number",
               "unit": "mm"
             },
             "outer_keyway_width": {
-              "description": "Optional. Leave empty for the preset's value. A keyway added with Enabled needs both width and depth.",
+              "description": "Leave blank to use the preset. A new keyway needs both width and depth.",
               "exclusiveMinimum": 0,
               "title": "Outer keyway width",
               "type": "number",
               "unit": "mm"
             },
             "placement": {
-              "description": "Sketch points, circles or circle interiors picked in the view. With none, one sits on the origin.",
+              "description": "Pick sketch points, circles or circle interiors. With none selected, place one at the origin.",
               "maxItems": 32,
               "title": "Placement",
               "type": "array",
@@ -339,238 +298,233 @@
             },
             "size": {
               "default": "CSK12P",
-              "description": "Choose a designation, search the reference presets by dimensions, or enter a Custom geometry.",
               "oneOf": [
                 {
+                  "const": "From scratch",
+                  "title": "From scratch — Dust covers by default"
+                },
+                {
                   "const": "CSK8",
-                  "title": "CSK8 — 8 × 22 × 9 mm — Measured exterior"
+                  "title": "CSK8 — Dust covers · 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK8P",
-                  "title": "CSK8P — 8 × 22 × 9 mm — Estimated exterior; inner 3 × 0.5"
+                  "title": "CSK8P — Dust covers · 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK8PP",
-                  "title": "CSK8PP — 8 × 22 × 9 mm — Estimated exterior; inner 3 × 0.5; outer 2 × 0.5"
+                  "title": "CSK8PP — Dust covers · 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK8-2RS",
-                  "title": "CSK8-2RS — 8 × 22 × 9 mm — Estimated exterior"
+                  "title": "CSK8-2RS — Single lip seal · 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK8P-2RS",
-                  "title": "CSK8P-2RS — 8 × 22 × 9 mm — Estimated exterior; inner 3 × 0.5"
+                  "title": "CSK8P-2RS — Single lip seal · 8 × 22 × 9 mm"
                 },
                 {
                   "const": "CSK10",
-                  "title": "CSK10 — 10 × 30 × 9 mm — Estimated exterior"
+                  "title": "CSK10 — Dust covers · 10 × 30 × 9 mm"
                 },
                 {
                   "const": "CSK10P",
-                  "title": "CSK10P — 10 × 30 × 9 mm — Estimated exterior; inner 3 × 0.6"
+                  "title": "CSK10P — Dust covers · 10 × 30 × 9 mm"
                 },
                 {
                   "const": "CSK10PP",
-                  "title": "CSK10PP — 10 × 30 × 9 mm — Estimated exterior; inner 3 × 0.6; outer 2 × 0.5"
+                  "title": "CSK10PP — Dust covers · 10 × 30 × 9 mm"
                 },
                 {
                   "const": "CSK12",
-                  "title": "CSK12 — 12 × 32 × 10 mm — Estimated exterior"
+                  "title": "CSK12 — Dust covers · 12 × 32 × 10 mm"
                 },
                 {
                   "const": "CSK12P",
-                  "title": "CSK12P — 12 × 32 × 10 mm — Estimated exterior; inner 4 × 1.8"
+                  "title": "CSK12P — Dust covers · 12 × 32 × 10 mm"
                 },
                 {
                   "const": "CSK12PP",
-                  "title": "CSK12PP — 12 × 32 × 10 mm — Estimated exterior; inner 4 × 1.2; outer 2 × 0.6"
+                  "title": "CSK12PP — Dust covers · 12 × 32 × 10 mm"
                 },
                 {
                   "const": "CSK12-2RS",
-                  "title": "CSK12-2RS — 12 × 32 × 14 mm — Measured exterior"
+                  "title": "CSK12-2RS — Lip seals · 12 × 32 × 14 mm"
                 },
                 {
                   "const": "CSK12P-2RS",
-                  "title": "CSK12P-2RS — 12 × 32 × 14 mm — Estimated exterior; inner 4 × 1.8"
+                  "title": "CSK12P-2RS — Lip seals · 12 × 32 × 14 mm"
                 },
                 {
                   "const": "CSK15",
-                  "title": "CSK15 — 15 × 35 × 11 mm — Estimated exterior"
+                  "title": "CSK15 — Dust covers · 15 × 35 × 11 mm"
                 },
                 {
                   "const": "CSK15P",
-                  "title": "CSK15P — 15 × 35 × 11 mm — Measured exterior; inner 5 × 1.2"
+                  "title": "CSK15P — Dust covers · 15 × 35 × 11 mm"
                 },
                 {
                   "const": "CSK15PP",
-                  "title": "CSK15PP — 15 × 35 × 11 mm — Measured exterior; inner 5 × 1.2; outer 2 × 0.6"
+                  "title": "CSK15PP — Dust covers · 15 × 35 × 11 mm"
                 },
                 {
                   "const": "CSK15-2RS",
-                  "title": "CSK15-2RS — 15 × 35 × 16 mm — Measured exterior"
+                  "title": "CSK15-2RS — Lip seals · 15 × 35 × 16 mm"
                 },
                 {
                   "const": "CSK15P-2RS",
-                  "title": "CSK15P-2RS — 15 × 35 × 16 mm — Estimated exterior; inner 5 × 1.2"
+                  "title": "CSK15P-2RS — Lip seals · 15 × 35 × 16 mm"
                 },
                 {
                   "const": "CSK15PP-2RS",
-                  "title": "CSK15PP-2RS — 15 × 35 × 16 mm — Estimated exterior; inner 5 × 1.2; outer 2 × 0.6"
+                  "title": "CSK15PP-2RS — Lip seals · 15 × 35 × 16 mm"
                 },
                 {
                   "const": "CSK17",
-                  "title": "CSK17 — 17 × 40 × 12 mm — Estimated exterior"
+                  "title": "CSK17 — Dust covers · 17 × 40 × 12 mm"
                 },
                 {
                   "const": "CSK17P",
-                  "title": "CSK17P — 17 × 40 × 12 mm — Estimated exterior; inner 5 × 1.2"
+                  "title": "CSK17P — Dust covers · 17 × 40 × 12 mm"
                 },
                 {
                   "const": "CSK17PP",
-                  "title": "CSK17PP — 17 × 40 × 12 mm — Estimated exterior; inner 5 × 1.2; outer 2 × 1"
+                  "title": "CSK17PP — Dust covers · 17 × 40 × 12 mm"
                 },
                 {
                   "const": "CSK17-2RS",
-                  "title": "CSK17-2RS — 17 × 40 × 17 mm — Estimated exterior"
+                  "title": "CSK17-2RS — Lip seals · 17 × 40 × 17 mm"
                 },
                 {
                   "const": "CSK17P-2RS",
-                  "title": "CSK17P-2RS — 17 × 40 × 17 mm — Estimated exterior; inner 5 × 1.2"
+                  "title": "CSK17P-2RS — Lip seals · 17 × 40 × 17 mm"
                 },
                 {
                   "const": "CSK17PP-2RS",
-                  "title": "CSK17PP-2RS — 17 × 40 × 17 mm — Estimated exterior; inner 5 × 1.2; outer 2 × 1"
+                  "title": "CSK17PP-2RS — Lip seals · 17 × 40 × 17 mm"
                 },
                 {
                   "const": "CSK20",
-                  "title": "CSK20 — 20 × 47 × 14 mm — Estimated exterior"
+                  "title": "CSK20 — Dust covers · 20 × 47 × 14 mm"
                 },
                 {
                   "const": "CSK20P",
-                  "title": "CSK20P — 20 × 47 × 14 mm — Estimated exterior; inner 6 × 1.6"
+                  "title": "CSK20P — Dust covers · 20 × 47 × 14 mm"
                 },
                 {
                   "const": "CSK20PP",
-                  "title": "CSK20PP — 20 × 47 × 14 mm — Estimated exterior; inner 6 × 1.6; outer 3 × 1.5"
+                  "title": "CSK20PP — Dust covers · 20 × 47 × 14 mm"
                 },
                 {
                   "const": "CSK20-2RS",
-                  "title": "CSK20-2RS — 20 × 47 × 19 mm — Estimated exterior"
+                  "title": "CSK20-2RS — Lip seals · 20 × 47 × 19 mm"
                 },
                 {
                   "const": "CSK20P-2RS",
-                  "title": "CSK20P-2RS — 20 × 47 × 19 mm — Estimated exterior; inner 6 × 1.6"
+                  "title": "CSK20P-2RS — Lip seals · 20 × 47 × 19 mm"
                 },
                 {
                   "const": "CSK20PP-2RS",
-                  "title": "CSK20PP-2RS — 20 × 47 × 19 mm — Estimated exterior; inner 6 × 1.6; outer 3 × 1.5"
+                  "title": "CSK20PP-2RS — Lip seals · 20 × 47 × 19 mm"
                 },
                 {
                   "const": "CSK25",
-                  "title": "CSK25 — 25 × 52 × 15 mm — Estimated exterior"
+                  "title": "CSK25 — Dust covers · 25 × 52 × 15 mm"
                 },
                 {
                   "const": "CSK25P",
-                  "title": "CSK25P — 25 × 52 × 15 mm — Estimated exterior; inner 8 × 2"
+                  "title": "CSK25P — Dust covers · 25 × 52 × 15 mm"
                 },
                 {
                   "const": "CSK25PP",
-                  "title": "CSK25PP — 25 × 52 × 15 mm — Estimated exterior; inner 8 × 2; outer 6 × 2"
+                  "title": "CSK25PP — Dust covers · 25 × 52 × 15 mm"
                 },
                 {
                   "const": "CSK25-2RS",
-                  "title": "CSK25-2RS — 25 × 52 × 20 mm — Estimated exterior"
+                  "title": "CSK25-2RS — Lip seals · 25 × 52 × 20 mm"
                 },
                 {
                   "const": "CSK25P-2RS",
-                  "title": "CSK25P-2RS — 25 × 52 × 20 mm — Estimated exterior; inner 8 × 2"
+                  "title": "CSK25P-2RS — Lip seals · 25 × 52 × 20 mm"
                 },
                 {
                   "const": "CSK25PP-2RS",
-                  "title": "CSK25PP-2RS — 25 × 52 × 20 mm — Estimated exterior; inner 8 × 2; outer 6 × 2"
+                  "title": "CSK25PP-2RS — Lip seals · 25 × 52 × 20 mm"
                 },
                 {
                   "const": "CSK30",
-                  "title": "CSK30 — 30 × 62 × 16 mm — Estimated exterior"
+                  "title": "CSK30 — Dust covers · 30 × 62 × 16 mm"
                 },
                 {
                   "const": "CSK30P",
-                  "title": "CSK30P — 30 × 62 × 16 mm — Estimated exterior; inner 8 × 2"
+                  "title": "CSK30P — Dust covers · 30 × 62 × 16 mm"
                 },
                 {
                   "const": "CSK30PP",
-                  "title": "CSK30PP — 30 × 62 × 16 mm — Estimated exterior; inner 8 × 2; outer 6 × 2"
+                  "title": "CSK30PP — Dust covers · 30 × 62 × 16 mm"
                 },
                 {
                   "const": "CSK30-2RS",
-                  "title": "CSK30-2RS — 30 × 62 × 21 mm — Estimated exterior"
+                  "title": "CSK30-2RS — Lip seals · 30 × 62 × 21 mm"
                 },
                 {
                   "const": "CSK30P-2RS",
-                  "title": "CSK30P-2RS — 30 × 62 × 21 mm — Estimated exterior; inner 8 × 2"
+                  "title": "CSK30P-2RS — Lip seals · 30 × 62 × 21 mm"
                 },
                 {
                   "const": "CSK30PP-2RS",
-                  "title": "CSK30PP-2RS — 30 × 62 × 21 mm — Estimated exterior; inner 8 × 2; outer 6 × 2"
+                  "title": "CSK30PP-2RS — Lip seals · 30 × 62 × 21 mm"
                 },
                 {
                   "const": "CSK35",
-                  "title": "CSK35 — 35 × 72 × 17 mm — Estimated exterior"
+                  "title": "CSK35 — Dust covers · 35 × 72 × 17 mm"
                 },
                 {
                   "const": "CSK35P",
-                  "title": "CSK35P — 35 × 72 × 17 mm — Estimated exterior; inner 10 × 2.4"
+                  "title": "CSK35P — Dust covers · 35 × 72 × 17 mm"
                 },
                 {
                   "const": "CSK35PP",
-                  "title": "CSK35PP — 35 × 72 × 17 mm — Estimated exterior; inner 10 × 2.4; outer 8 × 2.5"
+                  "title": "CSK35PP — Dust covers · 35 × 72 × 17 mm"
                 },
                 {
                   "const": "CSK35-2RS",
-                  "title": "CSK35-2RS — 35 × 72 × 22 mm — Estimated exterior"
+                  "title": "CSK35-2RS — Lip seals · 35 × 72 × 22 mm"
                 },
                 {
                   "const": "CSK35P-2RS",
-                  "title": "CSK35P-2RS — 35 × 72 × 22 mm — Estimated exterior; inner 10 × 2.4"
+                  "title": "CSK35P-2RS — Lip seals · 35 × 72 × 22 mm"
                 },
                 {
                   "const": "CSK35PP-2RS",
-                  "title": "CSK35PP-2RS — 35 × 72 × 22 mm — Estimated exterior; inner 10 × 2.4; outer 8 × 2.5"
+                  "title": "CSK35PP-2RS — Lip seals · 35 × 72 × 22 mm"
                 },
                 {
                   "const": "CSK40",
-                  "title": "CSK40 — 40 × 80 × 22 mm — Estimated exterior"
+                  "title": "CSK40 — Dust covers · 40 × 80 × 22 mm"
                 },
                 {
                   "const": "CSK40P",
-                  "title": "CSK40P — 40 × 80 × 22 mm — Measured exterior; inner 12 × 3.3"
+                  "title": "CSK40P — Dust covers · 40 × 80 × 22 mm"
                 },
                 {
                   "const": "CSK40PP",
-                  "title": "CSK40PP — 40 × 80 × 22 mm — Measured exterior; inner 12 × 3.3; outer 10 × 3"
+                  "title": "CSK40PP — Dust covers · 40 × 80 × 22 mm"
                 },
                 {
                   "const": "CSK40-2RS",
-                  "title": "CSK40-2RS — 40 × 80 × 27 mm — Measured exterior"
+                  "title": "CSK40-2RS — Lip seals · 40 × 80 × 27 mm"
                 },
                 {
                   "const": "CSK40P-2RS",
-                  "title": "CSK40P-2RS — 40 × 80 × 27 mm — Estimated exterior; inner 12 × 3.3"
+                  "title": "CSK40P-2RS — Lip seals · 40 × 80 × 27 mm"
                 },
                 {
                   "const": "CSK40PP-2RS",
-                  "title": "CSK40PP-2RS — 40 × 80 × 27 mm — Estimated exterior; inner 12 × 3.3; outer 10 × 3"
-                },
-                {
-                  "const": "By dimensions",
-                  "title": "By dimensions — narrow by closure or keyways"
-                },
-                {
-                  "const": "Custom",
-                  "title": "Custom — enter dimensions and keyways"
+                  "title": "CSK40PP-2RS — Lip seals · 40 × 80 × 27 mm"
                 }
               ],
-              "title": "CSK designation",
+              "title": "Starting preset",
               "type": "string"
             }
           },
@@ -585,6 +539,184 @@
           {
             "kind": "menu",
             "name": "CSK clutch"
+          }
+        ]
+      },
+      {
+        "effect": "edit",
+        "input_schema": {
+          "additionalProperties": true,
+          "properties": {
+            "match_bore": {
+              "description": "Leave blank to match any value.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000.0,
+              "title": "Bore",
+              "type": "number",
+              "unit": "mm"
+            },
+            "match_diameter": {
+              "description": "Leave blank to match any value.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000.0,
+              "title": "Outside diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "match_width": {
+              "description": "Leave blank to match any value.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000.0,
+              "title": "Width",
+              "type": "number",
+              "unit": "mm"
+            },
+            "narrow_by_closure": {
+              "default": "Shielded",
+              "oneOf": [
+                {
+                  "const": "Shielded",
+                  "title": "Shielded"
+                },
+                {
+                  "const": "Sealed",
+                  "title": "Sealed"
+                },
+                {
+                  "const": "Open",
+                  "title": "Open (626 only)"
+                }
+              ],
+              "title": "Closure",
+              "type": "string"
+            },
+            "placement": {
+              "description": "Pick sketch points, circles or circle interiors. With none selected, place one at the origin.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "profile",
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
+            }
+          },
+          "required": [],
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-bearing-by-dimensions.svg"
+        },
+        "name": "make-bearing-by-dimensions",
+        "slots": [
+          {
+            "kind": "menu",
+            "name": "Bearing by dimensions"
+          }
+        ]
+      },
+      {
+        "effect": "edit",
+        "input_schema": {
+          "additionalProperties": true,
+          "properties": {
+            "match_bore": {
+              "description": "Leave blank to match any value.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000.0,
+              "title": "Bore",
+              "type": "number",
+              "unit": "mm"
+            },
+            "match_diameter": {
+              "description": "Leave blank to match any value.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000.0,
+              "title": "Outside diameter",
+              "type": "number",
+              "unit": "mm"
+            },
+            "match_width": {
+              "description": "Leave blank to match any value.",
+              "exclusiveMinimum": 0,
+              "maximum": 1000.0,
+              "title": "Width",
+              "type": "number",
+              "unit": "mm"
+            },
+            "narrow_by_closure": {
+              "default": "Any",
+              "enum": [
+                "Any",
+                "Dust covers",
+                "Lip seals",
+                "Single lip seal"
+              ],
+              "title": "Closure",
+              "type": "string"
+            },
+            "narrow_by_inner_keyway": {
+              "default": "Any",
+              "oneOf": [
+                {
+                  "const": "Any"
+                },
+                {
+                  "const": "Enabled",
+                  "title": "Present"
+                },
+                {
+                  "const": "None",
+                  "title": "Absent"
+                }
+              ],
+              "title": "Inner keyway",
+              "type": "string"
+            },
+            "narrow_by_outer_keyway": {
+              "default": "Any",
+              "oneOf": [
+                {
+                  "const": "Any"
+                },
+                {
+                  "const": "Enabled",
+                  "title": "Present"
+                },
+                {
+                  "const": "None",
+                  "title": "Absent"
+                }
+              ],
+              "title": "Outer keyway",
+              "type": "string"
+            },
+            "placement": {
+              "description": "Pick sketch points, circles or circle interiors. With none selected, place one at the origin.",
+              "maxItems": 32,
+              "title": "Placement",
+              "type": "array",
+              "x-solidcraft-selection": {
+                "accept": [
+                  "profile",
+                  "sketch_point",
+                  "sketch_curve"
+                ],
+                "version": 1
+              }
+            }
+          },
+          "required": [],
+          "type": "object",
+          "x-solidcraft-icon": "icons/make-csk-by-dimensions.svg"
+        },
+        "name": "make-csk-by-dimensions",
+        "slots": [
+          {
+            "kind": "menu",
+            "name": "CSK clutch by dimensions"
           }
         ]
       }

@@ -4,15 +4,18 @@ use bearings::EnvelopeMatch;
 use plugin_kit::{input, place, FieldError, Runner};
 use serde_json::{json, Value};
 
+const DEFAULT_PRESET: &str = "CSK12P";
+const FROM_SCRATCH: &str = "From scratch";
+
 pub struct Params {
     pub geometry: Geometry,
     place: place::PlaceInput,
 }
 
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
-    input::workflow_fields(v, include_str!("../plugin.json"), "make-csk")?;
-    let size = input::choice(v, "size", "CSK12P")?;
-    let mut geometry = if size == "Custom" {
+    input::workflow_fields(v, crate::MANIFEST, "make-csk")?;
+    let start = input::choice(v, "size", DEFAULT_PRESET)?;
+    let mut geometry = if start == FROM_SCRATCH {
         Geometry {
             designation: None,
             closure: Closure::DustCovers,
@@ -22,31 +25,26 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
             inner_keyway: None,
             outer_keyway: None,
         }
-    } else if size == "By dimensions" {
-        by_dimensions(v)?.geometry()
     } else {
-        csk::ALL
+        let mut geometry = csk::ALL
             .into_iter()
-            .find(|c| c.designation() == size)
+            .find(|c| c.designation() == start)
             .ok_or_else(|| {
-                FieldError::new(
-                    "size",
-                    "choose a listed CSK designation, By dimensions or Custom",
-                )
+                FieldError::new("size", "choose a listed CSK designation or From scratch")
             })?
-            .geometry()
+            .geometry();
+        for (field, dimension) in [
+            ("custom_bore", &mut geometry.bore),
+            ("custom_diameter", &mut geometry.diameter),
+            ("custom_width", &mut geometry.width),
+        ] {
+            if let Some(value) = crate::optional_length(v, field)? {
+                *dimension = value;
+            }
+        }
+        geometry
     };
     geometry.closure = closure_choice(v, "closure", "Preset")?.unwrap_or(geometry.closure);
-    for (field, dimension) in [
-        ("custom_bore", &mut geometry.bore),
-        ("custom_diameter", &mut geometry.diameter),
-        ("custom_width", &mut geometry.width),
-    ] {
-        if let Some(value) = input::optional_length(v, field)? {
-            input::check_length(field, value)?;
-            *dimension = value;
-        }
-    }
     for (prefix, key) in [
         ("inner", &mut geometry.inner_keyway),
         ("outer", &mut geometry.outer_keyway),
@@ -104,6 +102,10 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         };
         FieldError::new(field, e.reason)
     })?;
+    finish(v, geometry)
+}
+
+fn finish(v: &Value, geometry: Geometry) -> Result<Params, FieldError> {
     parts::catalog::validate_selection(
         v,
         crate::provider::REVISION,
@@ -116,48 +118,38 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     })
 }
 
-fn by_dimensions(v: &Value) -> Result<csk::Csk, FieldError> {
-    let closure = closure_choice(v, "match_closure", "Any")?;
-    let inner = keyway_choice(v, "match_inner_keyway", "Any")?;
-    let outer = keyway_choice(v, "match_outer_keyway", "Any")?;
+pub fn by_dimensions(v: &Value) -> Result<Params, FieldError> {
+    input::workflow_fields(v, crate::MANIFEST, "make-csk-by-dimensions")?;
+    let closure = closure_choice(v, "narrow_by_closure", "Any")?;
+    let inner = keyway_choice(v, "narrow_by_inner_keyway", "Any")?;
+    let outer = keyway_choice(v, "narrow_by_outer_keyway", "Any")?;
     let candidates = csk::ALL.into_iter().filter(|c| {
         let g = c.geometry();
         closure.is_none_or(|value| value == g.closure)
             && inner.is_none_or(|enabled| enabled == g.inner_keyway.is_some())
             && outer.is_none_or(|enabled| enabled == g.outer_keyway.is_some())
     });
-    let (field, selection) = crate::match_dimensions(
-        |key| {
-            let Some(text) =
-                input::optional_text(v, key, "pass the dimension as text in millimetres")?
-            else {
-                return Ok(None);
-            };
-            text.replace(',', ".")
-                .parse::<f64>()
-                .map(Some)
-                .map_err(|_| FieldError::new(key, "enter a complete dimension in millimetres"))
-        },
-        candidates,
-        |c| (c.designation(), c.dimensions()),
-    )?;
+    let (field, selection) =
+        crate::match_dimensions(v, candidates, |c| (c.designation(), c.dimensions()))?;
     match selection {
-        EnvelopeMatch::One(preset) => Ok(preset),
+        EnvelopeMatch::One(preset) => finish(v, preset.geometry()),
         EnvelopeMatch::None => Err(FieldError::new(field,
-            "no CSK preset matches these dimensions, closure and keyways. Choose Custom for an unlisted clutch")),
+            "no CSK preset matches these dimensions, closure and keyways. Choose From scratch in CSK clutch for an unlisted clutch")),
         EnvelopeMatch::Ambiguous(reason) => Err(FieldError::new(field,
-            format!("{reason}. Use Match closure, Match inner keyway or Match outer keyway to filter the listed presets"))),
+            format!("{reason}. You can also narrow the search by Closure, Inner keyway or Outer keyway"))),
     }
 }
 
 fn closure_choice(v: &Value, field: &str, default: &str) -> Result<Option<Closure>, FieldError> {
-    match input::choice(v, field, default)? {
-        value if value == default => Ok(None),
-        "Dust covers" => Ok(Some(Closure::DustCovers)),
-        "Lip seals" => Ok(Some(Closure::LipSeals)),
-        "Single lip seal" => Ok(Some(Closure::SingleLipSeal)),
-        _ => Err(FieldError::new(field, "choose a listed closure style")),
+    let value = input::choice(v, field, default)?;
+    if value == default {
+        return Ok(None);
     }
+    Closure::ALL
+        .into_iter()
+        .find(|closure| closure.label() == value)
+        .map(Some)
+        .ok_or_else(|| FieldError::new(field, "choose a listed closure style"))
 }
 
 fn keyway_choice(v: &Value, field: &str, default: &str) -> Result<Option<bool>, FieldError> {
@@ -165,18 +157,22 @@ fn keyway_choice(v: &Value, field: &str, default: &str) -> Result<Option<bool>, 
         value if value == default => Ok(None),
         "Enabled" => Ok(Some(true)),
         "None" => Ok(Some(false)),
-        _ => Err(FieldError::new(
-            field,
-            format!("choose {default}, Enabled or None"),
-        )),
+        _ => Err(FieldError::new(field, "choose a listed keyway option")),
     }
 }
 
 fn required_length(v: &Value, field: &str) -> Result<f64, FieldError> {
-    let value = input::optional_length(v, field)?
-        .ok_or_else(|| FieldError::new(field, "required for Custom"))?;
-    input::check_length(field, value)?;
-    Ok(value)
+    crate::optional_length(v, field)?
+        .ok_or_else(|| FieldError::new(field, "enter a dimension when starting from scratch"))
+}
+
+#[cfg(target_arch = "wasm32")]
+pub(super) fn describe(p: &Params) -> String {
+    let designation = p
+        .geometry
+        .designation
+        .map_or("Custom", csk::Csk::designation);
+    format!("CSK clutch {designation}")
 }
 
 pub fn make(r: &mut impl Runner, p: &Params) -> Result<Value, String> {
@@ -201,7 +197,8 @@ mod tests {
             assert!(!geometry.customized());
             let explicit = parse(
                 &json!({"size":preset.designation(), "custom_bore":geometry.bore,
-                "custom_diameter":geometry.diameter, "custom_width":geometry.width}),
+                "custom_diameter":geometry.diameter, "custom_width":geometry.width,
+                "closure":geometry.closure.label()}),
             )
             .unwrap()
             .geometry;
@@ -215,17 +212,13 @@ mod tests {
     fn every_designation_can_be_selected_by_partial_dimensions_and_mounting() {
         for c in csk::ALL {
             let expected = c.geometry();
-            let closure = match expected.closure {
-                Closure::DustCovers => "Dust covers",
-                Closure::LipSeals => "Lip seals",
-                Closure::SingleLipSeal => "Single lip seal",
-            };
+            let closure = expected.closure.label();
             let choice = |key: Option<Keyway>| if key.is_some() { "Enabled" } else { "None" };
-            let selected = parse(
-                &json!({"size":"By dimensions","match_bore":expected.bore.to_string(),
-                "match_closure":closure,"match_inner_keyway":choice(expected.inner_keyway),
-                "match_outer_keyway":choice(expected.outer_keyway)}),
-            )
+            let selected = by_dimensions(&json!({
+                "match_bore":expected.bore, "narrow_by_closure":closure,
+                "narrow_by_inner_keyway":choice(expected.inner_keyway),
+                "narrow_by_outer_keyway":choice(expected.outer_keyway)
+            }))
             .unwrap();
             assert_eq!(selected.geometry, expected, "{}", c.designation());
         }
@@ -235,30 +228,25 @@ mod tests {
     fn a_dimension_search_explains_missing_ambiguous_and_unlisted_inputs() {
         for (params, field, reasons) in [
             (json!({}), "match_bore", vec!["enter at least one"]),
+            (json!({"match_width":1001}), "match_width", vec!["1000 mm"]),
+            (json!({"match_width":"11"}), "match_width", vec!["number"]),
             (
-                json!({"match_width":"1001"}),
-                "match_width",
-                vec!["1000 mm"],
-            ),
-            (
-                json!({"match_bore":"15","match_width":"11"}),
+                json!({"match_bore":15,"match_width":11}),
                 "match_bore",
-                vec!["CSK15 (", "CSK15P (", "CSK15PP (", "Match outer keyway"],
+                vec!["CSK15 (", "CSK15P (", "CSK15PP (", "Outer keyway"],
             ),
             (
-                json!({"match_diameter":"47","match_outer_keyway":"Enabled"}),
+                json!({"match_diameter":47,"narrow_by_outer_keyway":"Enabled"}),
                 "match_diameter",
                 vec!["CSK20PP (", "CSK20PP-2RS (", "width"],
             ),
             (
-                json!({"match_bore":"10","match_closure":"Lip seals"}),
+                json!({"match_bore":10,"narrow_by_closure":"Lip seals"}),
                 "match_bore",
-                vec!["no CSK preset", "Custom"],
+                vec!["no CSK preset", "From scratch"],
             ),
         ] {
-            let mut params = params;
-            params["size"] = json!("By dimensions");
-            let err = parse(&params).err().unwrap();
+            let err = by_dimensions(&params).err().unwrap();
             assert_eq!(err.field, field);
             for reason in reasons {
                 assert!(err.reason.contains(reason), "{}", err.reason);
@@ -267,42 +255,17 @@ mod tests {
     }
 
     #[test]
-    fn switching_only_the_size_discards_all_search_filters() {
-        let mut fields = json!({"size":"By dimensions", "match_bore":"15,0", "match_width":"11",
-            "match_inner_keyway":"None", "match_outer_keyway":"None", "match_closure":"Dust covers"});
-        assert_eq!(parse(&fields).unwrap().geometry, csk::Csk::Csk15.geometry());
-        for preset in [csk::Csk::Csk15P, csk::Csk::Csk15Pp, csk::Csk::Csk152Rs] {
-            fields["size"] = json!(preset.designation());
-            assert_eq!(parse(&fields).unwrap().geometry, preset.geometry());
+    fn construction_and_dimension_search_refuse_each_others_fields() {
+        for params in [
+            json!({"size":"By dimensions"}),
+            json!({"size":"Custom"}),
+            json!({"size":"CSK15P","match_bore":15}),
+            json!({"preset":"CSK15P"}),
+        ] {
+            assert!(parse(&params).is_err(), "{params}");
         }
-    }
-
-    #[test]
-    fn explicit_geometry_edits_apply_after_a_filtered_search() {
-        let fields = json!({"size":"By dimensions", "match_bore":"15", "match_width":"11",
-            "match_closure":"Dust covers", "match_outer_keyway":"Enabled",
-            "closure":"Lip seals", "inner_keyway":"None"});
-        let mut expected = csk::Csk::Csk15Pp.geometry();
-        expected.closure = Closure::LipSeals;
-        expected.inner_keyway = None;
-        assert_eq!(parse(&fields).unwrap().geometry, expected);
-    }
-
-    #[test]
-    fn an_unfinished_dimension_only_blocks_an_active_search() {
-        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
-        let schema = &manifest["runtime"]["entries"][1]["input_schema"];
-        for field in ["match_bore", "match_diameter", "match_width"] {
-            // Native forms validate numeric fields before the plugin can inspect Size.
-            assert_eq!(schema["properties"][field]["type"], "string");
-            let mut fields = json!({"size":"By dimensions", field:"1e"});
-            assert_eq!(parse(&fields).err().unwrap().field, field);
-            fields["size"] = json!("CSK15P");
-            assert_eq!(
-                parse(&fields).unwrap().geometry,
-                csk::Csk::Csk15P.geometry()
-            );
-        }
+        assert!(by_dimensions(&json!({"match_bore":15,"match_closure":"Dust covers"})).is_err());
+        assert!(by_dimensions(&json!({"match_bore":15,"custom_width":11})).is_err());
     }
 
     #[test]
@@ -333,7 +296,7 @@ mod tests {
     #[test]
     fn custom_requires_dimensions_and_has_no_reference_designation() {
         let g = parse(
-            &json!({"size":"Custom", "custom_bore":9, "custom_diameter":25, "custom_width":12,
+            &json!({"size":"From scratch", "custom_bore":9, "custom_diameter":25, "custom_width":12,
             "inner_keyway":"Enabled", "inner_keyway_width":3, "inner_keyway_depth":0.7}),
         )
         .unwrap()
@@ -362,9 +325,13 @@ mod tests {
     #[test]
     fn a_refused_geometry_names_a_dialog_field() {
         let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
-        let fields = manifest["runtime"]["entries"][1]["input_schema"]["properties"]
-            .as_object()
+        let entry = manifest["runtime"]["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["name"] == "make-csk")
             .unwrap();
+        let fields = entry["input_schema"]["properties"].as_object().unwrap();
         for (v, field) in [
             (json!({"size":"CSK8P", "custom_bore":30}), "custom_bore"),
             (
@@ -405,8 +372,8 @@ mod tests {
     #[test]
     fn invalid_geometry_and_purchasing_fields_are_rejected_before_host_edits() {
         for value in [
-            json!({"size":"Custom"}),
-            json!({"size":"Custom","custom_bore":9,"custom_diameter":25}),
+            json!({"size":"From scratch"}),
+            json!({"size":"From scratch","custom_bore":9,"custom_diameter":25}),
             json!({"size":"CSK12P","inner_keyway_depth":0}),
             json!({"size":"CSK12P","inner_keyway_width":12}),
             json!({"size":"CSK12P","inner_keyway_depth":20}),

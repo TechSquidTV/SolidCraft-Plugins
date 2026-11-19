@@ -285,6 +285,8 @@ ICONS = {
     "techsquid-inserts/make-insert": ("Heat-set insert", insert),
     "techsquid-bearings/make-bearing": ("Bearing", bearing),
     "techsquid-bearings/make-csk": ("CSK clutch", csk),
+    "techsquid-bearings/make-bearing-by-dimensions": ("Bearing by dimensions", bearing),
+    "techsquid-bearings/make-csk-by-dimensions": ("CSK clutch by dimensions", csk),
     "techsquid-extrusions/make-extrusion": ("Extrusion", extrusion),
     "techsquid-extrusions/make-t-nut": ("Slot nut", t_nut),
     "techsquid-v-wheels/make-v-wheel": ("V-wheel", v_wheel),

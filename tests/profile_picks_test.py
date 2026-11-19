@@ -22,7 +22,10 @@ TOL = 1e-6
 # Entry: (plugin, parameters that build the part alone).
 ENTRIES = {
     "make-bearing": ("techsquid-bearings", {"size": "625", "closure": "Sealed"}),
-    "make-csk": ("techsquid-bearings", {"size": "CSK12P"}),
+    "make-csk": ("techsquid-bearings", {"size": "CSK12P", "inner_keyway_depth": 1.2}),
+    "make-bearing-by-dimensions": ("techsquid-bearings", {"match_width": 7}),
+    "make-csk-by-dimensions": ("techsquid-bearings", {"match_bore": 15, "match_width": 11,
+                                                       "narrow_by_outer_keyway": "Enabled"}),
     "make-v-wheel": ("techsquid-v-wheels", {"size": "Solid V Wheel", "assembled": False}),
     "make-screw": ("techsquid-screws", {"size": "M3", "length": 12, "head": "Socket head",
                                         "drive": "Hex socket"}),

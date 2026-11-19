@@ -34,6 +34,18 @@ pub enum Closure {
     SingleLipSeal,
 }
 
+impl Closure {
+    pub const ALL: [Self; 3] = [Self::DustCovers, Self::LipSeals, Self::SingleLipSeal];
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::DustCovers => "Dust covers",
+            Self::LipSeals => "Lip seals",
+            Self::SingleLipSeal => "Single lip seal",
+        }
+    }
+}
+
 /// Nominal rectangular keyway: depth is measured radially from the bore/OD apex.
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -205,16 +217,20 @@ impl Csk {
             }),
         )
     }
+    pub fn closure(self) -> Closure {
+        match self.configuration() {
+            (Size::S8, _, true) => Closure::SingleLipSeal,
+            (_, _, true) => Closure::LipSeals,
+            _ => Closure::DustCovers,
+        }
+    }
+
     pub fn geometry(self) -> Geometry {
         let (inner_keyway, outer_keyway) = self.keyways();
         let d = self.dimensions();
         Geometry {
             designation: Some(self),
-            closure: match self.configuration() {
-                (Size::S8, _, true) => Closure::SingleLipSeal,
-                (_, _, true) => Closure::LipSeals,
-                _ => Closure::DustCovers,
-            },
+            closure: self.closure(),
             bore: d.bore,
             diameter: d.diameter,
             width: d.width,

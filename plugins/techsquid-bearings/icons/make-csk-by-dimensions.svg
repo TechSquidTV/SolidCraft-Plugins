@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>CSK clutch by dimensions</title>
+  <path d="M 5 24 L 5 38 A 27 15.59 0 0 0 59 38 L 59 24 Z" fill="#b8c3cf"/>
+  <path d="M 41.45 24 L 41.45 52.6 A 27 15.59 0 0 0 59 38 L 59 24 Z" fill="#8e9faf"/>
+  <path d="M 5 24 L 5 38 A 27 15.59 0 0 0 59 38 L 59 24 Z" fill="none" stroke="#34465b" stroke-width="2.55" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 9.5 24 A 22.5 12.99 0 1 0 54.5 24 A 22.5 12.99 0 1 0 9.5 24 Z" fill="#34465b"/>
+  <path d="M 46.13 27.48 L 48.96 31.72 M 39.68 32.7 L 36.5 36.85 M 28.74 33.76 L 21.4 35.39 M 19.7 30.04 L 12.51 28.2 M 17.87 23.72 L 15.04 19.48 M 24.32 18.5 L 27.5 14.35 M 35.26 17.44 L 42.6 15.81 M 44.3 21.16 L 51.49 23" fill="none" stroke="#328bd3" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 5 24 A 27 15.59 0 1 0 59 24 A 27 15.59 0 1 0 5 24 Z M 9.5 24 A 22.5 12.99 0 1 0 54.5 24 A 22.5 12.99 0 1 0 9.5 24 Z" fill="#e2e8ef" fill-rule="evenodd"/>
+  <path d="M 5 24 A 27 15.59 0 1 0 59 24 A 27 15.59 0 1 0 5 24 Z" fill="none" stroke="#34465b" stroke-width="2.55" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 9.5 24 A 22.5 12.99 0 1 0 54.5 24 A 22.5 12.99 0 1 0 9.5 24 Z" fill="none" stroke="#34465b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 20 24 A 12 6.93 0 1 0 44 24 A 12 6.93 0 1 0 20 24 Z" fill="#e2e8ef" stroke="#34465b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 24.5 24 A 7.5 4.33 0 1 0 39.5 24 A 7.5 4.33 0 1 0 24.5 24 Z" fill="#8e9faf" stroke="#34465b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 29.4 26.13 L 34.6 26.13 L 34.6 30.12 L 29.4 30.12 Z" fill="#8e9faf"/>
+  <path d="M 29.4 27.73 L 29.4 30.12 L 34.6 30.12 L 34.6 27.73" fill="none" stroke="#34465b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

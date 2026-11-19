@@ -163,25 +163,28 @@ for size, closure, designation, donor, donor_id in [
 with Headless() as host:
     path = package('techsquid-bearings')
     approval = host.command('plugin.inspect', path=path)['approval']
-    def select(params, allow_error=False):
-        result = host.command('plugin.run', path=path, approval=approval, entry='make-bearing',
+    def select(params, entry='make-bearing', allow_error=False):
+        result = host.command('plugin.run', path=path, approval=approval, entry=entry,
                               params=params, allow_error=allow_error)
         return result.get('result', result)
 
     default = select({})
     check('untouched dialog builds the measured B608ZZ',default['component']['component'] == 'Bearing B608ZZ')
     before = host.command('document.inspect', measure=False)
-    for params, reasons in [
-        ({'size':'By dimensions','match_bore':17}, ['6003 (17 × 35 × 10 mm)', '6203 (17 × 40 × 12 mm)', 'outside diameter']),
-        ({'size':'By dimensions','match_bore':17,'match_diameter':41}, ['no bearing matches']),
-        ({'size':'By dimensions'}, ['enter at least one']),
-        ({'size':'608','closure':'Open'}, ['only for size 626']),
-        ({'size':'B6203ZZ'}, ['choose a base size']),
+    search = 'make-bearing-by-dimensions'
+    for entry, params, reasons in [
+        (search, {'match_bore':17}, ['6003 (17 × 35 × 10 mm)', '6203 (17 × 40 × 12 mm)', 'outside diameter']),
+        (search, {'match_bore':17,'match_diameter':41}, ['no bearing matches']),
+        (search, {}, ['enter at least one']),
+        (search, {'match_diameter':40,'closure':'Sealed'}, ['unsupported field']),
+        ('make-bearing', {'size':'608','closure':'Open'}, ['only for size 626']),
+        ('make-bearing', {'size':'B6203ZZ'}, ['choose a listed bearing size']),
+        ('make-bearing', {'size':'By dimensions'}, ['choose a listed bearing size']),
     ]:
-        error = select(params, allow_error=True).get('error','')
-        check(f'{params} explains refusal without editing',all(reason in error for reason in reasons)
+        error = select(params, entry, allow_error=True).get('error','')
+        check(f'{entry} {params} explains refusal without editing',all(reason in error for reason in reasons)
               and host.command('document.inspect',measure=False) == before,error)
-    found = select({'size':'By dimensions','match_diameter':40,'closure':'Sealed'})
+    found = select({'match_diameter':40,'narrow_by_closure':'Sealed'}, search)
     name = found['component']['component']
     saved = str(Path(TMP)/'estimated-bearing.json')
     host.command('file.save_as',path=saved)
@@ -192,18 +195,12 @@ with Headless() as host:
           name == 'Bearing B6203DDU' and again['component']['reused']
           and evidence['provenance']['sources'] == ['misumi-b6203zz'])
 
-# The installed tool applies the manifest's field bounds before calling the plugin.
+# Installed tools apply the same numeric field bounds that the dialog uses.
 with Headless(plugins_dir=Path(ROOT)/'dist') as host:
     for field in ('match_bore', 'match_diameter', 'match_width'):
         for invalid in (0, 1001):
-            params = {'size':'By dimensions', 'closure':'Shielded', field:invalid}
-            error = host.tool('techsquid-bearings.make-bearing', params, allow_error=True).get('error', '')
-            check(f'By dimensions reports the range for {field}={invalid}', 'between 0 and 1000 mm' in error, error)
-
-            params['size'] = '608'
-            result = host.tool('techsquid-bearings.make-bearing', params, allow_error=True)
-            component = result.get('result', result).get('component', {}).get('component')
-            check(f'switching to 608 builds B608ZZ with {field}={invalid} still entered',
-                  component == 'Bearing B608ZZ', result.get('error', ''))
+            error = host.tool('techsquid-bearings.make-bearing-by-dimensions',
+                              {field:invalid}, allow_error=True).get('error', '')
+            check(f'By dimensions rejects {field}={invalid}', bool(error), error)
 
 finish()

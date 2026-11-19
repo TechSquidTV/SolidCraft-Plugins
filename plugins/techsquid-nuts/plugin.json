@@ -2,11 +2,12 @@
   "capabilities": [
     "commands@0.1"
   ],
-  "description": "Based on ISO 4032. Pick sketch points or circles: each gets a nut, and its pocket if you want one. With nothing picked, one nut sits on the origin.",
+  "description": "Place plain hex nuts or nylon-insert lock nuts, with optional captive pockets and bolt holes. Pick sketch points or circles, or place a loose nut at the origin.",
   "id": "techsquid-nuts",
   "name": "Hex nuts",
   "runtime": {
     "commands": [
+      "appearance.assign",
       "appearance.list",
       "browser.visibility",
       "component.activate",
@@ -31,6 +32,7 @@
       "parameters.users",
       "select.set",
       "selection.get",
+      "sketch.arc.three_point",
       "sketch.circle.center",
       "sketch.constraint.coincident",
       "sketch.constraint.fix",
@@ -68,12 +70,12 @@
               "type": "string"
             },
             "custom_size": {
-              "description": "Optional. A metric size that replaces Size, such as M8x1 or M3.5. ISO 4032 lists M1.6 to M64; a size outside that table also needs Custom width and Custom thickness.",
+              "description": "Optional metric thread, including a fine pitch such as M8x1. A lock nut requires a listed nominal diameter.",
               "title": "Custom size",
               "type": "string"
             },
             "custom_thickness": {
-              "description": "Optional. Nut height. Leave empty for the ISO 4032 height.",
+              "description": "Optional overall height, including the collar on a lock nut. Leave empty for the selected standard.",
               "maximum": 1000,
               "minimum": 0.1,
               "title": "Custom thickness",
@@ -81,7 +83,7 @@
               "unit": "mm"
             },
             "custom_width": {
-              "description": "Optional. Width across the flats. Leave empty for the ISO 4032 width.",
+              "description": "Optional width across the flats. Leave empty for the selected standard.",
               "maximum": 1000,
               "minimum": 0.1,
               "title": "Custom width",
@@ -113,39 +115,120 @@
             },
             "size": {
               "default": "M3",
-              "description": "Common ISO 4032 sizes with the coarse thread. For any other size, such as a fine pitch, fill in Custom size. A DIN 934 nut is wider at M10, M12 and M14: set Custom width for it.",
-              "enum": [
-                "M1.6",
-                "M2",
-                "M2.5",
-                "M3",
-                "M3.5",
-                "M4",
-                "M5",
-                "M6",
-                "M8",
-                "M10",
-                "M12",
-                "M14",
-                "M16",
-                "M18",
-                "M20",
-                "M22",
-                "M24",
-                "M27",
-                "M30",
-                "M33",
-                "M36",
-                "M39",
-                "M42",
-                "M45",
-                "M48",
-                "M52",
-                "M56",
-                "M60",
-                "M64"
+              "description": "Choose a coarse metric thread. Sizes marked ‘plain hex only’ require that style. Other sizes also fit nylon-insert lock nuts.",
+              "oneOf": [
+                {
+                  "const": "M1.6",
+                  "title": "M1.6 (plain hex only)"
+                },
+                {
+                  "const": "M2",
+                  "title": "M2 (plain hex only)"
+                },
+                {
+                  "const": "M2.5"
+                },
+                {
+                  "const": "M3"
+                },
+                {
+                  "const": "M3.5",
+                  "title": "M3.5 (plain hex only)"
+                },
+                {
+                  "const": "M4"
+                },
+                {
+                  "const": "M5"
+                },
+                {
+                  "const": "M6"
+                },
+                {
+                  "const": "M8"
+                },
+                {
+                  "const": "M10"
+                },
+                {
+                  "const": "M12"
+                },
+                {
+                  "const": "M14"
+                },
+                {
+                  "const": "M16"
+                },
+                {
+                  "const": "M18"
+                },
+                {
+                  "const": "M20"
+                },
+                {
+                  "const": "M22"
+                },
+                {
+                  "const": "M24"
+                },
+                {
+                  "const": "M27"
+                },
+                {
+                  "const": "M30"
+                },
+                {
+                  "const": "M33",
+                  "title": "M33 (plain hex only)"
+                },
+                {
+                  "const": "M36",
+                  "title": "M36 (plain hex only)"
+                },
+                {
+                  "const": "M39",
+                  "title": "M39 (plain hex only)"
+                },
+                {
+                  "const": "M42",
+                  "title": "M42 (plain hex only)"
+                },
+                {
+                  "const": "M45",
+                  "title": "M45 (plain hex only)"
+                },
+                {
+                  "const": "M48",
+                  "title": "M48 (plain hex only)"
+                },
+                {
+                  "const": "M52",
+                  "title": "M52 (plain hex only)"
+                },
+                {
+                  "const": "M56",
+                  "title": "M56 (plain hex only)"
+                },
+                {
+                  "const": "M60",
+                  "title": "M60 (plain hex only)"
+                },
+                {
+                  "const": "M64",
+                  "title": "M64 (plain hex only)"
+                }
               ],
               "title": "Size",
+              "type": "string"
+            },
+            "style": {
+              "default": "Plain hex",
+              "description": "Plain ISO 4032 hexagon nut or a thin DIN 985 nylon-insert lock nut. The nylon collar faces away from the seating surface.",
+              "enum": [
+                "Plain hex",
+                "Nylon-insert lock nut"
+              ],
+              "title": "Nut style",
               "type": "string"
             },
             "thread_modeled": {
@@ -156,6 +239,7 @@
             }
           },
           "required": [
+            "style",
             "size",
             "create",
             "pocket_adjust"

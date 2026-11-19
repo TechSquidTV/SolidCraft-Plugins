@@ -113,6 +113,8 @@ def render_catalog(staging):
          (1600, 700), ([0, 0, -5], 0, 0.6, 92), {}),
         ("nut", "editable-mounting-plate/reference/standalone-nut.png",
          (1280, 800), None, {}),
+        ("lock-nut", "v-slot-gantry/reference/nylon-insert-lock-nut.png",
+         (960, 640), ([0, 0, 2.4], -0.5, 0.55, 18), {"quality": "ultra"}),
         ("insert", "pcb-enclosure/reference/standalone-insert.png",
          (1280, 800), ([0, 0, -2.85], 0.5, 0.55, 14), {"quality": "ultra"}),
         ("rails", "sketch-driven-rails/reference/rail-profiles.png",

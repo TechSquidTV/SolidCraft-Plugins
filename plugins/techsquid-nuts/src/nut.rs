@@ -1,18 +1,23 @@
-//! ISO 4032 nut parameters. Sizes are millimetres.
+//! Plain hex and nylon-insert lock nut parameters. Sizes are millimetres.
 //!
 //! The bearing face sits on a sketch point. The sketch normal points outward and the nut
-//! stands on that side. A blank width and height come from the ISO 4032 table. A fine
+//! stands on that side. Blank dimensions use the selected style’s table. A fine
 //! pitch such as `M8x1` keeps the M8 nut and passes that pitch to the bore.
 
 use fasteners::clearance::Hole;
 use fasteners::designation;
-use fasteners::metric::{self, MetricSize};
+use fasteners::lock_nut::LockNut;
+use fasteners::metric;
 use fasteners::nut::{self, NutSize};
 pub use plugin_kit::create::Create;
 use plugin_kit::create::Words;
 use plugin_kit::input::{self, FieldError};
 use plugin_kit::place::{self, PlaceInput};
 use serde_json::Value;
+
+const PLAIN_HEX: &str = "Plain hex";
+const NYLON_INSERT: &str = "Nylon-insert lock nut";
+pub const STYLES: [&str; 2] = [PLAIN_HEX, NYLON_INSERT];
 
 pub const DEFAULT_DESIGNATION: &str = "M3";
 
@@ -49,14 +54,13 @@ pub struct Pocket {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Params {
     /// Explicit dimension overrides and non-ISO pitches are custom configurations.
-    pub custom: bool,
+    pub product: crate::provider::NutProduct,
+    pub lock: Option<LockNut>,
     pub create: Create,
     /// The pocket to cut in the part. Empty when only the nut is made.
     pub pocket: Option<Pocket>,
-    /// What the person typed, such as `M6` or `M8x1`.
+    /// The nut designation, using the catalog diameter when the input matches a row.
     pub designation: String,
-    /// What `solid.hole` is given: the designation, which SolidCraft reads with its coarse pitch.
-    pub thread: String,
     pub across_flats: f64,
     pub height: f64,
     pub major: f64,
@@ -70,6 +74,12 @@ pub struct Params {
     pub place: PlaceInput,
 }
 
+impl Params {
+    pub fn hex_height(&self) -> f64 {
+        self.lock.map_or(self.height, |lock| lock.hex_height)
+    }
+}
+
 pub fn parse(v: &Value) -> Result<Params, FieldError> {
     input::workflow_fields(v, include_str!("../plugin.json"), "make-nut")?;
     let designation = designation::designation(v, DEFAULT_DESIGNATION)?;
@@ -78,13 +88,59 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
     let height = input::optional_length(v, "custom_thickness")?;
     let modeled = input::flag(v, "thread_modeled", true)?;
     let place = place::parse_input(v)?;
-    let (size, thread, listed) =
-        resolve_size(&designation).map_err(|e| e.moved("size", size_field))?;
-    let custom = across_flats.is_some()
-        || height.is_some()
-        || listed.is_none_or(|row| row.pitch != size.pitch);
-    let (across_flats, height, countersink, chamfer_max) =
-        resolve_body(listed, across_flats, height)?;
+    let size = metric::parse_metric(&designation)
+        .map_err(|e| e.moved("size", size_field))?
+        .ok_or_else(|| FieldError::new(size_field, "use a metric size such as M6 or M8x1"))?;
+    let lock = match input::choice(v, "style", PLAIN_HEX)? {
+        PLAIN_HEX => None,
+        NYLON_INSERT => {
+            let lock = LockNut::for_major(size.major).ok_or_else(|| {
+                FieldError::new(
+                    size_field,
+                    "choose a supported DIN 985 size, such as M5 or M8",
+                )
+            })?;
+            Some(lock.with_envelope(across_flats, height))
+        }
+        _ => {
+            return Err(FieldError::new(
+                "style",
+                "choose Plain hex or Nylon-insert lock nut",
+            ))
+        }
+    };
+    let overrides = across_flats.is_some() || height.is_some();
+    let (outer, major, standard_pitch) = match lock {
+        Some(lock) => (
+            (lock.across_flats, lock.height, None, None),
+            lock.nominal,
+            metric::coarse_pitch(lock.nominal),
+        ),
+        None => {
+            let listed = nut::standard_nut(size.major);
+            (
+                resolve_body(listed, across_flats, height)?,
+                listed.map_or(size.major, |row| row.nominal),
+                listed.map(|row| row.pitch),
+            )
+        }
+    };
+    let (across_flats, height, countersink, chamfer_max) = outer;
+    // The lookup tolerates numerical noise. Use its diameter for both the host
+    // thread and purchasing identity, preserving the pitch the user requested.
+    if size.pitch >= major {
+        return Err(FieldError::new(
+            size_field,
+            format!("pitch must be shorter than the M{major} catalog diameter"),
+        ));
+    }
+    let designation = if major == size.major {
+        designation
+    } else if standard_pitch == Some(size.pitch) {
+        format!("M{major}")
+    } else {
+        format!("M{major}x{}", size.pitch)
+    };
     let create = CREATE.parse(v)?;
     let pocket = if create.cut() {
         let adjust = match input::optional_length_or_zero(v, "pocket_adjust")? {
@@ -97,12 +153,12 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
                 ))
             }
         };
-        let clearance = Hole::for_major(size.major).ok_or_else(|| {
+        let clearance = Hole::for_major(major).ok_or_else(|| {
             FieldError::new(
                 size_field,
                 format!(
                     "ISO 273 has no clearance hole for M{}, so the pocket has no bolt hole; pick a listed size or use Nut only",
-                    metric::number(size.major)
+                    metric::number(major)
                 ),
             )
         })?;
@@ -115,14 +171,17 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         None
     };
     let p = Params {
-        custom,
+        product: crate::provider::NutProduct::resolve(
+            lock,
+            overrides || standard_pitch != Some(size.pitch),
+        ),
+        lock,
         create,
         pocket,
         designation,
-        thread,
         across_flats,
         height,
-        major: size.major,
+        major,
         pitch: size.pitch,
         countersink,
         chamfer_max,
@@ -150,7 +209,7 @@ fn validate(p: &Params) -> Result<(), FieldError> {
         ));
     }
     let end = nut::end_chamfer(p.across_flats, p.chamfer_max);
-    if p.height <= 2.0 * end.axial {
+    if p.hex_height() <= 2.0 * end.axial {
         return Err(FieldError::new(
             "custom_thickness",
             "must be taller than the two end chamfers",
@@ -174,17 +233,6 @@ fn validate(p: &Params) -> Result<(), FieldError> {
         }
     }
     Ok(())
-}
-
-fn resolve_size(designation: &str) -> Result<(MetricSize, String, Option<NutSize>), FieldError> {
-    match metric::parse_metric(designation) {
-        Ok(Some(size)) => Ok((size, designation.to_string(), nut::standard_nut(size.major))),
-        Ok(None) => Err(FieldError::new(
-            "size",
-            "an ISO 4032 nut is metric; use a size such as M6 or M8x1",
-        )),
-        Err(err) => Err(err),
-    }
 }
 
 fn resolve_body(
@@ -226,16 +274,13 @@ mod tests {
         let blank = parse(&json!({})).unwrap();
         let m3 = parse(&json!({"size": "M3"})).unwrap();
         assert_eq!(blank.designation, "M3");
-        assert_eq!(blank.thread, m3.thread);
-        assert_eq!(blank.across_flats, m3.across_flats);
-        assert_eq!(blank.height, m3.height);
+        assert_eq!(blank, m3);
     }
 
     #[test]
     fn an_m6_is_the_iso_4032_m6() {
         let p = parse(&json!({"size": "M6"})).unwrap();
         assert_eq!(p.designation, "M6");
-        assert_eq!(p.thread, "M6");
         assert_eq!(p.across_flats, 10.0);
         assert_eq!(p.height, 5.2);
         assert_eq!(p.major, 6.0);
@@ -249,16 +294,43 @@ mod tests {
     #[test]
     fn a_fine_pitch_keeps_the_m8_nut() {
         let p = parse(&json!({"size": "M8x1"})).unwrap();
-        assert_eq!(p.thread, "M8x1");
+        assert_eq!(p.designation, "M8x1");
         assert_eq!(p.across_flats, 13.0);
         assert_eq!(p.height, 6.8);
         assert_eq!(p.pitch, 1.0);
     }
 
     #[test]
+    fn matched_diameters_drive_the_thread_and_pocket_without_rounding_a_custom_pitch() {
+        for style in STYLES {
+            for (input, thread) in [
+                ("M5.0000001", "M5"),
+                ("M4.9999999x0.8", "M5"),
+                ("M5.0000001x0.51234", "M5x0.51234"),
+            ] {
+                let p = parse(
+                    &json!({"style": style, "custom_size": input, "create": "Nut and pocket"}),
+                )
+                .unwrap();
+                assert_eq!((p.major, p.designation.as_str()), (5.0, thread));
+                assert_eq!(p.pocket.unwrap().clearance, Hole::Size("M5".into()));
+            }
+        }
+        let pitch_at_nominal = json!({"custom_size": "M5.0000001x5"});
+        assert_eq!(parse(&pitch_at_nominal).unwrap_err().field, "custom_size");
+        let v = json!({"style": NYLON_INSERT, "custom_size": "M5.00001x0.8"});
+        assert_eq!(parse(&v).unwrap_err().field, "custom_size");
+        let p = parse(
+            &json!({"custom_size": "M5.00001x0.8", "custom_width": 9, "custom_thickness": 6}),
+        )
+        .unwrap();
+        assert_eq!((p.major, p.designation.as_str()), (5.00001, "M5.00001x0.8"));
+    }
+
+    #[test]
     fn a_bare_m3_5_takes_the_table_pitch() {
         let p = parse(&json!({"size": "M3.5"})).unwrap();
-        assert_eq!(p.thread, "M3.5");
+        assert_eq!(p.designation, "M3.5");
         assert_eq!(p.across_flats, 6.0);
         assert_eq!(p.height, 2.8);
         assert_eq!(p.pitch, 0.6);
@@ -284,7 +356,7 @@ mod tests {
             "custom_thickness": 5.5,
         }))
         .unwrap();
-        assert_eq!(p.thread, "M7x1");
+        assert_eq!(p.designation, "M7x1");
         assert_eq!(p.major, 7.0);
         assert!(p.countersink.is_none());
         assert!(p.chamfer_max.is_none());
@@ -323,19 +395,25 @@ mod tests {
     #[test]
     fn a_custom_size_replaces_the_listed_one() {
         let p = parse(&json!({"size": "M6", "custom_size": "M8x1"})).unwrap();
-        assert_eq!(p.thread, "M8x1");
+        assert_eq!(p.designation, "M8x1");
         assert_eq!(p.across_flats, 13.0);
     }
 
     #[test]
-    fn every_size_in_the_dialog_list_is_a_standard_nut() {
+    fn dialog_sizes_identify_which_styles_can_use_each_diameter() {
         let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
         let sizes =
-            &manifest["runtime"]["entries"][0]["input_schema"]["properties"]["size"]["enum"];
-        for size in sizes.as_array().unwrap() {
-            let size = size.as_str().unwrap();
+            &manifest["runtime"]["entries"][0]["input_schema"]["properties"]["size"]["oneOf"];
+        for option in sizes.as_array().unwrap() {
+            let size = option["const"].as_str().unwrap();
             let p = parse(&json!({"size": size})).unwrap();
             assert!(p.countersink.is_some(), "{size}");
+            let lock = parse(&json!({"size": size, "style": NYLON_INSERT}));
+            if lock.is_ok() {
+                assert!(option.get("title").is_none(), "{size}");
+            } else {
+                assert_eq!(option["title"], format!("{size} (plain hex only)"));
+            }
         }
     }
 

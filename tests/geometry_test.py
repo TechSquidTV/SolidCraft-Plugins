@@ -240,6 +240,9 @@ on_plate("nut: pocket only, no gap", *NUT, {"size": "M6", "create": "Pocket only
          hexagon(10.0, 5.2) + cyl(6.6, 6.8), 12, bodies=["Plate", "Under"])
 on_plate("nut: no pocket by default", *NUT, {"size": "M6"}, 0, 12,
          bodies=["Nut M6", second("Nut M6"), "Plate", "Under"], top=17.2)
+on_plate("lock nut: M5 pocket fits the 5 mm height including the insert", *NUT,
+         {"size": "M5", "style": "Nylon-insert lock nut", "create": "Nut and pocket"},
+         hexagon(8.4, 5) + cyl(5.5, 7), 12, top=12)
 refused("nut: a pocket with nothing selected says what to select", *NUT,
         {"create": "Pocket only"}, "pick the sketch points")
 alone("nut: nut and pocket with nothing selected is a loose nut", *NUT,
@@ -908,13 +911,15 @@ def parts_keep_their_own_threads(name, first, second):
         return
     both = sorted(b["volume_mm3"] for n, b in found.items() if n not in ("Plate", "Under"))
     want = sorted(alone[0] + alone[1])
-    ok = len(both) == 2 and all(abs(a - b) < 1e-6 for a, b in zip(both, want))
+    ok = all(alone) and len(both) == len(want) and all(abs(a - b) < 1e-6 for a, b in zip(both, want))
     check(name, ok, f"| together {[round(v, 3) for v in both]}, alone {[round(v, 3) for v in want]}")
 
 
 NUT, INSERT, SCREW = (("techsquid-nuts", "make-nut"), ("techsquid-inserts", "make-insert"),
                       ("techsquid-screws", "make-screw"))
 TNUT = ("techsquid-extrusions", "make-t-nut")
+parts_keep_their_own_threads("threads: M5 plain and nylon-insert nuts retain their own geometry",
+                             run_of(*NUT, {"size": "M5"}), run_of(*NUT, {"size": "M5", "style": "Nylon-insert lock nut"}))
 parts_keep_their_own_threads("threads: an M5 nut and a thicker M5 nut",
                              run_of(*NUT, {"size": "M5"}), run_of(*NUT, {"size": "M5", "custom_thickness": 8}))
 parts_keep_their_own_threads("threads: an M5 nut with a plain hole and one with a thread",

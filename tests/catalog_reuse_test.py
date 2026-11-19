@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Native migration checks: representation reuse, purchasing BOM and edits."""
 
-from harness import check, finish, package
+import csv
+import json
+from pathlib import Path
+
+from harness import TMP, check, finish, package
 from headless import Headless
 
 CASES = [
@@ -90,6 +94,51 @@ for plugin, entry, params, custom in CASES:
             purchase = next(row for row in rows if row['part_number'] == mc['part_number'])
             check(f'{label}: custom aliases share one purchase row across representations',
                   purchase['count'] == 2 and len(purchase['components']) == 2)
+        if entry == 'make-nut':
+            lock = {'style': 'Nylon-insert lock nut'}
+            first_lock = insert(**lock, thread_modeled=False)
+            second_lock = insert(**lock, thread_modeled=False)
+            threaded_lock = insert(**lock, thread_modeled=True)
+            lock_rows = [r for r in host.command('assembly.bom')['rows'] if r['part_number'] == 'DIN 985 M6']
+            check('lock nuts: verified reuse and one purchase per two-body nut across thread details',
+                  not first_lock['component']['reused'] and second_lock['component']['reused']
+                  and not threaded_lock['component']['reused'] and len(lock_rows) == 1
+                  and lock_rows[0]['count'] == 3 and len(lock_rows[0]['components']) == 2)
+            extension = insert(**lock, custom_size='M2.5000001', thread_modeled=False)
+            supplier = metadata(definition(extension['component']['component'])['id'])
+            check('lock nuts: the M2.5 extension carries its sourced supplier article',
+                  extension['standard'] is None and extension['reference'] == 'Bossard BN 637'
+                  and supplier['part_number'] == 'Bossard 1143735'
+                  and json.loads(supplier['org.techsquid.parts']['product'])['kind'] == 'supplier_product')
+            check('lock nuts: the nominal M2.5 reuses the supplier definition',
+                  extension['thread'] == 'M2.5' and insert(**lock, size='M2.5', thread_modeled=False)['component']['reused'])
+            for style, near in [('Plain hex', 'M4.9999999'), (lock['style'], 'M5.0000001x0.8')]:
+                first = insert(style=style, custom_size=near)
+                exact = insert(style=style, size='M5')
+                check(f'{style}: a near-diameter input builds the M5 thread and reuses its definition',
+                      first['thread'] == 'M5' and first['major'] == 5 and exact['component']['reused']
+                      and first['component']['component'] == exact['component']['component'])
+            width = insert(**lock, custom_size='M5x0.5', custom_width=9, thread_modeled=False)
+            height = insert(**lock, custom_size='M5x0.5', custom_thickness=8, thread_modeled=False)
+            repeat = insert(**lock, custom_size='M5.0000001x0.5', custom_width=9, thread_modeled=False)
+            check('lock nuts: the near diameter also reuses the custom fine-pitch nut',
+                  repeat['component']['reused'] and repeat['component']['component'] == width['component']['component'])
+            path = Path(TMP) / 'nuts.csv'
+            host.command('assembly.bom', path=str(path))
+            with path.open(newline='') as table:
+                exported = {row['part_number']: row for row in csv.DictReader(table)}
+            check('nuts: exported ISO, DIN and supplier quantities include both diameter spellings',
+                  all(exported[number]['count'] == '2' for number in ('ISO 4032 M5', 'DIN 985 M5', 'Bossard 1143735')))
+            for made, family, thread, flats, high, count in [
+                (changed, 'hexagon nut', 'M6x1', 10, 5.2, 2),
+                (width, 'nylon-insert lock nut', 'M5x0.5', 9, 5, 2),
+                (height, 'nylon-insert lock nut', 'M5x0.5', 8, 8, 1),
+            ]:
+                meta = metadata(definition(made['component']['component'])['id'])
+                row = exported[meta['part_number']]
+                check(f'{family}: exported {thread}, {flats} mm across flats and {high} mm high',
+                      row['description'] == f'Custom {family} {thread}, {flats} mm across flats, {high} mm high'
+                      and row['count'] == str(count) and meta['bom_type'] == 'normal')
         if entry == 'make-t-nut':
             mounted = insert(thread_modeled=False, slot='V-slot', along='Sketch Y')
             check(f'{label}: mounting orientation does not change the purchased nut', mounted['component']['reused'])

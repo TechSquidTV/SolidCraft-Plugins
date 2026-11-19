@@ -1,9 +1,9 @@
-//! ISO 4032 hexagon nut (the size DIN 934 was replaced by) for SolidCraft.
+//! Plain ISO 4032 hex nuts and DIN 985 nylon-insert lock nuts for SolidCraft.
 //!
 //! One entry, `make-nut`. The bearing face sits on a sketch point, or on the origin when
 //! nothing is selected. The nut stands on the outer side of that plane. The body is the
-//! same six-sided profile as a hex head. Both ends are chamfered, the bore is tapped, and
-//! both ends of the bore are countersunk.
+//! same six-sided profile as a hex head. A lock nut adds a rolled lip and a captive nylon
+//! insert above its threaded metal hex.
 
 pub mod nut;
 pub mod provider;
@@ -13,6 +13,7 @@ use fasteners::hex::{self, Hex};
 use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
+use parts::ProductKind;
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
 use plugin_kit::host::{add_new, cut_bodies, sketch_id};
 use plugin_kit::name;
@@ -23,7 +24,11 @@ use serde_json::{json, Value};
 
 /// The body name before any number: `Nut M3`, `Nut M8x1`.
 pub fn body_base(p: &Params) -> String {
-    format!("Nut {}", p.designation)
+    format!(
+        "{} {}",
+        if p.lock.is_some() { "Lock nut" } else { "Nut" },
+        p.designation
+    )
 }
 
 /// Build the nut. Returns a summary of what was made.
@@ -101,18 +106,20 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     let mut library_report = Value::Null;
     let placed = if p.create.part() {
         let base = body_base(p);
+        let representation = provider::representation(p);
+        let number = p.product.part_number(&representation.product)?;
+        let description = provider::bom_description(p);
         let def = Definition {
             plugin: PLUGIN,
             base: &base,
-            description: if p.custom {
-                "Custom hexagon nut"
+            description: &description,
+            bom_type: if p.product.kind == ProductKind::Custom {
+                "normal"
             } else {
-                "ISO 4032"
+                "purchased"
             },
-            bom_type: if p.custom { "normal" } else { "purchased" },
             site: Site::for_thread(p.modeled),
         };
-        let number = provider::part_number(p)?;
         let creation = fasten::creation_calls(def.site, |mut r, site, name| {
             build_nut(&mut r, p, site, name).map(|_| ())
         })?;
@@ -122,19 +129,15 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             &places,
             FOLDER,
             |library| {
-                library.ensure_built(
-                    &def,
-                    &number,
-                    &provider::representation(p),
-                    |mut r, site, name| build_nut(&mut r, p, site, name).map(|_| ()),
-                )
+                library.ensure_built(&def, &number, &representation, |mut r, site, name| {
+                    build_nut(&mut r, p, site, name).map(|_| ())
+                })
             },
             |mut r, placed| {
-                let joint = format!("Nut {}", p.designation);
                 for ((seat, place), occurrence) in
                     seats.iter().zip(&places).zip(&placed.occurrences)
                 {
-                    seat.attach(&mut r, *occurrence, place, &joint)?;
+                    seat.attach(&mut r, *occurrence, place, &base)?;
                 }
                 Ok(())
             },
@@ -278,7 +281,7 @@ fn build_nut<R: Runner>(
             x_dir: place.x_dir,
             y_dir: place.y_dir,
             across_flats: p.across_flats,
-            height: p.height,
+            height: p.hex_height(),
             sketch_name: named("Hex profile"),
             name: named("Hex"),
             operation: "new",
@@ -302,7 +305,7 @@ fn build_nut<R: Runner>(
         r,
         &place,
         &body,
-        p.height,
+        p.hex_height(),
         opposite(place.normal),
         &end.triangle,
         &named("Outer chamfer"),
@@ -320,8 +323,8 @@ fn build_nut<R: Runner>(
         json!({
             "position": place.point,
             "direction": place.normal,
-            "depth": p.height,
-            "thread": p.thread,
+            "depth": p.hex_height(),
+            "thread": p.designation,
             "modeled": p.modeled,
             "targets": [body],
             "name": named("Thread"),
@@ -351,6 +354,9 @@ fn build_nut<R: Runner>(
                 &named("Outer countersink"),
             )?;
         }
+    }
+    if let Some(lock) = p.lock {
+        lock.add_collar(r, site, &body, body_name)?;
     }
     Ok(end)
 }
@@ -398,10 +404,11 @@ fn summary(
             "bolt_hole": pocket.clearance.describe(),
         })
     });
-    let reply = json!({
-        "standard": "ISO 4032",
+    let uses_reference = p.lock.is_some() && p.product.kind != ProductKind::StandardConfiguration;
+    let mut reply = json!({
+        "standard": (!uses_reference).then_some(p.product.basis),
         "designation": p.designation,
-        "thread": p.thread,
+        "thread": p.designation,
         "major": p.major,
         "pitch": p.pitch,
         "across_flats": p.across_flats,
@@ -414,6 +421,9 @@ fn summary(
         "drilled": drilled,
         "note": skipped.then(|| nut::CREATE.skipped()),
     });
+    if uses_reference {
+        reply["reference"] = json!(p.product.basis);
+    }
     fasten::with_placements(reply, places, placed)
 }
 
@@ -580,6 +590,17 @@ mod tests {
     }
 
     #[test]
+    fn custom_lock_nuts_report_the_dimensional_reference() {
+        for (size, reference) in [("M5", "DIN 985"), ("M2.5", "Bossard BN 637")] {
+            let (summary, _) = commands(json!({
+                "style": "Nylon-insert lock nut", "size": size, "custom_thickness": 6.0,
+            }));
+            assert_eq!(summary.get("standard"), Some(&Value::Null));
+            assert_eq!(summary["reference"], reference);
+        }
+    }
+
+    #[test]
     fn an_unlisted_size_has_no_countersink() {
         let (_, calls) = commands(json!({
             "size": "M7x1",
@@ -737,7 +758,7 @@ mod tests {
         let schema = &entry["input_schema"];
         assert_eq!(
             schema["required"],
-            json!(["size", "create", "pocket_adjust"])
+            json!(["style", "size", "create", "pocket_adjust"])
         );
         assert_eq!(schema["properties"]["create"]["default"], "Nut only");
         assert_eq!(
@@ -746,10 +767,11 @@ mod tests {
         );
         let props = &schema["properties"];
         assert_eq!(props["size"]["default"], nut::DEFAULT_DESIGNATION);
-        assert!(props["size"]["enum"]
+        assert!(props["size"]["oneOf"]
             .as_array()
             .unwrap()
-            .contains(&json!(nut::DEFAULT_DESIGNATION)));
+            .iter()
+            .any(|option| option["const"] == nut::DEFAULT_DESIGNATION));
         assert_eq!(props["thread_modeled"]["default"], true);
         // The dialog lists optional fields by key, so the keys are the order.
         let mut optional: Vec<&str> = props
@@ -757,7 +779,7 @@ mod tests {
             .unwrap()
             .keys()
             .map(String::as_str)
-            .filter(|key| !["size", "create", "pocket_adjust"].contains(key))
+            .filter(|key| !["style", "size", "create", "pocket_adjust"].contains(key))
             .collect();
         optional.sort();
         assert_eq!(
@@ -771,6 +793,8 @@ mod tests {
             ]
         );
         let expected: std::collections::BTreeSet<_> = [
+            "appearance.assign",
+            "sketch.arc.three_point",
             "select.set",
             "selection.get",
             "inspect.measure",
@@ -878,12 +902,13 @@ mod tests {
     #[test]
     fn the_counted_build_is_the_build_the_host_gets() {
         use plugin_kit::component::{creation_calls, site_at, MAX_PLACEMENTS, SEAL_CALLS};
-        let manifest: Value = serde_json::from_str(include_str!("../plugin.json")).unwrap();
-        let sizes = &manifest["runtime"]["entries"][0]["input_schema"]["properties"]["size"];
+        let sizes = fasteners::nut::sizes()
+            .map(|row| ("Plain hex", row.nominal))
+            .chain(fasteners::lock_nut::sizes().map(|row| ("Nylon-insert lock nut", row.nominal)));
         let mut largest = 0;
-        for size in sizes["enum"].as_array().unwrap() {
+        for (style, nominal) in sizes {
             for modeled in [true, false] {
-                let v = json!({"size": size, "thread_modeled": modeled});
+                let v = json!({"style": style, "size": format!("M{nominal}"), "thread_modeled": modeled});
                 let p = nut::parse(&v).unwrap();
                 let site = Site::for_thread(p.modeled);
                 let mut rec = Rec {

@@ -16,7 +16,7 @@ Saved example designs open without the plugins.
 |---|---|
 | [Screws](plugins/techsquid-screws/README.md) | Metric screws, set screws and threaded rod, with optional clearance or tapped holes |
 | [Heat-set inserts](plugins/techsquid-inserts/README.md) | CNC Kitchen metric and UN inserts and their mounting holes |
-| [Hexagon nuts](plugins/techsquid-nuts/README.md) | ISO 4032 nuts, with optional pockets and bolt holes |
+| [Hexagon nuts](plugins/techsquid-nuts/README.md) | Plain ISO 4032 and nylon-insert DIN 985 nuts, with optional pockets and bolt holes |
 | [Extrusions](plugins/techsquid-extrusions/README.md) | Fixed-length or sketch-driven T-slot and V-slot rails, tapped ends, screw holes and slot nuts |
 | [Bearings](plugins/techsquid-bearings/README.md) | Radial bearings by size, closure or dimensions, plus 55 customizable CSK presets with editable keyways and recorded references |
 | [V-wheels](plugins/techsquid-v-wheels/README.md) | Five OpenBuilds wheel products, bare or assembled with two bearings and an internal shim |

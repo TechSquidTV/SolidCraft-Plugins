@@ -39,6 +39,7 @@ version = "0.3.0"
 dependencies = [
  "bearings",
  "extrusions",
+ "fasteners",
  "plugin-kit",
  "serde_json",
  "techsquid-inserts",

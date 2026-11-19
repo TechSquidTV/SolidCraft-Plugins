@@ -54,10 +54,10 @@
     {"caption": "Place right_near", "command": "sketch.point", "params": {"point": [34, 20.32], "id": "right_near"}},
     {"caption": "Place right_far", "command": "sketch.point", "params": {"point": [34, -20.32], "id": "right_far"}},
     {"caption": "Finish Axle nut seats", "command": "sketch.finish", "params": {}},
-    {"caption": "Seat four M5 hex nuts against the lower inner rings", "command": "plugin.run", "params": {"path": "dist/techsquid-nuts", "approval": "@approval", "entry": "make-nut", "params": {"size": "M5", "create": "Nut only", "thread_modeled": false, "placement": [{"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "left_near"}, {"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "left_far"}, {"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "right_near"}, {"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "right_far"}]}}}
+    {"caption": "Seat four M5 nylon-insert lock nuts against the lower inner rings", "command": "plugin.run", "params": {"path": "dist/techsquid-nuts", "approval": "@approval", "entry": "make-nut", "params": {"style": "Nylon-insert lock nut", "size": "M5", "create": "Nut only", "thread_modeled": false, "placement": [{"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "left_near"}, {"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "left_far"}, {"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "right_near"}, {"type": "external_sketch_point", "sketch": "Axle nut seats", "id": "right_far"}]}}}
   ],
   "expect": {
-    "bodies": 56,
+    "bodies": 60,
     "surface_bodies": 16,
     "bbox": {
       "min": [
@@ -132,7 +132,7 @@
       "T-slot 2020 x 84 holes -X 42": 2,
       "Screw M5 x 18 socket": 2,
       "Screw M5 x 30 socket": 4,
-      "Nut M5": 4,
+      "Lock nut M5": 4,
       "T-nut M5 pre-assembly": 1,
       "T-nut M5 post-assembly": 1,
       "Solid V Wheel": 4,
@@ -282,12 +282,12 @@
         }
       },
       {
-        "label": "M5 nut at (-34, -20.32)",
+        "label": "M5 lock nut at (-34, -20.32)",
         "bbox": {
           "min": [
             -38.61880215351701,
             -24.32,
-            9.8
+            9.5
           ],
           "max": [
             -29.381197846482994,
@@ -462,12 +462,12 @@
         }
       },
       {
-        "label": "M5 nut at (-34, 20.32)",
+        "label": "M5 lock nut at (-34, 20.32)",
         "bbox": {
           "min": [
             -38.61880215351701,
             16.32,
-            9.8
+            9.5
           ],
           "max": [
             -29.381197846482994,
@@ -642,12 +642,12 @@
         }
       },
       {
-        "label": "M5 nut at (34, -20.32)",
+        "label": "M5 lock nut at (34, -20.32)",
         "bbox": {
           "min": [
             29.381197846482994,
             -24.32,
-            9.8
+            9.5
           ],
           "max": [
             38.61880215351701,
@@ -822,12 +822,12 @@
         }
       },
       {
-        "label": "M5 nut at (34, 20.32)",
+        "label": "M5 lock nut at (34, 20.32)",
         "bbox": {
           "min": [
             29.381197846482994,
             16.32,
-            9.8
+            9.5
           ],
           "max": [
             38.61880215351701,
@@ -970,6 +970,66 @@
             25.2
           ]
         }
+      },
+      {
+        "label": "captive nylon insert at (-34, -20.32)",
+        "bbox": {
+          "min": [
+            -37.52,
+            -23.84,
+            9.932
+          ],
+          "max": [
+            -30.48,
+            -16.8,
+            11.3
+          ]
+        }
+      },
+      {
+        "label": "captive nylon insert at (-34, 20.32)",
+        "bbox": {
+          "min": [
+            -37.52,
+            16.8,
+            9.932
+          ],
+          "max": [
+            -30.48,
+            23.84,
+            11.3
+          ]
+        }
+      },
+      {
+        "label": "captive nylon insert at (34, -20.32)",
+        "bbox": {
+          "min": [
+            30.48,
+            -23.84,
+            9.932
+          ],
+          "max": [
+            37.52,
+            -16.8,
+            11.3
+          ]
+        }
+      },
+      {
+        "label": "captive nylon insert at (34, 20.32)",
+        "bbox": {
+          "min": [
+            30.48,
+            16.8,
+            9.932
+          ],
+          "max": [
+            37.52,
+            23.84,
+            11.3
+          ]
+        }
       }
     ],
     "overlaps": {
@@ -989,19 +1049,19 @@
         ],
         [
           "Screw M5 x 30 socket",
-          "Nut M5"
+          "Lock nut M5"
         ],
         [
           "Screw M5 x 30 socket (Fasteners:1/Screw M5 x 30 socket:2)",
-          "Nut M5 (Fasteners:1/Nut M5:2)"
+          "Lock nut M5 (Fasteners:1/Lock nut M5:2)"
         ],
         [
           "Screw M5 x 30 socket (Fasteners:1/Screw M5 x 30 socket:3)",
-          "Nut M5 (Fasteners:1/Nut M5:3)"
+          "Lock nut M5 (Fasteners:1/Lock nut M5:3)"
         ],
         [
           "Screw M5 x 30 socket (Fasteners:1/Screw M5 x 30 socket:4)",
-          "Nut M5 (Fasteners:1/Nut M5:4)"
+          "Lock nut M5 (Fasteners:1/Lock nut M5:4)"
         ]
       ]
     }

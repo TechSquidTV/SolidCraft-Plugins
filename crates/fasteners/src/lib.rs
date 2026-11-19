@@ -10,6 +10,7 @@ pub mod designation;
 pub mod head;
 pub mod hex;
 pub mod hexsocket;
+pub mod lock_nut;
 pub mod metric;
 pub mod nut;
 pub mod phillips;

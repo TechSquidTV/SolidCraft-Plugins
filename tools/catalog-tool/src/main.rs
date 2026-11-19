@@ -80,7 +80,10 @@ fn run() -> Result<(), String> {
         ),
         (
             "techsquid-nuts",
-            vec![("make-nut", "size", techsquid_nuts::provider::labels())],
+            vec![
+                ("make-nut", "size", techsquid_nuts::provider::labels()),
+                ("make-nut", "style", strings(&techsquid_nuts::nut::STYLES)),
+            ],
         ),
         (
             "techsquid-screws",
@@ -167,7 +170,15 @@ fn run() -> Result<(), String> {
         &bearings_table,
         write,
     )?;
+    let mut lock_nuts = String::from("| Size | Across flats (mm) | Overall height (mm) | Hex height (mm) |\n|---|---:|---:|---:|\n");
+    for nut in fasteners::lock_nut::sizes() {
+        lock_nuts.push_str(&format!(
+            "| M{} | {} | {} | {} |\n",
+            nut.nominal, nut.across_flats, nut.height, nut.hex_height
+        ));
+    }
     for (plugin, table) in [
+        ("techsquid-nuts", lock_nuts),
         ("techsquid-bearings", bearings_table),
         ("techsquid-v-wheels", wheels_table),
     ] {
@@ -259,6 +270,25 @@ fn update(path: &Path, fields: Vec<(&str, &str, Vec<String>)>, write: bool) -> R
                 json!({"const":size.label(), "title":format!("{} — {} mm",size.label(),size.envelope())})
             }).collect();
             options.push(json!({"const":"By dimensions","title":"By dimensions"}));
+            property["oneOf"] = json!(options);
+        } else if entry == "make-nut" && field == "size" {
+            property
+                .as_object_mut()
+                .ok_or("missing nut size property")?
+                .remove("enum");
+            let lock_sizes: std::collections::BTreeSet<_> = fasteners::lock_nut::sizes()
+                .map(|row| format!("M{}", fasteners::metric::number(row.nominal)))
+                .collect();
+            let options: Vec<_> = choices
+                .into_iter()
+                .map(|size| {
+                    if lock_sizes.contains(&size) {
+                        json!({"const": size})
+                    } else {
+                        json!({"const": size, "title": format!("{size} (plain hex only)")})
+                    }
+                })
+                .collect();
             property["oneOf"] = json!(options);
         } else {
             property["enum"] = json!(choices);

@@ -1,4 +1,4 @@
-//! The ISO table remains the single owner of sizes and dimensions.
+//! Purchasing identity and CAD representation for plain and nylon-insert hex nuts.
 
 use crate::nut;
 use fasteners::{metric, nut as iso};
@@ -16,18 +16,29 @@ pub struct Specification {
     height_mm: f64,
     countersink_mm: Option<f64>,
     chamfer_max_mm: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    lock_hex_height_mm: Option<f64>,
 }
 
 pub fn representation(p: &nut::Params) -> Representation<Specification> {
+    let (catalog, part, kind) = match (p.lock, p.custom) {
+        (Some(_), true) => (
+            "techsquid-custom",
+            "nylon-insert-lock-nut",
+            ProductKind::Custom,
+        ),
+        (None, true) => ("techsquid-custom", "hex-nut", ProductKind::Custom),
+        (Some(lock), false) => match lock.supplier_article() {
+            Some(article) => ("bossard", article, ProductKind::SupplierProduct),
+            None => ("din", "985", ProductKind::StandardConfiguration),
+        },
+        (None, false) => ("iso", "4032", ProductKind::StandardConfiguration),
+    };
     Representation {
         product: Product {
-            catalog: if p.custom { "techsquid-custom" } else { "iso" }.into(),
-            part: if p.custom { "hex-nut" } else { "4032" }.into(),
-            kind: if p.custom {
-                ProductKind::Custom
-            } else {
-                ProductKind::StandardConfiguration
-            },
+            catalog: catalog.into(),
+            part: part.into(),
+            kind,
             configuration: Specification {
                 major_mm: p.major,
                 pitch_mm: p.pitch,
@@ -35,6 +46,7 @@ pub fn representation(p: &nut::Params) -> Representation<Specification> {
                 height_mm: p.height,
                 countersink_mm: p.countersink,
                 chamfer_max_mm: p.chamfer_max,
+                lock_hex_height_mm: p.lock.map(|lock| lock.hex_height),
             },
             members: vec![],
         },
@@ -47,8 +59,10 @@ pub fn representation(p: &nut::Params) -> Representation<Specification> {
 pub fn part_number(p: &nut::Params) -> Result<String, String> {
     if p.custom {
         plugin_kit::component::model_number(&representation(p).product)
+    } else if let Some(article) = p.lock.and_then(|lock| lock.supplier_article()) {
+        Ok(format!("Bossard {article}"))
     } else {
-        Ok(format!("ISO 4032 M{}", p.major))
+        Ok(format!("{} M{}", p.dimensional_basis(), p.major))
     }
 }
 
@@ -159,6 +173,58 @@ mod tests {
             );
         }
     }
+    #[test]
+    fn lock_nuts_have_distinct_products_and_reuse_across_equivalent_inputs() {
+        for lock in fasteners::lock_nut::sizes() {
+            let size = format!("M{}", lock.nominal);
+            let plain = nut::parse(&json!({"size":size})).unwrap();
+            let params = json!({"size":size, "style":"Nylon-insert lock nut"});
+            let p = nut::parse(&params).unwrap();
+            let product = representation(&p).product;
+            if lock.nominal == 2.5 {
+                assert_eq!(part_number(&p).unwrap(), "Bossard 1143735");
+                assert_eq!(product.kind, ProductKind::SupplierProduct);
+            } else {
+                assert_eq!(part_number(&p).unwrap(), format!("DIN 985 {size}"));
+                assert_eq!(product.kind, ProductKind::StandardConfiguration);
+            }
+            assert_ne!(product, representation(&plain).product);
+            let mut cosmetic = params.clone();
+            cosmetic["thread_modeled"] = json!(false);
+            cosmetic["custom_size"] = json!(format!("{size}x{}", p.pitch));
+            let other = nut::parse(&cosmetic).unwrap();
+            assert_eq!(product, representation(&other).product);
+            assert_ne!(representation(&p), representation(&other));
+            let mut changed = params;
+            changed["custom_width"] = json!(p.across_flats);
+            let custom = nut::parse(&changed).unwrap();
+            assert_eq!(representation(&custom).product.kind, ProductKind::Custom);
+            assert_ne!(part_number(&p).unwrap(), part_number(&custom).unwrap());
+        }
+    }
+
+    #[test]
+    fn lock_style_validates_the_source_size_and_scales_custom_pockets() {
+        for key in ["size", "custom_size"] {
+            assert_eq!(
+                nut::parse(&json!({"style":"Nylon-insert lock nut", key:"M3.5"}))
+                    .unwrap_err()
+                    .field,
+                key
+            );
+        }
+        let p = nut::parse(&json!({"style":"Nylon-insert lock nut", "size":"M5x0.5",
+            "create":"Pocket only", "custom_thickness":7.5}))
+        .unwrap();
+        assert!(p.custom);
+        assert!((p.hex_height() - 4.8).abs() < 1e-9);
+        assert_eq!(p.pocket.unwrap().depth, 7.5);
+        assert_eq!(
+            nut::parse(&json!({"style":"nylon"})).unwrap_err().field,
+            "style"
+        );
+    }
+
     #[test]
     fn overrides_and_fine_pitch_do_not_claim_iso_4032() {
         for params in [

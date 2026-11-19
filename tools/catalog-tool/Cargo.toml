@@ -12,6 +12,7 @@ serde_json.workspace = true
 techsquid-inserts = { path = "../../plugins/techsquid-inserts" }
 techsquid-nuts = { path = "../../plugins/techsquid-nuts" }
 techsquid-screws = { path = "../../plugins/techsquid-screws" }
+fasteners.workspace = true
 bearings.workspace = true
 wheels.workspace = true
 extrusions.workspace = true

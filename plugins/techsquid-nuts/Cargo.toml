@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 publish.workspace = true
-description = "ISO 4032 hexagon nut generator, a SolidCraft plugin"
+description = "ISO 4032 hexagon nut and DIN 985 nylon-insert lock nut generator, a SolidCraft plugin"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

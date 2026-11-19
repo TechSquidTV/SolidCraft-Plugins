@@ -1,13 +1,7 @@
 {
-  "format": "solidcraft/59",
+  "format": "solidcraft/61",
   "format_pending": [
-    "bom-item-numbers",
-    "bom-suppressed-parts",
-    "drawings",
-    "extrude-one-sided-direction",
-    "named-view-roll-and-up",
-    "occurrence-bom-type",
-    "plane-at-angle-axis-origin-expressions"
+    "import-record-copies"
   ],
   "name": "v-slot-gantry",
   "units": "mm",
@@ -22,6 +16,9 @@
         ],
         "2df24330c22396a7f2105e9eb0c0c33c3defe0db304dcaca9437ac595b3d6b13": [
           78
+        ],
+        "2f2044021fe7367836bd0f2b9c2722ef301404b69ea558dd01ab45fd783a2815": [
+          101
         ],
         "53e74e8ffa522b024069abb8bd045b2603136b8c3b418552df8c3114905f750e": [
           47
@@ -43,9 +40,6 @@
         ],
         "c78e452138ea37c220191f78d9ca84823e1d5d26bb790768e2fd2055af743207": [
           14
-        ],
-        "e57a0b53ecd18178d87648611fa2e08ff85b79ab7543764ca0d0ae936ff72864": [
-          101
         ]
       },
       "version": 1
@@ -6566,7 +6560,7 @@
     },
     {
       "id": 103,
-      "name": "Nut M5: Hex profile",
+      "name": "Lock nut M5: Hex profile",
       "suppressed": false,
       "component": 101,
       "type": "sketch",
@@ -6837,10 +6831,10 @@
     },
     {
       "id": 104,
-      "name": "Nut M5: Hex",
+      "name": "Lock nut M5: Hex",
       "suppressed": false,
       "body_names": [
-        "Nut M5"
+        "Lock nut M5"
       ],
       "param_names": [
         "d54"
@@ -6852,7 +6846,7 @@
         "type": "all"
       },
       "extent": {
-        "distance": "4.7",
+        "distance": "3.2",
         "convention": "total_distance",
         "direction": "positive"
       },
@@ -6860,7 +6854,7 @@
     },
     {
       "id": 105,
-      "name": "Nut M5: Bearing chamfer profile",
+      "name": "Lock nut M5: Bearing chamfer profile",
       "suppressed": false,
       "component": 101,
       "type": "sketch",
@@ -6950,7 +6944,7 @@
     },
     {
       "id": 106,
-      "name": "Nut M5: Bearing chamfer",
+      "name": "Lock nut M5: Bearing chamfer",
       "suppressed": false,
       "param_names": [
         "d55"
@@ -6968,13 +6962,13 @@
       "angle": "360",
       "operation": "cut",
       "targets": [
-        "Nut M5"
+        "Lock nut M5"
       ],
       "convention": "sketch_normal"
     },
     {
       "id": 107,
-      "name": "Nut M5: Outer chamfer profile",
+      "name": "Lock nut M5: Outer chamfer profile",
       "suppressed": false,
       "component": 101,
       "type": "sketch",
@@ -6984,7 +6978,7 @@
           "origin": [
             0.0,
             0.0,
-            4.7
+            3.2
           ],
           "x_dir": [
             1.0,
@@ -7064,7 +7058,7 @@
     },
     {
       "id": 108,
-      "name": "Nut M5: Outer chamfer",
+      "name": "Lock nut M5: Outer chamfer",
       "suppressed": false,
       "param_names": [
         "d56"
@@ -7082,13 +7076,13 @@
       "angle": "360",
       "operation": "cut",
       "targets": [
-        "Nut M5"
+        "Lock nut M5"
       ],
       "convention": "sketch_normal"
     },
     {
       "id": 109,
-      "name": "Nut M5: Thread",
+      "name": "Lock nut M5: Thread",
       "suppressed": false,
       "param_names": [
         "d57",
@@ -7099,7 +7093,7 @@
         "F104:start"
       ],
       "participants": [
-        "Nut M5"
+        "Lock nut M5"
       ],
       "type": "hole",
       "position": [
@@ -7113,7 +7107,7 @@
         1.0
       ],
       "diameter": "4.2 mm",
-      "depth": "4.7",
+      "depth": "3.2",
       "hole": {
         "type": "simple"
       },
@@ -7121,64 +7115,349 @@
     },
     {
       "id": 110,
-      "name": "Nut M5: Bearing countersink",
+      "name": "Lock nut M5: Rolled collar: Section",
       "suppressed": false,
-      "param_names": [
-        "d59",
-        "d60",
-        "d61"
-      ],
       "component": 101,
-      "participants": [
-        "Nut M5"
-      ],
-      "type": "cone",
-      "base": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "axis": [
-        0.0,
-        0.0,
-        1.0
-      ],
-      "radius": "(5.75 mm) / 2",
-      "top_radius": "(5 mm) / 2",
-      "height": "0.2165063509461096",
-      "operation": "cut"
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              3.3099999999999947,
+              4.309999999999981
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              4.0,
+              4.31
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              3.31,
+              4.999999999999986
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              3.31,
+              5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              3.0700000000000003,
+              5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              3.0700000000000003,
+              4.568
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              3.52,
+              4.568
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l4.end",
+            "pos": [
+              3.52,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l5.end",
+            "pos": [
+              4.0,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l6.end",
+            "pos": [
+              4.0,
+              4.31
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 1,
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 3,
+            "q": 4
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 2,
+            "q": 10
+          }
+        ],
+        "counters": {
+          "a": 1,
+          "k": 2,
+          "l": 6
+        }
+      }
     },
     {
       "id": 111,
-      "name": "Nut M5: Outer countersink",
+      "name": "Lock nut M5: Rolled collar",
       "suppressed": false,
       "param_names": [
-        "d62",
-        "d63",
-        "d64"
+        "d59"
       ],
       "component": 101,
-      "participants": [
-        "Nut M5"
+      "type": "revolve",
+      "sketch": 110,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "join",
+      "targets": [
+        "Lock nut M5"
       ],
-      "type": "cone",
-      "base": [
-        0.0,
-        0.0,
-        4.7
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 112,
+      "name": "Lock nut M5: Nylon insert: Section",
+      "suppressed": false,
+      "component": 101,
+      "type": "sketch",
+      "plane": {
+        "type": "custom",
+        "plane": {
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_dir": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_dir": [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        }
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "l1.start",
+            "pos": [
+              2.5,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l1.end",
+            "pos": [
+              3.52,
+              3.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l2.end",
+            "pos": [
+              3.52,
+              4.568
+            ],
+            "fixed": false
+          },
+          {
+            "id": "l3.end",
+            "pos": [
+              2.5,
+              4.568
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4
+        }
+      }
+    },
+    {
+      "id": 113,
+      "name": "Lock nut M5: Nylon insert",
+      "suppressed": false,
+      "body_names": [
+        "Lock nut M5 Nylon insert"
       ],
-      "axis": [
-        -0.0,
-        -0.0,
-        -1.0
+      "param_names": [
+        "d60"
       ],
-      "radius": "(5.75 mm) / 2",
-      "top_radius": "(5 mm) / 2",
-      "height": "0.2165063509461096",
-      "operation": "cut"
+      "component": 101,
+      "type": "revolve",
+      "sketch": 112,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_axis",
+        "axis": "y"
+      },
+      "angle": "360",
+      "operation": "new_body",
+      "convention": "sketch_normal"
     }
   ],
-  "next_id": 116,
+  "next_id": 118,
   "components": [
     {
       "id": 1,
@@ -7476,27 +7755,27 @@
     {
       "id": 101,
       "identification_color_index": 14,
-      "name": "Nut M5",
+      "name": "Lock nut M5",
       "parent": 55,
       "metadata": {
         "bom_type": "purchased",
-        "description": "ISO 4032",
+        "description": "DIN 985",
         "org.techsquid.parts": {
           "creator": "techsquid-nuts",
-          "product": "{\"catalog\":\"iso\",\"configuration\":{\"across_flats_mm\":8.0,\"chamfer_max_mm\":0.5,\"countersink_mm\":5.75,\"height_mm\":4.7,\"major_mm\":5.0,\"pitch_mm\":0.8},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"4032\"}",
-          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"iso\",\"configuration\":{\"across_flats_mm\":8.0,\"chamfer_max_mm\":0.5,\"countersink_mm\":5.75,\"height_mm\":4.7,\"major_mm\":5.0,\"pitch_mm\":0.8},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"4032\"},\"revision\":\"1\"}",
+          "product": "{\"catalog\":\"din\",\"configuration\":{\"across_flats_mm\":8.0,\"chamfer_max_mm\":null,\"countersink_mm\":null,\"height_mm\":5.0,\"lock_hex_height_mm\":3.2,\"major_mm\":5.0,\"pitch_mm\":0.8},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"985\"}",
+          "representation": "{\"dependencies\":[],\"detail\":\"cosmetic\",\"product\":{\"catalog\":\"din\",\"configuration\":{\"across_flats_mm\":8.0,\"chamfer_max_mm\":null,\"countersink_mm\":null,\"height_mm\":5.0,\"lock_hex_height_mm\":3.2,\"major_mm\":5.0,\"pitch_mm\":0.8},\"kind\":\"standard_configuration\",\"members\":[],\"part\":\"985\"},\"revision\":\"1\"}",
           "site": [
             0.0,
             0.0,
             0.0
           ],
           "snapshot": {
-            "sha256": "8b0ab90cfc8f473266125f03a886034d8fce8d4956236991e02bdd478fac3a07",
+            "sha256": "2852ad832ebd2adb78cfecae1a3dde7b7bdfb87d5f143084751be7ec8e314150",
             "version": 2
           },
           "version": 1
         },
-        "part_number": "ISO 4032 M5"
+        "part_number": "DIN 985 M5"
       }
     }
   ],
@@ -8265,7 +8544,7 @@
       "id": 102,
       "component": 101,
       "parent": 55,
-      "name": "Nut M5:1",
+      "name": "Lock nut M5:1",
       "transform": [
         [
           1.0,
@@ -8295,10 +8574,10 @@
       "grounded": false
     },
     {
-      "id": 113,
+      "id": 115,
       "component": 101,
       "parent": 55,
-      "name": "Nut M5:2",
+      "name": "Lock nut M5:2",
       "transform": [
         [
           1.0,
@@ -8328,10 +8607,10 @@
       "grounded": false
     },
     {
-      "id": 114,
+      "id": 116,
       "component": 101,
       "parent": 55,
-      "name": "Nut M5:3",
+      "name": "Lock nut M5:3",
       "transform": [
         [
           1.0,
@@ -8361,10 +8640,10 @@
       "grounded": false
     },
     {
-      "id": 115,
+      "id": 117,
       "component": 101,
       "parent": 55,
-      "name": "Nut M5:4",
+      "name": "Lock nut M5:4",
       "transform": [
         [
           1.0,
@@ -8438,6 +8717,15 @@
           53,
           107,
           149
+        ],
+        "opacity": 1.0
+      },
+      "Lock nut M5 Nylon insert": {
+        "name": "Custom",
+        "color": [
+          53,
+          92,
+          160
         ],
         "opacity": 1.0
       },
@@ -8563,8 +8851,8 @@
       ]
     },
     {
-      "id": 112,
-      "name": "Nut M5",
+      "id": 114,
+      "name": "Lock nut M5",
       "parent": null,
       "features": [
         103,
@@ -8575,7 +8863,9 @@
         108,
         109,
         110,
-        111
+        111,
+        112,
+        113
       ]
     }
   ]

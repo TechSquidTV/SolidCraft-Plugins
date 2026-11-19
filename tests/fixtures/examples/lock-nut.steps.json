@@ -1,0 +1,15 @@
+{
+  "description": "DIN 985 M5 lock nut with a modeled thread. The Bossard BN 637 envelope is 8 mm across flats and 5 mm tall. The captive ring has an illustrative installed section from z=3.2 to 4.568 mm, with 2.5 and 3.52 mm radii.",
+  "steps": [
+    {"caption": "Place one M5 nylon-insert lock nut", "command": "plugin.run", "params": {"path": "dist/techsquid-nuts", "approval": "@approval", "entry": "make-nut", "params": {"style": "Nylon-insert lock nut", "size": "M5"}}}
+  ],
+  "expect": {
+    "bodies": 2,
+    "bbox": {"min": [-4.618802, -4, 0], "max": [4.618802, 4, 5]},
+    "bom": {"Lock nut M5": 1},
+    "parts": [
+      {"body": "Lock nut M5", "bbox": {"min": [-4.618802, -4, 0], "max": [4.618802, 4, 5]}},
+      {"body": "Lock nut M5 Nylon insert", "bbox": {"min": [-3.52, -3.52, 3.2], "max": [3.52, 3.52, 4.568]}, "volume_mm3": 26.389589}
+    ]
+  }
+}

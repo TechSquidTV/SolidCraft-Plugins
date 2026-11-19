@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Native migration checks: representation reuse, purchasing BOM and edits."""
 
+import json
+
 from harness import check, finish, package
 from headless import Headless
 
@@ -90,6 +92,22 @@ for plugin, entry, params, custom in CASES:
             purchase = next(row for row in rows if row['part_number'] == mc['part_number'])
             check(f'{label}: custom aliases share one purchase row across representations',
                   purchase['count'] == 2 and len(purchase['components']) == 2)
+        if entry == 'make-nut':
+            lock = {'style': 'Nylon-insert lock nut'}
+            first_lock = insert(**lock, thread_modeled=False)
+            second_lock = insert(**lock, thread_modeled=False)
+            threaded_lock = insert(**lock, thread_modeled=True)
+            lock_rows = [r for r in host.command('assembly.bom')['rows'] if r['part_number'] == 'DIN 985 M6']
+            check('lock nuts: verified reuse and one purchase per two-body nut across thread details',
+                  not first_lock['component']['reused'] and second_lock['component']['reused']
+                  and not threaded_lock['component']['reused'] and len(lock_rows) == 1
+                  and lock_rows[0]['count'] == 3 and len(lock_rows[0]['components']) == 2)
+            extension = insert(**lock, size='M2.5', thread_modeled=False)
+            supplier = metadata(definition(extension['component']['component'])['id'])
+            check('lock nuts: the M2.5 extension carries its sourced supplier article',
+                  extension['standard'] is None and extension['reference'] == 'Bossard BN 637'
+                  and supplier['part_number'] == 'Bossard 1143735'
+                  and json.loads(supplier['org.techsquid.parts']['product'])['kind'] == 'supplier_product')
         if entry == 'make-t-nut':
             mounted = insert(thread_modeled=False, slot='V-slot', along='Sketch Y')
             check(f'{label}: mounting orientation does not change the purchased nut', mounted['component']['reused'])

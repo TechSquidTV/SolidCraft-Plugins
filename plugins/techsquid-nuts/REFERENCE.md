@@ -150,6 +150,11 @@ including after saving and reopening. Existing features are not renamed.
 Shared internal definitions cover the plain and lock nut tables above.
 The package exposes insertion workflows only; catalog discovery is not available. Standard coarse-pitch dimensions identify standards-based configurations; fine pitches and explicit width/thickness overrides are custom, even if an override matches a table value.
 
+A diameter that differs from a listed size by less than 0.000001 mm uses that
+size for the thread, clearance hole and BOM. For example, `M5.0000001x0.8` and
+`M5` share one purchasing row. A new custom nut's BOM description lists its
+diameter, pitch, width across flats and overall height.
+
 Purchasing identity is separate from cosmetic/modeled thread detail. Unchanged
 representations reuse verified native definitions across runs. Renamed components
 remain reusable; edited components are preserved and new insertions create clean

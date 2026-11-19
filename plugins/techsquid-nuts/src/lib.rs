@@ -13,6 +13,7 @@ use fasteners::hex::{self, Hex};
 use fasteners::nut::{self as din, EndChamfer};
 use fasteners::FOLDER;
 use nut::{Params, Pocket};
+use parts::ProductKind;
 use plugin_kit::component::{self as fasten, Definition, Placed, Site};
 use plugin_kit::host::{add_new, cut_bodies, sketch_id};
 use plugin_kit::name;
@@ -105,18 +106,20 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
     let mut library_report = Value::Null;
     let placed = if p.create.part() {
         let base = body_base(p);
+        let representation = provider::representation(p);
+        let number = p.product.part_number(&representation.product)?;
+        let description = provider::bom_description(p);
         let def = Definition {
             plugin: PLUGIN,
             base: &base,
-            description: match (p.custom, p.lock) {
-                (true, Some(_)) => "Custom nylon-insert lock nut",
-                (true, None) => "Custom hexagon nut",
-                (false, _) => p.dimensional_basis(),
+            description: &description,
+            bom_type: if p.product.kind == ProductKind::Custom {
+                "normal"
+            } else {
+                "purchased"
             },
-            bom_type: if p.custom { "normal" } else { "purchased" },
             site: Site::for_thread(p.modeled),
         };
-        let number = provider::part_number(p)?;
         let creation = fasten::creation_calls(def.site, |mut r, site, name| {
             build_nut(&mut r, p, site, name).map(|_| ())
         })?;
@@ -126,19 +129,15 @@ pub fn make_nut<R: Runner>(r: &mut R, p: &Params) -> Result<Value, String> {
             &places,
             FOLDER,
             |library| {
-                library.ensure_built(
-                    &def,
-                    &number,
-                    &provider::representation(p),
-                    |mut r, site, name| build_nut(&mut r, p, site, name).map(|_| ()),
-                )
+                library.ensure_built(&def, &number, &representation, |mut r, site, name| {
+                    build_nut(&mut r, p, site, name).map(|_| ())
+                })
             },
             |mut r, placed| {
-                let joint = body_base(p);
                 for ((seat, place), occurrence) in
                     seats.iter().zip(&places).zip(&placed.occurrences)
                 {
-                    seat.attach(&mut r, *occurrence, place, &joint)?;
+                    seat.attach(&mut r, *occurrence, place, &base)?;
                 }
                 Ok(())
             },
@@ -325,7 +324,7 @@ fn build_nut<R: Runner>(
             "position": place.point,
             "direction": place.normal,
             "depth": p.hex_height(),
-            "thread": p.thread,
+            "thread": p.designation,
             "modeled": p.modeled,
             "targets": [body],
             "name": named("Thread"),
@@ -405,10 +404,11 @@ fn summary(
             "bolt_hole": pocket.clearance.describe(),
         })
     });
+    let uses_reference = p.lock.is_some() && p.product.kind != ProductKind::StandardConfiguration;
     let mut reply = json!({
-        "standard": p.dimensional_basis(),
+        "standard": (!uses_reference).then_some(p.product.basis),
         "designation": p.designation,
-        "thread": p.thread,
+        "thread": p.designation,
         "major": p.major,
         "pitch": p.pitch,
         "across_flats": p.across_flats,
@@ -421,11 +421,8 @@ fn summary(
         "drilled": drilled,
         "note": skipped.then(|| nut::CREATE.skipped()),
     });
-    if p.lock
-        .is_some_and(|lock| p.custom || lock.supplier_article().is_some())
-    {
-        reply["standard"] = Value::Null;
-        reply["reference"] = json!(p.dimensional_basis());
+    if uses_reference {
+        reply["reference"] = json!(p.product.basis);
     }
     fasten::with_placements(reply, places, placed)
 }

@@ -54,15 +54,13 @@ pub struct Pocket {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Params {
     /// Explicit dimension overrides and non-ISO pitches are custom configurations.
-    pub custom: bool,
+    pub product: crate::provider::NutProduct,
     pub lock: Option<LockNut>,
     pub create: Create,
     /// The pocket to cut in the part. Empty when only the nut is made.
     pub pocket: Option<Pocket>,
-    /// What the person typed, such as `M6` or `M8x1`.
+    /// The nut designation, using the catalog diameter when the input matches a row.
     pub designation: String,
-    /// What `solid.hole` is given: the designation, which SolidCraft reads with its coarse pitch.
-    pub thread: String,
     pub across_flats: f64,
     pub height: f64,
     pub major: f64,
@@ -79,14 +77,6 @@ pub struct Params {
 impl Params {
     pub fn hex_height(&self) -> f64 {
         self.lock.map_or(self.height, |lock| lock.hex_height)
-    }
-
-    pub fn dimensional_basis(&self) -> &'static str {
-        match self.lock {
-            Some(lock) if lock.supplier_article().is_some() => "Bossard BN 637",
-            Some(_) => "DIN 985",
-            None => "ISO 4032",
-        }
     }
 }
 
@@ -120,20 +110,37 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         }
     };
     let overrides = across_flats.is_some() || height.is_some();
-    let (outer, standard_pitch) = match lock {
+    let (outer, major, standard_pitch) = match lock {
         Some(lock) => (
             (lock.across_flats, lock.height, None, None),
+            lock.nominal,
             metric::coarse_pitch(lock.nominal),
         ),
         None => {
             let listed = nut::standard_nut(size.major);
             (
                 resolve_body(listed, across_flats, height)?,
+                listed.map_or(size.major, |row| row.nominal),
                 listed.map(|row| row.pitch),
             )
         }
     };
     let (across_flats, height, countersink, chamfer_max) = outer;
+    // The lookup tolerates numerical noise. Use its diameter for both the host
+    // thread and purchasing identity, preserving the pitch the user requested.
+    if size.pitch >= major {
+        return Err(FieldError::new(
+            size_field,
+            format!("pitch must be shorter than the M{major} catalog diameter"),
+        ));
+    }
+    let designation = if major == size.major {
+        designation
+    } else if standard_pitch == Some(size.pitch) {
+        format!("M{major}")
+    } else {
+        format!("M{major}x{}", size.pitch)
+    };
     let create = CREATE.parse(v)?;
     let pocket = if create.cut() {
         let adjust = match input::optional_length_or_zero(v, "pocket_adjust")? {
@@ -146,12 +153,12 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
                 ))
             }
         };
-        let clearance = Hole::for_major(size.major).ok_or_else(|| {
+        let clearance = Hole::for_major(major).ok_or_else(|| {
             FieldError::new(
                 size_field,
                 format!(
                     "ISO 273 has no clearance hole for M{}, so the pocket has no bolt hole; pick a listed size or use Nut only",
-                    metric::number(size.major)
+                    metric::number(major)
                 ),
             )
         })?;
@@ -164,15 +171,17 @@ pub fn parse(v: &Value) -> Result<Params, FieldError> {
         None
     };
     let p = Params {
-        custom: overrides || standard_pitch != Some(size.pitch),
+        product: crate::provider::NutProduct::resolve(
+            lock,
+            overrides || standard_pitch != Some(size.pitch),
+        ),
         lock,
         create,
         pocket,
-        thread: designation.clone(),
         designation,
         across_flats,
         height,
-        major: size.major,
+        major,
         pitch: size.pitch,
         countersink,
         chamfer_max,
@@ -265,16 +274,13 @@ mod tests {
         let blank = parse(&json!({})).unwrap();
         let m3 = parse(&json!({"size": "M3"})).unwrap();
         assert_eq!(blank.designation, "M3");
-        assert_eq!(blank.thread, m3.thread);
-        assert_eq!(blank.across_flats, m3.across_flats);
-        assert_eq!(blank.height, m3.height);
+        assert_eq!(blank, m3);
     }
 
     #[test]
     fn an_m6_is_the_iso_4032_m6() {
         let p = parse(&json!({"size": "M6"})).unwrap();
         assert_eq!(p.designation, "M6");
-        assert_eq!(p.thread, "M6");
         assert_eq!(p.across_flats, 10.0);
         assert_eq!(p.height, 5.2);
         assert_eq!(p.major, 6.0);
@@ -288,16 +294,43 @@ mod tests {
     #[test]
     fn a_fine_pitch_keeps_the_m8_nut() {
         let p = parse(&json!({"size": "M8x1"})).unwrap();
-        assert_eq!(p.thread, "M8x1");
+        assert_eq!(p.designation, "M8x1");
         assert_eq!(p.across_flats, 13.0);
         assert_eq!(p.height, 6.8);
         assert_eq!(p.pitch, 1.0);
     }
 
     #[test]
+    fn matched_diameters_drive_the_thread_and_pocket_without_rounding_a_custom_pitch() {
+        for style in STYLES {
+            for (input, thread) in [
+                ("M5.0000001", "M5"),
+                ("M4.9999999x0.8", "M5"),
+                ("M5.0000001x0.51234", "M5x0.51234"),
+            ] {
+                let p = parse(
+                    &json!({"style": style, "custom_size": input, "create": "Nut and pocket"}),
+                )
+                .unwrap();
+                assert_eq!((p.major, p.designation.as_str()), (5.0, thread));
+                assert_eq!(p.pocket.unwrap().clearance, Hole::Size("M5".into()));
+            }
+        }
+        let pitch_at_nominal = json!({"custom_size": "M5.0000001x5"});
+        assert_eq!(parse(&pitch_at_nominal).unwrap_err().field, "custom_size");
+        let v = json!({"style": NYLON_INSERT, "custom_size": "M5.00001x0.8"});
+        assert_eq!(parse(&v).unwrap_err().field, "custom_size");
+        let p = parse(
+            &json!({"custom_size": "M5.00001x0.8", "custom_width": 9, "custom_thickness": 6}),
+        )
+        .unwrap();
+        assert_eq!((p.major, p.designation.as_str()), (5.00001, "M5.00001x0.8"));
+    }
+
+    #[test]
     fn a_bare_m3_5_takes_the_table_pitch() {
         let p = parse(&json!({"size": "M3.5"})).unwrap();
-        assert_eq!(p.thread, "M3.5");
+        assert_eq!(p.designation, "M3.5");
         assert_eq!(p.across_flats, 6.0);
         assert_eq!(p.height, 2.8);
         assert_eq!(p.pitch, 0.6);
@@ -323,7 +356,7 @@ mod tests {
             "custom_thickness": 5.5,
         }))
         .unwrap();
-        assert_eq!(p.thread, "M7x1");
+        assert_eq!(p.designation, "M7x1");
         assert_eq!(p.major, 7.0);
         assert!(p.countersink.is_none());
         assert!(p.chamfer_max.is_none());
@@ -362,7 +395,7 @@ mod tests {
     #[test]
     fn a_custom_size_replaces_the_listed_one() {
         let p = parse(&json!({"size": "M6", "custom_size": "M8x1"})).unwrap();
-        assert_eq!(p.thread, "M8x1");
+        assert_eq!(p.designation, "M8x1");
         assert_eq!(p.across_flats, 13.0);
     }
 

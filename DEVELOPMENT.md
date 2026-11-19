@@ -211,10 +211,29 @@ render its screenshots. A recipe that fails its measurements leaves the saved
 design intact. Gallery paths use `examples/<name>/<name>.json`. Scripts and links
 that used the old top-level files need the new paths.
 
+### Render the README icon overview
+
+Regenerate the README image from the shipped command SVGs with Python 3.11 or
+newer and Chrome or Chromium:
+
+```sh
+python3 tools/icons/render_overview.py --host-version 0.45.0
+```
+
+The script writes `docs/images/plugin-icons.png`, reads the release version from
+`Cargo.toml`, and checks that every manifest entry is represented. After adding an
+entry, update its card and caption in the script. Redraw changed icons with
+`python3 tools/icons/draw.py` first. Set `CHROME` to a browser executable outside
+the usual installation paths, or use `--out /path/to/overview.png` for a preview.
+
+Pass the SolidCraft version used in the most recent compatibility checks.
+`--host-version` only sets the caption; regeneration does not run those checks.
+Use the same browser and system fonts for byte-for-byte reproduction.
+
 ### Render the screenshots
 
 After building the packages with `./build.sh`, regenerate the gallery screenshots
-and README banner from the repository root. The command uses an unsigned
+and assembly banner from the repository root. The command uses an unsigned
 SolidCraft CLI and Chrome or Chromium. Set `CHROME` if the browser executable
 is outside the usual installation paths.
 
@@ -226,7 +245,7 @@ The SolidCraft renderer uses the CPU backend. It reads the saved example designs
 applies the mounting plate's initial parameters and nut centers for the before
 shot, and builds temporary models from the private regression recipes for the
 catalog portraits. Chrome
-composes the README banner from three native captures, including a temporary
+composes the assembly banner from three native captures, including a temporary
 enclosure view with the brass inserts highlighted. The command stages all
 images before updating the checked-in PNGs. Use the same SolidCraft and browser
 builds and system fonts for byte-for-byte comparisons.

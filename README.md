@@ -2,7 +2,7 @@
 
 Build the hardware and frames your designs need without modeling every part from scratch. These plugins bring configurable fasteners, heat-set inserts, aluminium extrusions, bearings and V-slot wheels into [SolidCraft](https://github.com/tangency-labs/solidcraft), with matching holes and pockets where you need them.
 
-![TechSquid SolidCraft Plugins 0.3.0: screws, hex nuts, heat-set inserts, extrusions, bearings, CSK clutches, slot nuts and V-wheels, verified on SolidCraft 0.45.0](docs/images/plugin-icons.png)
+![TechSquid SolidCraft Plugins: screws, hex nuts, heat-set inserts, extrusions, bearings, CSK clutches, slot nuts and V-wheels](docs/images/plugin-icons.png)
 
 [Explore the V-slot gantry](examples/v-slot-gantry/) · [Browse all examples](examples/)
 

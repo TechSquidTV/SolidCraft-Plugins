@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate the native screenshots and README banner with the built plugins."""
+"""Regenerate the native screenshots and assembly banner with the built plugins."""
 
 import json
 import os
@@ -8,6 +8,9 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from render_html import chrome_binary, render_html
 
 from harness import CLI, ROOT, recipe_commands, run
 
@@ -131,17 +134,6 @@ def render_catalog(staging):
         snapshot(model, staging / output, size, camera, **settings)
 
 
-def chrome_binary():
-    configured = os.environ.get("CHROME")
-    candidates = (configured,) if configured else (
-        "google-chrome", "chromium", "chromium-browser", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    )
-    for candidate in candidates:
-        if browser := shutil.which(candidate):
-            return browser
-    sys.exit("Install Chrome or Chromium, or set CHROME to its executable path to render the README banner.")
-
-
 def render_banner(staging, browser):
     output = staging / "readme-banner.png"
     with tempfile.TemporaryDirectory(prefix="banner-", dir=staging) as directory:
@@ -157,15 +149,7 @@ def render_banner(staging, browser):
                  INSERT_DETAIL_SIZE, INSERT_DETAIL_CAMERA, script=colors,
                  options=("--body", "Lid:opacity=0.18", "--body", "Base:opacity=0.20"))
 
-        command = [
-            browser, "--headless", "--no-first-run", "--no-default-browser-check", "--disable-background-networking",
-            "--force-color-profile=srgb", "--force-device-scale-factor=1", "--hide-scrollbars",
-            "--window-size=1600,800", f"--user-data-dir={work / 'chrome-profile'}",
-            f"--screenshot={output}", layout.as_uri(),
-        ]
-        result = subprocess.run(command, capture_output=True, text=True)
-        if result.returncode != 0 or not output.is_file():
-            sys.exit(f"Could not render the README banner:\n{result.stderr or result.stdout}")
+        render_html(layout, output, (1600, 800), browser=browser)
 
 
 def main():
